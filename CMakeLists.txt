@@ -3,4 +3,4 @@ project(wow_simulator)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(wow_simulator main.cpp)
+add_executable(wow_simulator main.cpp Combat_simulator.cpp Combat_simulator.hpp Stats.cpp Stats.hpp Item.cpp Item.hpp)
