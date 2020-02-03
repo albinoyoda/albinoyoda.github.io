@@ -90,6 +90,8 @@ double Combat_simulator::simulate(const Character &character, double sim_time, d
     double whirlwind_cd = 0;
     bool heroic_strike_ = false;
     int flurry_charges = 0;
+    double flurry_speed_bonus = 1.3;
+    double weapon_dt_factor = 1;
 
     auto special_stats = character.get_total_special_stats();
     auto weapons = character.get_weapons();
@@ -100,23 +102,48 @@ double Combat_simulator::simulate(const Character &character, double sim_time, d
         for (auto &weapon : weapons)
         {
             Combat_simulator::Hit_outcome hit_outcome{0.0, Hit_result::TBD};
-            Weapon::Step_result step_result = weapon.step(dt, special_stats.attack_power);
-            if (spell_rotation_ && heroic_strike_ && step_result.did_swing)
+            Weapon::Step_result step_result = weapon.step(weapon_dt_factor * dt, special_stats.attack_power);
+
+            // Check if heroic strike should be performed
+            if (step_result.did_swing)
             {
-                step_result.damage += 157;
-                hit_outcome = generate_hit(step_result.damage, Hit_type::yellow);
-                heroic_strike_ = false;
-                rage -= hit_outcome.damage * 7.5 / 230.6;
-            }
-            else
-            {
-                hit_outcome = generate_hit(step_result.damage, Hit_type::yellow);
+                if (spell_rotation_ &&
+                    heroic_strike_ &&
+                    (weapon.get_socket() == Weapon::Socket::main_hand))
+                {
+                    step_result.damage += 157;
+                    hit_outcome = generate_hit(step_result.damage, Hit_type::yellow);
+                    heroic_strike_ = false;
+                    rage -= hit_outcome.damage * 7.5 / 230.6;
+                }
+                else
+                {
+                    // Otherwise do white hit
+                    hit_outcome = generate_hit(step_result.damage, Hit_type::white);
+                }
             }
 
-//            if(talents_ ** )
-//            {
-//
-//            }
+            // Manage flurry charges
+            if (talents_)
+            {
+                if (step_result.did_swing)
+                {
+                    flurry_charges--;
+                    flurry_charges = std::max(0, flurry_charges);
+                }
+                if (hit_outcome.hit_result == Hit_result::crit)
+                {
+                    flurry_charges = 3;
+                }
+                if (flurry_charges > 0)
+                {
+                    weapon_dt_factor = flurry_speed_bonus;
+                }
+                else
+                {
+                    weapon_dt_factor = 1.0;
+                }
+            }
 
             rage += hit_outcome.damage * 7.5 / 230.6;
             rage = std::min(100.0, rage);
@@ -149,7 +176,7 @@ double Combat_simulator::simulate(const Character &character, double sim_time, d
             //            overpower = baseDamageMH + 35 + attackPower / 14 * normalizedSpeed
 //            execute = 600 + (rage - 15 + impExecuteRage) * 15
         }
-//        std::cout << rage << "\n";
+//        std::cout << flurry_charges << "\n";
         time += dt;
     }
 

@@ -4,7 +4,13 @@
 #include "Combat_simulator.hpp"
 #include "Character.hpp"
 
-// TODO battle shout in the simulation
+// TODO move battle shout in the simulation
+// TODO finish talents
+// TODO enchanted gear
+// TODO crusader enchant / chance on hit
+// TODO buffs
+// TODO stances
+// TODO cooldowns
 
 struct Armory
 {
@@ -63,11 +69,11 @@ int main()
     std::cout << character.get_total_special_stats() << "\n";
 
     Combat_simulator combat_simulator;
-    combat_simulator.enable_spell_rotation();
-    combat_simulator.enable_talents();
+//    combat_simulator.enable_spell_rotation();
+//    combat_simulator.enable_talents();
     combat_simulator.enable_item_change_on_hit_effects();
 
-    double dps = combat_simulator.simulate(character, 100, 0.01, 63);
+    double dps = combat_simulator.simulate(character, 100, 0.14, 63);
 
     std::cout << "Dps from simulation: " << dps << "\n";
 

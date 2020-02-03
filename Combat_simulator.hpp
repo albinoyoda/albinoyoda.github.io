@@ -29,10 +29,10 @@ public:
 
     struct Hit_outcome
     {
-        Hit_outcome(double damage, Hit_result hit_type) : damage{damage}, hit_type{hit_type} {};
+        Hit_outcome(double damage, Hit_result hit_result) : damage{damage}, hit_result{hit_result} {};
 
         double damage;
-        Hit_result hit_type;
+        Hit_result hit_result;
     };
 
     double simulate(const Character &character, double sim_time, double dt, int level);
