@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "Character.hpp"
 
 Character::Character(const Race &race) : base_stats_{}, total_special_stats_{}, weapon_skill_{300}
@@ -17,7 +18,7 @@ Character::Character(const Race &race) : base_stats_{}, total_special_stats_{}, 
 Stats Character::compute_total_stats()
 {
     Stats total_stats = base_stats_;
-    for (const Armor &armor : gear)
+    for (const Armor &armor : armor)
     {
         total_stats += armor.get_stats();
     }
@@ -32,7 +33,8 @@ void Character::compute_special_stats()
 {
     // TODO do buffs here
     auto total_stats = compute_total_stats();
-    for (const Item &armor : gear)
+    total_special_stats_.clear();
+    for (const Item &armor : armor)
     {
         total_special_stats_ += armor.get_special_stats();
     }
@@ -60,5 +62,29 @@ const std::vector<Weapon> &Character::get_weapons() const
 
 const std::vector<Armor> &Character::get_gear() const
 {
-    return gear;
+    return armor;
+}
+
+bool Character::check_if_gear_valid()
+{
+    bool is_unique{true};
+    {
+        std::vector<Armor::Socket> sockets;
+        for (auto const &armor_piece : armor)
+        {
+            sockets.emplace_back(armor_piece.get_socket());
+        }
+        auto it = std::unique(sockets.begin(), sockets.end());
+        is_unique &= (it == sockets.end());
+    }
+    {
+        std::vector<Weapon::Socket> sockets;
+        for (auto const &weapon : weapons)
+        {
+            sockets.emplace_back(weapon.get_socket());
+        }
+        auto it = std::unique(sockets.begin(), sockets.end());
+        is_unique &= (it == sockets.end());
+    }
+    return is_unique;
 }

@@ -44,11 +44,21 @@ double Weapon::step(double time, double attack_power)
     return 0.0;
 }
 
+Weapon::Socket Weapon::get_socket() const
+{
+    return socket_;
+}
+
 /**
 ARMOR
  */
 Armor::Armor(Stats stats, Special_stats special_stats, Socket socket) : Item{stats, special_stats},
                                                                         socket_{socket} {}
+
+Armor::Socket Armor::get_socket() const
+{
+    return socket_;
+}
 
 Buff::Buff(Stats stats, Special_stats special_stats, Buff::Socket socket) : Item{stats, special_stats},
                                                                             socket_{socket} {}

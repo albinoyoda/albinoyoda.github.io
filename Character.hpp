@@ -30,7 +30,7 @@ public:
     template<typename T>
     void equip_armor(T piece)
     {
-        gear.emplace_back(piece);
+        armor.emplace_back(piece);
     }
 
     template<typename T, typename ...Ts>
@@ -46,6 +46,8 @@ public:
         weapons.emplace_back(piece);
     }
 
+    bool check_if_gear_valid();
+
     const Special_stats &get_total_special_stats() const;
 
     double get_weapon_skill() const;
@@ -58,7 +60,7 @@ private:
     Stats base_stats_;
     Special_stats total_special_stats_;
     double weapon_skill_;
-    std::vector<Armor> gear;
+    std::vector<Armor> armor;
     std::vector<Weapon> weapons;
 };
 

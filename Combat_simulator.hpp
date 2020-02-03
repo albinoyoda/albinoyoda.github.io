@@ -37,9 +37,18 @@ public:
 
     void compute_hit_table(double level, double weapon_skill, Special_stats special_stats);
 
+    void enable_spell_rotation();
+
+    void enable_talents();
+
+    void enable_item_change_on_hit_effects();
+
 private:
     std::vector<double> hit_probabilities_;
     std::vector<double> damage_weights_;
+    bool spell_rotation_;
+    bool item_chance_on_hit_;
+    bool talents_;
 };
 
 #endif //WOW_SIMULATOR_COMBAT_SIMULATOR_HPP

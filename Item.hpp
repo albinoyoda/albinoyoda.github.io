@@ -54,6 +54,10 @@ private:
     double internal_swing_timer_;
     std::pair<double, double> damage_interval_;
     Socket socket_;
+public:
+    Socket get_socket() const;
+
+private:
     bool heroic_strike_{false};
 };
 
@@ -76,11 +80,14 @@ public:
         ring2,
         trinket1,
         trinket2,
+        ranged
     };
 
     Armor() = delete;
 
     Armor(Stats stats, Special_stats special_stats, Socket socket);
+
+    Socket get_socket() const;
 
 private:
     Socket socket_;

@@ -1,6 +1,8 @@
 #ifndef WOW_SIMULATOR_STATS_HPP
 #define WOW_SIMULATOR_STATS_HPP
 
+#include <ostream>
+
 struct Special_stats
 {
     Special_stats() = default;
@@ -22,6 +24,8 @@ struct Special_stats
         *this = *this + rhs;
         return *this;
     }
+
+    void clear();
 };
 
 class Stats
@@ -43,5 +47,7 @@ public:
 };
 
 Stats operator+(const Stats &lhs, const Stats &rhs);
+
+std::ostream &operator<<(std::ostream &os, Special_stats const &special_stats);
 
 #endif //WOW_SIMULATOR_STATS_HPP
