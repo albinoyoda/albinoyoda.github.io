@@ -5,19 +5,41 @@
 #include <cstdlib>
 #include <iostream>
 #include <cassert>
+#include "Stats.hpp"
+#include "Character.hpp"
 
 class Combat_simulator
 {
 public:
-    Combat_simulator() = delete;
+    enum class Hit_type
+    {
+        miss,
+        dodge,
+        glancing,
+        crit,
+        hit
+    };
 
-    explicit Combat_simulator(std::vector<double> hit_probabilities) : hit_probabilities_{std::move(hit_probabilities)} {}
+    struct Outcome
+    {
+        Outcome() = delete;
 
-    double generate_hit(double damage);
+        Outcome(double damage, Hit_type hit_type) : damage{damage}, hit_type{hit_type} {};
+
+        double damage;
+        Hit_type hit_type;
+        bool did_heroic_strike;
+    };
+
+    double simulate(const Character &character, double sim_time, double dt, int level);
+
+    Combat_simulator::Outcome generate_hit(double damage);
+
+    void compute_hit_table(double level, double weapon_skill, Special_stats special_stats);
 
 private:
     std::vector<double> hit_probabilities_;
-    std::vector<double> damage_weights;
+    std::vector<double> damage_weights_;
 };
 
 #endif //WOW_SIMULATOR_COMBAT_SIMULATOR_HPP

@@ -26,14 +26,16 @@ Weapon::Weapon(double swing_speed, std::pair<double, double> damage_interval, St
           Item{stats, special_stats},
           socket_{socket} {};
 
-double Weapon::step(double time, double attack_power, bool is_main_hand)
+double Weapon::step(double time, double attack_power)
 {
     internal_swing_timer_ -= time;
     if (internal_swing_timer_ < 0.0)
     {
         internal_swing_timer_ += swing_speed_;
+
+        // TODO random damage?
         double damage = (damage_interval_.second - damage_interval_.first) + attack_power * swing_speed_ / 14;
-        if (!is_main_hand)
+        if (socket_ == Weapon::Socket::off_hand)
         {
             damage *= 0.625;
         }

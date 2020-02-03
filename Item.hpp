@@ -27,19 +27,34 @@ public:
     {
         main_hand,
         off_hand,
-        ranged
     };
 
     Weapon(double swing_speed, std::pair<double, double> damage_interval, Stats stats, Special_stats special_stats,
            Socket socket);
 
-    double step(double time, double attack_power, bool is_main_hand);
+    double step(double time, double attack_power);
+
+    double get_average_damage()
+    {
+        return (damage_interval_.second + damage_interval_.first) / 2;
+    }
+
+    double get_swing_speed()
+    {
+        return swing_speed_;
+    }
+
+    void queue_heroic()
+    {
+        heroic_strike_ = true;
+    }
 
 private:
     double swing_speed_;
     double internal_swing_timer_;
     std::pair<double, double> damage_interval_;
     Socket socket_;
+    bool heroic_strike_{false};
 };
 
 class Armor : public Item
