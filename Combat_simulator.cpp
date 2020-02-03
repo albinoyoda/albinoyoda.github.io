@@ -92,7 +92,8 @@ double Combat_simulator::simulate(const Character &character, double sim_time, d
     bool heroic_strike_ = false;
     int flurry_charges = 0;
     double flurry_speed_bonus = 1.3;
-    double weapon_dt_factor = 1;
+    double character_haste = character.get_haste();
+    double flurry_dt_factor = 1;
     auto special_stats = character.get_total_special_stats();
     auto weapons = character.get_weapons();
 
@@ -102,7 +103,8 @@ double Combat_simulator::simulate(const Character &character, double sim_time, d
         for (auto &weapon : weapons)
         {
             Combat_simulator::Hit_outcome hit_outcome{0.0, Hit_result::TBD};
-            Weapon::Step_result step_result = weapon.step(weapon_dt_factor * dt, special_stats.attack_power);
+            Weapon::Step_result step_result = weapon.step(character_haste * flurry_dt_factor * dt,
+                                                          special_stats.attack_power);
 
             // Check if heroic strike should be performed
             if (step_result.did_swing)
@@ -114,12 +116,15 @@ double Combat_simulator::simulate(const Character &character, double sim_time, d
                     step_result.damage += 157;
                     hit_outcome = generate_hit(step_result.damage, Hit_type::yellow);
                     heroic_strike_ = false;
-                    rage -= hit_outcome.damage * 7.5 / 230.6;
+                    rage -= 13;
+                    rage = std::min(100.0, rage);
                 }
                 else
                 {
                     // Otherwise do white hit
                     hit_outcome = generate_hit(step_result.damage, Hit_type::white);
+                    rage += hit_outcome.damage * 7.5 / 230.6;
+                    rage = std::min(100.0, rage);
                 }
             }
 
@@ -137,11 +142,11 @@ double Combat_simulator::simulate(const Character &character, double sim_time, d
                 }
                 if (flurry_charges > 0)
                 {
-                    weapon_dt_factor = flurry_speed_bonus;
+                    flurry_dt_factor = flurry_speed_bonus;
                 }
                 else
                 {
-                    weapon_dt_factor = 1.0;
+                    flurry_dt_factor = 1.0;
                 }
             }
 
@@ -157,8 +162,6 @@ double Combat_simulator::simulate(const Character &character, double sim_time, d
                 }
             }
 
-            rage += hit_outcome.damage * 7.5 / 230.6;
-            rage = std::min(100.0, rage);
             total_damage += hit_outcome.damage;
         }
 

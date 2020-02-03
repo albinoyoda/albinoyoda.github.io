@@ -62,9 +62,12 @@ public:
 
     const std::vector<Weapon> &get_weapons() const;
 
+    double get_haste() const;
+
 private:
     Stats base_stats_;
     Special_stats total_special_stats_;
+    double haste_;
     double weapon_skill_;
     std::vector<Armor> armor;
     std::vector<Weapon> weapons;

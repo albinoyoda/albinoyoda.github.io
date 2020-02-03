@@ -4,13 +4,17 @@
 #include "Combat_simulator.hpp"
 #include "Character.hpp"
 
-// TODO finish talents
 // TODO enchanted gear
-// TODO crusader enchant / chance on hit
 // TODO buffs
+// TODO crusader enchant / chance on hit
 // TODO stances
-// TODO cooldowns
 // TODO move battle shout in the simulation
+// TODO anger management
+// TODO deep wounds
+// TODO cooldowns
+// TODO execute
+// TODO overpower
+
 
 struct Armory
 {

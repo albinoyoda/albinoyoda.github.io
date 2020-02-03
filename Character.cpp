@@ -1,7 +1,7 @@
 #include <algorithm>
 #include "Character.hpp"
 
-Character::Character(const Race &race) : base_stats_{}, total_special_stats_{}, weapon_skill_{300}
+Character::Character(const Race &race) : base_stats_{}, total_special_stats_{}, weapon_skill_{300}, haste_{1.0}
 {
     switch (race)
     {
@@ -92,6 +92,11 @@ bool Character::check_if_gear_valid()
         is_unique &= (it == sockets.end());
     }
     return is_unique;
+}
+
+double Character::get_haste() const
+{
+    return haste_;
 }
 
 

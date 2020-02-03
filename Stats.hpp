@@ -12,6 +12,7 @@ struct Special_stats
     double critical_strike;
     double hit;
     double attack_power;
+    double haste;
 
     Special_stats operator+(const Special_stats &rhs)
     {

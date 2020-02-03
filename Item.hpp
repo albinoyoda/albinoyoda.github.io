@@ -95,6 +95,27 @@ private:
     Socket socket_;
 };
 
+class Enchant : public Item
+{
+public:
+    enum class Socket
+    {
+        head,
+        back,
+        chest,
+        wrists,
+        hands,
+        legs,
+    };
+
+    Enchant() = delete;
+
+    Enchant(Stats stats, Special_stats special_stats, Socket socket);
+
+private:
+    Socket socket_;
+};
+
 class Buff : public Item
 {
 public:
