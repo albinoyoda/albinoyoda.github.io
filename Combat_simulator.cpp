@@ -88,11 +88,11 @@ double Combat_simulator::simulate(const Character &character, double sim_time, d
     double rage = 0;
     double blood_thirst_cd = 0;
     double whirlwind_cd = 0;
+    double global_cd = 0;
     bool heroic_strike_ = false;
     int flurry_charges = 0;
     double flurry_speed_bonus = 1.3;
     double weapon_dt_factor = 1;
-
     auto special_stats = character.get_total_special_stats();
     auto weapons = character.get_weapons();
 
@@ -145,6 +145,18 @@ double Combat_simulator::simulate(const Character &character, double sim_time, d
                 }
             }
 
+            // Unbridled wrath
+            if (talents_)
+            {
+                if (step_result.did_swing)
+                {
+                    if (rand() % 2)
+                    {
+                        rage += 1;
+                    }
+                }
+            }
+
             rage += hit_outcome.damage * 7.5 / 230.6;
             rage = std::min(100.0, rage);
             total_damage += hit_outcome.damage;
@@ -152,35 +164,39 @@ double Combat_simulator::simulate(const Character &character, double sim_time, d
 
         if (spell_rotation_)
         {
-            if (blood_thirst_cd < 0.0 && rage > 30)
+            if (blood_thirst_cd < 0.0 && global_cd < 0 && rage > 30)
             {
                 total_damage += special_stats.attack_power * 0.45;
                 rage -= 30;
                 blood_thirst_cd = 6.0;
+                global_cd = 1.0;
             }
-            if (whirlwind_cd < 0.0 && rage > 25 && blood_thirst_cd > 0)
+            if (whirlwind_cd < 0.0 && rage > 25 && global_cd < 0 && blood_thirst_cd > 0)
             {
                 total_damage += weapons[0].get_average_damage() +
                                 special_stats.attack_power * weapons[0].get_swing_speed() / 14;
                 rage -= 25;
                 whirlwind_cd = 10;
+                global_cd = 1.0;
             }
-            if (rage > 75)
+            if (rage > 75 && !heroic_strike_)
             {
                 heroic_strike_ = true;
                 std::cout << "heroic" << "\n";
             }
             blood_thirst_cd -= dt;
             whirlwind_cd -= dt;
+            global_cd -= dt;
 
             //            overpower = baseDamageMH + 35 + attackPower / 14 * normalizedSpeed
 //            execute = 600 + (rage - 15 + impExecuteRage) * 15
         }
-//        std::cout << flurry_charges << "\n";
+//        std::cout << i << "\n";
         time += dt;
     }
 
-    return total_damage / sim_time;
+    return total_damage /
+           sim_time;
 }
 
 void Combat_simulator::enable_spell_rotation()
