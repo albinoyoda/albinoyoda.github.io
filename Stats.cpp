@@ -25,14 +25,28 @@ std::ostream &operator<<(std::ostream &os, Special_stats const &special_stats)
     return os;
 }
 
+std::ostream &operator<<(std::ostream &os, Stats const &stats)
+{
+    os << "Characters stats: " << "\n";
+    os << "strength: " << stats.strength << "\n";
+    os << "agility: " << stats.agility << "\n";
+    return os;
+}
+
 double Stats::compute_attack_power()
 {
     return strength * 2 + agility;
 }
 
-Special_stats Stats::convert_to_special_stats()
+Special_stats Stats::convert_to_special_stats() const
 {
     return {this->agility / 20, 0, this->agility * 1 + this->strength * 2};
+}
+
+void Stats::clear()
+{
+    strength = 0;
+    agility = 0;
 }
 
 void Special_stats::clear()

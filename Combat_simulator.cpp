@@ -185,7 +185,7 @@ double Combat_simulator::simulate(const Character &character, double sim_time, d
             if (rage > 75 && !heroic_strike_)
             {
                 heroic_strike_ = true;
-                std::cout << "heroic" << "\n";
+//                std::cout << "heroic" << "\n";
             }
             blood_thirst_cd -= dt;
             whirlwind_cd -= dt;

@@ -35,8 +35,6 @@ public:
     Stats() = default;
 
     Stats(double strength, double agility) : strength{strength}, agility{agility} {};
-    double strength;
-    double agility;
 
     Stats operator+(const Stats &rhs);
 
@@ -44,10 +42,17 @@ public:
 
     double compute_attack_power();
 
-    Special_stats convert_to_special_stats();
+    Special_stats convert_to_special_stats() const;
+
+    void clear();
+
+    double strength;
+    double agility;
 };
 
 Stats operator+(const Stats &lhs, const Stats &rhs);
+
+std::ostream &operator<<(std::ostream &os, Stats const &stats);
 
 std::ostream &operator<<(std::ostream &os, Special_stats const &special_stats);
 

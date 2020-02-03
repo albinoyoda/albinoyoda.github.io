@@ -3,8 +3,10 @@
 #include "Item.hpp"
 #include "Combat_simulator.hpp"
 #include "Character.hpp"
+#include "Enchant.hpp"
 
 // TODO enchanted gear
+// TODO yellow hits for abilities
 // TODO buffs
 // TODO crusader enchant / chance on hit
 // TODO stances
@@ -69,15 +71,25 @@ int main()
         return -1;
     }
 
-    character.compute_special_stats(Character::Talent::fury);
+    character.add_enchants(Enchant{Enchant::Socket::head, Enchant::Type::haste},
+                           Enchant{Enchant::Socket::back, Enchant::Type::agility},
+                           Enchant{Enchant::Socket::chest, Enchant::Type::minor_stats},
+                           Enchant{Enchant::Socket::wrists, Enchant::Type::strength7},
+                           Enchant{Enchant::Socket::hands, Enchant::Type::strength},
+                           Enchant{Enchant::Socket::legs, Enchant::Type::haste}
+    );
+
+    character.compute_all_stats(Character::Talent::fury);
     std::cout << character.get_total_special_stats() << "\n";
+    std::cout << "haste: "<<character.get_haste() << "\n";
+    std::cout << character.get_stats() << "\n";
 
     Combat_simulator combat_simulator;
     combat_simulator.enable_spell_rotation();
     combat_simulator.enable_talents();
     combat_simulator.enable_item_change_on_hit_effects();
 
-    double dps = combat_simulator.simulate(character, 100, 0.14, 63);
+    double dps = combat_simulator.simulate(character, 1000, 0.14, 63);
 
     std::cout << "Dps from simulation: " << dps << "\n";
 
