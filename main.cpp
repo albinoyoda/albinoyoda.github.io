@@ -4,6 +4,8 @@
 #include "Combat_simulator.hpp"
 #include "Character.hpp"
 
+// TODO battle shout in the simulation
+
 struct Armory
 {
     Armor lionheart_helm = Armor{Stats{18, 0}, Special_stats{2, 2, 0}, Armor::Socket::head};
@@ -57,14 +59,13 @@ int main()
         return -1;
     }
 
-    character.compute_special_stats();
+    character.compute_special_stats(Character::Talent::fury);
+    std::cout << character.get_total_special_stats() << "\n";
 
     Combat_simulator combat_simulator;
     combat_simulator.enable_spell_rotation();
     combat_simulator.enable_talents();
     combat_simulator.enable_item_change_on_hit_effects();
-
-    std::cout << character.get_total_special_stats() << "\n";
 
     double dps = combat_simulator.simulate(character, 100, 0.01, 63);
 

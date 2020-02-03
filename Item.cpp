@@ -26,7 +26,7 @@ Weapon::Weapon(double swing_speed, std::pair<double, double> damage_interval, St
           Item{stats, special_stats},
           socket_{socket} {};
 
-double Weapon::step(double time, double attack_power)
+Weapon::Step_result Weapon::step(double time, double attack_power)
 {
     internal_swing_timer_ -= time;
     if (internal_swing_timer_ < 0.0)
@@ -39,9 +39,9 @@ double Weapon::step(double time, double attack_power)
         {
             damage *= 0.625;
         }
-        return damage;
+        return {damage, true};
     }
-    return 0.0;
+    return {0.0, false};
 }
 
 Weapon::Socket Weapon::get_socket() const
@@ -60,5 +60,8 @@ Armor::Socket Armor::get_socket() const
     return socket_;
 }
 
+/**
+BUFFS
+ */
 Buff::Buff(Stats stats, Special_stats special_stats, Buff::Socket socket) : Item{stats, special_stats},
                                                                             socket_{socket} {}

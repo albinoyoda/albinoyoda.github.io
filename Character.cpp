@@ -29,7 +29,7 @@ Stats Character::compute_total_stats()
     return total_stats;
 }
 
-void Character::compute_special_stats()
+void Character::compute_special_stats(Talent talent)
 {
     // TODO do buffs here
     auto total_stats = compute_total_stats();
@@ -41,6 +41,11 @@ void Character::compute_special_stats()
     for (const Item &weapon : weapons)
     {
         total_special_stats_ += weapon.get_special_stats();
+    }
+    if (talent == Talent::fury)
+    {
+        total_special_stats_.attack_power += 241;
+        total_special_stats_.critical_strike += 5;
     }
     total_special_stats_ += total_stats.convert_to_special_stats();
 }
@@ -88,3 +93,10 @@ bool Character::check_if_gear_valid()
     }
     return is_unique;
 }
+
+
+
+
+
+
+

@@ -14,11 +14,17 @@ enum class Race
 class Character
 {
 public:
+    enum class Talent
+    {
+        fury,
+        none,
+    };
+
     explicit Character(const Race &race);
 
     Stats compute_total_stats();
 
-    void compute_special_stats();
+    void compute_special_stats(Talent talent);
 
     template<typename T, typename ...Ts>
     void equip_armor(T piece, Ts ...pieces)

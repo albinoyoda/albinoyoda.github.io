@@ -23,6 +23,15 @@ private:
 class Weapon : public Item
 {
 public:
+    struct Step_result
+    {
+        Step_result(double damage, bool did_swing) : damage{damage}, did_swing{did_swing} {}
+
+        double damage;
+        bool did_swing;
+
+    };
+
     enum class Socket
     {
         main_hand,
@@ -32,7 +41,7 @@ public:
     Weapon(double swing_speed, std::pair<double, double> damage_interval, Stats stats, Special_stats special_stats,
            Socket socket);
 
-    double step(double time, double attack_power);
+    Step_result step(double time, double attack_power);
 
     double get_average_damage()
     {
@@ -44,21 +53,14 @@ public:
         return swing_speed_;
     }
 
-    void queue_heroic()
-    {
-        heroic_strike_ = true;
-    }
+    Socket get_socket() const;
 
 private:
     double swing_speed_;
     double internal_swing_timer_;
     std::pair<double, double> damage_interval_;
     Socket socket_;
-public:
-    Socket get_socket() const;
 
-private:
-    bool heroic_strike_{false};
 };
 
 class Armor : public Item
