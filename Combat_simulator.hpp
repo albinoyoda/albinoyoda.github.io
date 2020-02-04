@@ -65,16 +65,15 @@ public:
     };
 
     std::vector<double>
-    simulate(const Character &character, double sim_time, double dt, int opponent_level, int n_damage_batches);
+    simulate(const Character &character, double sim_time, int opponent_level, int n_damage_batches);
 
     template<typename Struct_t, typename Field_t>
     Stat_weight permute_stat(const Character &character, Struct_t struct_t, Field_t field_t, Stat stat, double amount,
                              double sim_time,
-                             double dt,
                              int opponent_level, int n_batches);
 
     std::vector<Combat_simulator::Stat_weight>
-    compute_stat_weights(const Character &character, double sim_time, double dt, int opponent_level, int n_batches);
+    compute_stat_weights(const Character &character, double sim_time, int opponent_level, int n_batches);
 
     Combat_simulator::Hit_outcome generate_hit(double damage, Hit_type hit_type);
 
@@ -101,7 +100,7 @@ public:
 private:
     std::vector<double> hit_probabilities_white_;
     std::vector<double> hit_probabilities_yellow_;
-    std::vector<double> damage_weights_;
+//    std::vector<double> damage_weights_;
     bool spell_rotation_{false};
     bool item_chance_on_hit_{false};
     bool talents_{false};

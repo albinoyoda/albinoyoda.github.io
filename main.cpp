@@ -7,7 +7,7 @@
 #include "Character.hpp"
 #include "Enchant.hpp"
 
-// TODO dynamic dt
+// Graphics?
 
 // TODO buffs
 // TODO crusader enchant / chance on hit
@@ -116,20 +116,20 @@ int main()
     combat_simulator.enable_crusader();
     //    srand(static_cast <unsigned> (time(nullptr)));
 
-    int n_batches = 1000;
-    auto dps_snapshots = combat_simulator.simulate(character, 120, .05, 63, n_batches);
+    int n_batches = 10000;
+    auto dps_snapshots = combat_simulator.simulate(character, 120, 63, n_batches);
     double mean_dps = Combat_simulator::average(dps_snapshots);
     double std_dps = Combat_simulator::standard_deviation(dps_snapshots, mean_dps);
     double sample_std_dps = Combat_simulator::sample_deviation(std_dps, n_batches);
-    std::cout << "DPS from simulation: \n" << mean_dps << " +- " << 1.96 * sample_std_dps << "\n\n";
+    std::cout << "DPS from simulation: \n" << mean_dps << " +- " << 1.96 * sample_std_dps
+              << " (95% confidence interval)\n\n";
 
-    auto stat_weight_vector = combat_simulator.compute_stat_weights(character, 100, 0.05, 63, n_batches);
+    auto stat_weight_vector = combat_simulator.compute_stat_weights(character, 100, 63, n_batches);
     std::cout << "Stat weights: \n";
     for (const auto &stat_weight : stat_weight_vector)
     {
         std::cout << stat_weight;
     }
-
 
     return 0;
 }
