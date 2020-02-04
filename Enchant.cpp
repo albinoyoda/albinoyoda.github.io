@@ -1,7 +1,13 @@
 #include <cassert>
 #include "Enchant.hpp"
 
-Enchant::Enchant(Enchant::Socket socket, Enchant::Type type) : stats_{}, haste{1.0}, socket_{socket}, type_{type}
+Enchant::Enchant(Enchant::Socket socket, Enchant::Type type)
+        : stats_{},
+          haste{1.0},
+          crusader_mh_{false},
+          crusader_oh_{false},
+          socket_{socket},
+          type_{type}
 {
     switch (socket)
     {
@@ -108,6 +114,30 @@ Enchant::Enchant(Enchant::Socket socket, Enchant::Type type) : stats_{}, haste{1
             }
             break;
         }
+        case Enchant::Socket::weapon_mh:
+        {
+            switch (type)
+            {
+                case Enchant::Type::crusader:
+                    crusader_mh_ = true;
+                    break;
+                default:
+                    assert(false);
+            }
+            break;
+        }
+        case Enchant::Socket::weapon_oh:
+        {
+            switch (type)
+            {
+                case Enchant::Type::crusader:
+                    crusader_oh_ = true;
+                    break;
+                default:
+                    assert(false);
+            }
+            break;
+        }
     }
 }
 
@@ -124,4 +154,14 @@ double Enchant::get_haste() const
 const Stats &Enchant::get_stats() const
 {
     return stats_;
+}
+
+bool Enchant::is_crusader_mh() const
+{
+    return crusader_mh_;
+}
+
+bool Enchant::is_crusader_oh() const
+{
+    return crusader_oh_;
 }

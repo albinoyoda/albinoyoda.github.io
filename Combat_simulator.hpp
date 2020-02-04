@@ -96,6 +96,7 @@ public:
 
     static double add_standard_deviations(double std1, double std2);
 
+    void enable_crusader();
 
 private:
     std::vector<double> hit_probabilities_white_;
@@ -104,6 +105,7 @@ private:
     bool spell_rotation_{false};
     bool item_chance_on_hit_{false};
     bool talents_{false};
+    bool crusader_enabled_{false};
     double glancing_factor_{0.0};
 };
 

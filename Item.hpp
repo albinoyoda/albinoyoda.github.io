@@ -67,6 +67,11 @@ public:
         return swing_speed_;
     }
 
+    double get_internal_swing_timer()
+    {
+        return internal_swing_timer_;
+    }
+
     Socket get_socket() const;
 
 private:

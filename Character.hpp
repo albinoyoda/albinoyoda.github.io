@@ -94,6 +94,10 @@ public:
 
     void set_weapon_skill(int weapon_skill);
 
+    bool is_crusader_mh() const;
+
+    bool is_crusader_oh() const;
+
     template<typename T>
     auto &get_field(T t)
     {
@@ -116,6 +120,8 @@ private:
     Stats total_stats_;
     Special_stats total_special_stats_;
     double haste_;
+    bool crusader_mh_;
+    bool crusader_oh_;
     int weapon_skill_;
     std::vector<Armor> armor_;
     std::vector<Weapon> weapons_;

@@ -8,6 +8,8 @@ Character::Character(const Race &race)
           total_stats_{},
           total_special_stats_{},
           haste_{1.0},
+          crusader_mh_{false},
+          crusader_oh_{false},
           weapon_skill_{300},
           chance_for_extra_hit_{0.0}
 {
@@ -66,6 +68,8 @@ void Character::compute_all_stats(Talent talent)
         total_stats_ += ench.get_stats();
 //        total_special_stats_ += ench.convert_to_special_stats();
         haste_ *= ench.get_haste();
+        crusader_mh_ += ench.is_crusader_mh();
+        crusader_oh_ += ench.is_crusader_oh();
     }
 
     if (talent == Talent::fury)
@@ -159,6 +163,16 @@ void Character::set_chance_for_extra_hit(double chance_for_extra_hit)
 void Character::set_haste(double haste)
 {
     haste_ = haste;
+}
+
+bool Character::is_crusader_mh() const
+{
+    return crusader_mh_;
+}
+
+bool Character::is_crusader_oh() const
+{
+    return crusader_oh_;
 }
 
 

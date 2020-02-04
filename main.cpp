@@ -1,4 +1,5 @@
 #include <iostream>
+#include <ctime>
 
 #include "Stats.hpp"
 #include "Item.hpp"
@@ -6,11 +7,14 @@
 #include "Character.hpp"
 #include "Enchant.hpp"
 
-// TODO base CRIT?!?!?!
-// TODO rage when missing?
-// TODO heroic strike bug OH implementation
+// TODO dynamic dt
+
 // TODO buffs
 // TODO crusader enchant / chance on hit
+
+// TODO rage when missing?
+// TODO heroic strike bug OH implementation
+
 // TODO stances
 // TODO move battle shout in the simulation / double check AP value
 // TODO double check whirlwind damage
@@ -94,7 +98,9 @@ int main()
                            Enchant{Enchant::Socket::chest, Enchant::Type::minor_stats},
                            Enchant{Enchant::Socket::wrists, Enchant::Type::strength7},
                            Enchant{Enchant::Socket::hands, Enchant::Type::strength},
-                           Enchant{Enchant::Socket::legs, Enchant::Type::haste}
+                           Enchant{Enchant::Socket::legs, Enchant::Type::haste},
+                           Enchant{Enchant::Socket::weapon_mh, Enchant::Type::crusader},
+                           Enchant{Enchant::Socket::weapon_oh, Enchant::Type::crusader}
     );
 
     character.compute_all_stats(Character::Talent::fury);
@@ -107,8 +113,10 @@ int main()
     combat_simulator.enable_spell_rotation();
     combat_simulator.enable_talents();
     combat_simulator.enable_item_chance_on_hit_effects();
+    combat_simulator.enable_crusader();
+    //    srand(static_cast <unsigned> (time(nullptr)));
 
-    int n_batches = 5000;
+    int n_batches = 1000;
     auto dps_snapshots = combat_simulator.simulate(character, 120, .05, 63, n_batches);
     double mean_dps = Combat_simulator::average(dps_snapshots);
     double std_dps = Combat_simulator::standard_deviation(dps_snapshots, mean_dps);

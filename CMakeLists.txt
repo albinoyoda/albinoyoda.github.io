@@ -12,3 +12,4 @@ add_executable(wow_simulator
         Enchant.cpp)
 
 target_compile_options(${PROJECT_NAME} PRIVATE -Werror -Wall -Wextra)
+#target_compile_options(${PROJECT_NAME} PRIVATE -Werror -Wall -Wextra -O2)

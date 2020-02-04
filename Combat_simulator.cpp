@@ -99,9 +99,10 @@ Combat_simulator::simulate(const Character &character, double sim_time, double d
                            int n_damage_batches)
 {
     size_t N = n_damage_batches * sim_time / dt;
+    std::vector<double> damage_snapshots;
+    damage_snapshots.reserve(n_damage_batches);
     double time = 0;
     double total_damage = 0;
-    std::vector<double> damage_snapshots;
     double rage = 0;
     double blood_thirst_cd = 0;
     double whirlwind_cd = 0;
@@ -114,7 +115,11 @@ Combat_simulator::simulate(const Character &character, double sim_time, double d
     auto special_stats = character.get_total_special_stats();
     auto weapons = character.get_weapons();
     double chance_for_extra_hit = character.get_chance_for_extra_hit();
-
+    double crusader_proc_chance_mh = character.is_crusader_mh() * weapons[0].get_swing_speed() / 40;
+    double crusader_proc_chance_oh = character.is_crusader_oh() * weapons[1].get_swing_speed() / 40;
+    double crusader_mh_buff_timer = 0.0;
+    double crusader_oh_buff_timer = 0.0;
+    bool crusader_ap_active = false;
     compute_hit_table(opponent_level, character.get_weapon_skill(), special_stats);
     for (size_t iter = 0; iter < N; iter++)
     {
@@ -159,6 +164,41 @@ Combat_simulator::simulate(const Character &character, double sim_time, double d
                             rage += hit_outcome.damage * 7.5 / 230.6;
                             rage = std::min(100.0, rage);
                             weapons[0].reset_timer();
+                        }
+                    }
+                }
+                if (crusader_enabled_)
+                {
+                    if (weapon.get_socket() == Weapon::Socket::main_hand)
+                    {
+                        double random_variable = rand() / static_cast<double>(RAND_MAX);
+                        if (random_variable < crusader_proc_chance_mh)
+                        {
+                            crusader_mh_buff_timer = 15.0;
+                        }
+                    }
+                    else
+                    {
+                        double random_variable = rand() / static_cast<double>(RAND_MAX);
+                        if (random_variable < crusader_proc_chance_oh)
+                        {
+                            crusader_oh_buff_timer = 15.0;
+                        }
+                    }
+                    if (crusader_mh_buff_timer > 0.0 || crusader_oh_buff_timer > 0.0)
+                    {
+                        if (!crusader_ap_active)
+                        {
+                            special_stats.attack_power += 200;
+                            crusader_ap_active = true;
+                        }
+                    }
+                    if (crusader_mh_buff_timer < 0.0 && crusader_oh_buff_timer < 0.0)
+                    {
+                        if (crusader_ap_active)
+                        {
+                            special_stats.attack_power -= 200;
+                            crusader_ap_active = false;
                         }
                     }
                 }
@@ -233,11 +273,12 @@ Combat_simulator::simulate(const Character &character, double sim_time, double d
             if (rage > 75 && !heroic_strike_)
             {
                 heroic_strike_ = true;
-//                std::cout << "heroic" << "\n";
             }
             blood_thirst_cd -= dt;
             whirlwind_cd -= dt;
             global_cd -= dt;
+            crusader_mh_buff_timer -= dt;
+            crusader_oh_buff_timer -= dt;
 
             //            overpower = baseDamageMH + 35 + attackPower / 14 * normalizedSpeed
 //            execute = 600 + (rage - 15 + impExecuteRage) * 15
@@ -293,10 +334,6 @@ Combat_simulator::compute_stat_weights(const Character &character, double sim_ti
 //    chance_extra_hit,
 //            haste,
 //            skill,
-//    auto stat_weight_crit = permute_stat(character, &Character::permutated_special_stats_,
-//                                         &Special_stats::critical_strike, Stat::crit,
-//                                         special_stat_permutation_amount,
-//                                         sim_time, dt, opponent_level, n_batches);
 
     return {stat_weight_agi, stat_weight_str, stat_weight_crit, stat_weight_hit};
 }
@@ -306,17 +343,17 @@ std::ostream &operator<<(std::ostream &os, Combat_simulator::Stat_weight const &
     switch (stats.stat)
     {
         case Combat_simulator::Stat::agility:
-            os << "Agility stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
+            os << "Agi stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
                stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incre/decre by: " << stats.amount
                << "\n";
             break;
         case Combat_simulator::Stat::strength:
-            os << "Strength stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
+            os << "Str stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
                stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incre/decre by: " << stats.amount
                << "\n";
             break;
         case Combat_simulator::Stat::crit:
-            os << "Critical stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
+            os << "Cri stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
                stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incre/decre by: " << stats.amount
                << "\n";
             break;
@@ -363,6 +400,11 @@ double Combat_simulator::sample_deviation(double mean, int n_samples)
 double Combat_simulator::add_standard_deviations(double std1, double std2)
 {
     return std::sqrt(std1 * std1 + std2 * std2);
+}
+
+void Combat_simulator::enable_crusader()
+{
+    crusader_enabled_ = true;
 }
 
 

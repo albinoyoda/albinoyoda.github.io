@@ -15,6 +15,8 @@ public:
         wrists,
         hands,
         legs,
+        weapon_mh,
+        weapon_oh,
     };
 
     enum class Type
@@ -39,15 +41,20 @@ public:
 
     double get_haste() const;
 
-private:
-    Stats stats_;
-public:
     const Stats &get_stats() const;
 
+    bool is_crusader_mh() const;
+
+    bool is_crusader_oh() const;
+
 private:
+    Stats stats_;
     double haste;
+    bool crusader_mh_;
+    bool crusader_oh_;
     Socket socket_;
     Type type_;
 };
 
 #endif //WOW_SIMULATOR_ENCHANT_HPP
+
