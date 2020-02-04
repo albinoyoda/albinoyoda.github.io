@@ -84,15 +84,43 @@ public:
 
     double get_chance_for_extra_hit() const;
 
+    void set_stats(const Stats &stats);
+
+    void set_total_special_stats(const Special_stats &total_special_stats);
+
+    void set_haste(double haste);
+
+    void set_chance_for_extra_hit(double chance_for_extra_hit);
+
+    void set_weapon_skill(int weapon_skill);
+
+    template<typename T>
+    auto &get_field(T t)
+    {
+        return (*this).*t;
+    }
+
+    void clear_permutations()
+    {
+        permutated_stats_ = Stats{};
+        permutated_special_stats_ = Special_stats{};
+    }
+
+    // Used to compute
+    Stats permutated_stats_;
+    Special_stats permutated_special_stats_;
+
 private:
-    Stats stats_;
+    Stats base_stats_;
+    Special_stats base_special_stats_;
+    Stats total_stats_;
     Special_stats total_special_stats_;
     double haste_;
     int weapon_skill_;
     std::vector<Armor> armor_;
     std::vector<Weapon> weapons_;
     std::vector<Enchant> enchants_;
-    double chance_for_extra_hit;
+    double chance_for_extra_hit_;
 };
 
 #endif //WOW_SIMULATOR_CHARACTER_HPP

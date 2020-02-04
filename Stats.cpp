@@ -2,7 +2,7 @@
 
 Stats Stats::operator+(const Stats &rhs)
 {
-    return {this->agility + rhs.agility, this->strength + rhs.strength};
+    return {this->strength + rhs.strength, this->agility + rhs.agility,};
 }
 
 Stats &Stats::operator+=(const Stats &rhs)
@@ -13,7 +13,7 @@ Stats &Stats::operator+=(const Stats &rhs)
 
 Stats operator+(const Stats &lhs, const Stats &rhs)
 {
-    return {lhs.agility + rhs.agility, lhs.strength + rhs.strength};
+    return {lhs.strength + rhs.strength, lhs.agility + rhs.agility};
 }
 
 std::ostream &operator<<(std::ostream &os, Special_stats const &special_stats)
@@ -35,7 +35,7 @@ std::ostream &operator<<(std::ostream &os, Stats const &stats)
 
 Special_stats Stats::convert_to_special_stats() const
 {
-    return {this->agility / 20, 0, this->agility * 1 + this->strength * 2};
+    return {this->agility / 20, 0, this->strength * 2};
 }
 
 void Stats::clear()

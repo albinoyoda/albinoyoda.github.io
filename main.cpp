@@ -1,17 +1,19 @@
 #include <iostream>
-#include <numeric>
+
 #include "Stats.hpp"
 #include "Item.hpp"
 #include "Combat_simulator.hpp"
 #include "Character.hpp"
 #include "Enchant.hpp"
 
-// TODO support skill 300-305
+// TODO base CRIT?!?!?!
+// TODO rage when missing?
+// TODO heroic strike bug OH implementation
 // TODO buffs
 // TODO crusader enchant / chance on hit
-// TODO stat weights
 // TODO stances
 // TODO move battle shout in the simulation / double check AP value
+// TODO double check whirlwind damage
 // TODO anger management
 // TODO deep wounds
 // TODO cooldowns
@@ -21,6 +23,11 @@
 
 struct Armory
 {
+    Armory()
+    {
+        set_extra_item_properties();
+    }
+
     Armor lionheart_helm = Armor{Stats{18, 0}, Special_stats{2, 2, 0}, Armor::Socket::head};
     Armor onyxia_tooth_pendant = Armor{Stats{0, 13}, Special_stats{1, 1, 0}, Armor::Socket::neck};
     Armor truestrike_shoulders = Armor{Stats{0, 0}, Special_stats{0, 2, 24}, Armor::Socket::shoulder};
@@ -54,19 +61,19 @@ int main()
 {
     Character character{Race::human};
     Armory armory;
-    armory.set_extra_item_properties();
 
     character.equip_armor(armory.lionheart_helm,
                           armory.onyxia_tooth_pendant,
                           armory.truestrike_shoulders,
                           armory.cape_of_the_black_baron,
                           armory.savage_gladiator_chain,
+//                          armory.cadaverous_armor,
                           armory.wristguards_of_stability,
                           armory.devilsaur_gauntlets,
 //                          armory.edgemasters_handguards,
                           armory.onslaught_girdle,
                           armory.devilsaur_leggings,
-                          armory.windreaver_greaves,
+                          armory.bloodmail_boots,
                           armory.don_julios_band,
                           armory.magnis_will,
                           armory.hand_of_justice,
@@ -91,43 +98,30 @@ int main()
     );
 
     character.compute_all_stats(Character::Talent::fury);
-    std::cout << character.get_total_special_stats() << "\n";
-    std::cout << "haste: " << character.get_haste() << "\n";
-    std::cout << "chance for extra hit: " << character.get_chance_for_extra_hit() << "%" << "\n";
     std::cout << character.get_stats() << "\n";
+    std::cout << character.get_total_special_stats();
+    std::cout << "haste: " << character.get_haste() << "\n";
+    std::cout << "chance for extra hit: " << character.get_chance_for_extra_hit() << "%" << "\n\n";
 
     Combat_simulator combat_simulator;
     combat_simulator.enable_spell_rotation();
     combat_simulator.enable_talents();
-    combat_simulator.enable_item_change_on_hit_effects();
+    combat_simulator.enable_item_chance_on_hit_effects();
 
-    auto dps_snapshots = combat_simulator.simulate(character, 1000, .01, 63);
-    double average = std::accumulate(dps_snapshots.begin(), dps_snapshots.end(), 0.0) / dps_snapshots.size();
-    std::cout << "DPS from simulation: \n" << average << "\n";
-    std::cout << "Average DPS over the simulation: \n";
-    for (const auto &elem : dps_snapshots)
+    int n_batches = 5000;
+    auto dps_snapshots = combat_simulator.simulate(character, 120, .05, 63, n_batches);
+    double mean_dps = Combat_simulator::average(dps_snapshots);
+    double std_dps = Combat_simulator::standard_deviation(dps_snapshots, mean_dps);
+    double sample_std_dps = Combat_simulator::sample_deviation(std_dps, n_batches);
+    std::cout << "DPS from simulation: \n" << mean_dps << " +- " << 1.96 * sample_std_dps << "\n\n";
+
+    auto stat_weight_vector = combat_simulator.compute_stat_weights(character, 100, 0.05, 63, n_batches);
+    std::cout << "Stat weights: \n";
+    for (const auto &stat_weight : stat_weight_vector)
     {
-        std::cout << elem << ", ";
+        std::cout << stat_weight;
     }
 
-//    auto dps_snapshots = combat_simulator.simulate(character, 100000, .01, 63);
 
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -49,15 +49,32 @@ public:
 
     struct Stat_weight
     {
-        double d_dps;
+        Stat_weight(double d_dps_plus, double std_d_dps_plus, double d_dps_minus, double std_d_dps_minus, double amount,
+                    Stat stat) : d_dps_plus{d_dps_plus},
+                                 std_d_dps_plus{std_d_dps_plus},
+                                 d_dps_minus{d_dps_minus},
+                                 std_d_dps_minus{std_d_dps_minus},
+                                 amount{amount},
+                                 stat{stat} {};
+        double d_dps_plus;
+        double std_d_dps_plus;
+        double d_dps_minus;
+        double std_d_dps_minus;
+        double amount;
         Stat stat;
     };
 
-
-    std::vector<double> simulate(const Character &character, double sim_time, double dt, int opponent_level);
-
     std::vector<double>
-    compute_stat_weights(const Character &character, double sim_time, double dt, int opponent_level);
+    simulate(const Character &character, double sim_time, double dt, int opponent_level, int n_damage_batches);
+
+    template<typename Struct_t, typename Field_t>
+    Stat_weight permute_stat(const Character &character, Struct_t struct_t, Field_t field_t, Stat stat, double amount,
+                             double sim_time,
+                             double dt,
+                             int opponent_level, int n_batches);
+
+    std::vector<Combat_simulator::Stat_weight>
+    compute_stat_weights(const Character &character, double sim_time, double dt, int opponent_level, int n_batches);
 
     Combat_simulator::Hit_outcome generate_hit(double damage, Hit_type hit_type);
 
@@ -67,7 +84,18 @@ public:
 
     void enable_talents();
 
-    void enable_item_change_on_hit_effects();
+    void enable_item_chance_on_hit_effects();
+
+    static double average(const std::vector<double> &vec);
+
+    static double standard_deviation(const std::vector<double> &vec, double ave);
+
+    static double variance(const std::vector<double> &vec, double ave);
+
+    static double sample_deviation(double mean, int n_samples);
+
+    static double add_standard_deviations(double std1, double std2);
+
 
 private:
     std::vector<double> hit_probabilities_white_;
@@ -78,5 +106,9 @@ private:
     bool talents_{false};
     double glancing_factor_{0.0};
 };
+
+std::ostream &operator<<(std::ostream &os, Combat_simulator::Stat_weight const &stats);
+
+#include "Combat_simulator.tcc"
 
 #endif //WOW_SIMULATOR_COMBAT_SIMULATOR_HPP

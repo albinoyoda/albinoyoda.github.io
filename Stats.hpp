@@ -43,6 +43,12 @@ public:
 
     void clear();
 
+    template<typename T>
+    auto &get_field(T t)
+    {
+        return (*this).*t;
+    }
+
     double strength;
     double agility;
 };

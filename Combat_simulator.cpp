@@ -1,5 +1,8 @@
 #include "Combat_simulator.hpp"
 
+#include <cmath>
+
+
 Combat_simulator::Hit_outcome Combat_simulator::generate_hit(double damage, Hit_type hit_type)
 {
     double random_var = 100 * rand() / static_cast<double>(RAND_MAX);
@@ -14,14 +17,13 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(double damage, Hit_
             case 1:
                 return {0.0, Combat_simulator::Hit_result::dodge};
             case 2:
-                return {damage * 0.85, Combat_simulator::Hit_result::glancing};
+                return {damage * (100.0 - glancing_factor_) / 100.0, Combat_simulator::Hit_result::glancing};
             case 3:
                 return {damage * 2.2, Combat_simulator::Hit_result::crit};
             case 4:
                 return {damage, Combat_simulator::Hit_result::hit};
             default:
                 assert(false);
-                return {0.0, Combat_simulator::Hit_result::miss};
         }
     }
     else
@@ -40,9 +42,9 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(double damage, Hit_
                 return {damage, Combat_simulator::Hit_result::hit};
             default:
                 assert(false);
-                return {0.0, Combat_simulator::Hit_result::miss};
         }
     }
+    return {0.0, Combat_simulator::Hit_result::miss};
 }
 
 void Combat_simulator::compute_hit_table(int opponent_level, int weapon_skill, Special_stats special_stats)
@@ -57,7 +59,6 @@ void Combat_simulator::compute_hit_table(int opponent_level, int weapon_skill, S
     double crit_chance = special_stats.critical_strike - base_skill_diff * 0.2;
 
     // Miss chance
-
     double base_miss_chance = (skill_diff > 10) ? (5.0 + skill_diff * 0.2) + 1 : (5.0 + skill_diff * 0.1);
     double dw_miss_chance = (base_miss_chance * 0.8 + 20.0);
     double miss_chance = dw_miss_chance - special_stats.hit;
@@ -83,9 +84,9 @@ void Combat_simulator::compute_hit_table(int opponent_level, int weapon_skill, S
     hit_probabilities_white_.push_back(hit_probabilities_white_.back() + glancing_chance);
     hit_probabilities_white_.push_back(hit_probabilities_white_.back() + crit_chance);
 
-    std::cout << miss_chance << "% chance to miss \n";
-    std::cout << 100.0 - hit_probabilities_white_.back() << "% chance to white hit. (Negative value = crit capped) \n";
-    std::cout << crit_chance << "% chance to crit.\n";
+//    std::cout << miss_chance << "% chance to miss \n";
+//    std::cout << 100.0 - hit_probabilities_white_.back() << "% chance to white hit. (Negative value = crit capped) \n";
+//    std::cout << crit_chance << "% chance to crit.\n\n";
 
     hit_probabilities_yellow_.clear();
     hit_probabilities_yellow_.push_back(miss_chance);
@@ -94,9 +95,10 @@ void Combat_simulator::compute_hit_table(int opponent_level, int weapon_skill, S
 }
 
 std::vector<double>
-Combat_simulator::simulate(const Character &character, double sim_time, double dt, int opponent_level)
+Combat_simulator::simulate(const Character &character, double sim_time, double dt, int opponent_level,
+                           int n_damage_batches)
 {
-    size_t N = sim_time / dt;
+    size_t N = n_damage_batches * sim_time / dt;
     double time = 0;
     double total_damage = 0;
     std::vector<double> damage_snapshots;
@@ -165,7 +167,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, double d
             // Manage flurry charges
             if (talents_)
             {
-                if (step_result.did_swing)
+                if (hit_outcome.hit_result != Hit_result::miss && hit_outcome.hit_result != Hit_result::dodge)
                 {
                     flurry_charges--;
                     flurry_charges = std::max(0, flurry_charges);
@@ -187,7 +189,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, double d
             // Unbridled wrath
             if (talents_)
             {
-                if (step_result.did_swing)
+                if (hit_outcome.hit_result != Hit_result::miss && hit_outcome.hit_result != Hit_result::dodge)
                 {
                     if (rand() % 2)
                     {
@@ -241,9 +243,11 @@ Combat_simulator::simulate(const Character &character, double sim_time, double d
 //            execute = 600 + (rage - 15 + impExecuteRage) * 15
         }
         time += dt;
-        if (((iter + 1) % (N / 10)) == 0)
+        if (((iter + 1) % (N / n_damage_batches)) == 0)
         {
             damage_snapshots.push_back(total_damage / time);
+            total_damage = 0;
+            time = 0;
         }
     }
 
@@ -260,7 +264,105 @@ void Combat_simulator::enable_talents()
     talents_ = true;
 }
 
-void Combat_simulator::enable_item_change_on_hit_effects()
+void Combat_simulator::enable_item_chance_on_hit_effects()
 {
     item_chance_on_hit_ = true;
 }
+
+std::vector<Combat_simulator::Stat_weight>
+Combat_simulator::compute_stat_weights(const Character &character, double sim_time, double dt, int opponent_level,
+                                       int n_batches)
+{
+
+    double stat_permutation_amount = 10;
+    double special_stat_permutation_amount = 1;
+    auto stat_weight_agi = permute_stat(character, &Character::permutated_stats_, &Stats::agility, Stat::agility,
+                                        stat_permutation_amount,
+                                        sim_time, dt, opponent_level, n_batches);
+    auto stat_weight_str = permute_stat(character, &Character::permutated_stats_, &Stats::strength, Stat::strength,
+                                        stat_permutation_amount,
+                                        sim_time, dt, opponent_level, n_batches);
+    auto stat_weight_crit = permute_stat(character, &Character::permutated_special_stats_,
+                                         &Special_stats::critical_strike, Stat::crit,
+                                         special_stat_permutation_amount,
+                                         sim_time, dt, opponent_level, n_batches);
+    auto stat_weight_hit = permute_stat(character, &Character::permutated_special_stats_,
+                                        &Special_stats::hit, Stat::hit,
+                                        special_stat_permutation_amount,
+                                        sim_time, dt, opponent_level, n_batches);
+//    chance_extra_hit,
+//            haste,
+//            skill,
+//    auto stat_weight_crit = permute_stat(character, &Character::permutated_special_stats_,
+//                                         &Special_stats::critical_strike, Stat::crit,
+//                                         special_stat_permutation_amount,
+//                                         sim_time, dt, opponent_level, n_batches);
+
+    return {stat_weight_agi, stat_weight_str, stat_weight_crit, stat_weight_hit};
+}
+
+std::ostream &operator<<(std::ostream &os, Combat_simulator::Stat_weight const &stats)
+{
+    switch (stats.stat)
+    {
+        case Combat_simulator::Stat::agility:
+            os << "Agility stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
+               stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incre/decre by: " << stats.amount
+               << "\n";
+            break;
+        case Combat_simulator::Stat::strength:
+            os << "Strength stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
+               stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incre/decre by: " << stats.amount
+               << "\n";
+            break;
+        case Combat_simulator::Stat::crit:
+            os << "Critical stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
+               stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incre/decre by: " << stats.amount
+               << "\n";
+            break;
+        case Combat_simulator::Stat::hit:
+            os << "Hit stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
+               stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incre/decre by: " << stats.amount
+               << "\n";
+            break;
+        default:
+            assert(false);
+    }
+    return os;
+}
+
+double Combat_simulator::average(const std::vector<double> &vec)
+{
+    double sum = 0;
+    for (double value : vec)
+        sum += value;
+    return sum / vec.size();
+}
+
+double Combat_simulator::variance(const std::vector<double> &vec, double average)
+{
+    double sum = 0;
+    double inverse = 1.0 / static_cast<double>(vec.size());
+    for (double value : vec)
+    {
+        sum += std::pow(static_cast<double>(value) - average, 2);
+    }
+    return inverse * sum;
+}
+
+double Combat_simulator::standard_deviation(const std::vector<double> &vec, double average)
+{
+    return std::sqrt(variance(vec, average));
+}
+
+double Combat_simulator::sample_deviation(double mean, int n_samples)
+{
+    return mean / std::sqrt(static_cast<double>(n_samples));
+}
+
+double Combat_simulator::add_standard_deviations(double std1, double std2)
+{
+    return std::sqrt(std1 * std1 + std2 * std2);
+}
+
+
