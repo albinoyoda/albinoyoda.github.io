@@ -202,41 +202,39 @@ Combat_simulator::simulate(const Character &character, double sim_time, double d
                         }
                     }
                 }
-            }
-
-            // Manage flurry charges
-            if (talents_)
-            {
-                if (hit_outcome.hit_result != Hit_result::miss && hit_outcome.hit_result != Hit_result::dodge)
+                // Unbridled wrath
+                if (talents_)
                 {
-                    flurry_charges--;
-                    flurry_charges = std::max(0, flurry_charges);
-                }
-                if (hit_outcome.hit_result == Hit_result::crit)
-                {
-                    flurry_charges = 3;
-                }
-                if (flurry_charges > 0)
-                {
-                    flurry_dt_factor = flurry_speed_bonus;
-                }
-                else
-                {
-                    flurry_dt_factor = 1.0;
-                }
-            }
-
-            // Unbridled wrath
-            if (talents_)
-            {
-                if (hit_outcome.hit_result != Hit_result::miss && hit_outcome.hit_result != Hit_result::dodge)
-                {
-                    if (rand() % 2)
+                    if (hit_outcome.hit_result != Hit_result::miss && hit_outcome.hit_result != Hit_result::dodge)
                     {
-                        rage += 1;
+                        if (rand() % 2)
+                        {
+                            rage += 1;
+                        }
+                    }
+
+                    // Manage flurry charges
+                    if (hit_outcome.hit_result != Hit_result::miss && hit_outcome.hit_result != Hit_result::dodge)
+                    {
+                        flurry_charges--;
+                        flurry_charges = std::max(0, flurry_charges);
+                    }
+                    if (hit_outcome.hit_result == Hit_result::crit)
+                    {
+                        flurry_charges = 3;
+                    }
+                    if (flurry_charges > 0)
+                    {
+                        flurry_dt_factor = flurry_speed_bonus;
+                    }
+                    else
+                    {
+                        flurry_dt_factor = 1.0;
                     }
                 }
             }
+
+
         }
 
         if (spell_rotation_)
@@ -284,6 +282,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, double d
 //            execute = 600 + (rage - 15 + impExecuteRage) * 15
         }
         time += dt;
+
         if (((iter + 1) % (N / n_damage_batches)) == 0)
         {
             damage_snapshots.push_back(total_damage / time);
