@@ -33,11 +33,6 @@ std::ostream &operator<<(std::ostream &os, Stats const &stats)
     return os;
 }
 
-double Stats::compute_attack_power()
-{
-    return strength * 2 + agility;
-}
-
 Special_stats Stats::convert_to_special_stats() const
 {
     return {this->agility / 20, 0, this->agility * 1 + this->strength * 2};

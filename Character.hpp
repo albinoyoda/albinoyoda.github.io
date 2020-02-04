@@ -10,6 +10,9 @@
 enum class Race
 {
     human,
+    dwarf,
+    night_elf,
+    gnome
 };
 
 class Character
@@ -29,7 +32,7 @@ public:
 
     const Special_stats &get_total_special_stats() const;
 
-    double get_weapon_skill() const;
+    int get_weapon_skill() const;
 
     const std::vector<Armor> &get_gear() const;
 
@@ -79,14 +82,17 @@ public:
         enchants_.emplace_back(piece);
     }
 
+    double get_chance_for_extra_hit() const;
+
 private:
     Stats stats_;
     Special_stats total_special_stats_;
     double haste_;
-    double weapon_skill_;
+    int weapon_skill_;
     std::vector<Armor> armor_;
     std::vector<Weapon> weapons_;
     std::vector<Enchant> enchants_;
+    double chance_for_extra_hit;
 };
 
 #endif //WOW_SIMULATOR_CHARACTER_HPP

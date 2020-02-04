@@ -15,9 +15,19 @@ public:
 
     const Special_stats &get_special_stats() const;
 
+    void set_chance_for_extra_hit(int chance_for_extra_hit_input);
+
+    double get_chance_for_extra_hit() const;
+
+    int get_extra_skill() const;
+
+    void set_extra_skill(double extra_skill);
+
 private:
     Stats stats_;
     Special_stats special_stats_;
+    double chance_for_extra_hit;
+    int extra_skill_;
 };
 
 class Weapon : public Item
@@ -43,6 +53,10 @@ public:
 
     Step_result step(double time, double attack_power);
 
+    double swing(double attack_power);
+
+    void reset_timer();
+
     double get_average_damage()
     {
         return (damage_interval_.second + damage_interval_.first) / 2;
@@ -60,7 +74,6 @@ private:
     double internal_swing_timer_;
     std::pair<double, double> damage_interval_;
     Socket socket_;
-
 };
 
 class Armor : public Item
@@ -98,18 +111,20 @@ private:
 class Buff : public Item
 {
 public:
-    enum class Socket
+    enum class Name
     {
-        strength,
-        agility,
+        rallying_cry,
+        dire_maul,
+        blessing_of_kings,
+        blessing_of_might,
     };
 
     Buff() = delete;
 
-    Buff(Stats stats, Special_stats special_stats, Socket socket);
+    Buff(Stats stats, Special_stats special_stats, Name name);
 
 private:
-    Socket socket_;
+    Name name_;
 };
 
 

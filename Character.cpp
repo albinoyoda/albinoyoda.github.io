@@ -1,8 +1,14 @@
 #include <algorithm>
 #include "Character.hpp"
 
-Character::Character(const Race &race) : stats_{}, total_special_stats_{}, weapon_skill_{300}, haste_{1.0}
+Character::Character(const Race &race)
+        : stats_{},
+          total_special_stats_{},
+          haste_{1.0},
+          weapon_skill_{300},
+          chance_for_extra_hit{0.0}
 {
+    stats_.clear();
     switch (race)
     {
         case Race::human:
@@ -10,43 +16,40 @@ Character::Character(const Race &race) : stats_{}, total_special_stats_{}, weapo
             total_special_stats_ += Special_stats{5, 0, 0};
             weapon_skill_ += 5;
             break;
+        case Race::dwarf:
+            stats_ += Stats{122, 76};
+            total_special_stats_ += Special_stats{5, 0, 0};
+            break;
+        case Race::night_elf:
+            stats_ += Stats{117, 85};
+            total_special_stats_ += Special_stats{5, 0, 0};
+            break;
+        case Race::gnome:
+            stats_ += Stats{115, 83};
+            total_special_stats_ += Special_stats{5, 0, 0};
+            break;
         default:
             assert(false);
     }
 }
 
-//Stats Character::compute_total_stats()
-//{
-//    for (const Armor &armor : armor_)
-//    {
-//        total_stats += armor.get_stats();
-//    }
-//    for (const Weapon &weapon : weapons_)
-//    {
-//        total_stats += weapon.get_stats();
-//    }
-//    for (const Enchant &ench : enchants_)
-//    {
-//        total_special_stats_ += ench.convert_to_special_stats();
-//        haste_ *= ench.get_haste();
-//    }
-//    return total_stats;
-//}
-
 void Character::compute_all_stats(Talent talent)
 {
-    // TODO do buffs here
     total_special_stats_.clear();
     for (const Item &armor : armor_)
     {
         stats_ += armor.get_stats();
         total_special_stats_ += armor.get_special_stats();
+        chance_for_extra_hit += armor.get_chance_for_extra_hit();
+        weapon_skill_ += armor.get_extra_skill();
     }
 
     for (const Item &weapon : weapons_)
     {
         stats_ += weapon.get_stats();
         total_special_stats_ += weapon.get_special_stats();
+        chance_for_extra_hit += weapon.get_chance_for_extra_hit();
+        weapon_skill_ += weapon.get_extra_skill();
     }
 
     for (const Enchant &ench : enchants_)
@@ -58,8 +61,9 @@ void Character::compute_all_stats(Talent talent)
 
     if (talent == Talent::fury)
     {
-        total_special_stats_.attack_power += 241;
-        total_special_stats_.critical_strike += 5;
+        total_special_stats_.attack_power += 231;  // battle shout
+        total_special_stats_.critical_strike += 5; // crit from talent
+        total_special_stats_.critical_strike += 3; // crit from talent
     }
     total_special_stats_ += stats_.convert_to_special_stats();
 }
@@ -69,7 +73,7 @@ const Special_stats &Character::get_total_special_stats() const
     return total_special_stats_;
 }
 
-double Character::get_weapon_skill() const
+int Character::get_weapon_skill() const
 {
     return weapon_skill_;
 }
@@ -116,6 +120,11 @@ double Character::get_haste() const
 const Stats &Character::get_stats() const
 {
     return stats_;
+}
+
+double Character::get_chance_for_extra_hit() const
+{
+    return chance_for_extra_hit;
 }
 
 
