@@ -91,3 +91,51 @@ Armor::Socket Armor::get_socket() const
 {
     return socket_;
 }
+
+std::ostream &operator<<(std::ostream &os, Armor::Socket const &socket)
+{
+    os << "Item slot:" << "\n";
+    switch (socket)
+    {
+        case Armor::Socket::head:
+            os << "head." << "\n";
+            break;
+        case Armor::Socket::neck:
+            os << "neck." << "\n";
+            break;
+        case Armor::Socket::shoulder:
+            os << "shoulder." << "\n";
+            break;
+        case Armor::Socket::back:
+            os << "back." << "\n";
+            break;
+        case Armor::Socket::chest:
+            os << "chest." << "\n";
+            break;
+        case Armor::Socket::wrists:
+            os << "wrists." << "\n";
+            break;
+        case Armor::Socket::hands:
+            os << "hands." << "\n";
+            break;
+        case Armor::Socket::belt:
+            os << "belt." << "\n";
+            break;
+        case Armor::Socket::legs:
+            os << "legs." << "\n";
+            break;
+        case Armor::Socket::boots:
+            os << "boots." << "\n";
+            break;
+        case Armor::Socket::ring:
+            os << "ring." << "\n";
+            break;
+        case Armor::Socket::trinket:
+            os << "trinket." << "\n";
+            break;
+        case Armor::Socket::ranged:
+            os << "ranged." << "\n";
+            break;
+    }
+    return os;
+}

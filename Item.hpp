@@ -94,10 +94,8 @@ public:
         belt,
         legs,
         boots,
-        ring1,
-        ring2,
-        trinket1,
-        trinket2,
+        ring,
+        trinket,
         ranged
     };
 
@@ -110,6 +108,8 @@ public:
 private:
     Socket socket_;
 };
+
+std::ostream &operator<<(std::ostream &os, Armor::Socket const &socket);
 
 class Buff : public Item
 {

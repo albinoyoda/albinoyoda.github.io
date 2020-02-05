@@ -121,15 +121,39 @@ const std::vector<Armor> &Character::get_gear() const
 
 bool Character::check_if_armor_valid()
 {
-    bool is_unique{true};
     std::vector<Armor::Socket> sockets;
+    bool one_ring{false};
+    bool one_trinket{false};
     for (auto const &armor_piece : armor_)
     {
+        for (auto const &socket : sockets)
+        {
+            if (armor_piece.get_socket() == socket)
+            {
+                if (armor_piece.get_socket() == Armor::Socket::ring)
+                {
+                    if (armor_piece.get_socket() == Armor::Socket::ring && one_ring)
+                    {
+                        std::cout << "extra copy of " << armor_piece.get_socket() << "\n";
+                        return false;
+                    }
+                    one_ring = true;
+                }
+                if (armor_piece.get_socket() == Armor::Socket::trinket)
+                {
+                    if (armor_piece.get_socket() == Armor::Socket::trinket && one_trinket)
+                    {
+                        std::cout << "extra copy of " << armor_piece.get_socket() << "\n";
+                        return false;
+                    }
+                    one_trinket = true;
+                }
+            }
+        }
         sockets.emplace_back(armor_piece.get_socket());
     }
-    auto it = std::unique(sockets.begin(), sockets.end());
-    is_unique &= (it == sockets.end());
-    return is_unique;
+
+    return true;
 }
 
 

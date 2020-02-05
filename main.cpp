@@ -9,8 +9,7 @@
 
 // TODO Graphics?
 
-
-// TODO onehand/mainhand/offhand weapons
+// TODO weapon skill split
 // TODO ring trinket slots
 // TODO 2h weapons
 
@@ -88,10 +87,10 @@ struct Armory
     Armor devilsaur_leggings{Stats{0, 0}, Special_stats{1, 1, 46}, Armor::Socket::legs};
     Armor windreaver_greaves{Stats{0, 20}, Special_stats{0, 1, 0}, Armor::Socket::boots};
     Armor bloodmail_boots{Stats{9, 9}, Special_stats{0, 1, 0}, Armor::Socket::boots};
-    Armor don_julios_band{Stats{0, 0}, Special_stats{1, 1, 16}, Armor::Socket::ring1};
-    Armor magnis_will{Stats{6, 0}, Special_stats{1, 0, 0}, Armor::Socket::ring2};
-    Armor hand_of_justice{Stats{0, 0}, Special_stats{0, 0, 20}, Armor::Socket::trinket1};
-    Armor blackhands_breadth{Stats{0, 0}, Special_stats{2, 0, 0}, Armor::Socket::trinket2};
+    Armor don_julios_band{Stats{0, 0}, Special_stats{1, 1, 16}, Armor::Socket::ring};
+    Armor magnis_will{Stats{6, 0}, Special_stats{1, 0, 0}, Armor::Socket::ring};
+    Armor hand_of_justice{Stats{0, 0}, Special_stats{0, 0, 20}, Armor::Socket::trinket};
+    Armor blackhands_breadth{Stats{0, 0}, Special_stats{2, 0, 0}, Armor::Socket::trinket};
     Armor satyrs_bow{Stats{0, 3}, Special_stats{0, 1, 0}, Armor::Socket::ranged};
 
     Weapon brutality_blade = Weapon{2.5, {90, 168}, Stats{9, 9}, Special_stats{1, 0, 0}, Weapon::Socket::one_hand};
@@ -109,13 +108,13 @@ struct Armory
     Armor legguards_of_the_fallen_crusader{Stats{28, 22}, Special_stats{0, 0, 0}, Armor::Socket::legs};
     Armor malfurions_blessed_bulwark{Stats{40, 0}, Special_stats{0, 0, 0}, Armor::Socket::chest};
     Armor dragonbreath_hand_cannon{Stats{0, 14}, Special_stats{0, 0, 0}, Armor::Socket::ranged};
-    Armor circle_of_applied_force{Stats{12, 22}, Special_stats{0, 0, 0}, Armor::Socket::ring1};
+    Armor circle_of_applied_force{Stats{12, 22}, Special_stats{0, 0, 0}, Armor::Socket::ring};
     Armor girdle_of_the_fallen_crusader{Stats{20, 10}, Special_stats{0, 0, 0}, Armor::Socket::belt};
     Armor chromatic_boots{Stats{20, 2}, Special_stats{0, 1, 0}, Armor::Socket::boots};
     Armor prestors_talisman_of_connivery{Stats{0, 30}, Special_stats{0, 1, 0}, Armor::Socket::neck};
     Armor boots_of_shadow_flame{Stats{0, 0}, Special_stats{0, 2, 44}, Armor::Socket::boots};
-    Armor drake_fang_talisman{Stats{0, 0}, Special_stats{0, 2, 56}, Armor::Socket::trinket1};
-    Armor master_dragonslayers_ring{Stats{0, 0}, Special_stats{0, 1, 48}, Armor::Socket::ring1};
+    Armor drake_fang_talisman{Stats{0, 0}, Special_stats{0, 2, 56}, Armor::Socket::trinket};
+    Armor master_dragonslayers_ring{Stats{0, 0}, Special_stats{0, 1, 48}, Armor::Socket::ring};
     Armor cloak_of_draconic_might{Stats{16, 16}, Special_stats{0, 0, 0}, Armor::Socket::back};
 
     // Weapons
