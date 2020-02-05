@@ -98,6 +98,9 @@ struct Armory
 
     // Others
     Armor expert_goldminers_head{Stats{0, 5}, Special_stats{0, 0, 0}, Armor::Socket::head};
+    Armor mask_of_the_unforgiven{Stats{0, 0}, Special_stats{1, 2, 0}, Armor::Socket::head};
+    Armor crown_of_destruction{Stats{0, 0}, Special_stats{2, 0, 44}, Armor::Socket::head};
+    Armor quick_strike_ring{Stats{8, 0}, Special_stats{1, 0, 30}, Armor::Socket::ring};
 
     /** BWL */
     // Armor
@@ -159,6 +162,7 @@ int main()
                           armory.bloodmail_boots,
                           armory.don_julios_band,
                           armory.magnis_will,
+//                          armory.quick_strike_ring,
                           armory.hand_of_justice,
                           armory.blackhands_breadth,
                           armory.satyrs_bow);
@@ -228,12 +232,12 @@ int main()
     std::cout << "DPS from simulation: \n" << mean_dps << " +- " << 1.96 * sample_std_dps
               << " (95% confidence interval)\n\n";
 
-    auto stat_weight_vector = combat_simulator.compute_stat_weights(character, 120, 63, n_batches);
-    std::cout << "Stat weights: \n";
-    for (const auto &stat_weight : stat_weight_vector)
-    {
-        std::cout << stat_weight;
-    }
+//    auto stat_weight_vector = combat_simulator.compute_stat_weights(character, 120, 63, n_batches);
+//    std::cout << "Stat weights: \n";
+//    for (const auto &stat_weight : stat_weight_vector)
+//    {
+//        std::cout << stat_weight;
+//    }
 
     return 0;
 }

@@ -139,7 +139,7 @@ bool Character::check_if_armor_valid()
                     }
                     one_ring = true;
                 }
-                if (armor_piece.get_socket() == Armor::Socket::trinket)
+                else if (armor_piece.get_socket() == Armor::Socket::trinket)
                 {
                     if (armor_piece.get_socket() == Armor::Socket::trinket && one_trinket)
                     {
@@ -147,6 +147,11 @@ bool Character::check_if_armor_valid()
                         return false;
                     }
                     one_trinket = true;
+                }
+                else
+                {
+                    std::cout << "extra copy of " << armor_piece.get_socket() << "\n";
+                    return false;
                 }
             }
         }
