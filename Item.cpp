@@ -47,7 +47,8 @@ Weapon::Weapon(double swing_speed, std::pair<double, double> damage_interval, St
         swing_speed_{swing_speed},
         internal_swing_timer_{0},
         damage_interval_{std::move(damage_interval)},
-        socket_{socket} {};
+        average_damage_{0.0},
+        socket_{socket} {}
 
 double Weapon::swing(double attack_power)
 {

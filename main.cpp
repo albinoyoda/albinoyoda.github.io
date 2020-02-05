@@ -101,6 +101,7 @@ struct Armory
     Armor mask_of_the_unforgiven{Stats{0, 0}, Special_stats{1, 2, 0}, Armor::Socket::head};
     Armor crown_of_destruction{Stats{0, 0}, Special_stats{2, 0, 44}, Armor::Socket::head};
     Armor quick_strike_ring{Stats{8, 0}, Special_stats{1, 0, 30}, Armor::Socket::ring};
+    Armor flameguard_gauntlets{Stats{0, 0}, Special_stats{1, 0, 54}, Armor::Socket::hands};
 
     /** BWL */
     // Armor
@@ -148,27 +149,55 @@ int main()
     Armory armory;
     Buffs buffs;
 
-    character.equip_armor(armory.lionheart_helm,
-                          armory.onyxia_tooth_pendant,
-                          armory.truestrike_shoulders,
-                          armory.cape_of_the_black_baron,
-                          armory.savage_gladiator_chain,
-//                          armory.cadaverous_armor,
-                          armory.wristguards_of_stability,
-                          armory.devilsaur_gauntlets,
-//                          armory.edgemasters_handguards,
-                          armory.onslaught_girdle,
-                          armory.devilsaur_leggings,
-                          armory.bloodmail_boots,
-                          armory.don_julios_band,
-                          armory.magnis_will,
-//                          armory.quick_strike_ring,
-                          armory.hand_of_justice,
-                          armory.blackhands_breadth,
-                          armory.satyrs_bow);
+    character.equip_armor(
+            armory.lionheart_helm,
+//            armory.expert_goldminers_head,
 
-    character.equip_weapon(armory.brutality_blade,
-                           armory.mirahs_song);
+            armory.onyxia_tooth_pendant,
+//            armory.prestors_talisman_of_connivery,
+
+            armory.truestrike_shoulders,
+//            armory.drake_talon_pauldrons,
+
+//            armory.cloak_of_firemaw,
+//            armory.cloak_of_draconic_might,
+            armory.cape_of_the_black_baron,
+
+            armory.savage_gladiator_chain,
+//            armory.malfurions_blessed_bulwark,
+//            armory.cadaverous_armor,
+
+            armory.wristguards_of_stability,
+
+            armory.flameguard_gauntlets,
+//            armory.devilsaur_gauntlets,
+//            armory.edgemasters_handguards,
+
+            armory.onslaught_girdle,
+
+//            armory.devilsaur_leggings,
+            armory.legguards_of_the_fallen_crusader,
+
+            armory.bloodmail_boots,
+//            armory.chromatic_boots,
+//            armory.boots_of_shadow_flame,
+
+            armory.don_julios_band,
+            armory.magnis_will,
+//            armory.master_dragonslayers_ring,
+//            armory.circle_of_applied_force,
+//            armory.quick_strike_ring,
+
+            armory.hand_of_justice,
+//            armory.drake_fang_talisman,
+            armory.blackhands_breadth,
+
+            armory.satyrs_bow
+//            armory.dragonbreath_hand_cannon
+                         );
+
+    character.equip_weapon(armory.crul_shorukh_edge_of_chaos,
+                           armory.dooms_edge);
 
     if (!character.check_if_armor_valid())
     {
