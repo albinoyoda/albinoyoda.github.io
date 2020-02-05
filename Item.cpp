@@ -9,9 +9,9 @@ const Stats &Item::get_stats() const
 }
 
 Item::Item(Stats stats, Special_stats special_stats) : stats_{stats},
-                                                       special_stats_{special_stats},
-                                                       chance_for_extra_hit{0.0},
-                                                       extra_skill_{0} {};
+        special_stats_{special_stats},
+        chance_for_extra_hit{0.0},
+        extra_skill_{0} {};
 
 const Special_stats &Item::get_special_stats() const
 {
@@ -44,10 +44,10 @@ WEAPON
 Weapon::Weapon(double swing_speed, std::pair<double, double> damage_interval, Stats stats, Special_stats special_stats,
                Socket socket)
         : Item{stats, special_stats},
-          swing_speed_{swing_speed},
-          internal_swing_timer_{0},
-          damage_interval_{std::move(damage_interval)},
-          socket_{socket} {};
+        swing_speed_{swing_speed},
+        internal_swing_timer_{0},
+        damage_interval_{std::move(damage_interval)},
+        socket_{socket} {};
 
 double Weapon::swing(double attack_power)
 {
@@ -60,9 +60,9 @@ void Weapon::reset_timer()
     internal_swing_timer_ = swing_speed_;
 }
 
-Weapon::Step_result Weapon::step(double time, double attack_power)
+double Weapon::step(double dt, double attack_power)
 {
-    internal_swing_timer_ -= time;
+    internal_swing_timer_ -= dt;
     if (internal_swing_timer_ < 0.0)
     {
         internal_swing_timer_ += swing_speed_;
@@ -71,9 +71,9 @@ Weapon::Step_result Weapon::step(double time, double attack_power)
         {
             damage *= 0.625;
         }
-        return {damage, true};
+        return damage;
     }
-    return {0.0, false};
+    return 0.0;
 }
 
 Weapon::Socket Weapon::get_socket() const
@@ -85,7 +85,7 @@ Weapon::Socket Weapon::get_socket() const
 ARMOR
  */
 Armor::Armor(Stats stats, Special_stats special_stats, Socket socket) : Item{stats, special_stats},
-                                                                        socket_{socket} {}
+        socket_{socket} {}
 
 Armor::Socket Armor::get_socket() const
 {

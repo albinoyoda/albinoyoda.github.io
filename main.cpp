@@ -134,28 +134,28 @@ int main()
                            Enchant{Enchant::Socket::back, Enchant::Type::agility},
                            Enchant{Enchant::Socket::chest, Enchant::Type::minor_stats},
                            Enchant{Enchant::Socket::wrists, Enchant::Type::strength7},
-                           Enchant{Enchant::Socket::hands, Enchant::Type::strength},
+                           Enchant{Enchant::Socket::hands, Enchant::Type::haste},
                            Enchant{Enchant::Socket::legs, Enchant::Type::haste},
                            Enchant{Enchant::Socket::weapon_mh, Enchant::Type::crusader},
                            Enchant{Enchant::Socket::weapon_oh, Enchant::Type::crusader}
                           );
 
-    character.add_buffs(buffs.rallying_cry,
-                        buffs.dire_maul,
+//    character.add_buffs(buffs.rallying_cry,
+//                        buffs.dire_maul,
 //                        buffs.songflower,
-                        buffs.blessing_of_kings,
-                        buffs.blessing_of_might,
-                        buffs.mark_of_the_wild,
-                        buffs.trueshot_aura,
-                        buffs.elixir_mongoose,
-                        buffs.dense_stone_mh,
-                        buffs.dense_stone_oh,
+//                        buffs.blessing_of_kings,
+//                        buffs.blessing_of_might,
+//                        buffs.mark_of_the_wild,
+//                        buffs.trueshot_aura,
+//                        buffs.elixir_mongoose,
+//                        buffs.dense_stone_mh,
+//                        buffs.dense_stone_oh,
 //                        buffs.elemental_stone_mh,
 //                        buffs.elemental_stone_oh,
-                        buffs.blessed_sunfruit,
-//                        buffs.juju_power,
-                        buffs.juju_might,
-                        buffs.roids);
+//                        buffs.blessed_sunfruit,
+////                        buffs.juju_power,
+//                        buffs.juju_might,
+//                        buffs.roids);
 
     character.compute_all_stats(Character::Talent::fury);
     std::cout << character.get_stats() << "\n";
@@ -164,7 +164,7 @@ int main()
     std::cout << "chance for extra hit: " << character.get_chance_for_extra_hit() << "%" << "\n\n";
 
     Combat_simulator combat_simulator;
-    combat_simulator.compute_hit_table(63, character.get_weapon_skill(), character.get_total_special_stats());
+//    combat_simulator.compute_hit_table(63, character.get_weapon_skill(), character.get_total_special_stats());
 
     // Combat settings
     combat_simulator.enable_spell_rotation();

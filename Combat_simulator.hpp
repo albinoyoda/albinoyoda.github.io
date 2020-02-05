@@ -5,6 +5,9 @@
 #include <cstdlib>
 #include <iostream>
 #include <cassert>
+#include <map>
+#include <cmath>
+
 #include "Stats.hpp"
 #include "Character.hpp"
 
@@ -51,11 +54,11 @@ public:
     {
         Stat_weight(double d_dps_plus, double std_d_dps_plus, double d_dps_minus, double std_d_dps_minus, double amount,
                     Stat stat) : d_dps_plus{d_dps_plus},
-                                 std_d_dps_plus{std_d_dps_plus},
-                                 d_dps_minus{d_dps_minus},
-                                 std_d_dps_minus{std_d_dps_minus},
-                                 amount{amount},
-                                 stat{stat} {};
+                std_d_dps_plus{std_d_dps_plus},
+                d_dps_minus{d_dps_minus},
+                std_d_dps_minus{std_d_dps_minus},
+                amount{amount},
+                stat{stat} {};
         double d_dps_plus;
         double std_d_dps_plus;
         double d_dps_minus;
@@ -97,15 +100,19 @@ public:
 
     void enable_crusader();
 
+    void compute_hit_map();
+
 private:
     std::vector<double> hit_probabilities_white_;
     std::vector<double> hit_probabilities_yellow_;
-//    std::vector<double> damage_weights_;
+    std::map<int, Combat_simulator::Hit_outcome> hit_map_white_;
+    std::map<int, Combat_simulator::Hit_outcome> hit_map_yellow_;
     bool spell_rotation_{false};
     bool item_chance_on_hit_{false};
     bool talents_{false};
     bool crusader_enabled_{false};
     double glancing_factor_{0.0};
+    double random_var_;
 };
 
 std::ostream &operator<<(std::ostream &os, Combat_simulator::Stat_weight const &stats);

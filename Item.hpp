@@ -33,15 +33,6 @@ private:
 class Weapon : public Item
 {
 public:
-    struct Step_result
-    {
-        Step_result(double damage, bool did_swing) : damage{damage}, did_swing{did_swing} {}
-
-        double damage;
-        bool did_swing;
-
-    };
-
     enum class Socket
     {
         main_hand,
@@ -51,7 +42,7 @@ public:
     Weapon(double swing_speed, std::pair<double, double> damage_interval, Stats stats, Special_stats special_stats,
            Socket socket);
 
-    Step_result step(double time, double attack_power);
+    double step(double time, double attack_power);
 
     double swing(double attack_power);
 

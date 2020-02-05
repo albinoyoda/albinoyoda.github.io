@@ -1,6 +1,15 @@
 #include "Combat_simulator.hpp"
 
-#include <cmath>
+constexpr double rage_factor = 15.0 / 4.0 / 230.6;
+
+namespace
+{
+    inline double rage_generation(double damage, double weapon_speed, bool crit, bool is_main_hand)
+    {
+        double hit_factor = 1.75 * (crit + 1) * (is_main_hand + 1);
+        return damage * rage_factor + hit_factor * weapon_speed / 2;
+    }
+}
 
 
 Combat_simulator::Hit_outcome Combat_simulator::generate_hit(double damage, Hit_type hit_type)
@@ -49,8 +58,6 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(double damage, Hit_
 
 void Combat_simulator::compute_hit_table(int opponent_level, int weapon_skill, Special_stats special_stats)
 {
-    // TODO level based glancing/hit/crit
-
     int target_defence = opponent_level * 5;
     int skill_diff = target_defence - weapon_skill;
     int base_skill_diff = target_defence - 300;
@@ -107,19 +114,21 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
         double blood_thirst_cd = 0;
         double whirlwind_cd = 0;
         double global_cd = 0;
-        bool heroic_strike_ = false;
         int flurry_charges = 0;
+        double crusader_mh_buff_timer = 0.0;
+        double crusader_oh_buff_timer = 0.0;
         double flurry_speed_bonus = 1.3;
-        double character_haste = character.get_haste();
         double flurry_dt_factor = 1;
+
+        bool heroic_strike_ = false;
+        bool crusader_ap_active = false;
+
+        double character_haste = character.get_haste();
         auto special_stats = character.get_total_special_stats();
         auto weapons = character.get_weapons();
         double chance_for_extra_hit = character.get_chance_for_extra_hit();
         double crusader_proc_chance_mh = character.is_crusader_mh() * weapons[0].get_swing_speed() / 40;
         double crusader_proc_chance_oh = character.is_crusader_oh() * weapons[1].get_swing_speed() / 40;
-        double crusader_mh_buff_timer = 0.0;
-        double crusader_oh_buff_timer = 0.0;
-        bool crusader_ap_active = false;
 
         weapons[0].compute_average_damage(character.get_mh_bonus_damage());
         weapons[1].compute_average_damage(character.get_oh_bonus_damage());
@@ -150,42 +159,39 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                 dt = std::min(crusader_oh_buff_timer, dt);
             }
             double wep_dt = weapons[0].get_internal_swing_timer() / (character_haste * flurry_dt_factor);
-//            if (wep_dt > 0.0)
-//            {
             dt = std::min(wep_dt, dt);
-//            }
             wep_dt = weapons[1].get_internal_swing_timer() / (character_haste * flurry_dt_factor);
-//            if (wep_dt > 0.0)
-//            {
             dt = std::min(wep_dt, dt);
-//            }
             dt = std::min(sim_time - time, dt);
             dt += 0.0000001;
             assert(dt > 0.0);
             for (auto &weapon : weapons)
             {
                 Combat_simulator::Hit_outcome hit_outcome{0.0, Hit_result::TBD};
-                Weapon::Step_result step_result = weapon.step(character_haste * flurry_dt_factor * dt,
-                                                              special_stats.attack_power);
+                double swing_damage = weapon.step(character_haste * flurry_dt_factor * dt,
+                                                  special_stats.attack_power);
 
                 // Check if heroic strike should be performed
-                if (step_result.did_swing)
+                if (swing_damage > 0.0)
                 {
                     if (spell_rotation_ &&
                         heroic_strike_ &&
-                        (weapon.get_socket() == Weapon::Socket::main_hand))
+                        (weapon.get_socket() == Weapon::Socket::main_hand) &&
+                        rage > 13.0)
                     {
-                        step_result.damage += 157;
-                        hit_outcome = generate_hit(step_result.damage, Hit_type::yellow);
+                        swing_damage += 157;
+                        hit_outcome = generate_hit(swing_damage, Hit_type::yellow);
                         heroic_strike_ = false;
                         rage -= 13;
-                        rage = std::min(100.0, rage);
                     }
                     else
                     {
                         // Otherwise do white hit
-                        hit_outcome = generate_hit(step_result.damage, Hit_type::white);
-                        rage += hit_outcome.damage * 7.5 / 230.6;
+                        hit_outcome = generate_hit(swing_damage, Hit_type::white);
+                        rage += rage_generation(hit_outcome.damage,
+                                                weapon.get_swing_speed(),
+                                                hit_outcome.hit_result == Hit_result::crit,
+                                                weapon.get_socket() == Weapon::Socket::main_hand);
                         rage = std::min(100.0, rage);
                     }
                     total_damage += hit_outcome.damage;
@@ -200,7 +206,10 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                                 double damage = weapons[0].swing(special_stats.attack_power);
                                 hit_outcome = generate_hit(damage, Hit_type::white);
                                 total_damage += hit_outcome.damage;
-                                rage += hit_outcome.damage * 7.5 / 230.6;
+                                rage += rage_generation(hit_outcome.damage,
+                                                        weapon.get_swing_speed(),
+                                                        hit_outcome.hit_result == Hit_result::crit,
+                                                        weapon.get_socket() == Weapon::Socket::main_hand);
                                 rage = std::min(100.0, rage);
                                 weapons[0].reset_timer();
                             }
@@ -244,7 +253,8 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                     // Unbridled wrath
                     if (talents_)
                     {
-                        if (hit_outcome.hit_result != Hit_result::miss && hit_outcome.hit_result != Hit_result::dodge)
+                        if (hit_outcome.hit_result != Hit_result::miss &&
+                            hit_outcome.hit_result != Hit_result::dodge)
                         {
                             if (rand() % 2)
                             {
@@ -253,7 +263,8 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         }
 
                         // Manage flurry charges
-                        if (hit_outcome.hit_result != Hit_result::miss && hit_outcome.hit_result != Hit_result::dodge)
+                        if (hit_outcome.hit_result != Hit_result::miss &&
+                            hit_outcome.hit_result != Hit_result::dodge)
                         {
                             flurry_charges--;
                             flurry_charges = std::max(0, flurry_charges);
