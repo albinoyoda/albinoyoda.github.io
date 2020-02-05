@@ -38,7 +38,9 @@ public:
 
     const Special_stats &get_total_special_stats() const;
 
-    int get_weapon_skill() const;
+    int get_weapon_skill_oh() const;
+
+    int get_weapon_skill_mh() const;
 
     const std::vector<Armor> &get_gear() const;
 
@@ -145,7 +147,9 @@ private:
     double haste_;
     bool crusader_mh_;
     bool crusader_oh_;
-    int weapon_skill_;
+    int weapon_skill_mh;
+    int weapon_skill_oh;
+    std::vector<Extra_skill> extra_skills_;
     double chance_for_extra_hit_;
     double stat_multipliers_;
     double oh_bonus_damage_;

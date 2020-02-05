@@ -4,33 +4,32 @@ constexpr double rage_factor = 15.0 / 4.0 / 230.6;
 
 namespace
 {
-    inline double rage_generation(double damage, double weapon_speed, bool crit, bool is_main_hand)
+    constexpr double rage_generation(double damage, double weapon_speed, bool crit, bool is_main_hand)
     {
         double hit_factor = 1.75 * (crit + 1) * (is_main_hand + 1);
         return damage * rage_factor + hit_factor * weapon_speed / 2;
     }
 }
 
-
-Combat_simulator::Hit_outcome Combat_simulator::generate_hit(double damage, Hit_type hit_type)
+Combat_simulator::Hit_outcome Combat_simulator::generate_hit_mh(double damage, Hit_type hit_type)
 {
     double random_var = 100 * rand() / static_cast<double>(RAND_MAX);
     if (hit_type == Hit_type::white)
     {
-        int outcome = std::lower_bound(hit_probabilities_white_.begin(), hit_probabilities_white_.end(), random_var) -
-                      hit_probabilities_white_.begin();
+        int outcome = std::lower_bound(hit_probabilities_white_mh_.begin(), hit_probabilities_white_mh_.end(),
+                                       random_var) - hit_probabilities_white_mh_.begin();
         switch (outcome)
         {
             case 0:
-                return {0.0, Combat_simulator::Hit_result::miss};
+                return {0.0, Hit_result::miss};
             case 1:
-                return {0.0, Combat_simulator::Hit_result::dodge};
+                return {0.0, Hit_result::dodge};
             case 2:
-                return {damage * (100.0 - glancing_factor_) / 100.0, Combat_simulator::Hit_result::glancing};
+                return {damage * (100.0 - glancing_factor_mh_) / 100.0, Hit_result::glancing};
             case 3:
-                return {damage * 2.2, Combat_simulator::Hit_result::crit};
+                return {damage * 2.2, Hit_result::crit};
             case 4:
-                return {damage, Combat_simulator::Hit_result::hit};
+                return {damage, Hit_result::hit};
             default:
                 assert(false);
         }
@@ -42,28 +41,65 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(double damage, Hit_
         switch (outcome)
         {
             case 0:
-                return {0.0, Combat_simulator::Hit_result::miss};
+                return {0.0, Hit_result::miss};
             case 1:
-                return {0.0, Combat_simulator::Hit_result::dodge};
+                return {0.0, Hit_result::dodge};
             case 2:
-                return {damage * 2.2, Combat_simulator::Hit_result::crit};
+                return {damage * 2.2, Hit_result::crit};
             case 3:
-                return {damage, Combat_simulator::Hit_result::hit};
+                return {damage, Hit_result::hit};
             default:
                 assert(false);
         }
     }
-    return {0.0, Combat_simulator::Hit_result::miss};
+    return {0.0, Hit_result::miss};
 }
 
-void Combat_simulator::compute_hit_table(int opponent_level, int weapon_skill, Special_stats special_stats)
+Combat_simulator::Hit_outcome Combat_simulator::generate_hit_oh(double damage)
+{
+    double random_var = 100 * rand() / static_cast<double>(RAND_MAX);
+    int outcome = std::lower_bound(hit_probabilities_white_oh_.begin(), hit_probabilities_white_oh_.end(), random_var) -
+                  hit_probabilities_white_oh_.begin();
+    switch (outcome)
+    {
+        case 0:
+            return {0.0, Hit_result::miss};
+        case 1:
+            return {0.0, Hit_result::dodge};
+        case 2:
+            return {damage * (100.0 - glancing_factor_oh_) / 100.0, Hit_result::glancing};
+        case 3:
+            return {damage * 2.2, Hit_result::crit};
+        case 4:
+            return {damage, Hit_result::hit};
+        default:
+            assert(false);
+    }
+
+    return {0.0, Hit_result::miss};
+}
+
+Combat_simulator::Hit_outcome Combat_simulator::generate_hit(double damage, Combat_simulator::Hit_type hit_type,
+                                                             Hand weapon_hand)
+{
+    if (weapon_hand == Hand::main_hand)
+    {
+        return generate_hit_mh(damage, hit_type);
+    }
+    else
+    {
+        return generate_hit_oh(damage);
+    }
+}
+
+void Combat_simulator::compute_hit_table_mh_(int opponent_level, int weapon_skill, Special_stats special_stats)
 {
     int target_defence = opponent_level * 5;
     int skill_diff = target_defence - weapon_skill;
     int base_skill_diff = target_defence - 300;
 
     // Crit chance
-    double crit_chance = special_stats.critical_strike - base_skill_diff * 0.2;
+    double crit_chance = special_stats.critical_strike - base_skill_diff * 0.2 - 1.8; // 1.8 flat aura modifier
 
     // Miss chance
     double base_miss_chance = (skill_diff > 10) ? (5.0 + skill_diff * 0.2) + 1 : (5.0 + skill_diff * 0.1);
@@ -77,29 +113,77 @@ void Combat_simulator::compute_hit_table(int opponent_level, int weapon_skill, S
     double glancing_chance = 40.0;
     if (skill_diff > 8)
     {
-        glancing_factor_ = 35.0 - (15.0 - skill_diff) * 4.0;
+        glancing_factor_mh_ = 35.0 - (15.0 - skill_diff) * 4.0;
     }
     else
     {
-        glancing_factor_ = 5.0;
+        glancing_factor_mh_ = 5.0;
     }
 
     // Order -> Miss, parry, dodge, block, glancing, crit, hit.
-    hit_probabilities_white_.clear();
-    hit_probabilities_white_.push_back(miss_chance);
-    hit_probabilities_white_.push_back(hit_probabilities_white_.back() + dodge_chance);
-    hit_probabilities_white_.push_back(hit_probabilities_white_.back() + glancing_chance);
-    hit_probabilities_white_.push_back(hit_probabilities_white_.back() + crit_chance);
-
-//    std::cout << miss_chance << "% chance to miss \n";
-//    std::cout << 100.0 - hit_probabilities_white_.back() << "% chance to white hit. (Negative value = crit capped) \n";
-//    std::cout << crit_chance << "% chance to crit.\n\n";
+    hit_probabilities_white_mh_.clear();
+    hit_probabilities_white_mh_.push_back(miss_chance);
+    hit_probabilities_white_mh_.push_back(hit_probabilities_white_mh_.back() + dodge_chance);
+    hit_probabilities_white_mh_.push_back(hit_probabilities_white_mh_.back() + glancing_chance);
+    hit_probabilities_white_mh_.push_back(hit_probabilities_white_mh_.back() + crit_chance);
 
     hit_probabilities_yellow_.clear();
     hit_probabilities_yellow_.push_back(miss_chance);
     hit_probabilities_yellow_.push_back(hit_probabilities_yellow_.back() + dodge_chance);
     hit_probabilities_yellow_.push_back(hit_probabilities_yellow_.back() + crit_chance);
 }
+
+void Combat_simulator::compute_hit_table_oh_(int opponent_level, int weapon_skill, Special_stats special_stats)
+{
+    int target_defence = opponent_level * 5;
+    int skill_diff = target_defence - weapon_skill;
+    int base_skill_diff = target_defence - 300;
+
+    // Crit chance
+    double crit_chance = special_stats.critical_strike - base_skill_diff * 0.2 - 1.8; // 1.8 flat aura modifier
+
+    // Miss chance
+    double base_miss_chance = (skill_diff > 10) ? (5.0 + skill_diff * 0.2) + 1 : (5.0 + skill_diff * 0.1);
+    double dw_miss_chance = (base_miss_chance * 0.8 + 20.0);
+    double miss_chance = dw_miss_chance - special_stats.hit;
+
+    // Dodge chance
+    double dodge_chance = (5 + skill_diff * 0.1);
+
+    // Glancing blows
+    double glancing_chance = 40.0;
+    if (skill_diff > 8)
+    {
+        glancing_factor_oh_ = 35.0 - (15.0 - skill_diff) * 4.0;
+    }
+    else
+    {
+        glancing_factor_oh_ = 5.0;
+    }
+
+    // Order -> Miss, parry, dodge, block, glancing, crit, hit.
+    hit_probabilities_white_oh_.clear();
+    hit_probabilities_white_oh_.push_back(miss_chance);
+    hit_probabilities_white_oh_.push_back(hit_probabilities_white_oh_.back() + dodge_chance);
+    hit_probabilities_white_oh_.push_back(hit_probabilities_white_oh_.back() + glancing_chance);
+    hit_probabilities_white_oh_.push_back(hit_probabilities_white_oh_.back() + crit_chance);
+}
+
+void Combat_simulator::compute_hit_table(int opponent_level,
+                                         int weapon_skill,
+                                         Special_stats special_stats,
+                                         Hand weapon_hand)
+{
+    if (weapon_hand == Hand::main_hand)
+    {
+        compute_hit_table_mh_(opponent_level, weapon_skill, special_stats);
+    }
+    else
+    {
+        compute_hit_table_oh_(opponent_level, weapon_skill, special_stats);
+    }
+}
+
 
 std::vector<double>
 Combat_simulator::simulate(const Character &character, double sim_time, int opponent_level, int n_damage_batches)
@@ -133,7 +217,8 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
         weapons[0].compute_average_damage(character.get_mh_bonus_damage());
         weapons[1].compute_average_damage(character.get_oh_bonus_damage());
 
-        compute_hit_table(opponent_level, character.get_weapon_skill(), special_stats);
+        compute_hit_table(opponent_level, character.get_weapon_skill_mh(), special_stats, Hand::main_hand);
+        compute_hit_table(opponent_level, character.get_weapon_skill_oh(), special_stats, Hand::off_hand);
 
         while (time < sim_time)
         {
@@ -164,7 +249,6 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
             dt = std::min(wep_dt, dt);
             dt = std::min(sim_time - time, dt);
             dt += 0.0000001;
-            assert(dt > 0.0);
             for (auto &weapon : weapons)
             {
                 Combat_simulator::Hit_outcome hit_outcome{0.0, Hit_result::TBD};
@@ -176,18 +260,18 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                 {
                     if (spell_rotation_ &&
                         heroic_strike_ &&
-                        (weapon.get_socket() == Weapon::Socket::main_hand) &&
+                        (weapon.get_hand() == Hand::main_hand) &&
                         rage > 13.0)
                     {
                         swing_damage += 157;
-                        hit_outcome = generate_hit(swing_damage, Hit_type::yellow);
+                        hit_outcome = generate_hit(swing_damage, Hit_type::yellow, weapon.get_hand());
                         heroic_strike_ = false;
                         rage -= 13;
                     }
                     else
                     {
                         // Otherwise do white hit
-                        hit_outcome = generate_hit(swing_damage, Hit_type::white);
+                        hit_outcome = generate_hit(swing_damage, Hit_type::white, weapon.get_hand());
                         rage += rage_generation(hit_outcome.damage,
                                                 weapon.get_swing_speed(),
                                                 hit_outcome.hit_result == Hit_result::crit,
@@ -204,7 +288,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                             if (random_variable < chance_for_extra_hit)
                             {
                                 double damage = weapons[0].swing(special_stats.attack_power);
-                                hit_outcome = generate_hit(damage, Hit_type::white);
+                                hit_outcome = generate_hit(damage, Hit_type::white, weapon.get_hand());
                                 total_damage += hit_outcome.damage;
                                 rage += rage_generation(hit_outcome.damage,
                                                         weapon.get_swing_speed(),
@@ -290,7 +374,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                 if (blood_thirst_cd < 0.0 && global_cd < 0 && rage > 30)
                 {
                     double damage = special_stats.attack_power * 0.45;
-                    auto hit_outcome = generate_hit(damage, Hit_type::yellow);
+                    auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand);
                     if (hit_outcome.hit_result == Hit_result::crit)
                     {
                         flurry_charges = 3;
@@ -306,7 +390,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                 {
                     double damage = weapons[0].get_average_damage() +
                                     special_stats.attack_power * weapons[0].get_swing_speed() / 14;
-                    auto hit_outcome = generate_hit(damage, Hit_type::yellow);
+                    auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand);
                     if (hit_outcome.hit_result == Hit_result::crit)
                     {
                         flurry_charges = 3;

@@ -93,8 +93,9 @@ struct Armory
     Armor blackhands_breadth{Stats{0, 0}, Special_stats{2, 0, 0}, Armor::Socket::trinket};
     Armor satyrs_bow{Stats{0, 3}, Special_stats{0, 1, 0}, Armor::Socket::ranged};
 
-    Weapon brutality_blade = Weapon{2.5, {90, 168}, Stats{9, 9}, Special_stats{1, 0, 0}, Weapon::Socket::one_hand};
-    Weapon mirahs_song = Weapon{1.8, {57, 87}, Stats{9, 9}, Special_stats{0, 0, 0}, Weapon::Socket::one_hand};
+    Weapon brutality_blade{2.5, {90, 168}, Stats{9, 9}, Special_stats{1, 0, 0}, Weapon::Socket::one_hand,
+                           Skill_type::sword};
+    Weapon mirahs_song{1.8, {57, 87}, Stats{9, 9}, Special_stats{0, 0, 0}, Weapon::Socket::one_hand, Skill_type::sword};
 
     // Others
     Armor expert_goldminers_head{Stats{0, 5}, Special_stats{0, 0, 0}, Armor::Socket::head};
@@ -123,23 +124,23 @@ struct Armory
 
     // Weapons
     Weapon spineshatter = Weapon{2.5, {99.0, 184.0}, Stats{9.0, 0.0}, Special_stats{0.0, 0.0, 0.0},
-                                 Weapon::Socket::main_hand};
+                                 Weapon::Socket::main_hand, Skill_type::mace};
     Weapon maladath = Weapon{2.2, {86.0, 162.0}, Stats{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0},
-                             Weapon::Socket::one_hand};
+                             Weapon::Socket::one_hand, Skill_type::sword};
     Weapon chromatically_tempered_sword = Weapon{2.6, {106.0, 198.0}, Stats{14.0, 14.0}, Special_stats{0.0, 0.0, 0.0},
-                                                 Weapon::Socket::one_hand};
+                                                 Weapon::Socket::one_hand, Skill_type::sword};
     Weapon crul_shorukh_edge_of_chaos = Weapon{2.3, {101.0, 188.0}, Stats{0.0, 0.0}, Special_stats{0.0, 0.0, 36.0},
-                                               Weapon::Socket::one_hand};
+                                               Weapon::Socket::one_hand, Skill_type::axe};
     Weapon dooms_edge = Weapon{2.3, {83.0, 154.0}, Stats{9.0, 16.0}, Special_stats{0.0, 0.0, 0.0},
-                               Weapon::Socket::one_hand};
+                               Weapon::Socket::one_hand, Skill_type::axe};
 
 
     void set_extra_item_properties()
     {
         hand_of_justice.set_chance_for_extra_hit(2);
-        edgemasters_handguards.set_extra_skill(7);
-        maladath.set_extra_skill(4);
-        expert_goldminers_head.set_extra_skill(7);
+        edgemasters_handguards.set_bonus_skill(Extra_skill{Skill_type::all, 7});
+        maladath.set_bonus_skill(Extra_skill{Skill_type::sword, 7});
+        expert_goldminers_head.set_bonus_skill(Extra_skill{Skill_type::axe, 7});
     }
 };
 
@@ -169,14 +170,14 @@ int main()
 
             armory.wristguards_of_stability,
 
-            armory.flameguard_gauntlets,
-//            armory.devilsaur_gauntlets,
+//            armory.flameguard_gauntlets,
+            armory.devilsaur_gauntlets,
 //            armory.edgemasters_handguards,
 
             armory.onslaught_girdle,
 
-//            armory.devilsaur_leggings,
-            armory.legguards_of_the_fallen_crusader,
+            armory.devilsaur_leggings,
+//            armory.legguards_of_the_fallen_crusader,
 
             armory.bloodmail_boots,
 //            armory.chromatic_boots,
@@ -196,8 +197,11 @@ int main()
 //            armory.dragonbreath_hand_cannon
                          );
 
-    character.equip_weapon(armory.crul_shorukh_edge_of_chaos,
-                           armory.dooms_edge);
+//    character.equip_weapon(armory.crul_shorukh_edge_of_chaos,
+//                           armory.dooms_edge);
+
+    character.equip_weapon(armory.brutality_blade,
+                           armory.mirahs_song);
 
     if (!character.check_if_armor_valid())
     {
@@ -244,16 +248,15 @@ int main()
     std::cout << "chance for extra hit: " << character.get_chance_for_extra_hit() << "%" << "\n\n";
 
     Combat_simulator combat_simulator;
-//    combat_simulator.compute_hit_table(63, character.get_weapon_skill(), character.get_total_special_stats());
 
     // Combat settings
     combat_simulator.enable_spell_rotation();
     combat_simulator.enable_talents();
     combat_simulator.enable_item_chance_on_hit_effects();
     combat_simulator.enable_crusader();
-    //    srand(static_cast <unsigned> (time(nullptr)));
+//        srand(static_cast <unsigned> (time(nullptr)));
 
-    int n_batches = 100000;
+    int n_batches = 10000;
     auto dps_snapshots = combat_simulator.simulate(character, 120, 63, n_batches);
     double mean_dps = Combat_simulator::average(dps_snapshots);
     double std_dps = Combat_simulator::standard_deviation(dps_snapshots, mean_dps);
@@ -261,12 +264,12 @@ int main()
     std::cout << "DPS from simulation: \n" << mean_dps << " +- " << 1.96 * sample_std_dps
               << " (95% confidence interval)\n\n";
 
-//    auto stat_weight_vector = combat_simulator.compute_stat_weights(character, 120, 63, n_batches);
-//    std::cout << "Stat weights: \n";
-//    for (const auto &stat_weight : stat_weight_vector)
-//    {
-//        std::cout << stat_weight;
-//    }
+    auto stat_weight_vector = combat_simulator.compute_stat_weights(character, 120, 63, n_batches);
+    std::cout << "Stat weights: \n";
+    for (const auto &stat_weight : stat_weight_vector)
+    {
+        std::cout << stat_weight;
+    }
 
     return 0;
 }

@@ -78,9 +78,17 @@ public:
     std::vector<Combat_simulator::Stat_weight>
     compute_stat_weights(const Character &character, double sim_time, int opponent_level, int n_batches);
 
-    Combat_simulator::Hit_outcome generate_hit(double damage, Hit_type hit_type);
+    Combat_simulator::Hit_outcome generate_hit(double damage, Hit_type hit_type, Hand weapon_hand);
 
-    void compute_hit_table(int opponent_level, int weapon_skill, Special_stats special_stats);
+    Combat_simulator::Hit_outcome generate_hit_oh(double damage);
+
+    Combat_simulator::Hit_outcome generate_hit_mh(double damage, Hit_type hit_type);
+
+    void compute_hit_table(int opponent_level, int weapon_skill, Special_stats special_stats, Hand weapon_hand);
+
+    void compute_hit_table_oh_(int opponent_level, int weapon_skill, Special_stats special_stats);
+
+    void compute_hit_table_mh_(int opponent_level, int weapon_skill, Special_stats special_stats);
 
     void enable_spell_rotation();
 
@@ -100,19 +108,16 @@ public:
 
     void enable_crusader();
 
-    void compute_hit_map();
-
 private:
-    std::vector<double> hit_probabilities_white_;
+    std::vector<double> hit_probabilities_white_mh_;
+    std::vector<double> hit_probabilities_white_oh_;
     std::vector<double> hit_probabilities_yellow_;
-    std::map<int, Combat_simulator::Hit_outcome> hit_map_white_;
-    std::map<int, Combat_simulator::Hit_outcome> hit_map_yellow_;
     bool spell_rotation_{false};
     bool item_chance_on_hit_{false};
     bool talents_{false};
     bool crusader_enabled_{false};
-    double glancing_factor_{0.0};
-    double random_var_;
+    double glancing_factor_mh_{0.0};
+    double glancing_factor_oh_{0.0};
 };
 
 std::ostream &operator<<(std::ostream &os, Combat_simulator::Stat_weight const &stats);

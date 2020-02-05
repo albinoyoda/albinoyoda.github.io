@@ -4,6 +4,30 @@
 #include <utility>
 #include "Stats.hpp"
 
+enum class Hand
+{
+    main_hand,
+    off_hand
+};
+
+enum class Skill_type
+{
+    sword,
+    axe,
+    mace,
+    dagger,
+    all,
+    none
+};
+
+struct Extra_skill
+{
+    Extra_skill(Skill_type type, int amount) : type(type), amount(amount) {}
+
+    Skill_type type;
+    int amount;
+};
+
 class Item
 {
 public:
@@ -19,15 +43,15 @@ public:
 
     double get_chance_for_extra_hit() const;
 
-    int get_extra_skill() const;
+    const Extra_skill &get_bonus_skill() const;
 
-    void set_extra_skill(double extra_skill);
+    void set_bonus_skill(Extra_skill bonus_skill);
 
 private:
     Stats stats_;
     Special_stats special_stats_;
     double chance_for_extra_hit;
-    int extra_skill_;
+    Extra_skill bonus_skill_;
 };
 
 class Weapon : public Item
@@ -41,7 +65,7 @@ public:
     };
 
     Weapon(double swing_speed, std::pair<double, double> damage_interval, Stats stats, Special_stats special_stats,
-           Socket socket);
+           Socket socket, Skill_type skill_type);
 
     double step(double time, double attack_power);
 
@@ -71,12 +95,22 @@ public:
 
     Socket get_socket() const;
 
+    void set_weapon_type(Skill_type weapon_type);
+
+    Skill_type get_weapon_type() const;
+
+    Hand get_hand() const;
+
+    void set_hand(Hand hand);
+
 private:
     double swing_speed_;
     double internal_swing_timer_;
     std::pair<double, double> damage_interval_;
     double average_damage_;
     Socket socket_;
+    Skill_type weapon_type_;
+    Hand hand_;
 };
 
 class Armor : public Item

@@ -11,7 +11,7 @@ const Stats &Item::get_stats() const
 Item::Item(Stats stats, Special_stats special_stats) : stats_{stats},
         special_stats_{special_stats},
         chance_for_extra_hit{0.0},
-        extra_skill_{0} {};
+        bonus_skill_{Skill_type::none, 0} {};
 
 const Special_stats &Item::get_special_stats() const
 {
@@ -28,27 +28,29 @@ double Item::get_chance_for_extra_hit() const
     return chance_for_extra_hit;
 }
 
-int Item::get_extra_skill() const
+void Item::set_bonus_skill(Extra_skill bonus_skill)
 {
-    return extra_skill_;
+    bonus_skill_ = bonus_skill;
 }
 
-void Item::set_extra_skill(double extra_skill)
+const Extra_skill &Item::get_bonus_skill() const
 {
-    extra_skill_ = extra_skill;
+    return bonus_skill_;
 }
 
 /**
 WEAPON
  */
 Weapon::Weapon(double swing_speed, std::pair<double, double> damage_interval, Stats stats, Special_stats special_stats,
-               Socket socket)
+               Socket socket, Skill_type skill_type)
         : Item{stats, special_stats},
         swing_speed_{swing_speed},
         internal_swing_timer_{0},
         damage_interval_{std::move(damage_interval)},
         average_damage_{0.0},
-        socket_{socket} {}
+        socket_{socket},
+        weapon_type_{skill_type},
+        hand_{} {}
 
 double Weapon::swing(double attack_power)
 {
@@ -80,6 +82,26 @@ double Weapon::step(double dt, double attack_power)
 Weapon::Socket Weapon::get_socket() const
 {
     return socket_;
+}
+
+Skill_type Weapon::get_weapon_type() const
+{
+    return weapon_type_;
+}
+
+void Weapon::set_weapon_type(Skill_type weapon_type)
+{
+    weapon_type_ = weapon_type;
+}
+
+void Weapon::set_hand(Hand hand)
+{
+    hand_ = hand;
+}
+
+Hand Weapon::get_hand() const
+{
+    return hand_;
 }
 
 /**

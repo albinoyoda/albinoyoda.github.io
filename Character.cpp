@@ -11,7 +11,8 @@ Character::Character(const Race &race)
         haste_{1.0},
         crusader_mh_{false},
         crusader_oh_{false},
-        weapon_skill_{300},
+        weapon_skill_mh{300},
+        weapon_skill_oh{300},
         chance_for_extra_hit_{0.0},
         stat_multipliers_{1.0},
         oh_bonus_damage_{0.0},
@@ -28,7 +29,7 @@ void Character::set_base_stats(const Race &race)
         case Race::human:
             base_stats_ = Stats{120, 80};
             base_special_stats_ = Special_stats{0, 0, 160};
-            weapon_skill_ = 305;
+            extra_skills_.emplace_back(Extra_skill{Skill_type::sword, 5});
             break;
         case Race::dwarf:
             base_stats_ = Stats{122, 76};
@@ -59,7 +60,7 @@ void Character::compute_all_stats(Talent talent)
         total_stats_ += armor.get_stats();
         total_special_stats_ += armor.get_special_stats();
         chance_for_extra_hit_ += armor.get_chance_for_extra_hit();
-        weapon_skill_ += armor.get_extra_skill();
+        extra_skills_.push_back(armor.get_bonus_skill());
     }
 
     for (const Item &weapon : weapons_)
@@ -67,7 +68,7 @@ void Character::compute_all_stats(Talent talent)
         total_stats_ += weapon.get_stats();
         total_special_stats_ += weapon.get_special_stats();
         chance_for_extra_hit_ += weapon.get_chance_for_extra_hit();
-        weapon_skill_ += weapon.get_extra_skill();
+        extra_skills_.push_back(weapon.get_bonus_skill());
     }
 
     for (const Enchant &ench : enchants_)
@@ -104,9 +105,32 @@ const Special_stats &Character::get_total_special_stats() const
     return total_special_stats_;
 }
 
-int Character::get_weapon_skill() const
+int Character::get_weapon_skill_oh() const
 {
-    return weapon_skill_;
+    auto oh_wep_type = weapons_[1].get_weapon_type();
+    int extra_skill = 0;
+    for (const auto &skill : extra_skills_)
+    {
+        if (skill.type == oh_wep_type)
+        {
+            extra_skill += skill.amount;
+        }
+    }
+    return 300 + extra_skill;
+}
+
+int Character::get_weapon_skill_mh() const
+{
+    auto oh_wep_type = weapons_[0].get_weapon_type();
+    int extra_skill = 0;
+    for (const auto &skill : extra_skills_)
+    {
+        if (skill.type == oh_wep_type)
+        {
+            extra_skill += skill.amount;
+        }
+    }
+    return 300 + extra_skill;
 }
 
 const std::vector<Weapon> &Character::get_weapons() const
@@ -168,6 +192,11 @@ bool Character::check_if_weapons_valid()
     is_unique &= weapons_.size() <= 2;
     is_unique &= !(weapons_[0].get_socket() == Weapon::Socket::off_hand);
     is_unique &= !(weapons_[1].get_socket() == Weapon::Socket::main_hand);
+    if (weapons_.size() == 2)
+    {
+        weapons_[0].set_hand(Hand::main_hand);
+        weapons_[1].set_hand(Hand::off_hand);
+    }
     return is_unique;
 }
 
@@ -194,11 +223,6 @@ void Character::set_stats(const Stats &stats)
 void Character::set_total_special_stats(const Special_stats &total_special_stats)
 {
     total_special_stats_ = total_special_stats;
-}
-
-void Character::set_weapon_skill(int weapon_skill)
-{
-    weapon_skill_ = weapon_skill;
 }
 
 void Character::set_chance_for_extra_hit(double chance_for_extra_hit)
@@ -235,6 +259,7 @@ void Character::clean_all()
 {
     total_special_stats_.clear();
     total_stats_.clear();
+    extra_skills_ = {};
     set_base_stats(race_);
     haste_ = 1.0;
     crusader_mh_ = false;
