@@ -119,27 +119,26 @@ const std::vector<Armor> &Character::get_gear() const
     return armor_;
 }
 
-bool Character::check_if_gear_valid()
+bool Character::check_if_armor_valid()
 {
     bool is_unique{true};
+    std::vector<Armor::Socket> sockets;
+    for (auto const &armor_piece : armor_)
     {
-        std::vector<Armor::Socket> sockets;
-        for (auto const &armor_piece : armor_)
-        {
-            sockets.emplace_back(armor_piece.get_socket());
-        }
-        auto it = std::unique(sockets.begin(), sockets.end());
-        is_unique &= (it == sockets.end());
+        sockets.emplace_back(armor_piece.get_socket());
     }
-    {
-        std::vector<Weapon::Socket> sockets;
-        for (auto const &weapon : weapons_)
-        {
-            sockets.emplace_back(weapon.get_socket());
-        }
-        auto it = std::unique(sockets.begin(), sockets.end());
-        is_unique &= (it == sockets.end());
-    }
+    auto it = std::unique(sockets.begin(), sockets.end());
+    is_unique &= (it == sockets.end());
+    return is_unique;
+}
+
+
+bool Character::check_if_weapons_valid()
+{
+    bool is_unique{true};
+    is_unique &= weapons_.size() <= 2;
+    is_unique &= !(weapons_[0].get_socket() == Weapon::Socket::off_hand);
+    is_unique &= !(weapons_[1].get_socket() == Weapon::Socket::main_hand);
     return is_unique;
 }
 

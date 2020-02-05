@@ -36,6 +36,7 @@ public:
     enum class Socket
     {
         main_hand,
+        one_hand,
         off_hand,
     };
 

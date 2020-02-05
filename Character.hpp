@@ -32,7 +32,9 @@ public:
 
     void clean_all();
 
-    bool check_if_gear_valid();
+    bool check_if_armor_valid();
+
+    bool check_if_weapons_valid();
 
     const Special_stats &get_total_special_stats() const;
 

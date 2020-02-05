@@ -94,8 +94,8 @@ struct Armory
     Armor blackhands_breadth{Stats{0, 0}, Special_stats{2, 0, 0}, Armor::Socket::trinket2};
     Armor satyrs_bow{Stats{0, 3}, Special_stats{0, 1, 0}, Armor::Socket::ranged};
 
-    Weapon brutality_blade = Weapon{2.5, {90, 168}, Stats{9, 9}, Special_stats{1, 0, 0}, Weapon::Socket::main_hand};
-    Weapon mirahs_song = Weapon{1.8, {57, 87}, Stats{9, 9}, Special_stats{0, 0, 0}, Weapon::Socket::off_hand};
+    Weapon brutality_blade = Weapon{2.5, {90, 168}, Stats{9, 9}, Special_stats{1, 0, 0}, Weapon::Socket::one_hand};
+    Weapon mirahs_song = Weapon{1.8, {57, 87}, Stats{9, 9}, Special_stats{0, 0, 0}, Weapon::Socket::one_hand};
 
     // Others
     Armor expert_goldminers_head{Stats{0, 5}, Special_stats{0, 0, 0}, Armor::Socket::head};
@@ -119,11 +119,16 @@ struct Armory
     Armor cloak_of_draconic_might{Stats{16, 16}, Special_stats{0, 0, 0}, Armor::Socket::back};
 
     // Weapons
-    Weapon spineshatter = Weapon{2.5, {99.0, 184.0}, Stats{9.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, Weapon::Socket::main_hand};
-    Weapon maladath = Weapon{2.2, {86.0, 162.0}, Stats{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, Weapon::Socket::main_hand};
-    Weapon chromatically_tempered_sword = Weapon{2.6, {106.0, 198.0}, Stats{14.0, 14.0}, Special_stats{0.0, 0.0, 0.0}, Weapon::Socket::main_hand};
-    Weapon crul_shorukh_edge_of_chaos = Weapon{2.3, {101.0, 188.0}, Stats{0.0, 0.0}, Special_stats{0.0, 0.0, 36.0}, Weapon::Socket::main_hand};
-    Weapon dooms_edge = Weapon{2.3, {83.0, 154.0}, Stats{9.0, 16.0}, Special_stats{0.0, 0.0, 0.0}, Weapon::Socket::main_hand};
+    Weapon spineshatter = Weapon{2.5, {99.0, 184.0}, Stats{9.0, 0.0}, Special_stats{0.0, 0.0, 0.0},
+                                 Weapon::Socket::main_hand};
+    Weapon maladath = Weapon{2.2, {86.0, 162.0}, Stats{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0},
+                             Weapon::Socket::one_hand};
+    Weapon chromatically_tempered_sword = Weapon{2.6, {106.0, 198.0}, Stats{14.0, 14.0}, Special_stats{0.0, 0.0, 0.0},
+                                                 Weapon::Socket::one_hand};
+    Weapon crul_shorukh_edge_of_chaos = Weapon{2.3, {101.0, 188.0}, Stats{0.0, 0.0}, Special_stats{0.0, 0.0, 36.0},
+                                               Weapon::Socket::one_hand};
+    Weapon dooms_edge = Weapon{2.3, {83.0, 154.0}, Stats{9.0, 16.0}, Special_stats{0.0, 0.0, 0.0},
+                               Weapon::Socket::one_hand};
 
 
     void set_extra_item_properties()
@@ -162,9 +167,14 @@ int main()
     character.equip_weapon(armory.brutality_blade,
                            armory.mirahs_song);
 
-    if (!character.check_if_gear_valid())
+    if (!character.check_if_armor_valid())
     {
-        std::cout << "Incorrect gear setup!\n";
+        std::cout << "Incorrect armor setup!\n";
+        return -1;
+    }
+    if (!character.check_if_weapons_valid())
+    {
+        std::cout << "Incorrect weapon setup!\n";
         return -1;
     }
 
