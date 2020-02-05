@@ -7,21 +7,27 @@
 #include "Character.hpp"
 #include "Enchant.hpp"
 
-// Graphics?
+// TODO Graphics?
 
-// TODO buffs
+
+// TODO onehand/mainhand/offhand weapons
+// TODO ring trinket slots
+// TODO 2h weapons
 
 // TODO rage when missing?
 // TODO heroic strike bug OH implementation
 
-// TODO stances
-// TODO move battle shout in the simulation
 // TODO double check whirlwind damage
+
 // TODO anger management
 // TODO deep wounds
+
+// TODO move battle shout in the simulation
 // TODO cooldowns
+// TODO stances
 // TODO execute
 // TODO overpower
+
 // TODO setbonuses
 
 struct Buffs
@@ -42,7 +48,7 @@ struct Buffs
     Player_buff mark_of_the_wild{Stats{12.0, 12.0}, Special_stats{0.0, 0.0, 0.0}, Player_buff::Id::mark_of_the_wild};
     Player_buff trueshot_aura{Stats{0.0, 0.0}, Special_stats{0.0, 0.0, 100}, Player_buff::Id::trueshot_aura};
 
-    // Consumable
+    // Consumables
     Consumable elixir_mongoose{Stats{0.0, 25.0}, Special_stats{2.0, 0.0, 0.0}, Consumable::Id::elixir_mongoose};
     Consumable dense_stone_mh{Stats{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, Consumable::Id::dense_stone_mh};
     Consumable dense_stone_oh{Stats{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, Consumable::Id::dense_stone_oh};
@@ -68,6 +74,7 @@ struct Armory
         set_extra_item_properties();
     }
 
+    // Current items
     Armor lionheart_helm{Stats{18, 0}, Special_stats{2, 2, 0}, Armor::Socket::head};
     Armor onyxia_tooth_pendant{Stats{0, 13}, Special_stats{1, 1, 0}, Armor::Socket::neck};
     Armor truestrike_shoulders{Stats{0, 0}, Special_stats{0, 2, 24}, Armor::Socket::shoulder};
@@ -90,10 +97,41 @@ struct Armory
     Weapon brutality_blade = Weapon{2.5, {90, 168}, Stats{9, 9}, Special_stats{1, 0, 0}, Weapon::Socket::main_hand};
     Weapon mirahs_song = Weapon{1.8, {57, 87}, Stats{9, 9}, Special_stats{0, 0, 0}, Weapon::Socket::off_hand};
 
+    // Others
+    Armor expert_goldminers_head{Stats{0, 5}, Special_stats{0, 0, 0}, Armor::Socket::head};
+
+    /** BWL */
+    // Armor
+    Armor helm_of_endless_rage{Stats{26, 26}, Special_stats{0, 0, 0}, Armor::Socket::head};
+    Armor heartstriker{Stats{0, 0}, Special_stats{0, 0, 24}, Armor::Socket::ranged};
+    Armor drake_talon_pauldrons{Stats{20, 20}, Special_stats{0, 0, 0}, Armor::Socket::shoulder};
+    Armor cloak_of_firemaw{Stats{0, 0}, Special_stats{0, 0, 50}, Armor::Socket::back};
+    Armor legguards_of_the_fallen_crusader{Stats{28, 22}, Special_stats{0, 0, 0}, Armor::Socket::legs};
+    Armor malfurions_blessed_bulwark{Stats{40, 0}, Special_stats{0, 0, 0}, Armor::Socket::chest};
+    Armor dragonbreath_hand_cannon{Stats{0, 14}, Special_stats{0, 0, 0}, Armor::Socket::ranged};
+    Armor circle_of_applied_force{Stats{12, 22}, Special_stats{0, 0, 0}, Armor::Socket::ring1};
+    Armor girdle_of_the_fallen_crusader{Stats{20, 10}, Special_stats{0, 0, 0}, Armor::Socket::belt};
+    Armor chromatic_boots{Stats{20, 2}, Special_stats{0, 1, 0}, Armor::Socket::boots};
+    Armor prestors_talisman_of_connivery{Stats{0, 30}, Special_stats{0, 1, 0}, Armor::Socket::neck};
+    Armor boots_of_shadow_flame{Stats{0, 0}, Special_stats{0, 2, 44}, Armor::Socket::boots};
+    Armor drake_fang_talisman{Stats{0, 0}, Special_stats{0, 2, 56}, Armor::Socket::trinket1};
+    Armor master_dragonslayers_ring{Stats{0, 0}, Special_stats{0, 1, 48}, Armor::Socket::ring1};
+    Armor cloak_of_draconic_might{Stats{16, 16}, Special_stats{0, 0, 0}, Armor::Socket::back};
+
+    // Weapons
+    Weapon spineshatter = Weapon{2.5, {99.0, 184.0}, Stats{9.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, Weapon::Socket::main_hand};
+    Weapon maladath = Weapon{2.2, {86.0, 162.0}, Stats{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, Weapon::Socket::main_hand};
+    Weapon chromatically_tempered_sword = Weapon{2.6, {106.0, 198.0}, Stats{14.0, 14.0}, Special_stats{0.0, 0.0, 0.0}, Weapon::Socket::main_hand};
+    Weapon crul_shorukh_edge_of_chaos = Weapon{2.3, {101.0, 188.0}, Stats{0.0, 0.0}, Special_stats{0.0, 0.0, 36.0}, Weapon::Socket::main_hand};
+    Weapon dooms_edge = Weapon{2.3, {83.0, 154.0}, Stats{9.0, 16.0}, Special_stats{0.0, 0.0, 0.0}, Weapon::Socket::main_hand};
+
+
     void set_extra_item_properties()
     {
         hand_of_justice.set_chance_for_extra_hit(2);
         edgemasters_handguards.set_extra_skill(7);
+        maladath.set_extra_skill(4);
+        expert_goldminers_head.set_extra_skill(7);
     }
 };
 
@@ -140,22 +178,22 @@ int main()
                            Enchant{Enchant::Socket::weapon_oh, Enchant::Type::crusader}
                           );
 
-//    character.add_buffs(buffs.rallying_cry,
-//                        buffs.dire_maul,
+    character.add_buffs(buffs.rallying_cry,
+                        buffs.dire_maul,
 //                        buffs.songflower,
-//                        buffs.blessing_of_kings,
-//                        buffs.blessing_of_might,
-//                        buffs.mark_of_the_wild,
-//                        buffs.trueshot_aura,
-//                        buffs.elixir_mongoose,
-//                        buffs.dense_stone_mh,
-//                        buffs.dense_stone_oh,
+                        buffs.blessing_of_kings,
+                        buffs.blessing_of_might,
+                        buffs.mark_of_the_wild,
+                        buffs.trueshot_aura,
+                        buffs.elixir_mongoose,
+                        buffs.dense_stone_mh,
+                        buffs.dense_stone_oh,
 //                        buffs.elemental_stone_mh,
 //                        buffs.elemental_stone_oh,
-//                        buffs.blessed_sunfruit,
-////                        buffs.juju_power,
-//                        buffs.juju_might,
-//                        buffs.roids);
+                        buffs.blessed_sunfruit,
+//                        buffs.juju_power,
+                        buffs.juju_might,
+                        buffs.roids);
 
     character.compute_all_stats(Character::Talent::fury);
     std::cout << character.get_stats() << "\n";
@@ -173,7 +211,7 @@ int main()
     combat_simulator.enable_crusader();
     //    srand(static_cast <unsigned> (time(nullptr)));
 
-    int n_batches = 10000;
+    int n_batches = 100000;
     auto dps_snapshots = combat_simulator.simulate(character, 120, 63, n_batches);
     double mean_dps = Combat_simulator::average(dps_snapshots);
     double std_dps = Combat_simulator::standard_deviation(dps_snapshots, mean_dps);
@@ -190,3 +228,4 @@ int main()
 
     return 0;
 }
+
