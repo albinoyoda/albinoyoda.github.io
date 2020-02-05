@@ -14,6 +14,7 @@ Combat_simulator::permute_stat(const Character &character, Struct_t struct_t, Fi
     double sample_std_init = sample_deviation(std_init, n_batches);
 
     stat_struct.*field_t += amount;
+    char_copy.clean_all();
     char_copy.compute_all_stats(Character::Talent::fury);
     auto dmg_plus = simulate(char_copy, sim_time, opponent_level, n_batches);
     double mean_plus = average(dmg_plus);

@@ -120,6 +120,10 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
         double crusader_mh_buff_timer = 0.0;
         double crusader_oh_buff_timer = 0.0;
         bool crusader_ap_active = false;
+
+        weapons[0].compute_average_damage(character.get_mh_bonus_damage());
+        weapons[1].compute_average_damage(character.get_oh_bonus_damage());
+
         compute_hit_table(opponent_level, character.get_weapon_skill(), special_stats);
 
         while (time < sim_time)

@@ -52,7 +52,7 @@ Weapon::Weapon(double swing_speed, std::pair<double, double> damage_interval, St
 double Weapon::swing(double attack_power)
 {
     // TODO random damage?
-    return (damage_interval_.second + damage_interval_.first) / 2 + attack_power * swing_speed_ / 14;
+    return average_damage_ + attack_power * swing_speed_ / 14;
 }
 
 void Weapon::reset_timer()
@@ -90,12 +90,4 @@ Armor::Armor(Stats stats, Special_stats special_stats, Socket socket) : Item{sta
 Armor::Socket Armor::get_socket() const
 {
     return socket_;
-}
-
-/**
-BUFFS
- */
-Buff::Buff(Stats stats, Special_stats special_stats, Buff::Name name) : Item(stats, special_stats), name_{name}
-{
-
 }

@@ -57,9 +57,14 @@ public:
 
     void reset_timer();
 
+    void compute_average_damage(double bonus_damage)
+    {
+        average_damage_ = (damage_interval_.second + damage_interval_.first) / 2 + bonus_damage / 2;
+    }
+
     double get_average_damage()
     {
-        return (damage_interval_.second + damage_interval_.first) / 2;
+        return average_damage_;
     }
 
     double get_swing_speed()
@@ -78,6 +83,7 @@ private:
     double swing_speed_;
     double internal_swing_timer_;
     std::pair<double, double> damage_interval_;
+    double average_damage_;
     Socket socket_;
 };
 
@@ -116,22 +122,114 @@ private:
 class Buff : public Item
 {
 public:
-    enum class Name
+    Buff() = delete;
+
+    Buff(Stats stats, Special_stats special_stats) : Item(stats, special_stats),
+            stat_multiplier_{1.0},
+            oh_bonus_damage_{0.0},
+            mh_bonus_damage_{0.0} {};
+
+    void set_stat_multiplier(double stat_multiplier)
+    {
+        stat_multiplier_ = stat_multiplier;
+    }
+
+    void set_oh_bonus_damage(double oh_bonus_damage)
+    {
+        oh_bonus_damage_ = oh_bonus_damage;
+    }
+
+    void set_mh_bonus_damage(double mh_bonus_damage)
+    {
+        mh_bonus_damage_ = mh_bonus_damage;
+    }
+
+    double get_stat_multiplier() const
+    {
+        return stat_multiplier_;
+    }
+
+    double get_oh_bonus_damage() const
+    {
+        return oh_bonus_damage_;
+    }
+
+    double get_mh_bonus_damage() const
+    {
+        return mh_bonus_damage_;
+    }
+
+private:
+    double stat_multiplier_;
+    double oh_bonus_damage_;
+    double mh_bonus_damage_;
+};
+
+class World_buff : public Buff
+{
+public:
+    enum class Id
     {
         rallying_cry,
         dire_maul,
-        blessing_of_kings,
-        blessing_of_might,
+        songflower,
     };
 
-    Buff() = delete;
+    World_buff() = delete;
 
-    Buff(Stats stats, Special_stats special_stats, Name name);
+    World_buff(Stats stats, Special_stats special_stats, Id name) : Buff(stats, special_stats),
+            name_{name} {};
 
 private:
-    Name name_;
+    Id name_;
 };
 
+class Player_buff : public Buff
+{
+public:
+
+    enum class Id
+    {
+        blessing_of_kings,
+        blessing_of_might,
+        mark_of_the_wild,
+        trueshot_aura,
+    };
+
+    Player_buff() = delete;
+
+    Player_buff(Stats stats, Special_stats special_stats, Id name) : Buff(stats, special_stats),
+            name_{name} {};
+
+private:
+    Id name_;
+};
+
+class Consumable : public Buff
+{
+public:
+    enum class Id
+    {
+        elixir_mongoose,
+        dense_stone_mh,
+        dense_stone_oh,
+        elemental_stone_mh,
+        elemental_stone_oh,
+        blessed_sunfruit,
+        juju_power,
+        juju_might,
+        roids,
+    };
+
+
+    Consumable() = delete;
+
+    Consumable(Stats stats, Special_stats special_stats, Id name) : Buff(stats, special_stats),
+            name_{name} {};
+
+private:
+    Id name_;
+};
 
 #endif //WOW_SIMULATOR_ITEM_HPP
 

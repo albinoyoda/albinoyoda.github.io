@@ -26,7 +26,11 @@ public:
 
     explicit Character(const Race &race);
 
+    void set_base_stats(const Race &race);
+
     void compute_all_stats(Talent talent);
+
+    void clean_all();
 
     bool check_if_gear_valid();
 
@@ -82,6 +86,19 @@ public:
         enchants_.emplace_back(piece);
     }
 
+    template<typename T, typename ...Ts>
+    void add_buffs(T buff, Ts ...buffs)
+    {
+        add_buffs(buff);
+        add_buffs(buffs...);
+    }
+
+    template<typename T>
+    void add_buffs(T buff)
+    {
+        buffs_.emplace_back(buff);
+    }
+
     double get_chance_for_extra_hit() const;
 
     void set_stats(const Stats &stats);
@@ -110,6 +127,10 @@ public:
         permutated_special_stats_ = Special_stats{};
     }
 
+    double get_oh_bonus_damage() const;
+
+    double get_mh_bonus_damage() const;
+
     // Used to compute
     Stats permutated_stats_;
     Special_stats permutated_special_stats_;
@@ -123,10 +144,15 @@ private:
     bool crusader_mh_;
     bool crusader_oh_;
     int weapon_skill_;
+    double chance_for_extra_hit_;
+    double stat_multipliers_;
+    double oh_bonus_damage_;
+    double mh_bonus_damage_;
     std::vector<Armor> armor_;
     std::vector<Weapon> weapons_;
     std::vector<Enchant> enchants_;
-    double chance_for_extra_hit_;
+    std::vector<Buff> buffs_;
+    Race race_;
 };
 
 #endif //WOW_SIMULATOR_CHARACTER_HPP

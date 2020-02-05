@@ -1,24 +1,34 @@
 #include <algorithm>
+#include <iostream>
 #include "Character.hpp"
 
 Character::Character(const Race &race)
         : permutated_stats_{},
-          permutated_special_stats_{},
-          base_stats_{},
-          total_stats_{},
-          total_special_stats_{},
-          haste_{1.0},
-          crusader_mh_{false},
-          crusader_oh_{false},
-          weapon_skill_{300},
-          chance_for_extra_hit_{0.0}
+        permutated_special_stats_{},
+        base_stats_{},
+        total_stats_{},
+        total_special_stats_{},
+        haste_{1.0},
+        crusader_mh_{false},
+        crusader_oh_{false},
+        weapon_skill_{300},
+        chance_for_extra_hit_{0.0},
+        stat_multipliers_{1.0},
+        oh_bonus_damage_{0.0},
+        mh_bonus_damage_{0.0},
+        race_{race}
+{
+    set_base_stats(race_);
+}
+
+void Character::set_base_stats(const Race &race)
 {
     switch (race)
     {
         case Race::human:
             base_stats_ = Stats{120, 80};
             base_special_stats_ = Special_stats{0, 0, 160};
-            weapon_skill_ += 5;
+            weapon_skill_ = 305;
             break;
         case Race::dwarf:
             base_stats_ = Stats{122, 76};
@@ -39,13 +49,10 @@ Character::Character(const Race &race)
 
 void Character::compute_all_stats(Talent talent)
 {
-    total_special_stats_.clear();
-    total_stats_.clear();
-    haste_ = 1.0;
-    chance_for_extra_hit_ = 0.0;
-    total_special_stats_ += base_special_stats_;
+    clean_all();
     total_stats_ += base_stats_;
     total_stats_ += permutated_stats_;
+    total_special_stats_ += base_special_stats_;
     total_special_stats_ += permutated_special_stats_;
     for (const Item &armor : armor_)
     {
@@ -66,10 +73,18 @@ void Character::compute_all_stats(Talent talent)
     for (const Enchant &ench : enchants_)
     {
         total_stats_ += ench.get_stats();
-//        total_special_stats_ += ench.convert_to_special_stats();
         haste_ *= ench.get_haste();
         crusader_mh_ += ench.is_crusader_mh();
         crusader_oh_ += ench.is_crusader_oh();
+    }
+
+    for (const auto &buff : buffs_)
+    {
+        total_stats_ += buff.get_stats();
+        total_special_stats_ += buff.get_special_stats();
+        stat_multipliers_ *= buff.get_stat_multiplier();
+        mh_bonus_damage_ += buff.get_mh_bonus_damage();
+        oh_bonus_damage_ += buff.get_oh_bonus_damage();
     }
 
     if (talent == Talent::fury)
@@ -78,6 +93,9 @@ void Character::compute_all_stats(Talent talent)
         total_special_stats_.critical_strike += 5; // crit from talent
         total_special_stats_.critical_strike += 3; // crit from talent
     }
+
+    total_stats_ *= stat_multipliers_;
+
     total_special_stats_ += total_stats_.convert_to_special_stats();
 }
 
@@ -173,6 +191,30 @@ bool Character::is_crusader_mh() const
 bool Character::is_crusader_oh() const
 {
     return crusader_oh_;
+}
+
+double Character::get_oh_bonus_damage() const
+{
+    return oh_bonus_damage_;
+}
+
+double Character::get_mh_bonus_damage() const
+{
+    return mh_bonus_damage_;
+}
+
+void Character::clean_all()
+{
+    total_special_stats_.clear();
+    total_stats_.clear();
+    set_base_stats(race_);
+    haste_ = 1.0;
+    crusader_mh_ = false;
+    crusader_oh_ = false;
+    chance_for_extra_hit_ = 0.0;
+    stat_multipliers_ = 1.0;
+    oh_bonus_damage_ = 0.0;
+    mh_bonus_damage_ = 0.0;
 }
 
 

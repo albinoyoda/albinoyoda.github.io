@@ -8,7 +8,7 @@ struct Special_stats
     Special_stats() = default;
 
     Special_stats(double critical_strike, double hit, double attack_power) : critical_strike{critical_strike}, hit{hit},
-                                                                             attack_power{attack_power} {};
+            attack_power{attack_power} {};
     double critical_strike;
     double hit;
     double attack_power;
@@ -39,6 +39,10 @@ public:
 
     Stats &operator+=(const Stats &rhs);
 
+    Stats operator*(double rhs);
+
+    Stats &operator*=(double rhs);
+
     Special_stats convert_to_special_stats() const;
 
     void clear();
@@ -52,8 +56,6 @@ public:
     double strength;
     double agility;
 };
-
-Stats operator+(const Stats &lhs, const Stats &rhs);
 
 std::ostream &operator<<(std::ostream &os, Stats const &stats);
 

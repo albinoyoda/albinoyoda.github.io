@@ -11,9 +11,15 @@ Stats &Stats::operator+=(const Stats &rhs)
     return *this;
 }
 
-Stats operator+(const Stats &lhs, const Stats &rhs)
+Stats Stats::operator*(double rhs)
 {
-    return {lhs.strength + rhs.strength, lhs.agility + rhs.agility};
+    return {this->strength * rhs, this->agility * rhs};
+}
+
+Stats &Stats::operator*=(double rhs)
+{
+    *this = *this * rhs;
+    return *this;
 }
 
 std::ostream &operator<<(std::ostream &os, Special_stats const &special_stats)
