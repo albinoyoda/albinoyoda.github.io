@@ -15,7 +15,6 @@ enum class Skill_type
     sword,
     axe,
     mace,
-    dagger,
     all,
     none
 };
@@ -69,7 +68,11 @@ public:
 
     double step(double time, double attack_power);
 
-    double swing(double attack_power);
+    constexpr double swing(double attack_power)
+    {
+        // TODO random damage?
+        return average_damage_ + attack_power * swing_speed_ / 14;
+    }
 
     void reset_timer();
 
@@ -105,6 +108,8 @@ public:
     }
 
     void set_hand(Hand hand);
+
+    void set_internal_swing_timer(double internal_swing_timer);
 
 private:
     double swing_speed_;

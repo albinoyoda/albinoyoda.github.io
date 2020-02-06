@@ -30,6 +30,7 @@ void Character::set_base_stats(const Race &race)
             base_stats_ = Stats{120, 80};
             base_special_stats_ = Special_stats{0, 0, 160};
             extra_skills_.emplace_back(Extra_skill{Skill_type::sword, 5});
+            extra_skills_.emplace_back(Extra_skill{Skill_type::mace, 5});
             break;
         case Race::dwarf:
             base_stats_ = Stats{122, 76};

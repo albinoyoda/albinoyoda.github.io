@@ -45,18 +45,12 @@ Weapon::Weapon(double swing_speed, std::pair<double, double> damage_interval, St
                Socket socket, Skill_type skill_type)
         : Item{stats, special_stats},
         swing_speed_{swing_speed},
-        internal_swing_timer_{0},
+        internal_swing_timer_{0.0},
         damage_interval_{std::move(damage_interval)},
         average_damage_{0.0},
         socket_{socket},
         weapon_type_{skill_type},
         hand_{} {}
-
-double Weapon::swing(double attack_power)
-{
-    // TODO random damage?
-    return average_damage_ + attack_power * swing_speed_ / 14;
-}
 
 void Weapon::reset_timer()
 {
@@ -97,6 +91,11 @@ void Weapon::set_weapon_type(Skill_type weapon_type)
 void Weapon::set_hand(Hand hand)
 {
     hand_ = hand;
+}
+
+void Weapon::set_internal_swing_timer(double internal_swing_timer)
+{
+    internal_swing_timer_ = internal_swing_timer;
 }
 
 /**

@@ -45,14 +45,12 @@ public:
     struct Damage_sources
     {
         Damage_sources() = default;
-//        Damage_sources(double white_mh, double white_oh, double extra_hit, double bloodthirst, double heroic_strike,
-//                       double whirlwind) : white_mh(white_mh), white_oh(white_oh), extra_hit(extra_hit),
-//                bloodthirst(bloodthirst), heroic_strike(heroic_strike), whirlwind(whirlwind) {}
 
         Damage_sources &operator+(const Damage_sources &rhs)
         {
             this->whirlwind = this->whirlwind + rhs.whirlwind;
             this->bloodthirst = this->bloodthirst + rhs.bloodthirst;
+            this->execute = this->execute + rhs.execute;
             this->white_mh = this->white_mh + rhs.white_mh;
             this->white_oh = this->white_oh + rhs.white_oh;
             this->extra_hit = this->extra_hit + rhs.extra_hit;
@@ -63,13 +61,14 @@ public:
 
         constexpr double sum() const
         {
-            return white_mh + white_oh + extra_hit + bloodthirst + heroic_strike + whirlwind;
+            return white_mh + white_oh + extra_hit + bloodthirst + heroic_strike + whirlwind + execute;
         }
 
         double white_mh;
         double white_oh;
         double extra_hit;
         double bloodthirst;
+        double execute;
         double heroic_strike;
         double whirlwind;
     };
@@ -110,7 +109,7 @@ public:
     std::vector<Combat_simulator::Stat_weight>
     compute_stat_weights(const Character &character, double sim_time, int opponent_level, int n_batches);
 
-    Combat_simulator::Hit_outcome generate_hit(double damage, Hit_type hit_type, Hand weapon_hand);
+    Combat_simulator::Hit_outcome generate_hit(double damage, Hit_type hit_type, Hand weapon_hand, bool death_wish);
 
     Combat_simulator::Hit_outcome generate_hit_oh(double damage);
 
@@ -128,6 +127,12 @@ public:
 
     void enable_item_chance_on_hit_effects();
 
+    void enable_crusader();
+
+    void enable_death_wish();
+
+    void enable_recklessness();
+
     static double average(const std::vector<double> &vec);
 
     static double standard_deviation(const std::vector<double> &vec, double ave);
@@ -137,8 +142,6 @@ public:
     static double sample_deviation(double mean, int n_samples);
 
     static double add_standard_deviations(double std1, double std2);
-
-    void enable_crusader();
 
     const std::vector<double> &get_hit_probabilities_white_mh() const;
 
@@ -150,14 +153,17 @@ private:
     std::vector<double> hit_probabilities_white_mh_;
     std::vector<double> hit_probabilities_white_oh_;
     std::vector<double> hit_probabilities_yellow_;
-    std::vector<double> damage_snapshots_{};
+    std::vector<double> batch_damage_{};
     std::vector<Damage_sources> damage_distribution_{};
     bool spell_rotation_{false};
     bool item_chance_on_hit_{false};
     bool talents_{false};
     bool crusader_enabled_{false};
+    bool death_wish_enabled_{false};
+    bool recklessness_enabled_{false};
     double glancing_factor_mh_{0.0};
     double glancing_factor_oh_{0.0};
+    double armor_reduction_factor_{};
 };
 
 std::ostream &operator<<(std::ostream &os, Combat_simulator::Stat_weight const &stats);
