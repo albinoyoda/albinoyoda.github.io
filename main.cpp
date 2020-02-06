@@ -46,12 +46,12 @@ int main()
             armory.onyxia_tooth_pendant,
 //            armory.prestors_talisman_of_connivery,
 
-//            armory.truestrike_shoulders,
-            armory.drake_talon_pauldrons,
+            armory.truestrike_shoulders,
+//            armory.drake_talon_pauldrons,
 
 //            armory.cloak_of_firemaw,
-            armory.cloak_of_draconic_might,
-//            armory.cape_of_the_black_baron,
+//            armory.cloak_of_draconic_might,
+            armory.cape_of_the_black_baron,
 
             armory.savage_gladiator_chain,
 //            armory.malfurions_blessed_bulwark,
@@ -59,39 +59,39 @@ int main()
 
             armory.wristguards_of_stability,
 
-            armory.flameguard_gauntlets,
-//            armory.devilsaur_gauntlets,
+//            armory.flameguard_gauntlets,
+            armory.devilsaur_gauntlets,
 //            armory.edgemasters_handguards,
 
             armory.onslaught_girdle,
 
-//            armory.devilsaur_leggings,
-            armory.legguards_of_the_fallen_crusader,
+            armory.devilsaur_leggings,
+//            armory.legguards_of_the_fallen_crusader,
 
-//            armory.bloodmail_boots,
-            armory.chromatic_boots,
+            armory.bloodmail_boots,
+//            armory.chromatic_boots,
 //            armory.boots_of_shadow_flame,
 
             armory.don_julios_band,
-//            armory.magnis_will,
+            armory.magnis_will,
 //            armory.master_dragonslayers_ring,
 //            armory.circle_of_applied_force,
-            armory.quick_strike_ring,
+//            armory.quick_strike_ring,
 
 //            armory.hand_of_justice,
-            armory.drake_fang_talisman,
+//            armory.drake_fang_talisman,
             armory.blackhands_breadth,
-//            armory.hand_of_justice,
+            armory.hand_of_justice,
 
             armory.satyrs_bow
 //            armory.dragonbreath_hand_cannon
                          );
 
-//    character.equip_weapon(armory.brutality_blade,
-//                           armory.mirahs_song);
+    character.equip_weapon(armory.brutality_blade,
+                           armory.mirahs_song);
 
-    character.equip_weapon(armory.chromatically_tempered_sword,
-                           armory.maladath);
+//    character.equip_weapon(armory.chromatically_tempered_sword,
+//                           armory.maladath);
 
     if (!character.check_if_armor_valid())
     {

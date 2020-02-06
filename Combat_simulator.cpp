@@ -279,7 +279,8 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
         double flurry_dt_factor = 1;
 
         bool heroic_strike_ = false;
-        bool crusader_ap_active = false;
+        bool crusader_oh_active = false;
+        bool crusader_mh_active = false;
         bool deathwish_active = false;
 
         weapons[0].set_internal_swing_timer(0.0);
@@ -362,31 +363,35 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                             if (random_variable < crusader_proc_chance_mh)
                             {
                                 crusader_mh_buff_timer = 15.0;
+                                if (!crusader_mh_active)
+                                {
+                                    special_stats.attack_power += 200;
+                                    crusader_mh_active = true;
+                                }
                             }
                         }
-                        else
+                        if (crusader_mh_buff_timer < 0.0 && crusader_mh_active)
+                        {
+                            special_stats.attack_power -= 200;
+                            crusader_mh_active = false;
+                        }
+                        if (weapon.get_hand() == Hand::off_hand)
                         {
                             double random_variable = rand() / static_cast<double>(RAND_MAX);
                             if (random_variable < crusader_proc_chance_oh)
                             {
                                 crusader_oh_buff_timer = 15.0;
+                                if (!crusader_oh_active)
+                                {
+                                    special_stats.attack_power += 200;
+                                    crusader_oh_active = true;
+                                }
                             }
                         }
-                        if (crusader_mh_buff_timer > 0.0 || crusader_oh_buff_timer > 0.0)
+                        if (crusader_oh_buff_timer < 0.0 && crusader_oh_active)
                         {
-                            if (!crusader_ap_active)
-                            {
-                                special_stats.attack_power += 200;
-                                crusader_ap_active = true;
-                            }
-                        }
-                        if (crusader_mh_buff_timer < 0.0 && crusader_oh_buff_timer < 0.0)
-                        {
-                            if (crusader_ap_active)
-                            {
-                                special_stats.attack_power -= 200;
-                                crusader_ap_active = false;
-                            }
+                            special_stats.attack_power -= 200;
+                            crusader_oh_active = false;
                         }
                     }
                     // Unbridled wrath
@@ -498,7 +503,11 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
             time += dt;
         }
         // Remove crusader if the simulation ends
-        if (crusader_ap_active)
+        if (crusader_oh_active)
+        {
+            special_stats.attack_power -= 200;
+        }
+        if (crusader_mh_active)
         {
             special_stats.attack_power -= 200;
         }
