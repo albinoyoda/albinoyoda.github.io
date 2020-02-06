@@ -96,6 +96,7 @@ struct Armory
     Weapon brutality_blade{2.5, {90, 168}, Stats{9, 9}, Special_stats{1, 0, 0}, Weapon::Socket::one_hand,
                            Skill_type::sword};
     Weapon mirahs_song{1.8, {57, 87}, Stats{9, 9}, Special_stats{0, 0, 0}, Weapon::Socket::one_hand, Skill_type::sword};
+    Weapon viskag{2.6, {100, 187}, Stats{0, 0}, Special_stats{0, 0, 0}, Weapon::Socket::one_hand, Skill_type::sword};
 
     // Others
     Armor expert_goldminers_head{Stats{0, 5}, Special_stats{0, 0, 0}, Armor::Socket::head};
@@ -153,6 +154,7 @@ int main()
     Buffs buffs;
 
     character.equip_armor(
+//            armory.mask_of_the_unforgiven,
             armory.lionheart_helm,
 //            armory.expert_goldminers_head,
 
@@ -199,11 +201,11 @@ int main()
 //            armory.dragonbreath_hand_cannon
                          );
 
-//    character.equip_weapon(armory.crul_shorukh_edge_of_chaos,
-//                           armory.dooms_edge);
-
     character.equip_weapon(armory.brutality_blade,
                            armory.mirahs_song);
+
+//    character.equip_weapon(armory.chromatically_tempered_sword,
+//                           armory.maladath);
 
     if (!character.check_if_armor_valid())
     {
@@ -258,7 +260,7 @@ int main()
     combat_simulator.enable_crusader();
         srand(static_cast <unsigned> (time(nullptr)));
 
-    int n_batches = 100000;
+    int n_batches = 20000;
     auto dps_snapshots = combat_simulator.simulate(character, 60, 63, n_batches);
 
     auto hit_table = combat_simulator.get_hit_probabilities_white_mh();

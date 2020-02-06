@@ -10,14 +10,14 @@ namespace
         return damage * rage_factor + hit_factor * weapon_speed / 2;
     }
 
-    inline double get_dynamic_time_step(double blood_thirst_cd,
-                                        double whirlwind_cd,
-                                        double global_cd,
-                                        double crusader_mh_buff_timer,
-                                        double crusader_oh_buff_timer,
-                                        double mh_dt,
-                                        double oh_dt,
-                                        double sim_dt)
+    constexpr double get_dynamic_time_step(double blood_thirst_cd,
+                                           double whirlwind_cd,
+                                           double global_cd,
+                                           double crusader_mh_buff_timer,
+                                           double crusader_oh_buff_timer,
+                                           double mh_dt,
+                                           double oh_dt,
+                                           double sim_dt)
     {
         double dt = 1.0;
         if (blood_thirst_cd > 0.0)
@@ -226,35 +226,37 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
 {
     damage_snapshots_.clear();
     damage_snapshots_.reserve(n_damage_batches);
+    double character_haste = character.get_haste();
+    auto special_stats = character.get_total_special_stats();
+    auto weapons = character.get_weapons();
+    double chance_for_extra_hit = character.get_chance_for_extra_hit();
+    double crusader_proc_chance_mh = character.is_crusader_mh() * weapons[0].get_swing_speed() / 40;
+    double crusader_proc_chance_oh = character.is_crusader_oh() * weapons[1].get_swing_speed() / 40;
+
+    weapons[0].compute_average_damage(character.get_mh_bonus_damage());
+    weapons[1].compute_average_damage(character.get_oh_bonus_damage());
+
+    compute_hit_table(opponent_level, character.get_weapon_skill_mh(), special_stats, Hand::main_hand);
+    compute_hit_table(opponent_level, character.get_weapon_skill_oh(), special_stats, Hand::off_hand);
     for (int iter = 0; iter < n_damage_batches; iter++)
     {
         double time = 0;
         double total_damage = 0;
         double rage = 0;
-        double blood_thirst_cd = 0;
-        double whirlwind_cd = 0;
-        double global_cd = 0;
+        double blood_thirst_cd = -1e-10;
+        double whirlwind_cd = -1e-10;
+        double global_cd = -1e-10;
         int flurry_charges = 0;
-        double crusader_mh_buff_timer = 0.0;
-        double crusader_oh_buff_timer = 0.0;
+        double crusader_mh_buff_timer = -1e-10;
+        double crusader_oh_buff_timer = -1e-10;
         double flurry_speed_bonus = 1.3;
         double flurry_dt_factor = 1;
 
         bool heroic_strike_ = false;
         bool crusader_ap_active = false;
 
-        double character_haste = character.get_haste();
-        auto special_stats = character.get_total_special_stats();
-        auto weapons = character.get_weapons();
-        double chance_for_extra_hit = character.get_chance_for_extra_hit();
-        double crusader_proc_chance_mh = character.is_crusader_mh() * weapons[0].get_swing_speed() / 40;
-        double crusader_proc_chance_oh = character.is_crusader_oh() * weapons[1].get_swing_speed() / 40;
-
-        weapons[0].compute_average_damage(character.get_mh_bonus_damage());
-        weapons[1].compute_average_damage(character.get_oh_bonus_damage());
-
-        compute_hit_table(opponent_level, character.get_weapon_skill_mh(), special_stats, Hand::main_hand);
-        compute_hit_table(opponent_level, character.get_weapon_skill_oh(), special_stats, Hand::off_hand);
+        weapons[0].reset_timer();
+        weapons[1].reset_timer();
 
         while (time < sim_time)
         {
@@ -427,6 +429,11 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                 crusader_oh_buff_timer -= dt;
             }
             time += dt;
+        }
+        // Remove crusader if the simulation ends
+        if (crusader_ap_active)
+        {
+            special_stats.attack_power -= 200;
         }
         damage_snapshots_.push_back(total_damage / time);
     }
