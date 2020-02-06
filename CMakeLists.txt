@@ -11,5 +11,6 @@ add_executable(wow_simulator
         Character.cpp
         Enchant.cpp)
 
-target_compile_options(${PROJECT_NAME} PRIVATE -Werror -Wall -Wextra)
-#target_compile_options(${PROJECT_NAME} PRIVATE -Werror -Wall -Wextra -O2)
+#target_compile_options(${PROJECT_NAME} PRIVATE -Werror -Wall -Wextra)
+target_compile_options(${PROJECT_NAME} PRIVATE -O2)
+#target_compile_options(${PROJECT_NAME} PRIVATE -O3 -march=native)

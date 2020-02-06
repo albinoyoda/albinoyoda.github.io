@@ -99,7 +99,10 @@ public:
 
     Skill_type get_weapon_type() const;
 
-    Hand get_hand() const;
+    constexpr Hand get_hand() const
+    {
+        return hand_;
+    }
 
     void set_hand(Hand hand);
 

@@ -9,8 +9,8 @@
 
 // TODO Graphics?
 
-// TODO weapon skill split
-// TODO ring trinket slots
+// TODO damage sources
+
 // TODO 2h weapons
 
 // TODO rage when missing?
@@ -146,6 +146,8 @@ struct Armory
 
 int main()
 {
+    clock_t startTime = clock();
+
     Character character{Race::human};
     Armory armory;
     Buffs buffs;
@@ -254,22 +256,29 @@ int main()
     combat_simulator.enable_talents();
     combat_simulator.enable_item_chance_on_hit_effects();
     combat_simulator.enable_crusader();
-//        srand(static_cast <unsigned> (time(nullptr)));
+        srand(static_cast <unsigned> (time(nullptr)));
 
-    int n_batches = 10000;
-    auto dps_snapshots = combat_simulator.simulate(character, 120, 63, n_batches);
+    int n_batches = 100000;
+    auto dps_snapshots = combat_simulator.simulate(character, 60, 63, n_batches);
+
+    auto hit_table = combat_simulator.get_hit_probabilities_white_mh();
+    std::cout << "Crit % left to crit cap: " << 100 - hit_table.back() << ". (Negative number means capped)\n";
+
     double mean_dps = Combat_simulator::average(dps_snapshots);
     double std_dps = Combat_simulator::standard_deviation(dps_snapshots, mean_dps);
     double sample_std_dps = Combat_simulator::sample_deviation(std_dps, n_batches);
     std::cout << "DPS from simulation: \n" << mean_dps << " +- " << 1.96 * sample_std_dps
               << " (95% confidence interval)\n\n";
 
-    auto stat_weight_vector = combat_simulator.compute_stat_weights(character, 120, 63, n_batches);
+    auto stat_weight_vector = combat_simulator.compute_stat_weights(character, 60, 63, n_batches);
     std::cout << "Stat weights: \n";
     for (const auto &stat_weight : stat_weight_vector)
     {
         std::cout << stat_weight;
     }
+
+    std::cout << "Code executed in: " << double(clock() - startTime) / (double) CLOCKS_PER_SEC << " seconds."
+              << std::endl;
 
     return 0;
 }

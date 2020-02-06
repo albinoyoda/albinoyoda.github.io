@@ -99,11 +99,6 @@ void Weapon::set_hand(Hand hand)
     hand_ = hand;
 }
 
-Hand Weapon::get_hand() const
-{
-    return hand_;
-}
-
 /**
 ARMOR
  */

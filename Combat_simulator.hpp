@@ -67,7 +67,7 @@ public:
         Stat stat;
     };
 
-    std::vector<double>
+    std::vector<double> &
     simulate(const Character &character, double sim_time, int opponent_level, int n_damage_batches);
 
     template<typename Struct_t, typename Field_t>
@@ -108,10 +108,13 @@ public:
 
     void enable_crusader();
 
+    const std::vector<double> &get_hit_probabilities_white_mh() const;
+
 private:
     std::vector<double> hit_probabilities_white_mh_;
     std::vector<double> hit_probabilities_white_oh_;
     std::vector<double> hit_probabilities_yellow_;
+    std::vector<double> damage_snapshots_{};
     bool spell_rotation_{false};
     bool item_chance_on_hit_{false};
     bool talents_{false};

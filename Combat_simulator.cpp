@@ -9,6 +9,43 @@ namespace
         double hit_factor = 1.75 * (crit + 1) * (is_main_hand + 1);
         return damage * rage_factor + hit_factor * weapon_speed / 2;
     }
+
+    inline double get_dynamic_time_step(double blood_thirst_cd,
+                                        double whirlwind_cd,
+                                        double global_cd,
+                                        double crusader_mh_buff_timer,
+                                        double crusader_oh_buff_timer,
+                                        double mh_dt,
+                                        double oh_dt,
+                                        double sim_dt)
+    {
+        double dt = 1.0;
+        if (blood_thirst_cd > 0.0)
+        {
+            dt = std::min(blood_thirst_cd, dt);
+        }
+        if (whirlwind_cd > 0.0)
+        {
+            dt = std::min(whirlwind_cd, dt);
+        }
+        if (global_cd > 0.0)
+        {
+            dt = std::min(global_cd, dt);
+        }
+        if (crusader_mh_buff_timer > 0.0)
+        {
+            dt = std::min(crusader_mh_buff_timer, dt);
+        }
+        if (crusader_oh_buff_timer > 0.0)
+        {
+            dt = std::min(crusader_oh_buff_timer, dt);
+        }
+        dt = std::min(mh_dt, dt);
+        dt = std::min(oh_dt, dt);
+        dt = std::min(sim_dt, dt);
+        dt += 0.0000001;
+        return dt;
+    }
 }
 
 Combat_simulator::Hit_outcome Combat_simulator::generate_hit_mh(double damage, Hit_type hit_type)
@@ -75,7 +112,6 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit_oh(double damage)
         default:
             assert(false);
     }
-
     return {0.0, Hit_result::miss};
 }
 
@@ -185,11 +221,11 @@ void Combat_simulator::compute_hit_table(int opponent_level,
 }
 
 
-std::vector<double>
+std::vector<double> &
 Combat_simulator::simulate(const Character &character, double sim_time, int opponent_level, int n_damage_batches)
 {
-    std::vector<double> damage_snapshots;
-    damage_snapshots.reserve(n_damage_batches);
+    damage_snapshots_.clear();
+    damage_snapshots_.reserve(n_damage_batches);
     for (int iter = 0; iter < n_damage_batches; iter++)
     {
         double time = 0;
@@ -222,33 +258,11 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
 
         while (time < sim_time)
         {
-            double dt = 1.0;
-            if (blood_thirst_cd > 0.0)
-            {
-                dt = std::min(blood_thirst_cd, dt);
-            }
-            if (whirlwind_cd > 0.0)
-            {
-                dt = std::min(whirlwind_cd, dt);
-            }
-            if (global_cd > 0.0)
-            {
-                dt = std::min(global_cd, dt);
-            }
-            if (crusader_mh_buff_timer > 0.0)
-            {
-                dt = std::min(crusader_mh_buff_timer, dt);
-            }
-            if (crusader_oh_buff_timer > 0.0)
-            {
-                dt = std::min(crusader_oh_buff_timer, dt);
-            }
-            double wep_dt = weapons[0].get_internal_swing_timer() / (character_haste * flurry_dt_factor);
-            dt = std::min(wep_dt, dt);
-            wep_dt = weapons[1].get_internal_swing_timer() / (character_haste * flurry_dt_factor);
-            dt = std::min(wep_dt, dt);
-            dt = std::min(sim_time - time, dt);
-            dt += 0.0000001;
+            double mh_dt = weapons[0].get_internal_swing_timer() / (character_haste * flurry_dt_factor);
+            double oh_dt = weapons[1].get_internal_swing_timer() / (character_haste * flurry_dt_factor);
+            double dt = get_dynamic_time_step(blood_thirst_cd, whirlwind_cd, global_cd, crusader_mh_buff_timer,
+                                              crusader_oh_buff_timer, mh_dt, oh_dt, sim_time - time);
+
             for (auto &weapon : weapons)
             {
                 Combat_simulator::Hit_outcome hit_outcome{0.0, Hit_result::TBD};
@@ -275,7 +289,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         rage += rage_generation(hit_outcome.damage,
                                                 weapon.get_swing_speed(),
                                                 hit_outcome.hit_result == Hit_result::crit,
-                                                weapon.get_socket() == Weapon::Socket::main_hand);
+                                                weapon.get_hand() == Hand::main_hand);
                         rage = std::min(100.0, rage);
                     }
                     total_damage += hit_outcome.damage;
@@ -293,7 +307,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                                 rage += rage_generation(hit_outcome.damage,
                                                         weapon.get_swing_speed(),
                                                         hit_outcome.hit_result == Hit_result::crit,
-                                                        weapon.get_socket() == Weapon::Socket::main_hand);
+                                                        weapon.get_hand() == Hand::main_hand);
                                 rage = std::min(100.0, rage);
                                 weapons[0].reset_timer();
                             }
@@ -301,7 +315,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                     }
                     if (crusader_enabled_)
                     {
-                        if (weapon.get_socket() == Weapon::Socket::main_hand)
+                        if (weapon.get_hand() == Hand::main_hand)
                         {
                             double random_variable = rand() / static_cast<double>(RAND_MAX);
                             if (random_variable < crusader_proc_chance_mh)
@@ -414,9 +428,9 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
             }
             time += dt;
         }
-        damage_snapshots.push_back(total_damage / time);
+        damage_snapshots_.push_back(total_damage / time);
     }
-    return damage_snapshots;
+    return damage_snapshots_;
 }
 
 void Combat_simulator::enable_spell_rotation()
@@ -533,6 +547,11 @@ double Combat_simulator::add_standard_deviations(double std1, double std2)
 void Combat_simulator::enable_crusader()
 {
     crusader_enabled_ = true;
+}
+
+const std::vector<double> &Combat_simulator::get_hit_probabilities_white_mh() const
+{
+    return hit_probabilities_white_mh_;
 }
 
 
