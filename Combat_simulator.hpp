@@ -42,6 +42,38 @@ public:
         yellow
     };
 
+    struct Damage_sources
+    {
+        Damage_sources() = default;
+//        Damage_sources(double white_mh, double white_oh, double extra_hit, double bloodthirst, double heroic_strike,
+//                       double whirlwind) : white_mh(white_mh), white_oh(white_oh), extra_hit(extra_hit),
+//                bloodthirst(bloodthirst), heroic_strike(heroic_strike), whirlwind(whirlwind) {}
+
+        Damage_sources &operator+(const Damage_sources &rhs)
+        {
+            this->whirlwind = this->whirlwind + rhs.whirlwind;
+            this->bloodthirst = this->bloodthirst + rhs.bloodthirst;
+            this->white_mh = this->white_mh + rhs.white_mh;
+            this->white_oh = this->white_oh + rhs.white_oh;
+            this->extra_hit = this->extra_hit + rhs.extra_hit;
+            this->heroic_strike = this->heroic_strike + rhs.heroic_strike;
+            return *(this);
+        }
+
+
+        constexpr double sum() const
+        {
+            return white_mh + white_oh + extra_hit + bloodthirst + heroic_strike + whirlwind;
+        }
+
+        double white_mh;
+        double white_oh;
+        double extra_hit;
+        double bloodthirst;
+        double heroic_strike;
+        double whirlwind;
+    };
+
     struct Hit_outcome
     {
         Hit_outcome(double damage, Hit_result hit_result) : damage{damage}, hit_result{hit_result} {};
@@ -110,11 +142,16 @@ public:
 
     const std::vector<double> &get_hit_probabilities_white_mh() const;
 
+    const std::vector<Damage_sources> &get_damage_distribution() const;
+
+    void print_damage_distribution() const;
+
 private:
     std::vector<double> hit_probabilities_white_mh_;
     std::vector<double> hit_probabilities_white_oh_;
     std::vector<double> hit_probabilities_yellow_;
     std::vector<double> damage_snapshots_{};
+    std::vector<Damage_sources> damage_distribution_{};
     bool spell_rotation_{false};
     bool item_chance_on_hit_{false};
     bool talents_{false};

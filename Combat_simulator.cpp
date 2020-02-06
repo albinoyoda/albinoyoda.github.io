@@ -226,6 +226,8 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
 {
     damage_snapshots_.clear();
     damage_snapshots_.reserve(n_damage_batches);
+    damage_distribution_.clear();
+    damage_distribution_.reserve(n_damage_batches);
     double character_haste = character.get_haste();
     auto special_stats = character.get_total_special_stats();
     auto weapons = character.get_weapons();
@@ -242,6 +244,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
     {
         double time = 0;
         double total_damage = 0;
+        Damage_sources damage_sources{};
         double rage = 0;
         double blood_thirst_cd = -1e-10;
         double whirlwind_cd = -1e-10;
@@ -283,6 +286,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         hit_outcome = generate_hit(swing_damage, Hit_type::yellow, weapon.get_hand());
                         heroic_strike_ = false;
                         rage -= 13;
+                        damage_sources.heroic_strike += hit_outcome.damage;
                     }
                     else
                     {
@@ -293,6 +297,15 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                                                 hit_outcome.hit_result == Hit_result::crit,
                                                 weapon.get_hand() == Hand::main_hand);
                         rage = std::min(100.0, rage);
+                        if (weapon.get_hand() == Hand::main_hand)
+                        {
+                            damage_sources.white_mh += hit_outcome.damage;
+                        }
+                        else
+                        {
+                            damage_sources.white_oh += hit_outcome.damage;
+                        }
+
                     }
                     total_damage += hit_outcome.damage;
 
@@ -312,6 +325,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                                                         weapon.get_hand() == Hand::main_hand);
                                 rage = std::min(100.0, rage);
                                 weapons[0].reset_timer();
+                                damage_sources.extra_hit += hit_outcome.damage;
                             }
                         }
                     }
@@ -400,6 +414,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                     rage -= 30;
                     blood_thirst_cd = 6.0;
                     global_cd = 1.0;
+                    damage_sources.bloodthirst += hit_outcome.damage;
                 }
 
                 if (whirlwind_cd < 0.0 && rage > 25 && global_cd < 0 && blood_thirst_cd > 0)
@@ -416,12 +431,14 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                     rage -= 25;
                     whirlwind_cd = 10;
                     global_cd = 1.0;
+                    damage_sources.whirlwind += hit_outcome.damage;
                 }
 
-                if (rage > 75 && !heroic_strike_)
+                if (rage > 60 && !heroic_strike_)
                 {
                     heroic_strike_ = true;
                 }
+
                 blood_thirst_cd -= dt;
                 whirlwind_cd -= dt;
                 global_cd -= dt;
@@ -436,6 +453,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
             special_stats.attack_power -= 200;
         }
         damage_snapshots_.push_back(total_damage / time);
+        damage_distribution_.emplace_back(damage_sources);
     }
     return damage_snapshots_;
 }
@@ -559,6 +577,30 @@ void Combat_simulator::enable_crusader()
 const std::vector<double> &Combat_simulator::get_hit_probabilities_white_mh() const
 {
     return hit_probabilities_white_mh_;
+}
+
+const std::vector<Combat_simulator::Damage_sources> &Combat_simulator::get_damage_distribution() const
+{
+    return damage_distribution_;
+}
+
+void Combat_simulator::print_damage_distribution() const
+{
+    Damage_sources total_sources{};
+    double total_damage{0.0};
+    for (const auto &damage_source : damage_distribution_)
+    {
+        total_sources = total_sources + damage_source;
+        total_damage += damage_source.sum();
+    }
+    std::cout << "Damage_sources:\n" <<
+              "White hits: " << total_sources.white_mh / total_damage + total_sources.white_oh / total_damage << ". ("
+              << total_sources.white_mh / total_damage << ", " << total_sources.white_oh / total_damage
+              << ") mainhand/offhand" <<
+              "\nbloodthirst: " << total_sources.bloodthirst / total_damage <<
+              "\nheroic_strike: " << total_sources.heroic_strike / total_damage <<
+              "\nwhirlwind: " << total_sources.whirlwind / total_damage <<
+              "\nextra_hit: " << total_sources.extra_hit / total_damage << "\n\n";
 }
 
 

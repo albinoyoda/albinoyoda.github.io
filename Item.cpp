@@ -70,7 +70,7 @@ double Weapon::step(double dt, double attack_power)
     {
         internal_swing_timer_ += swing_speed_;
         double damage = swing(attack_power);
-        if (socket_ == Weapon::Socket::off_hand)
+        if (get_hand() == Hand::off_hand)
         {
             damage *= 0.625;
         }

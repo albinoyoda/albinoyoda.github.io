@@ -258,9 +258,9 @@ int main()
     combat_simulator.enable_talents();
     combat_simulator.enable_item_chance_on_hit_effects();
     combat_simulator.enable_crusader();
-        srand(static_cast <unsigned> (time(nullptr)));
+//        srand(static_cast <unsigned> (time(nullptr)));
 
-    int n_batches = 20000;
+    int n_batches = 10000;
     auto dps_snapshots = combat_simulator.simulate(character, 60, 63, n_batches);
 
     auto hit_table = combat_simulator.get_hit_probabilities_white_mh();
@@ -271,6 +271,8 @@ int main()
     double sample_std_dps = Combat_simulator::sample_deviation(std_dps, n_batches);
     std::cout << "DPS from simulation: \n" << mean_dps << " +- " << 1.96 * sample_std_dps
               << " (95% confidence interval)\n\n";
+
+    combat_simulator.print_damage_distribution();
 
     auto stat_weight_vector = combat_simulator.compute_stat_weights(character, 60, 63, n_batches);
     std::cout << "Stat weights: \n";
