@@ -457,6 +457,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                             flurry_dt_factor = flurry_speed_bonus;
                         }
                         global_cd = 1.0;
+                        rage = 0;
                         total_damage += hit_outcome.damage;
                         damage_sources.execute += hit_outcome.damage;
                     }

@@ -150,7 +150,7 @@ int main()
     combat_simulator.enable_talents();
     combat_simulator.enable_item_chance_on_hit_effects();
     combat_simulator.enable_crusader();
-//    combat_simulator.enable_death_wish();
+    combat_simulator.enable_death_wish();
 //    combat_simulator.enable_recklessness();
 
 //    srand(static_cast <unsigned> (time(nullptr)));
