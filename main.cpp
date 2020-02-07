@@ -9,8 +9,10 @@
 #include "Armory.hpp"
 
 // TODO Graphics?
-
-// TODO damage sources
+// TODO hit tables performance
+// TODO recycle stat weight computations
+// TODO damage sources std
+// TODO HOJ proc when whirlwind etc.
 
 // TODO 2h weapons
 
@@ -39,8 +41,10 @@ int main()
     Buffs buffs;
 
     character.equip_armor(
-//            armory.mask_of_the_unforgiven,
-            armory.lionheart_helm,
+//            armory.crown_of_destruction,
+            armory.helm_of_endless_rage,
+//            armory.lionheart_helm,
+//            armory.lionheart_helm,
 //            armory.expert_goldminers_head,
 
             armory.onyxia_tooth_pendant,
@@ -115,7 +119,7 @@ int main()
                           );
 
     character.add_buffs(
-            buffs.rallying_cry,
+//            buffs.rallying_cry,
             buffs.dire_maul,
 //            buffs.songflower,
             buffs.blessing_of_kings,
@@ -146,13 +150,14 @@ int main()
     combat_simulator.enable_talents();
     combat_simulator.enable_item_chance_on_hit_effects();
     combat_simulator.enable_crusader();
-    combat_simulator.enable_death_wish();
+//    combat_simulator.enable_death_wish();
 //    combat_simulator.enable_recklessness();
 
 //    srand(static_cast <unsigned> (time(nullptr)));
 
-    int n_batches = 100000;
-    auto dps_snapshots = combat_simulator.simulate(character, 120, 63, n_batches);
+    int n_batches = 50000;
+    double sim_time = 60;
+    auto dps_snapshots = combat_simulator.simulate(character, sim_time, 63, n_batches);
 
     auto hit_table = combat_simulator.get_hit_probabilities_white_mh();
     double mean_dps = Combat_simulator::average(dps_snapshots);
@@ -161,16 +166,17 @@ int main()
     std::cout << "Crit % left to crit cap: " << 100 - hit_table.back() << ". (Negative number means capped)\n\n";
     std::cout << "DPS from simulation: \n" << mean_dps << " +- " << 1.96 * sample_std_dps
               << " (95% confidence interval)\n";
-    std::cout << "Simulation DPS deviation: " << std_dps << "\n\n";
+    std::cout << "Average DPS deviation in simulations: " << std_dps << "\n\n";
 
     combat_simulator.print_damage_distribution();
 
-//    auto stat_weight_vector = combat_simulator.compute_stat_weights(character, 120, 63, n_batches);
-//    std::cout << "Stat weights: \n";
-//    for (const auto &stat_weight : stat_weight_vector)
-//    {
-//        std::cout << stat_weight;
-//    }
+    auto stat_weight_vector = combat_simulator
+            .compute_stat_weights(character, sim_time, 63, n_batches, mean_dps, sample_std_dps);
+    std::cout << "Stat weights: \n";
+    for (const auto &stat_weight : stat_weight_vector)
+    {
+        std::cout << stat_weight;
+    }
 
     std::cout << "Code executed in: " << double(clock() - startTime) / (double) CLOCKS_PER_SEC << " seconds."
               << std::endl;

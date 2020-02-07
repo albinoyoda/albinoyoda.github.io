@@ -400,7 +400,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         if (hit_outcome.hit_result != Hit_result::miss &&
                             hit_outcome.hit_result != Hit_result::dodge)
                         {
-                            if (rand() % 2)
+                            if (rand() % 10 <= 3) // ish 40%
                             {
                                 rage += 1;
                             }
@@ -431,14 +431,17 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
 
             if (spell_rotation_)
             {
-                if (sim_time - time < 31.0 && rage >= 10 && !deathwish_active)
+                if (death_wish_enabled_)
                 {
-                    deathwish_active = true;
-                    rage -= 10;
-                    global_cd = 1.0;
+                    if (sim_time - time < 31.0 && rage >= 10 && !deathwish_active)
+                    {
+                        deathwish_active = true;
+                        rage -= 10;
+                        global_cd = 1.0;
+                    }
                 }
                 // Execute phase
-                if (time > sim_time * 0.84)
+                if (time > sim_time * 0.85)
                 {
                     if (global_cd < 0 && rage > 10)
                     {
@@ -449,9 +452,8 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                             flurry_charges = 3;
                             flurry_dt_factor = flurry_speed_bonus;
                         }
-                        total_damage += hit_outcome.damage;
-                        rage -= 30;
                         global_cd = 1.0;
+                        total_damage += hit_outcome.damage;
                         damage_sources.execute += hit_outcome.damage;
                     }
                 }
@@ -534,25 +536,25 @@ void Combat_simulator::enable_item_chance_on_hit_effects()
 
 std::vector<Combat_simulator::Stat_weight>
 Combat_simulator::compute_stat_weights(const Character &character, double sim_time, int opponent_level,
-                                       int n_batches)
+                                       int n_batches, double mean_init, double sample_std_init)
 {
 
     double stat_permutation_amount = 10;
     double special_stat_permutation_amount = 1;
     auto stat_weight_agi = permute_stat(character, &Character::permutated_stats_, &Stats::agility, Stat::agility,
                                         stat_permutation_amount,
-                                        sim_time, opponent_level, n_batches);
+                                        sim_time, opponent_level, n_batches, mean_init, sample_std_init);
     auto stat_weight_str = permute_stat(character, &Character::permutated_stats_, &Stats::strength, Stat::strength,
                                         stat_permutation_amount,
-                                        sim_time, opponent_level, n_batches);
+                                        sim_time, opponent_level, n_batches, mean_init, sample_std_init);
     auto stat_weight_crit = permute_stat(character, &Character::permutated_special_stats_,
                                          &Special_stats::critical_strike, Stat::crit,
                                          special_stat_permutation_amount,
-                                         sim_time, opponent_level, n_batches);
+                                         sim_time, opponent_level, n_batches, mean_init, sample_std_init);
     auto stat_weight_hit = permute_stat(character, &Character::permutated_special_stats_,
                                         &Special_stats::hit, Stat::hit,
                                         special_stat_permutation_amount,
-                                        sim_time, opponent_level, n_batches);
+                                        sim_time, opponent_level, n_batches, mean_init, sample_std_init);
 //    chance_extra_hit,
 //            haste,
 //            skill,
@@ -652,15 +654,25 @@ void Combat_simulator::print_damage_distribution() const
         total_sources = total_sources + damage_source;
         total_damage += damage_source.sum();
     }
-    std::cout << "Damage_sources:\n" <<
+
+    double white_mh_std = damage_source_std(&Damage_sources::white_mh);
+    double white_oh_std = damage_source_std(&Damage_sources::white_oh);
+    double bloodthirst_std = damage_source_std(&Damage_sources::bloodthirst);
+    double execute_std = damage_source_std(&Damage_sources::execute);
+    double heroic_strike_std = damage_source_std(&Damage_sources::heroic_strike);
+    double whirlwind_std = damage_source_std(&Damage_sources::whirlwind);
+    double extra_hit_std = damage_source_std(&Damage_sources::extra_hit);
+
+    std::cout << "Damage_sources (%):\n" <<
               "White hits: " << total_sources.white_mh / total_damage + total_sources.white_oh / total_damage << ". ("
-              << total_sources.white_mh / total_damage << ", " << total_sources.white_oh / total_damage
+              << total_sources.white_mh / total_damage << " +- "
+              << white_mh_std << ", " << total_sources.white_oh / total_damage << " +- " << white_oh_std
               << ") mainhand/offhand" <<
-              "\nbloodthirst: " << total_sources.bloodthirst / total_damage <<
-              "\nexecute: " << total_sources.execute / total_damage <<
-              "\nheroic_strike: " << total_sources.heroic_strike / total_damage <<
-              "\nwhirlwind: " << total_sources.whirlwind / total_damage <<
-              "\nextra_hit: " << total_sources.extra_hit / total_damage << "\n\n";
+              "\nbloodthirst: " << total_sources.bloodthirst / total_damage << " +- " << bloodthirst_std <<
+              "\nexecute: " << total_sources.execute / total_damage << " +- " << execute_std <<
+              "\nheroic_strike: " << total_sources.heroic_strike / total_damage << " +- " << heroic_strike_std <<
+              "\nwhirlwind: " << total_sources.whirlwind / total_damage << " +- " << whirlwind_std <<
+              "\nextra_hit: " << total_sources.extra_hit / total_damage << " +- " << extra_hit_std << "\n\n";
 }
 
 void Combat_simulator::enable_death_wish()

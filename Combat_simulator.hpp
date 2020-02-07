@@ -103,11 +103,12 @@ public:
 
     template<typename Struct_t, typename Field_t>
     Stat_weight permute_stat(const Character &character, Struct_t struct_t, Field_t field_t, Stat stat, double amount,
-                             double sim_time,
-                             int opponent_level, int n_batches);
+                             double sim_time, int opponent_level, int n_batches, double mean_init,
+                             double sample_std_init);
 
     std::vector<Combat_simulator::Stat_weight>
-    compute_stat_weights(const Character &character, double sim_time, int opponent_level, int n_batches);
+    compute_stat_weights(const Character &character, double sim_time, int opponent_level, int n_batches,
+                         double mean_init, double sample_std_init);
 
     Combat_simulator::Hit_outcome generate_hit(double damage, Hit_type hit_type, Hand weapon_hand, bool death_wish);
 
@@ -146,6 +147,21 @@ public:
     const std::vector<double> &get_hit_probabilities_white_mh() const;
 
     const std::vector<Damage_sources> &get_damage_distribution() const;
+
+    template<typename T>
+    double damage_source_std(T field_ptr) const
+    {
+        std::vector<double> damage_vec;
+        damage_vec.reserve(damage_distribution_.size());
+        for (const auto &damage_source : damage_distribution_)
+        {
+            damage_vec.push_back(damage_source.*field_ptr / damage_source.sum());
+        }
+        double mean_dps = Combat_simulator::average(damage_vec);
+        double std_dps = Combat_simulator::standard_deviation(damage_vec, mean_dps);
+//        double sample_std_dps = Combat_simulator::sample_deviation(std_dps, damage_vec.size());
+        return std_dps;
+    }
 
     void print_damage_distribution() const;
 
