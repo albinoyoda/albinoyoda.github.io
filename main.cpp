@@ -166,7 +166,7 @@ int main()
     std::cout << "Crit % left to crit cap: " << 100 - hit_table.back() << ". (Negative number means capped)\n\n";
     std::cout << "DPS from simulation: \n" << mean_dps << " +- " << 1.96 * sample_std_dps
               << " (95% confidence interval)\n";
-    std::cout << "Average DPS deviation in simulations: " << std_dps << "\n\n";
+    std::cout << "DPS standard deviation in simulations: " << std_dps << "\n\n";
 
     combat_simulator.print_damage_distribution();
 

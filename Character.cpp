@@ -126,7 +126,7 @@ int Character::get_weapon_skill_mh() const
     int extra_skill = 0;
     for (const auto &skill : extra_skills_)
     {
-        if (skill.type == oh_wep_type)
+        if (skill.type == oh_wep_type || skill.type == Skill_type::all)
         {
             extra_skill += skill.amount;
         }

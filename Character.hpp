@@ -111,9 +111,36 @@ public:
 
     void set_haste(double haste);
 
+    void set_extra_haste(double extra_haste_percent)
+    {
+        double extra_haste_factor = 1.0 + std::abs(extra_haste_percent)/100.0;
+        if (extra_haste_percent > 0.0)
+        {
+            haste_ *= extra_haste_factor;
+        }
+        else
+        {
+            haste_ /= extra_haste_factor;
+        }
+    }
+
+    void increase_chance_for_extra_hit(double extra_chance_on_hit)
+    {
+        chance_for_extra_hit_ += extra_chance_on_hit;
+    }
+
+    void increase_extra_skill(double extra_chance_on_hit)
+    {
+        chance_for_extra_hit_ += extra_chance_on_hit;
+    }
+
     void set_chance_for_extra_hit(double chance_for_extra_hit);
 
-    void set_weapon_skill(int weapon_skill);
+    void set_extra_weapon_skill(int weapon_skill)
+    {
+        Extra_skill extra_skill{Skill_type::all, weapon_skill};
+        extra_skills_.push_back(extra_skill);
+    }
 
     bool is_crusader_mh() const;
 

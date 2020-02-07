@@ -67,7 +67,7 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit_mh(double damage, H
             case 1:
                 return {0.0, Hit_result::dodge};
             case 2:
-                return {damage * (100.0 - glancing_factor_mh_) / 100.0, Hit_result::glancing};
+                return {damage * glancing_factor_mh_, Hit_result::glancing};
             case 3:
                 return {damage * 2.2, Hit_result::crit};
             case 4:
@@ -109,7 +109,7 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit_oh(double damage)
         case 1:
             return {0.0, Hit_result::dodge};
         case 2:
-            return {damage * (100.0 - glancing_factor_oh_) / 100.0, Hit_result::glancing};
+            return {damage * glancing_factor_oh_, Hit_result::glancing};
         case 3:
             return {damage * 2.2, Hit_result::crit};
         case 4:
@@ -164,14 +164,16 @@ void Combat_simulator::compute_hit_table_mh_(int opponent_level, int weapon_skil
 
     // Glancing blows
     double glancing_chance = 40.0;
+    double glancing_penalty_mh_;
     if (skill_diff > 8)
     {
-        glancing_factor_mh_ = 35.0 - (15.0 - skill_diff) * 4.0;
+        glancing_penalty_mh_ = 35.0 - (15.0 - skill_diff) * 4.0;
     }
     else
     {
-        glancing_factor_mh_ = 5.0;
+        glancing_penalty_mh_ = 5.0;
     }
+    glancing_factor_mh_ = (100.0 - glancing_penalty_mh_) / 100.0;
 
     // Order -> Miss, parry, dodge, block, glancing, crit, hit.
     hit_probabilities_white_mh_.clear();
@@ -205,14 +207,16 @@ void Combat_simulator::compute_hit_table_oh_(int opponent_level, int weapon_skil
 
     // Glancing blows
     double glancing_chance = 40.0;
+    double glancing_penalty_oh_;
     if (skill_diff > 8)
     {
-        glancing_factor_oh_ = 35.0 - (15.0 - skill_diff) * 4.0;
+        glancing_penalty_oh_ = 35.0 - (15.0 - skill_diff) * 4.0;
     }
     else
     {
-        glancing_factor_oh_ = 5.0;
+        glancing_penalty_oh_ = 5.0;
     }
+    glancing_factor_oh_ = (100.0 - glancing_penalty_oh_) / 100.0;
 
     // Order -> Miss, parry, dodge, block, glancing, crit, hit.
     hit_probabilities_white_oh_.clear();
@@ -292,7 +296,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
             double oh_dt = weapons[1].get_internal_swing_timer() / (character_haste * flurry_dt_factor);
             double dt = get_dynamic_time_step(blood_thirst_cd, whirlwind_cd, global_cd, crusader_mh_buff_timer,
                                               crusader_oh_buff_timer, mh_dt, oh_dt, sim_time - time);
-
+            assert(dt > 0.0);
             for (auto &weapon : weapons)
             {
                 Combat_simulator::Hit_outcome hit_outcome{0.0, Hit_result::TBD};
@@ -538,9 +542,10 @@ std::vector<Combat_simulator::Stat_weight>
 Combat_simulator::compute_stat_weights(const Character &character, double sim_time, int opponent_level,
                                        int n_batches, double mean_init, double sample_std_init)
 {
-
-    double stat_permutation_amount = 10;
+    double stat_permutation_amount = 8;
     double special_stat_permutation_amount = 1;
+    double skill_permutation_amount = 5;
+
     auto stat_weight_agi = permute_stat(character, &Character::permutated_stats_, &Stats::agility, Stat::agility,
                                         stat_permutation_amount,
                                         sim_time, opponent_level, n_batches, mean_init, sample_std_init);
@@ -555,11 +560,20 @@ Combat_simulator::compute_stat_weights(const Character &character, double sim_ti
                                         &Special_stats::hit, Stat::hit,
                                         special_stat_permutation_amount,
                                         sim_time, opponent_level, n_batches, mean_init, sample_std_init);
-//    chance_extra_hit,
-//            haste,
-//            skill,
+    auto stat_weight_haste = permute_stat(character, &Character::set_extra_haste, Stat::haste,
+                                          special_stat_permutation_amount,
+                                          sim_time, opponent_level, n_batches, mean_init, sample_std_init);
+    auto stat_weight_extra_hit = permute_stat(character, &Character::increase_chance_for_extra_hit,
+                                              Stat::chance_extra_hit,
+                                              special_stat_permutation_amount,
+                                              sim_time, opponent_level, n_batches, mean_init, sample_std_init);
+    auto stat_weight_extra_skill = permute_stat(character, &Character::set_extra_weapon_skill,
+                                              Stat::skill,
+                                                skill_permutation_amount,
+                                              sim_time, opponent_level, n_batches, mean_init, sample_std_init);
 
-    return {stat_weight_agi, stat_weight_str, stat_weight_crit, stat_weight_hit};
+    return {stat_weight_agi, stat_weight_str, stat_weight_crit, stat_weight_hit, stat_weight_haste,
+            stat_weight_extra_hit, stat_weight_extra_skill};
 }
 
 std::ostream &operator<<(std::ostream &os, Combat_simulator::Stat_weight const &stats)
@@ -586,6 +600,24 @@ std::ostream &operator<<(std::ostream &os, Combat_simulator::Stat_weight const &
             break;
         case Combat_simulator::Stat::hit:
             os << "Hit stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
+               stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
+               << stats.amount
+               << "\n";
+            break;
+        case Combat_simulator::Stat::haste:
+            os << "Haste stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
+               stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
+               << stats.amount
+               << "\n";
+            break;
+        case Combat_simulator::Stat::chance_extra_hit:
+            os << "Extra swing stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
+               stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
+               << stats.amount
+               << "\n";
+            break;
+        case Combat_simulator::Stat::skill:
+            os << "Skill stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
                stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
                << stats.amount
                << "\n";

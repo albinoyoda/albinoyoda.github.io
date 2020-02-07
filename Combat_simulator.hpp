@@ -106,6 +106,12 @@ public:
                              double sim_time, int opponent_level, int n_batches, double mean_init,
                              double sample_std_init);
 
+    template<typename Field_t>
+    Combat_simulator::Stat_weight
+    permute_stat(const Character &character, Field_t field_t,
+                 Combat_simulator::Stat stat, double amount, double sim_time, int opponent_level,
+                 int n_batches, double mean_init, double sample_std_init);
+
     std::vector<Combat_simulator::Stat_weight>
     compute_stat_weights(const Character &character, double sim_time, int opponent_level, int n_batches,
                          double mean_init, double sample_std_init);
