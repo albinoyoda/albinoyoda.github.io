@@ -18,7 +18,7 @@ struct Buffs
     // Player_buffs
     Player_buff blessing_of_kings{Stats{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, Player_buff::Id::blessing_of_kings};
     Player_buff blessing_of_might{Stats{0.0, 0.0}, Special_stats{0.0, 0.0, 155}, Player_buff::Id::blessing_of_might};
-    Player_buff mark_of_the_wild{Stats{12.0, 12.0}, Special_stats{0.0, 0.0, 0.0}, Player_buff::Id::mark_of_the_wild};
+    Player_buff gift_of_the_wild{Stats{12.0, 12.0}, Special_stats{0.0, 0.0, 0.0}, Player_buff::Id::mark_of_the_wild};
     Player_buff trueshot_aura{Stats{0.0, 0.0}, Special_stats{0.0, 0.0, 100}, Player_buff::Id::trueshot_aura};
 
     // Consumables
@@ -71,6 +71,8 @@ struct Armory
                            Skill_type::sword};
     Weapon mirahs_song{1.8, {57, 87}, Stats{9, 9}, Special_stats{0, 0, 0}, Weapon::Socket::one_hand, Skill_type::sword};
     Weapon viskag{2.6, {100, 187}, Stats{0, 0}, Special_stats{0, 0, 0}, Weapon::Socket::one_hand, Skill_type::sword};
+    Weapon deathbringer{2.9, {114, 213}, Stats{0, 0}, Special_stats{0, 0, 0}, Weapon::Socket::one_hand,
+                        Skill_type::axe};
 
     // Others
     Armor expert_goldminers_head{Stats{0, 5}, Special_stats{0, 0, 0}, Armor::Socket::head};
@@ -78,6 +80,13 @@ struct Armory
     Armor crown_of_destruction{Stats{0, 0}, Special_stats{2, 0, 44}, Armor::Socket::head};
     Armor quick_strike_ring{Stats{8, 0}, Special_stats{1, 0, 30}, Armor::Socket::ring};
     Armor flameguard_gauntlets{Stats{0, 0}, Special_stats{1, 0, 54}, Armor::Socket::hands};
+
+    Armor leutenant_shoulders{Stats{17, 0}, Special_stats{1, 0, 0}, Armor::Socket::shoulder};
+    Armor omokks_girth{Stats{15, 0}, Special_stats{1, 0, 0}, Armor::Socket::belt};
+    Armor cloudkeeper_legplaters{Stats{20, 20}, Special_stats{0, 0, 100}, Armor::Socket::legs};
+    Armor knight_leutenants_greaves{Stats{10, 9}, Special_stats{0, 0, 40}, Armor::Socket::boots};
+    Armor battleborn_armbraces{Stats{0, 0}, Special_stats{1, 1, 0}, Armor::Socket::wrists};
+    Armor strikers_mark{Stats{0, 0}, Special_stats{0, 1, 22}, Armor::Socket::ranged};
 
     /** BWL */
     // Armor

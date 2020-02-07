@@ -486,14 +486,14 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                 }
                 if (recklessness_enabled_)
                 {
-                    if (sim_time - time < 20.0 && !recklessness_active)
+                    if (sim_time - time < 16.0 && !recklessness_active)
                     {
                         recklessness_active = true;
                         global_cd = 1.0;
                     }
                 }
                 // Execute phase
-                if (time > sim_time * 0.85)
+                if (time > sim_time * 0.83)
                 {
                     if (global_cd < 0 && rage > 10)
                     {
@@ -547,7 +547,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         total_damage += hit_outcome.damage;
                     }
 
-                    if (rage > 60 && !heroic_strike_)
+                    if (rage > 50 && !heroic_strike_)
                     {
                         heroic_strike_ = true;
                     }

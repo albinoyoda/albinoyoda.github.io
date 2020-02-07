@@ -12,7 +12,11 @@ enum class Race
     human,
     dwarf,
     night_elf,
-    gnome
+    gnome,
+    orc,
+    tauren,
+    troll,
+    undead
 };
 
 class Character

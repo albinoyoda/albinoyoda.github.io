@@ -44,6 +44,23 @@ void Character::set_base_stats(const Race &race)
             base_stats_ = Stats{115, 83};
             base_special_stats_ = Special_stats{0, 0, 160};
             break;
+        case Race::orc:
+            base_stats_ = Stats{123, 77};
+            base_special_stats_ = Special_stats{0, 0, 160};
+            extra_skills_.emplace_back(Extra_skill{Skill_type::axe, 5});
+            break;
+        case Race::tauren:
+            base_stats_ = Stats{125, 75};
+            base_special_stats_ = Special_stats{0, 0, 160};
+            break;
+        case Race::troll:
+            base_stats_ = Stats{121, 82};
+            base_special_stats_ = Special_stats{0, 0, 160};
+            break;
+        case Race::undead:
+            base_stats_ = Stats{119, 78};
+            base_special_stats_ = Special_stats{0, 0, 160};
+            break;
         default:
             assert(false);
     }
