@@ -1,0 +1,137 @@
+
+        double crit = 0;
+        double hit = 0;
+        double dodge = 0;
+        double miss = 0;
+        double glancing = 0;
+        for (auto outcome_mh : hit_outcomes_mh_)
+        {
+            if (outcome_mh == Hit_result::crit)
+            {
+                crit++;
+            }
+            if (outcome_mh == Hit_result::dodge)
+            {
+                dodge++;
+            }
+            if (outcome_mh == Hit_result::miss)
+            {
+                miss++;
+            }
+            if (outcome_mh == Hit_result::hit)
+            {
+                hit++;
+            }
+            if (outcome_mh == Hit_result::glancing)
+            {
+                glancing++;
+            }
+        }
+        crit /= hit_outcomes_mh_.size();
+        dodge /= hit_outcomes_mh_.size();
+        miss /= hit_outcomes_mh_.size();
+        hit /= hit_outcomes_mh_.size();
+        glancing /= hit_outcomes_mh_.size();
+        glancing += 0.00001;
+        crit = 0;
+        hit = 0;
+        dodge = 0;
+        miss = 0;
+        glancing = 0;
+        for (auto outcome_mh : hit_outcomes_mh_)
+        {
+            if (outcome_mh == Hit_result::crit)
+            {
+                crit++;
+            }
+            if (outcome_mh == Hit_result::dodge)
+            {
+                dodge++;
+            }
+            if (outcome_mh == Hit_result::miss)
+            {
+                miss++;
+            }
+            if (outcome_mh == Hit_result::hit)
+            {
+                hit++;
+            }
+            if (outcome_mh == Hit_result::glancing)
+            {
+                glancing++;
+            }
+        }
+        crit /= hit_outcomes_mh_.size();
+        dodge /= hit_outcomes_mh_.size();
+        miss /= hit_outcomes_mh_.size();
+        hit /= hit_outcomes_mh_.size();
+        glancing /= hit_outcomes_mh_.size();
+        glancing += 0.00001;
+        crit = 0;
+        hit = 0;
+        dodge = 0;
+        miss = 0;
+        glancing = 0;
+        for (auto outcome_mh : hit_outcomes_yellow_)
+        {
+            if (outcome_mh == Hit_result::crit)
+            {
+                crit++;
+            }
+            if (outcome_mh == Hit_result::dodge)
+            {
+                dodge++;
+            }
+            if (outcome_mh == Hit_result::miss)
+            {
+                miss++;
+            }
+            if (outcome_mh == Hit_result::hit)
+            {
+                hit++;
+            }
+            if (outcome_mh == Hit_result::glancing)
+            {
+                glancing++;
+            }
+        }
+        crit /= hit_outcomes_yellow_.size();
+        dodge /= hit_outcomes_yellow_.size();
+        miss /= hit_outcomes_yellow_.size();
+        hit /= hit_outcomes_yellow_.size();
+        glancing /= hit_outcomes_yellow_.size();
+        glancing += 0.00001;
+        crit = 0;
+        hit = 0;
+        dodge = 0;
+        miss = 0;
+        glancing = 0;
+        for (auto outcome_mh : hit_outcomes_oh_)
+        {
+            if (outcome_mh == Hit_result::crit)
+            {
+                crit++;
+            }
+            if (outcome_mh == Hit_result::dodge)
+            {
+                dodge++;
+            }
+            if (outcome_mh == Hit_result::miss)
+            {
+                miss++;
+            }
+            if (outcome_mh == Hit_result::hit)
+            {
+                hit++;
+            }
+            if (outcome_mh == Hit_result::glancing)
+            {
+                glancing++;
+            }
+        }
+        crit /= hit_outcomes_oh_.size();
+        dodge /= hit_outcomes_oh_.size();
+        miss /= hit_outcomes_oh_.size();
+        hit /= hit_outcomes_oh_.size();
+        glancing /= hit_outcomes_oh_.size();
+        glancing += 0.00001;

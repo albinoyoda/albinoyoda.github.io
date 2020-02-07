@@ -53,94 +53,114 @@ namespace
     }
 }
 
-Combat_simulator::Hit_outcome Combat_simulator::generate_hit_mh(double damage, Hit_type hit_type)
+Combat_simulator::Hit_outcome
+Combat_simulator::generate_hit_mh(double damage, Hit_type hit_type, bool recklessness_active)
 {
     double random_var = 100 * rand() / static_cast<double>(RAND_MAX);
     if (hit_type == Hit_type::white)
     {
-        int outcome = std::lower_bound(hit_probabilities_white_mh_.begin(), hit_probabilities_white_mh_.end(),
-                                       random_var) - hit_probabilities_white_mh_.begin();
-        switch (outcome)
+        if (recklessness_active)
         {
-            case 0:
-                return {0.0, Hit_result::miss};
-            case 1:
-                return {0.0, Hit_result::dodge};
-            case 2:
-                return {damage * glancing_factor_mh_, Hit_result::glancing};
-            case 3:
-                return {damage * 2.2, Hit_result::crit};
-            case 4:
-                return {damage, Hit_result::hit};
-            default:
-                assert(false);
+            int outcome = std::lower_bound(hit_probabilities_recklessness_mh_.begin(),
+                                           hit_probabilities_recklessness_mh_.end(),
+                                           random_var) - hit_probabilities_recklessness_mh_.begin();
+            return {damage * lookup_outcome_mh_white(outcome), Hit_result(outcome)};
+        }
+        else
+        {
+            int outcome = std::lower_bound(hit_probabilities_white_mh_.begin(), hit_probabilities_white_mh_.end(),
+                                           random_var) - hit_probabilities_white_mh_.begin();
+            return {damage * lookup_outcome_mh_white(outcome), Hit_result(outcome)};
         }
     }
     else
     {
-        int outcome = std::lower_bound(hit_probabilities_yellow_.begin(), hit_probabilities_yellow_.end(), random_var) -
-                      hit_probabilities_yellow_.begin();
-        switch (outcome)
+        // Yellow hit
+        if (recklessness_active)
         {
-            case 0:
-                return {0.0, Hit_result::miss};
-            case 1:
-                return {0.0, Hit_result::dodge};
-            case 2:
-                return {damage * 2.2, Hit_result::crit};
-            case 3:
-                return {damage, Hit_result::hit};
-            default:
-                assert(false);
+            int outcome = std::lower_bound(hit_probabilities_recklessness_yellow_.begin(),
+                                           hit_probabilities_recklessness_yellow_.end(),
+                                           random_var) -
+                          hit_probabilities_recklessness_yellow_.begin();
+            if (outcome <= 1)
+            {
+                return {damage * lookup_outcome_mh_yellow(outcome), Hit_result(outcome)};
+            }
+            else
+            {
+                return {damage * lookup_outcome_mh_yellow(outcome),
+                        Hit_result(outcome + 1)}; // +1 because yellow cant glance
+            }
+        }
+        else
+        {
+            int outcome = std::lower_bound(hit_probabilities_yellow_.begin(), hit_probabilities_yellow_.end(),
+                                           random_var) -
+                          hit_probabilities_yellow_.begin();
+            if (outcome <= 1)
+            {
+                return {damage * lookup_outcome_mh_yellow(outcome), Hit_result(outcome)};
+            }
+            else
+            {
+                return {damage * lookup_outcome_mh_yellow(outcome),
+                        Hit_result(outcome + 1)}; // +1 because yellow cant glance
+            }
         }
     }
-    return {0.0, Hit_result::miss};
 }
 
-Combat_simulator::Hit_outcome Combat_simulator::generate_hit_oh(double damage)
+Combat_simulator::Hit_outcome Combat_simulator::generate_hit_oh(double damage, bool recklessness_active)
 {
-    double random_var = 100 * rand() / static_cast<double>(RAND_MAX);
-    int outcome = std::lower_bound(hit_probabilities_white_oh_.begin(), hit_probabilities_white_oh_.end(), random_var) -
-                  hit_probabilities_white_oh_.begin();
-    switch (outcome)
+    if (recklessness_active)
     {
-        case 0:
-            return {0.0, Hit_result::miss};
-        case 1:
-            return {0.0, Hit_result::dodge};
-        case 2:
-            return {damage * glancing_factor_oh_, Hit_result::glancing};
-        case 3:
-            return {damage * 2.2, Hit_result::crit};
-        case 4:
-            return {damage, Hit_result::hit};
-        default:
-            assert(false);
+        double random_var = 100 * rand() / static_cast<double>(RAND_MAX);
+        int outcome = std::lower_bound(hit_probabilities_recklessness_oh_.begin(),
+                                       hit_probabilities_recklessness_oh_.end(),
+                                       random_var) - hit_probabilities_recklessness_oh_.begin();
+        return {damage * lookup_outcome_mh_white(outcome), Hit_result(outcome)};
     }
-    return {0.0, Hit_result::miss};
+    else
+    {
+        double random_var = 100 * rand() / static_cast<double>(RAND_MAX);
+        int outcome = std::lower_bound(hit_probabilities_white_oh_.begin(), hit_probabilities_white_oh_.end(),
+                                       random_var) -
+                      hit_probabilities_white_oh_.begin();
+        return {damage * lookup_outcome_oh(outcome), Hit_result(outcome)};
+    }
 }
 
 Combat_simulator::Hit_outcome Combat_simulator::generate_hit(double damage, Combat_simulator::Hit_type hit_type,
-                                                             Hand weapon_hand, bool death_wish_active)
+                                                             Hand weapon_hand, bool death_wish_active,
+                                                             bool recklessness_active)
 {
     if (weapon_hand == Hand::main_hand)
     {
-        auto hit_outcome = generate_hit_mh(damage, hit_type);
+        auto hit_outcome = generate_hit_mh(damage, hit_type, recklessness_active);
         hit_outcome.damage *= armor_reduction_factor_;
         if (death_wish_active)
         {
             hit_outcome.damage *= 1.2;
         }
+//        if (hit_type == Hit_type::white)
+//        {
+//            hit_outcomes_mh_.emplace_back(hit_outcome.hit_result);
+//        }
+//        else
+//        {
+//            hit_outcomes_yellow_.emplace_back(hit_outcome.hit_result);
+//        }
         return hit_outcome;
     }
     else
     {
-        auto hit_outcome = generate_hit_oh(damage);
+        auto hit_outcome = generate_hit_oh(damage, recklessness_active);
         hit_outcome.damage *= armor_reduction_factor_;
         if (death_wish_active)
         {
             hit_outcome.damage *= 1.2;
         }
+//        hit_outcomes_oh_.emplace_back(hit_outcome.hit_result);
         return hit_outcome;
     }
 }
@@ -182,10 +202,21 @@ void Combat_simulator::compute_hit_table_mh_(int opponent_level, int weapon_skil
     hit_probabilities_white_mh_.push_back(hit_probabilities_white_mh_.back() + glancing_chance);
     hit_probabilities_white_mh_.push_back(hit_probabilities_white_mh_.back() + crit_chance);
 
+    hit_probabilities_recklessness_mh_.clear();
+    hit_probabilities_recklessness_mh_.push_back(miss_chance);
+    hit_probabilities_recklessness_mh_.push_back(hit_probabilities_recklessness_mh_.back() + dodge_chance);
+    hit_probabilities_recklessness_mh_.push_back(hit_probabilities_recklessness_mh_.back() + glancing_chance);
+    hit_probabilities_recklessness_mh_.push_back(hit_probabilities_recklessness_mh_.back() + 100);
+
     hit_probabilities_yellow_.clear();
     hit_probabilities_yellow_.push_back(miss_chance);
     hit_probabilities_yellow_.push_back(hit_probabilities_yellow_.back() + dodge_chance);
     hit_probabilities_yellow_.push_back(hit_probabilities_yellow_.back() + crit_chance);
+
+    hit_probabilities_recklessness_yellow_.clear();
+    hit_probabilities_recklessness_yellow_.push_back(miss_chance);
+    hit_probabilities_recklessness_yellow_.push_back(hit_probabilities_recklessness_yellow_.back() + dodge_chance);
+    hit_probabilities_recklessness_yellow_.push_back(hit_probabilities_recklessness_yellow_.back() + 100);
 }
 
 void Combat_simulator::compute_hit_table_oh_(int opponent_level, int weapon_skill, Special_stats special_stats)
@@ -224,6 +255,12 @@ void Combat_simulator::compute_hit_table_oh_(int opponent_level, int weapon_skil
     hit_probabilities_white_oh_.push_back(hit_probabilities_white_oh_.back() + dodge_chance);
     hit_probabilities_white_oh_.push_back(hit_probabilities_white_oh_.back() + glancing_chance);
     hit_probabilities_white_oh_.push_back(hit_probabilities_white_oh_.back() + crit_chance);
+
+    hit_probabilities_recklessness_oh_.clear();
+    hit_probabilities_recklessness_oh_.push_back(miss_chance);
+    hit_probabilities_recklessness_oh_.push_back(hit_probabilities_recklessness_oh_.back() + dodge_chance);
+    hit_probabilities_recklessness_oh_.push_back(hit_probabilities_recklessness_oh_.back() + glancing_chance);
+    hit_probabilities_recklessness_oh_.push_back(hit_probabilities_recklessness_oh_.back() + 100);
 }
 
 void Combat_simulator::compute_hit_table(int opponent_level,
@@ -286,6 +323,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
         bool crusader_oh_active = false;
         bool crusader_mh_active = false;
         bool deathwish_active = false;
+        bool recklessness_active = false;
 
         weapons[0].set_internal_swing_timer(0.0);
         weapons[1].set_internal_swing_timer(0.0);
@@ -312,7 +350,8 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         rage >= 13.0)
                     {
                         swing_damage += 157;
-                        hit_outcome = generate_hit(swing_damage, Hit_type::yellow, weapon.get_hand(), deathwish_active);
+                        hit_outcome = generate_hit(swing_damage, Hit_type::yellow, weapon.get_hand(), deathwish_active,
+                                                   recklessness_active);
                         heroic_strike_ = false;
                         rage -= 13;
                         damage_sources.heroic_strike += hit_outcome.damage;
@@ -320,7 +359,8 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                     else
                     {
                         // Otherwise do white hit
-                        hit_outcome = generate_hit(swing_damage, Hit_type::white, weapon.get_hand(), deathwish_active);
+                        hit_outcome = generate_hit(swing_damage, Hit_type::white, weapon.get_hand(), deathwish_active,
+                                                   recklessness_active);
                         rage += rage_generation(hit_outcome.damage,
                                                 weapon.get_swing_speed(),
                                                 hit_outcome.hit_result == Hit_result::crit,
@@ -347,7 +387,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                             {
                                 double damage = weapons[0].swing(special_stats.attack_power);
                                 hit_outcome = generate_hit(damage, Hit_type::white, weapons[0].get_hand(),
-                                                           deathwish_active);
+                                                           deathwish_active, recklessness_active);
                                 rage += rage_generation(hit_outcome.damage,
                                                         weapons[0].get_swing_speed(),
                                                         hit_outcome.hit_result == Hit_result::crit,
@@ -444,13 +484,22 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         global_cd = 1.0;
                     }
                 }
+                if (recklessness_enabled_)
+                {
+                    if (sim_time - time < 20.0 && !recklessness_active)
+                    {
+                        recklessness_active = true;
+                        global_cd = 1.0;
+                    }
+                }
                 // Execute phase
                 if (time > sim_time * 0.85)
                 {
                     if (global_cd < 0 && rage > 10)
                     {
                         double damage = 600 + (rage - 10) * 15;
-                        auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand, deathwish_active);
+                        auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand, deathwish_active,
+                                                        recklessness_active);
                         if (hit_outcome.hit_result == Hit_result::crit)
                         {
                             flurry_charges = 3;
@@ -467,7 +516,8 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                     if (blood_thirst_cd < 0.0 && global_cd < 0 && rage > 30)
                     {
                         double damage = special_stats.attack_power * 0.45;
-                        auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand, deathwish_active);
+                        auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand, deathwish_active,
+                                                        recklessness_active);
                         if (hit_outcome.hit_result == Hit_result::crit)
                         {
                             flurry_charges = 3;
@@ -483,7 +533,8 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                     if (whirlwind_cd < 0.0 && rage > 25 && global_cd < 0 && blood_thirst_cd > 0)
                     {
                         double damage = weapons[0].swing(special_stats.attack_power);
-                        auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand, deathwish_active);
+                        auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand, deathwish_active,
+                                                        recklessness_active);
                         if (hit_outcome.hit_result == Hit_result::crit)
                         {
                             flurry_charges = 3;
@@ -569,9 +620,9 @@ Combat_simulator::compute_stat_weights(const Character &character, double sim_ti
                                               special_stat_permutation_amount,
                                               sim_time, opponent_level, n_batches, mean_init, sample_std_init);
     auto stat_weight_extra_skill = permute_stat(character, &Character::set_extra_weapon_skill,
-                                              Stat::skill,
+                                                Stat::skill,
                                                 skill_permutation_amount,
-                                              sim_time, opponent_level, n_batches, mean_init, sample_std_init);
+                                                sim_time, opponent_level, n_batches, mean_init, sample_std_init);
 
     return {stat_weight_agi, stat_weight_str, stat_weight_crit, stat_weight_hit, stat_weight_haste,
             stat_weight_extra_hit, stat_weight_extra_skill};

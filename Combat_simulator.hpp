@@ -81,6 +81,64 @@ public:
         Hit_result hit_result;
     };
 
+    constexpr double lookup_outcome_mh_white(int case_id)
+    {
+        switch (case_id)
+        {
+            case 0:
+                return 0.0;
+            case 1:
+                return 0.0;
+            case 2:
+                return glancing_factor_mh_;
+            case 3:
+                return 2.2;
+            case 4:
+                return 1.0;
+            default:
+                assert(false);
+                return 0.0;
+        }
+    }
+
+    static constexpr double lookup_outcome_mh_yellow(int case_id)
+    {
+        switch (case_id)
+        {
+            case 0:
+                return 0.0;
+            case 1:
+                return 0.0;
+            case 2:
+                return 2.2;
+            case 3:
+                return 1.0;
+            default:
+                assert(false);
+                return 0.0;
+        }
+    }
+
+    constexpr double lookup_outcome_oh(int case_id)
+    {
+        switch (case_id)
+        {
+            case 0:
+                return 0.0;
+            case 1:
+                return 0.0;
+            case 2:
+                return glancing_factor_oh_;
+            case 3:
+                return 2.2;
+            case 4:
+                return 1.0;
+            default:
+                assert(false);
+                return 0.0;
+        }
+    }
+
     struct Stat_weight
     {
         Stat_weight(double d_dps_plus, double std_d_dps_plus, double d_dps_minus, double std_d_dps_minus, double amount,
@@ -106,9 +164,9 @@ public:
                              double sim_time, int opponent_level, int n_batches, double mean_init,
                              double sample_std_init);
 
-    template<typename Field_t>
+    template<typename Function_ptr>
     Combat_simulator::Stat_weight
-    permute_stat(const Character &character, Field_t field_t,
+    permute_stat(const Character &character, Function_ptr function_ptr,
                  Combat_simulator::Stat stat, double amount, double sim_time, int opponent_level,
                  int n_batches, double mean_init, double sample_std_init);
 
@@ -116,11 +174,12 @@ public:
     compute_stat_weights(const Character &character, double sim_time, int opponent_level, int n_batches,
                          double mean_init, double sample_std_init);
 
-    Combat_simulator::Hit_outcome generate_hit(double damage, Hit_type hit_type, Hand weapon_hand, bool death_wish);
+    Combat_simulator::Hit_outcome generate_hit(double damage, Hit_type hit_type, Hand weapon_hand, bool death_wish,
+                                               bool recklessness_active);
 
-    Combat_simulator::Hit_outcome generate_hit_oh(double damage);
+    Combat_simulator::Hit_outcome generate_hit_oh(double damage, bool recklessness_active);
 
-    Combat_simulator::Hit_outcome generate_hit_mh(double damage, Hit_type hit_type);
+    Combat_simulator::Hit_outcome generate_hit_mh(double damage, Hit_type hit_type, bool recklessness_active);
 
     void compute_hit_table(int opponent_level, int weapon_skill, Special_stats special_stats, Hand weapon_hand);
 
@@ -175,6 +234,9 @@ private:
     std::vector<double> hit_probabilities_white_mh_;
     std::vector<double> hit_probabilities_white_oh_;
     std::vector<double> hit_probabilities_yellow_;
+    std::vector<double> hit_probabilities_recklessness_mh_;
+    std::vector<double> hit_probabilities_recklessness_oh_;
+    std::vector<double> hit_probabilities_recklessness_yellow_;
     std::vector<double> batch_damage_{};
     std::vector<Damage_sources> damage_distribution_{};
     bool spell_rotation_{false};

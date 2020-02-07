@@ -10,8 +10,6 @@
 
 // TODO Graphics?
 // TODO hit tables performance
-// TODO recycle stat weight computations
-// TODO damage sources std
 // TODO HOJ proc when whirlwind etc.
 
 // TODO 2h weapons
@@ -19,15 +17,12 @@
 // TODO rage when missing?
 // TODO heroic strike bug OH implementation
 
-// TODO double check whirlwind damage
-
 // TODO anger management
 // TODO deep wounds
 
 // TODO move battle shout in the simulation
 // TODO cooldowns
 // TODO stances
-// TODO execute
 // TODO overpower
 
 // TODO setbonuses

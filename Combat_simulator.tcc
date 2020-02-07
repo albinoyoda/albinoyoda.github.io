@@ -28,9 +28,9 @@ Combat_simulator::permute_stat(const Character &character, Struct_t struct_t, Fi
             stat};
 }
 
-template<typename F>
+template<typename Function_ptr>
 Combat_simulator::Stat_weight
-Combat_simulator::permute_stat(const Character &character, F function_ptr,
+Combat_simulator::permute_stat(const Character &character, Function_ptr function_ptr,
                                Combat_simulator::Stat stat, double amount, double sim_time, int opponent_level,
                                int n_batches, double mean_init, double sample_std_init)
 {
