@@ -174,12 +174,14 @@ public:
     compute_stat_weights(const Character &character, double sim_time, int opponent_level, int n_batches,
                          double mean_init, double sample_std_init);
 
-    Combat_simulator::Hit_outcome generate_hit(double damage, Hit_type hit_type, Hand weapon_hand, bool death_wish,
-                                               bool recklessness_active);
+    Combat_simulator::Hit_outcome
+    generate_hit(double damage, Hit_type hit_type, Hand weapon_hand, bool heroic_strike_active, bool death_wish,
+                 bool recklessness_active);
 
-    Combat_simulator::Hit_outcome generate_hit_oh(double damage, bool recklessness_active);
+    Combat_simulator::Hit_outcome generate_hit_oh(double damage, bool heroic_strike_active, bool recklessness_active);
 
-    Combat_simulator::Hit_outcome generate_hit_mh(double damage, Hit_type hit_type, bool recklessness_active);
+    Combat_simulator::Hit_outcome
+    generate_hit_mh(double damage, Hit_type hit_type, bool recklessness_active);
 
     void compute_hit_table(int opponent_level, int weapon_skill, Special_stats special_stats, Hand weapon_hand);
 
@@ -230,6 +232,19 @@ public:
 
     void print_damage_distribution() const;
 
+    void display_combat_debug()
+    {
+        debug_mode_ = true;
+    }
+
+    constexpr void simulator_cout(const std::string &message)
+    {
+        if (debug_mode_)
+        {
+            std::cout << "Time: "<< time_ << ". Event: " << message << "\n";
+        }
+    }
+
 private:
     std::vector<double> hit_probabilities_white_mh_;
     std::vector<double> hit_probabilities_white_oh_;
@@ -237,6 +252,8 @@ private:
     std::vector<double> hit_probabilities_recklessness_mh_;
     std::vector<double> hit_probabilities_recklessness_oh_;
     std::vector<double> hit_probabilities_recklessness_yellow_;
+    std::vector<double> hit_probabilities_two_hand_;
+    std::vector<double> hit_probabilities_recklessness_two_hand_;
     std::vector<double> batch_damage_{};
     std::vector<Damage_sources> damage_distribution_{};
     bool spell_rotation_{false};
@@ -245,9 +262,11 @@ private:
     bool crusader_enabled_{false};
     bool death_wish_enabled_{false};
     bool recklessness_enabled_{false};
+    bool debug_mode_{false};
     double glancing_factor_mh_{0.0};
     double glancing_factor_oh_{0.0};
     double armor_reduction_factor_{};
+    double time_;
 };
 
 std::ostream &operator<<(std::ostream &os, Combat_simulator::Stat_weight const &stats);

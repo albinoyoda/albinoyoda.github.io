@@ -212,7 +212,10 @@ public:
     World_buff() = delete;
 
     World_buff(Stats stats, Special_stats special_stats, Id name) : Buff(stats, special_stats),
-            name_{name} {};
+            name_{name}
+    {
+        name_ = name;
+    };
 
 private:
     Id name_;
@@ -232,8 +235,10 @@ public:
 
     Player_buff() = delete;
 
-    Player_buff(Stats stats, Special_stats special_stats, Id name) : Buff(stats, special_stats),
-            name_{name} {};
+    Player_buff(Stats stats, Special_stats special_stats, Id name) : Buff(stats, special_stats)
+    {
+        name_ = name;
+    };
 
 private:
     Id name_;
@@ -259,7 +264,10 @@ public:
     Consumable() = delete;
 
     Consumable(Stats stats, Special_stats special_stats, Id name) : Buff(stats, special_stats),
-            name_{name} {};
+            name_{name}
+    {
+        name_ = name;
+    };
 
 private:
     Id name_;
