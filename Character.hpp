@@ -140,9 +140,27 @@ public:
 
     void set_chance_for_extra_hit(double chance_for_extra_hit);
 
-    void set_extra_weapon_skill(int weapon_skill)
+    void set_extra_weapon_skill_sword(int weapon_skill)
     {
-        Extra_skill extra_skill{Skill_type::all, weapon_skill};
+        Extra_skill extra_skill{Skill_type::sword, weapon_skill};
+        extra_skills_.push_back(extra_skill);
+    }
+
+    void set_extra_weapon_skill_axe(int weapon_skill)
+    {
+        Extra_skill extra_skill{Skill_type::axe, weapon_skill};
+        extra_skills_.push_back(extra_skill);
+    }
+
+    void set_extra_weapon_skill_dagger(int weapon_skill)
+    {
+        Extra_skill extra_skill{Skill_type::dagger, weapon_skill};
+        extra_skills_.push_back(extra_skill);
+    }
+
+    void set_extra_weapon_skill_mace(int weapon_skill)
+    {
+        Extra_skill extra_skill{Skill_type::mace, weapon_skill};
         extra_skills_.push_back(extra_skill);
     }
 

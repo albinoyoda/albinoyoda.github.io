@@ -148,8 +148,12 @@ public:
         hit,
         chance_extra_hit,
         haste,
-        skill,
+        skill_sword,
+        skill_axe,
+        skill_mace,
+        skill_dagger,
         weapon_damage,
+        NONE
         // TODO add more
     };
 
@@ -200,6 +204,15 @@ public:
 
     struct Stat_weight
     {
+        Stat_weight(Stat stat) : stat(stat)
+        {
+            d_dps_plus = 0.0;
+            std_d_dps_plus = 0.0;
+            d_dps_minus = 0.0;
+            std_d_dps_minus = 0.0;
+            amount = 0.0;
+        };
+
         Stat_weight(double d_dps_plus, double std_d_dps_plus, double d_dps_minus, double std_d_dps_minus, double amount,
                     Stat stat) : d_dps_plus{d_dps_plus},
                 std_d_dps_plus{std_d_dps_plus},

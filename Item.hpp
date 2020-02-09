@@ -15,6 +15,7 @@ enum class Skill_type
     sword,
     axe,
     mace,
+    dagger,
     all,
     none
 };

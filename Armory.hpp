@@ -73,6 +73,8 @@ struct Armory
     Weapon viskag{2.6, {100, 187}, Stats{0, 0}, Special_stats{0, 0, 0}, Weapon::Socket::one_hand, Skill_type::sword};
     Weapon deathbringer{2.9, {114, 213}, Stats{0, 0}, Special_stats{0, 0, 0}, Weapon::Socket::one_hand,
                         Skill_type::axe};
+    Weapon core_hound_tooth{1.6, {57, 107}, Stats{0, 0}, Special_stats{1, 0, 20}, Weapon::Socket::one_hand,
+                            Skill_type::dagger};
 
     // Others
     Armor expert_goldminers_head{Stats{0, 5}, Special_stats{0, 0, 0}, Armor::Socket::head};
@@ -80,6 +82,7 @@ struct Armory
     Armor crown_of_destruction{Stats{0, 0}, Special_stats{2, 0, 44}, Armor::Socket::head};
     Armor quick_strike_ring{Stats{8, 0}, Special_stats{1, 0, 30}, Armor::Socket::ring};
     Armor flameguard_gauntlets{Stats{0, 0}, Special_stats{1, 0, 54}, Armor::Socket::hands};
+    Armor mugglers_belt{Stats{0, 0}, Special_stats{1, 0, 0}, Armor::Socket::belt};
 
     Armor leutenant_shoulders{Stats{17, 0}, Special_stats{1, 0, 0}, Armor::Socket::shoulder};
     Armor omokks_girth{Stats{15, 0}, Special_stats{1, 0, 0}, Armor::Socket::belt};
@@ -125,6 +128,7 @@ struct Armory
         edgemasters_handguards.set_bonus_skill(Extra_skill{Skill_type::all, 7});
         maladath.set_bonus_skill(Extra_skill{Skill_type::sword, 7});
         expert_goldminers_head.set_bonus_skill(Extra_skill{Skill_type::axe, 7});
+        mugglers_belt.set_bonus_skill(Extra_skill{Skill_type::dagger, 5});
     }
 };
 

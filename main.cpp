@@ -38,79 +38,50 @@ int main()
     Buffs buffs;
 
     character.equip_armor(
-//            armory.crown_of_destruction,
-//            armory.helm_of_endless_rage,
+            //Helmet
             armory.lionheart_helm,
-//            armory.expert_goldminers_head,
 
+            // Neck
             armory.onyxia_tooth_pendant,
-//            armory.prestors_talisman_of_connivery,
 
+            // Shoulders
             armory.truestrike_shoulders,
-//            armory.leutenant_shoulders,
-//            armory.drake_talon_pauldrons,
 
-//            armory.cloak_of_firemaw,
-//            armory.cloak_of_draconic_might,
+            // Back
             armory.cape_of_the_black_baron,
 
+            // Chest
             armory.savage_gladiator_chain,
-//            armory.malfurions_blessed_bulwark,
-//            armory.cadaverous_armor,
 
+            // Wrists
             armory.wristguards_of_stability,
-//            armory.battleborn_armbraces,
 
-//            armory.flameguard_gauntlets,
+            // Hands
             armory.devilsaur_gauntlets,
-//            armory.edgemasters_handguards,
 
-//            armory.omokks_girth,
+            // Waist
             armory.onslaught_girdle,
 
+            // Legs
             armory.devilsaur_leggings,
-//            armory.cloudkeeper_legplaters,
-//            armory.legguards_of_the_fallen_crusader,
 
+            // boots
             armory.bloodmail_boots,
-//            armory.knight_leutenants_greaves,
-//            armory.chromatic_boots,
-//            armory.boots_of_shadow_flame,
 
+            // Rings
             armory.don_julios_band,
             armory.magnis_will,
-//            armory.master_dragonslayers_ring,
-//            armory.circle_of_applied_force,
-//            armory.quick_strike_ring,
 
-//            armory.hand_of_justice,
-//            armory.drake_fang_talisman,
+            // Trinket
             armory.blackhands_breadth,
             armory.hand_of_justice,
 
+            // Bow
             armory.satyrs_bow
-//            armory.dragonbreath_hand_cannon
                          );
-
-//    character.equip_weapon(armory.maladath,
-//                           armory.brutality_blade);
 
     character.equip_weapon(armory.brutality_blade,
                            armory.mirahs_song);
-
-//    character.equip_weapon(armory.chromatically_tempered_sword,
-//                           armory.maladath);
-
-    if (!character.check_if_armor_valid())
-    {
-        std::cout << "Incorrect armor setup!\n";
-        return -1;
-    }
-    if (!character.check_if_weapons_valid())
-    {
-        std::cout << "Incorrect weapon setup!\n";
-        return -1;
-    }
 
     character.add_enchants(Enchant{Enchant::Socket::head, Enchant::Type::haste},
                            Enchant{Enchant::Socket::back, Enchant::Type::agility},
@@ -124,22 +95,33 @@ int main()
 
     character.add_buffs(
 //            buffs.rallying_cry,
-            buffs.dire_maul,
+//            buffs.dire_maul,
 //            buffs.songflower,
-            buffs.blessing_of_kings,
-            buffs.blessing_of_might,
-            buffs.gift_of_the_wild,
-            buffs.trueshot_aura,
-            buffs.elixir_mongoose,
-            buffs.dense_stone_mh,
-            buffs.dense_stone_oh,
+//            buffs.blessing_of_kings,
+//            buffs.blessing_of_might,
+//            buffs.gift_of_the_wild,
+//            buffs.trueshot_aura,
+//            buffs.elixir_mongoose,
+//            buffs.dense_stone_mh,
+//            buffs.dense_stone_oh,
 //            buffs.elemental_stone_mh,
 //            buffs.elemental_stone_oh,
-            buffs.blessed_sunfruit,
-            buffs.juju_power,
+//            buffs.blessed_sunfruit,
+//            buffs.juju_power,
 //            buffs.juju_might,
             buffs.roids
                        );
+
+    if (!character.check_if_armor_valid())
+    {
+        std::cout << "Incorrect armor setup!\n";
+        return -1;
+    }
+    if (!character.check_if_weapons_valid())
+    {
+        std::cout << "Incorrect weapon setup!\n";
+        return -1;
+    }
 
     character.compute_all_stats(Character::Talent::fury);
     std::cout << character.get_stats() << "\n";
@@ -148,8 +130,8 @@ int main()
     std::cout << "chance for extra hit: " << character.get_chance_for_extra_hit() << "%" << "\n";
 
     Combat_simulator combat_simulator;
-//    combat_simulator.use_fast_but_sloppy_rng(); // Use before set seed!
-    combat_simulator.set_seed(0); // Use for predictable random numbers
+    combat_simulator.use_fast_but_sloppy_rng(); // Use before set seed!
+    combat_simulator.set_seed(1000); // Use for predictable random numbers
 
     // Combat settings
     combat_simulator.enable_spell_rotation();
@@ -160,7 +142,7 @@ int main()
 //    combat_simulator.enable_recklessness();
 //    combat_simulator.display_combat_debug();
 
-    int n_batches = 50000;
+    int n_batches = 150000;
     double sim_time = 50;
     auto dps_snapshots = combat_simulator.simulate(character, sim_time, 63, n_batches);
 
