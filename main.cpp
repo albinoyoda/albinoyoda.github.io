@@ -7,6 +7,7 @@
 #include "Enchant.hpp"
 #include "Armory.hpp"
 
+// TODO does missing refund rage?
 // TODO Graphics?
 // TODO HOJ proc when whirlwind etc.
 
@@ -23,6 +24,10 @@
 // TODO overpower
 
 // TODO setbonuses
+
+// Notes
+// Execute and bloodthirst refunds rage on dodge, not whirlwind tho
+// Offhand hit chance is increased if heroic strike is activated
 
 int main()
 {
@@ -143,6 +148,8 @@ int main()
     std::cout << "chance for extra hit: " << character.get_chance_for_extra_hit() << "%" << "\n";
 
     Combat_simulator combat_simulator;
+//    combat_simulator.use_fast_but_sloppy_rng(); // Use before set seed!
+    combat_simulator.set_seed(0); // Use for predictable random numbers
 
     // Combat settings
     combat_simulator.enable_spell_rotation();
@@ -153,9 +160,7 @@ int main()
 //    combat_simulator.enable_recklessness();
 //    combat_simulator.display_combat_debug();
 
-    srand(1);
-
-    int n_batches = 50000;
+    int n_batches = 10000;
     double sim_time = 47;
     auto dps_snapshots = combat_simulator.simulate(character, sim_time, 63, n_batches);
 

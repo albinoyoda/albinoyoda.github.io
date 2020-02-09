@@ -23,7 +23,7 @@ namespace
 Combat_simulator::Hit_outcome
 Combat_simulator::generate_hit_mh(double damage, Hit_type hit_type, bool recklessness_active)
 {
-    double random_var = 100 * rand() / static_cast<double>(RAND_MAX);
+    double random_var = get_random_100();
     if (hit_type == Hit_type::white)
     {
         if (recklessness_active)
@@ -83,7 +83,7 @@ Combat_simulator::generate_hit_oh(double damage, bool heroic_strike_active, bool
         if (heroic_strike_active)
         {
             simulator_cout("Offhand hitrate increased: mainhand queue heroic");
-            double random_var = 100 * rand() / static_cast<double>(RAND_MAX);
+            double random_var = get_random_100();
             int outcome = std::lower_bound(hit_probabilities_recklessness_two_hand_.begin(),
                                            hit_probabilities_recklessness_two_hand_.end(),
                                            random_var) - hit_probabilities_recklessness_two_hand_.begin();
@@ -91,7 +91,7 @@ Combat_simulator::generate_hit_oh(double damage, bool heroic_strike_active, bool
         }
         else
         {
-            double random_var = 100 * rand() / static_cast<double>(RAND_MAX);
+            double random_var = get_random_100();
             int outcome = std::lower_bound(hit_probabilities_recklessness_oh_.begin(),
                                            hit_probabilities_recklessness_oh_.end(),
                                            random_var) - hit_probabilities_recklessness_oh_.begin();
@@ -103,7 +103,7 @@ Combat_simulator::generate_hit_oh(double damage, bool heroic_strike_active, bool
         if (heroic_strike_active)
         {
             simulator_cout("Offhand hitrate increased: mainhand queue heroic");
-            double random_var = 100 * rand() / static_cast<double>(RAND_MAX);
+            double random_var = get_random_100();
             int outcome = std::lower_bound(hit_probabilities_two_hand_.begin(),
                                            hit_probabilities_two_hand_.end(),
                                            random_var) - hit_probabilities_two_hand_.begin();
@@ -111,7 +111,7 @@ Combat_simulator::generate_hit_oh(double damage, bool heroic_strike_active, bool
         }
         else
         {
-            double random_var = 100 * rand() / static_cast<double>(RAND_MAX);
+            double random_var = get_random_100();
             int outcome = std::lower_bound(hit_probabilities_white_oh_.begin(), hit_probabilities_white_oh_.end(),
                                            random_var) -
                           hit_probabilities_white_oh_.begin();
@@ -461,7 +461,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         {
                             if (chance_for_extra_hit > 0.0)
                             {
-                                double random_variable = 100 * rand() / static_cast<double>(RAND_MAX);
+                                double random_variable = get_random_100();
                                 if (random_variable < chance_for_extra_hit)
                                 {
                                     simulator_cout("HoJ procc");
@@ -484,7 +484,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         {
                             if (weapon.get_hand() == Hand::main_hand)
                             {
-                                double random_variable = rand() / static_cast<double>(RAND_MAX);
+                                double random_variable = get_random_1();
                                 if (random_variable < crusader_proc_chance_mh)
                                 {
                                     simulator_cout("MH crusader procc");
@@ -504,7 +504,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                             }
                             if (weapon.get_hand() == Hand::off_hand)
                             {
-                                double random_variable = rand() / static_cast<double>(RAND_MAX);
+                                double random_variable = get_random_1();
                                 if (random_variable < crusader_proc_chance_oh)
                                 {
                                     simulator_cout("OH crusader procc");
@@ -527,7 +527,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         if (talents_)
                         {
                             // Unbridled wrath
-                            if (rand() % 10 <= 3) // ish 40%
+                            if (get_random_1() < 0.4)
                             {
                                 rage += 1;
                                 simulator_cout("Unbridled wrath, +1 rage");
@@ -608,7 +608,14 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                             flurry_dt_factor = flurry_speed_bonus;
                         }
                         time_keeper_.global_cd = 1.0;
-                        rage = 0;
+                        if (hit_outcome.hit_result == Hit_result::dodge)
+                        {
+                            rage -= 10;
+                        }
+                        else
+                        {
+                            rage = 0;
+                        }
                         total_damage += hit_outcome.damage;
                         damage_sources.execute += hit_outcome.damage;
                         simulator_cout(rage, " rage");
@@ -627,7 +634,10 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                             flurry_charges = 3;
                             flurry_dt_factor = flurry_speed_bonus;
                         }
-                        rage -= 30;
+                        if (hit_outcome.hit_result != Hit_result::dodge)
+                        {
+                            rage -= 30;
+                        }
                         time_keeper_.blood_thirst_cd = 6.0;
                         time_keeper_.global_cd = 1.0;
                         damage_sources.bloodthirst += hit_outcome.damage;

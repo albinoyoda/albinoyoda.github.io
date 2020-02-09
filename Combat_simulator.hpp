@@ -2,12 +2,12 @@
 #define WOW_SIMULATOR_COMBAT_SIMULATOR_HPP
 
 #include <vector>
-#include <cstdlib>
 #include <iostream>
 #include <cassert>
 #include <map>
 #include <cmath>
 #include <iomanip>
+#include <random>
 
 #include "Stats.hpp"
 #include "Character.hpp"
@@ -85,6 +85,51 @@ public:
 class Combat_simulator
 {
 public:
+    explicit Combat_simulator() : eng_{static_cast<long unsigned int>(time(nullptr))},
+            dist100_{0.0, 100.0}, dist1_(0.0, 1.0) {}
+
+    void set_seed(long unsigned int seed)
+    {
+        if (use_fast_rng_)
+        {
+            srand(seed);
+        }
+        else
+        {
+            eng_ = std::default_random_engine{seed};
+        }
+
+    }
+
+    void use_fast_but_sloppy_rng()
+    {
+        use_fast_rng_ = true;
+    }
+
+    double get_random_100()
+    {
+        if (use_fast_rng_)
+        {
+            return rand() * 100.0 / RAND_MAX;
+        }
+        else
+        {
+            return dist100_(eng_);
+        }
+    }
+
+    double get_random_1()
+    {
+        if (use_fast_rng_)
+        {
+            return rand() / RAND_MAX;
+        }
+        else
+        {
+            return dist1_(eng_);
+        }
+    }
+
     enum class Hit_result
     {
         miss,
@@ -152,6 +197,23 @@ public:
         Hit_result hit_result;
     };
 
+    struct Stat_weight
+    {
+        Stat_weight(double d_dps_plus, double std_d_dps_plus, double d_dps_minus, double std_d_dps_minus, double amount,
+                    Stat stat) : d_dps_plus{d_dps_plus},
+                std_d_dps_plus{std_d_dps_plus},
+                d_dps_minus{d_dps_minus},
+                std_d_dps_minus{std_d_dps_minus},
+                amount{amount},
+                stat{stat} {};
+        double d_dps_plus;
+        double std_d_dps_plus;
+        double d_dps_minus;
+        double std_d_dps_minus;
+        double amount;
+        Stat stat;
+    };
+
     constexpr double lookup_outcome_mh_white(int case_id)
     {
         switch (case_id)
@@ -209,23 +271,6 @@ public:
                 return 0.0;
         }
     }
-
-    struct Stat_weight
-    {
-        Stat_weight(double d_dps_plus, double std_d_dps_plus, double d_dps_minus, double std_d_dps_minus, double amount,
-                    Stat stat) : d_dps_plus{d_dps_plus},
-                std_d_dps_plus{std_d_dps_plus},
-                d_dps_minus{d_dps_minus},
-                std_d_dps_minus{std_d_dps_minus},
-                amount{amount},
-                stat{stat} {};
-        double d_dps_plus;
-        double std_d_dps_plus;
-        double d_dps_minus;
-        double std_d_dps_minus;
-        double amount;
-        Stat stat;
-    };
 
     std::vector<double> &
     simulate(const Character &character, double sim_time, int opponent_level, int n_damage_batches);
@@ -347,10 +392,15 @@ private:
     bool death_wish_enabled_{false};
     bool recklessness_enabled_{false};
     bool debug_mode_{false};
+    bool use_fast_rng_{false};
     double glancing_factor_mh_{0.0};
     double glancing_factor_oh_{0.0};
     double armor_reduction_factor_{};
     Time_keeper time_keeper_{};
+    std::default_random_engine eng_;
+    std::uniform_real_distribution<double> dist100_;
+    std::uniform_real_distribution<double> dist1_;
+
 };
 
 std::ostream &operator<<(std::ostream &os, Combat_simulator::Stat_weight const &stats);
