@@ -13,8 +13,8 @@ Which have been validated on classic servers.
 You need to be able to compile C++ code, which can be done by either  
 downloading a compiler and manually compiling it, or downloading an IDE  
 such as CLion or Visual studio. (Do it!! will be worth it).
-When you can compile you simply enter the gear setup and buffs, in  
-main.cpp and you are good to go.
+Currently you control all the feature of the simulator in main.cpp,  
+where gear, buffs, race, etc. is specifield.
 
 ## Result
 The output will be expected DPS vs a monster of level 60 - 63,  
