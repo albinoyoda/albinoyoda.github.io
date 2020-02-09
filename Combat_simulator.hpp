@@ -122,7 +122,7 @@ public:
     {
         if (use_fast_rng_)
         {
-            return rand() / RAND_MAX;
+            return rand() * 1.0 / RAND_MAX;
         }
         else
         {
@@ -149,6 +149,7 @@ public:
         chance_extra_hit,
         haste,
         skill,
+        weapon_damage,
         // TODO add more
     };
 

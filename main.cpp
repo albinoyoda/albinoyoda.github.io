@@ -160,8 +160,8 @@ int main()
 //    combat_simulator.enable_recklessness();
 //    combat_simulator.display_combat_debug();
 
-    int n_batches = 10000;
-    double sim_time = 47;
+    int n_batches = 50000;
+    double sim_time = 50;
     auto dps_snapshots = combat_simulator.simulate(character, sim_time, 63, n_batches);
 
     auto hit_table = combat_simulator.get_hit_probabilities_white_mh();

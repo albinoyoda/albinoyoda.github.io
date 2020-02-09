@@ -117,7 +117,7 @@ public:
 
     void set_extra_haste(double extra_haste_percent)
     {
-        double extra_haste_factor = 1.0 + std::abs(extra_haste_percent)/100.0;
+        double extra_haste_factor = 1.0 + std::abs(extra_haste_percent) / 100.0;
         if (extra_haste_percent > 0.0)
         {
             haste_ *= extra_haste_factor;
@@ -144,6 +144,12 @@ public:
     {
         Extra_skill extra_skill{Skill_type::all, weapon_skill};
         extra_skills_.push_back(extra_skill);
+    }
+
+    void increase_weapon_damage(double weapon_damage)
+    {
+        mh_bonus_damage_ += weapon_damage;
+        oh_bonus_damage_ += weapon_damage;
     }
 
     bool is_crusader_mh() const;

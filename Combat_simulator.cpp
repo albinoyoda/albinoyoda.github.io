@@ -714,6 +714,7 @@ Combat_simulator::compute_stat_weights(const Character &character, double sim_ti
         double stat_permutation_amount = 8;
         double special_stat_permutation_amount = 1;
         double skill_permutation_amount = 5;
+        double damage_permutation_amount = 8;
 
         auto stat_weight_agi = permute_stat(character, &Character::permutated_stats_, &Stats::agility, Stat::agility,
                                             stat_permutation_amount,
@@ -740,9 +741,13 @@ Combat_simulator::compute_stat_weights(const Character &character, double sim_ti
                                                     Stat::skill,
                                                     skill_permutation_amount,
                                                     sim_time, opponent_level, n_batches, mean_init, sample_std_init);
+        auto stat_weight_dense_stone = permute_stat(character, &Character::increase_weapon_damage,
+                                                    Stat::weapon_damage, damage_permutation_amount,
+                                                    sim_time, opponent_level, n_batches, mean_init, sample_std_init);
+
 
         return {stat_weight_agi, stat_weight_str, stat_weight_crit, stat_weight_hit, stat_weight_haste,
-                stat_weight_extra_hit, stat_weight_extra_skill};
+                stat_weight_extra_hit, stat_weight_extra_skill, stat_weight_dense_stone};
     }
     else
     {
@@ -792,6 +797,12 @@ std::ostream &operator<<(std::ostream &os, Combat_simulator::Stat_weight const &
             break;
         case Combat_simulator::Stat::skill:
             os << "Skill stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
+               stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
+               << stats.amount
+               << "\n";
+            break;
+        case Combat_simulator::Stat::weapon_damage:
+            os << "Weapon damage stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
                stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
                << stats.amount
                << "\n";
