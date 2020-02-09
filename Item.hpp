@@ -78,7 +78,7 @@ public:
 
     constexpr void compute_average_damage(double bonus_damage)
     {
-        average_damage_ = (damage_interval_.second + damage_interval_.first) / 2 + bonus_damage / 2;
+        average_damage_ = (damage_interval_.second + damage_interval_.first) / 2 + bonus_damage;
     }
 
     constexpr double get_average_damage()

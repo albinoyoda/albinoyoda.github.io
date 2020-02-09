@@ -89,6 +89,7 @@ int main()
 
 //    character.equip_weapon(armory.maladath,
 //                           armory.brutality_blade);
+
     character.equip_weapon(armory.brutality_blade,
                            armory.mirahs_song);
 
@@ -117,9 +118,9 @@ int main()
                           );
 
     character.add_buffs(
-            buffs.rallying_cry,
+//            buffs.rallying_cry,
             buffs.dire_maul,
-            buffs.songflower,
+//            buffs.songflower,
             buffs.blessing_of_kings,
             buffs.blessing_of_might,
             buffs.gift_of_the_wild,
@@ -152,10 +153,10 @@ int main()
 //    combat_simulator.enable_recklessness();
 //    combat_simulator.display_combat_debug();
 
-//    srand(static_cast <unsigned> (time(nullptr)));
+    srand(1);
 
     int n_batches = 50000;
-    double sim_time = 120;
+    double sim_time = 47;
     auto dps_snapshots = combat_simulator.simulate(character, sim_time, 63, n_batches);
 
     auto hit_table = combat_simulator.get_hit_probabilities_white_mh();
@@ -168,6 +169,9 @@ int main()
     std::cout << "DPS standard deviation in simulations: " << std_dps << "\n\n";
 
     combat_simulator.print_damage_distribution();
+
+    std::cout << "Code executed in: " << double(clock() - startTime) / (double) CLOCKS_PER_SEC << " seconds."
+              << std::endl;
 
     auto stat_weight_vector = combat_simulator
             .compute_stat_weights(character, sim_time, 63, n_batches, mean_dps, sample_std_dps);

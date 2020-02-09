@@ -7,9 +7,80 @@
 #include <cassert>
 #include <map>
 #include <cmath>
+#include <iomanip>
 
 #include "Stats.hpp"
 #include "Character.hpp"
+
+class Time_keeper
+{
+public:
+    Time_keeper() = default;
+
+    void increment(double dt)
+    {
+        blood_thirst_cd -= dt;
+        whirlwind_cd -= dt;
+        global_cd -= dt;
+        crusader_mh_buff_timer -= dt;
+        crusader_oh_buff_timer -= dt;
+        time_ += dt;
+        step_index_++;
+    }
+
+    void reset()
+    {
+        blood_thirst_cd = -1e-10;
+        whirlwind_cd = -1e-10;
+        global_cd = -1e-10;
+        crusader_mh_buff_timer = -1e-10;
+        crusader_oh_buff_timer = -1e-10;
+        time_ = 0.0;
+        step_index_ = 1;
+    }
+
+    constexpr double get_dynamic_time_step(double mh_dt,
+                                           double oh_dt,
+                                           double sim_dt)
+    {
+        double dt = 100.0;
+        if (blood_thirst_cd > 0.0)
+        {
+            dt = std::min(blood_thirst_cd, dt);
+        }
+        if (whirlwind_cd > 0.0)
+        {
+            dt = std::min(whirlwind_cd, dt);
+        }
+        if (global_cd > 0.0)
+        {
+            dt = std::min(global_cd, dt);
+        }
+        if (crusader_mh_buff_timer > 0.0)
+        {
+            dt = std::min(crusader_mh_buff_timer, dt);
+        }
+        if (crusader_oh_buff_timer > 0.0)
+        {
+            dt = std::min(crusader_oh_buff_timer, dt);
+        }
+        dt = std::min(mh_dt, dt);
+        dt = std::min(oh_dt, dt);
+        dt = std::min(sim_dt, dt);
+        dt += 1e-5;
+        dt_ = dt;
+        return dt;
+    }
+
+    double blood_thirst_cd;
+    double whirlwind_cd;
+    double global_cd;
+    double crusader_mh_buff_timer;
+    double crusader_oh_buff_timer;
+    double time_;
+    double dt_;
+    int step_index_;
+};
 
 class Combat_simulator
 {
@@ -237,11 +308,24 @@ public:
         debug_mode_ = true;
     }
 
-    constexpr void simulator_cout(const std::string &message)
+    template<typename T>
+    void print_statement(T t)
     {
         if (debug_mode_)
         {
-            std::cout << "Time: "<< time_ << ". Event: " << message << "\n";
+            std::cout << std::setprecision(4) << t;
+        }
+    }
+
+    template<typename... Args>
+    void simulator_cout(Args &&... args)
+    {
+        if (debug_mode_)
+        {
+            std::cout << "Time: " << std::setw(8) << std::left << time_keeper_.time_ + time_keeper_.dt_
+                      << "s. Loop idx:" << std::setw(4) << time_keeper_.step_index_ << "Event: ";
+            __attribute__((unused)) int dummy[] = {0, ((void) print_statement(std::forward<Args>(args)), 0)...};
+            std::cout << "\n";
         }
     }
 
@@ -266,7 +350,7 @@ private:
     double glancing_factor_mh_{0.0};
     double glancing_factor_oh_{0.0};
     double armor_reduction_factor_{};
-    double time_;
+    Time_keeper time_keeper_{};
 };
 
 std::ostream &operator<<(std::ostream &os, Combat_simulator::Stat_weight const &stats);
