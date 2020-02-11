@@ -401,12 +401,17 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
             double oh_dt = weapons[1].get_internal_swing_timer() / (character_haste * flurry_dt_factor);
             double dt = time_keeper_.get_dynamic_time_step(mh_dt, oh_dt, sim_time);
 
+            if (time_keeper_.time_ + dt > sim_time)
+            {
+                break;
+            }
+
             assert(dt > 0.0);
             for (auto &weapon : weapons)
             {
                 Combat_simulator::Hit_outcome hit_outcome{0.0, Hit_result::TBD};
                 double swing_damage = weapon.step(character_haste * flurry_dt_factor * dt,
-                                                  special_stats.attack_power);
+                                                  special_stats.attack_power, random_melee_hits_);
 
                 // Check if heroic strike should be performed
                 if (swing_damage > 0.0)
@@ -567,7 +572,6 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
 
                             }
                         }
-//                        simulator_cout(rage, " rage");
                     }
                 }
             }
@@ -651,7 +655,15 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         time_keeper_.blood_thirst_cd > 1.0)
                     {
                         simulator_cout("Whirlwind!");
-                        double damage = weapons[0].swing(special_stats.attack_power);
+                        double damage;
+                        if (random_melee_hits_)
+                        {
+                            damage = weapons[0].random_normalized_swing(special_stats.attack_power);
+                        }
+                        else
+                        {
+                            damage = weapons[0].normalized_swing(special_stats.attack_power);
+                        }
                         auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand, heroic_strike_,
                                                         deathwish_active, recklessness_active);
                         if (hit_outcome.hit_result == Hit_result::crit)
@@ -828,28 +840,28 @@ std::ostream &operator<<(std::ostream &os, Combat_simulator::Stat_weight const &
                << "). Incremented/decremented by: " << stats.amount << "\n";
             break;
         case Combat_simulator::Stat::skill_sword:
-                os << "Sword skill stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
-                   << ", " << stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus
-                   << "). Incremented/decremented by: "
-                   << stats.amount << "\n";
+            os << "Sword skill stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
+               << ", " << stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus
+               << "). Incremented/decremented by: "
+               << stats.amount << "\n";
             break;
         case Combat_simulator::Stat::skill_axe:
-                os << "Axe skill stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
-                   << ", " <<
-                   stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
-                   << stats.amount << "\n";
+            os << "Axe skill stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
+               << ", " <<
+               stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
+               << stats.amount << "\n";
             break;
         case Combat_simulator::Stat::skill_mace:
-                os << "Mace skill stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
-                   << ", " <<
-                   stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
-                   << stats.amount << "\n";
+            os << "Mace skill stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
+               << ", " <<
+               stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
+               << stats.amount << "\n";
             break;
         case Combat_simulator::Stat::skill_dagger:
-                os << "Dagger skill stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
-                   << ", " <<
-                   stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
-                   << stats.amount << "\n";
+            os << "Dagger skill stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
+               << ", " <<
+               stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
+               << stats.amount << "\n";
             break;
         case Combat_simulator::Stat::NONE:
             break;

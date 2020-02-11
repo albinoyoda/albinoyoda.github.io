@@ -367,6 +367,11 @@ public:
         debug_mode_ = true;
     }
 
+    void enable_rng_melee()
+    {
+        random_melee_hits_ = true;
+    }
+
     template<typename T>
     void print_statement(T t)
     {
@@ -407,6 +412,7 @@ private:
     bool recklessness_enabled_{false};
     bool debug_mode_{false};
     bool use_fast_rng_{false};
+    bool random_melee_hits_{false};
     double glancing_factor_mh_{0.0};
     double glancing_factor_oh_{0.0};
     double armor_reduction_factor_{};

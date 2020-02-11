@@ -90,6 +90,7 @@ struct Armory
     Armor knight_leutenants_greaves{Stats{10, 9}, Special_stats{0, 0, 40}, Armor::Socket::boots};
     Armor battleborn_armbraces{Stats{0, 0}, Special_stats{1, 1, 0}, Armor::Socket::wrists};
     Armor strikers_mark{Stats{0, 0}, Special_stats{0, 1, 22}, Armor::Socket::ranged};
+    Armor battlechasers{Stats{0, 0}, Special_stats{0, 1, 22}, Armor::Socket::boots};
 
     /** BWL */
     // Armor

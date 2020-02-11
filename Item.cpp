@@ -50,20 +50,38 @@ Weapon::Weapon(double swing_speed, std::pair<double, double> damage_interval, St
         average_damage_{0.0},
         socket_{socket},
         weapon_type_{skill_type},
-        hand_{} {}
+        hand_{}
+{
+    if (skill_type == Skill_type::dagger)
+    {
+        normalized_swing_speed_ = 1.7;
+    }
+    else
+    {
+        normalized_swing_speed_ = 2.5;
+    }
+}
 
 void Weapon::reset_timer()
 {
     internal_swing_timer_ = swing_speed_;
 }
 
-double Weapon::step(double dt, double attack_power)
+double Weapon::step(double dt, double attack_power, bool is_random)
 {
     internal_swing_timer_ -= dt;
     if (internal_swing_timer_ < 0.0)
     {
         internal_swing_timer_ += swing_speed_;
-        double damage = swing(attack_power);
+        double damage;
+        if (is_random)
+        {
+            damage = random_swing(attack_power);
+        }
+        else
+        {
+            damage = swing(attack_power);
+        }
         if (get_hand() == Hand::off_hand)
         {
             damage *= 0.625;

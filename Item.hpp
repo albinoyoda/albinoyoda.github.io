@@ -2,6 +2,7 @@
 #define WOW_SIMULATOR_ITEM_HPP
 
 #include <utility>
+
 #include "Stats.hpp"
 
 enum class Hand
@@ -67,12 +68,32 @@ public:
     Weapon(double swing_speed, std::pair<double, double> damage_interval, Stats stats, Special_stats special_stats,
            Socket socket, Skill_type skill_type);
 
-    double step(double time, double attack_power);
+    double step(double time, double attack_power, bool is_random);
 
     constexpr double swing(double attack_power)
     {
-        // TODO random damage?
         return average_damage_ + attack_power * swing_speed_ / 14;
+    }
+
+    double random_swing(double attack_power)
+    {
+        double damage = damage_interval_.first + (damage_interval_.second - damage_interval_
+                .first) * static_cast<double>(rand()) / RAND_MAX
+                        + attack_power * swing_speed_ / 14;
+        return damage;
+    }
+
+    double random_normalized_swing(double attack_power)
+    {
+        return damage_interval_.first + (damage_interval_.second - damage_interval_
+                .first) * static_cast<double>(rand()) / RAND_MAX
+               + attack_power * normalized_swing_speed_ / 14;
+    }
+
+    constexpr double normalized_swing(double attack_power)
+    {
+        // TODO random damage?
+        return average_damage_ + attack_power * normalized_swing_speed_ / 14;
     }
 
     void reset_timer();
@@ -114,6 +135,7 @@ public:
 
 private:
     double swing_speed_;
+    double normalized_swing_speed_;
     double internal_swing_timer_;
     std::pair<double, double> damage_interval_;
     double average_damage_;

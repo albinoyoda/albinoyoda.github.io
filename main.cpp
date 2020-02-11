@@ -8,6 +8,7 @@
 #include "Armory.hpp"
 
 // TODO does missing refund rage?
+// TODO move weapon mechanics to the simulator instead of weapon class
 // TODO Graphics?
 // TODO HOJ proc when whirlwind etc.
 
@@ -94,20 +95,20 @@ int main()
                           );
 
     character.add_buffs(
-//            buffs.rallying_cry,
-//            buffs.dire_maul,
+            buffs.rallying_cry,
+            buffs.dire_maul,
 //            buffs.songflower,
-//            buffs.blessing_of_kings,
-//            buffs.blessing_of_might,
-//            buffs.gift_of_the_wild,
-//            buffs.trueshot_aura,
-//            buffs.elixir_mongoose,
-//            buffs.dense_stone_mh,
-//            buffs.dense_stone_oh,
+            buffs.blessing_of_kings,
+            buffs.blessing_of_might,
+            buffs.gift_of_the_wild,
+            buffs.trueshot_aura,
+            buffs.elixir_mongoose,
+            buffs.dense_stone_mh,
+            buffs.dense_stone_oh,
 //            buffs.elemental_stone_mh,
 //            buffs.elemental_stone_oh,
-//            buffs.blessed_sunfruit,
-//            buffs.juju_power,
+            buffs.blessed_sunfruit,
+            buffs.juju_power,
 //            buffs.juju_might,
             buffs.roids
                        );
@@ -141,6 +142,7 @@ int main()
     combat_simulator.enable_death_wish();
 //    combat_simulator.enable_recklessness();
 //    combat_simulator.display_combat_debug();
+//    combat_simulator.enable_rng_melee();
 
     int n_batches = 150000;
     double sim_time = 50;
