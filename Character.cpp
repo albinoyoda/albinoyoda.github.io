@@ -66,22 +66,40 @@ void Character::set_base_stats(const Race &race)
     }
 }
 
-void Character::compute_all_stats(Talent talent)
+void Character::compute_all_stats(Talent talent, std::vector<Set_bonus> set_bonuses)
 {
     clean_all();
     total_stats_ += base_stats_;
     total_stats_ += permutated_stats_;
     total_special_stats_ += base_special_stats_;
     total_special_stats_ += permutated_special_stats_;
-    for (const Item &armor : armor_)
+    std::vector<Set_name> set_names{};
+    for (const Armor &armor : armor_)
     {
         total_stats_ += armor.get_stats();
         total_special_stats_ += armor.get_special_stats();
         chance_for_extra_hit_ += armor.get_chance_for_extra_hit();
         extra_skills_.push_back(armor.get_bonus_skill());
+        set_names.emplace_back(armor.get_set());
     }
 
-    for (const Item &weapon : weapons_)
+    for (Set_bonus &set_bonus : set_bonuses)
+    {
+//        for (const Set_name &set_name : set_names)
+//        {
+//            std::vector<int> myvector (myints,myints+4);
+//            std::vector<int>::iterator it;
+            auto it __attribute__ ((unused)) = find (set_names.begin(), set_names.end(), set_bonus.get_set_name());
+//            if (it != set_bonuses.end())
+//            {
+//
+//            }
+//                std::cout << "Element found in myvector: " << *it << '\n';
+//        }
+    }
+
+
+    for (const Weapon &weapon : weapons_)
     {
         total_stats_ += weapon.get_stats();
         total_special_stats_ += weapon.get_special_stats();

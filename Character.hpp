@@ -32,7 +32,7 @@ public:
 
     void set_base_stats(const Race &race);
 
-    void compute_all_stats(Talent talent);
+    void compute_all_stats(Talent talent, std::vector<Set_bonus> set_bonuses);
 
     void clean_all();
 

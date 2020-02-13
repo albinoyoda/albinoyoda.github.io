@@ -100,7 +100,9 @@ public:
 
     constexpr void compute_average_damage(double bonus_damage)
     {
-        average_damage_ = (damage_interval_.second + damage_interval_.first) / 2 + bonus_damage;
+        damage_interval_.first += bonus_damage;
+        damage_interval_.second += bonus_damage;
+        average_damage_ = (damage_interval_.second + damage_interval_.first) / 2;
     }
 
     constexpr double get_average_damage()
@@ -144,6 +146,13 @@ private:
     Hand hand_;
 };
 
+enum class Set_name
+{
+    none,
+    devilsaur,
+    black_dragonscale
+};
+
 class Armor : public Item
 {
 public:
@@ -166,12 +175,36 @@ public:
 
     Armor() = delete;
 
-    Armor(Stats stats, Special_stats special_stats, Socket socket);
+    Armor(Stats stats, Special_stats special_stats, Socket socket, Set_name set_name = Set_name::none);
 
     Socket get_socket() const;
 
+    Set_name get_set() const { return set_; }
+
 private:
     Socket socket_;
+    Set_name set_;
+};
+
+class Set_bonus : public Item
+{
+public:
+    Set_bonus() = delete;
+
+    Set_bonus(Stats stats, Special_stats special_stats, size_t pieces, Set_name set_name) : Item(stats, special_stats),
+            pieces_(pieces)
+    {
+        set_name_ = set_name;
+    };
+
+    Set_name get_set_name()
+    {
+        return set_name_;
+    }
+
+private:
+    Set_name set_name_;
+    size_t pieces_;
 };
 
 std::ostream &operator<<(std::ostream &os, Armor::Socket const &socket);

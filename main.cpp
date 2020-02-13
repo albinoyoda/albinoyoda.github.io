@@ -58,13 +58,13 @@ int main()
             armory.wristguards_of_stability,
 
             // Hands
-            armory.devilsaur_gauntlets,
+            armory.devilsaur_gauntlets_set,
 
             // Waist
             armory.onslaught_girdle,
 
             // Legs
-            armory.devilsaur_leggings,
+            armory.devilsaur_leggings_set,
 
             // boots
             armory.bloodmail_boots,
@@ -82,7 +82,7 @@ int main()
                          );
 
     character.equip_weapon(armory.brutality_blade,
-                           armory.mirahs_song);
+                           armory.maladath);
 
     character.add_enchants(Enchant{Enchant::Socket::head, Enchant::Type::haste},
                            Enchant{Enchant::Socket::back, Enchant::Type::agility},
@@ -97,7 +97,7 @@ int main()
     character.add_buffs(
             buffs.rallying_cry,
             buffs.dire_maul,
-//            buffs.songflower,
+            buffs.songflower,
             buffs.blessing_of_kings,
             buffs.blessing_of_might,
             buffs.gift_of_the_wild,
@@ -109,7 +109,7 @@ int main()
 //            buffs.elemental_stone_oh,
             buffs.blessed_sunfruit,
             buffs.juju_power,
-//            buffs.juju_might,
+            buffs.juju_might,
             buffs.roids
                        );
 
@@ -124,15 +124,16 @@ int main()
         return -1;
     }
 
-    character.compute_all_stats(Character::Talent::fury);
+    character.compute_all_stats(Character::Talent::fury, armory.get_set_bonuses());
+    
     std::cout << character.get_stats() << "\n";
     std::cout << character.get_total_special_stats();
     std::cout << "haste: " << character.get_haste() << "\n";
     std::cout << "chance for extra hit: " << character.get_chance_for_extra_hit() << "%" << "\n";
 
     Combat_simulator combat_simulator;
-    combat_simulator.use_fast_but_sloppy_rng(); // Use before set seed!
-    combat_simulator.set_seed(1000); // Use for predictable random numbers
+//    combat_simulator.use_fast_but_sloppy_rng(); // Use before set seed!
+    combat_simulator.set_seed(5000); // Use for predictable random numbers
 
     // Combat settings
     combat_simulator.enable_spell_rotation();
@@ -140,12 +141,12 @@ int main()
     combat_simulator.enable_item_chance_on_hit_effects();
     combat_simulator.enable_crusader();
     combat_simulator.enable_death_wish();
-//    combat_simulator.enable_recklessness();
+    combat_simulator.enable_recklessness();
 //    combat_simulator.display_combat_debug();
 //    combat_simulator.enable_rng_melee();
 
-    int n_batches = 150000;
-    double sim_time = 50;
+    int n_batches = 50000;
+    double sim_time = 60;
     auto dps_snapshots = combat_simulator.simulate(character, sim_time, 63, n_batches);
 
     auto hit_table = combat_simulator.get_hit_probabilities_white_mh();

@@ -119,8 +119,8 @@ void Weapon::set_internal_swing_timer(double internal_swing_timer)
 /**
 ARMOR
  */
-Armor::Armor(Stats stats, Special_stats special_stats, Socket socket) : Item{stats, special_stats},
-        socket_{socket} {}
+Armor::Armor(Stats stats, Special_stats special_stats, Socket socket, Set_name set_name) :
+        Item(stats, special_stats), socket_(socket), set_(set_name) {}
 
 Armor::Socket Armor::get_socket() const
 {

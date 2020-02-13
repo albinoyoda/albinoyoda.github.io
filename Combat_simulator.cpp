@@ -679,7 +679,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         simulator_cout(rage, " rage");
                     }
 
-                    if (rage > 50 && !heroic_strike_)
+                    if (rage > 0 && !heroic_strike_)
                     {
                         heroic_strike_ = true;
                         simulator_cout("Heroic strike activated");
