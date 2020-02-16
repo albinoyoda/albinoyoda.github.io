@@ -132,7 +132,8 @@ int main()
 
     Combat_simulator combat_simulator;
     combat_simulator.use_fast_but_sloppy_rng(); // Use before set seed!
-    combat_simulator.set_seed(1000); // Use for predictable random numbers
+    combat_simulator.set_seed(10); // Use for predictable random numbers
+    combat_simulator.enable_rng_melee(); // Uses random swing damage instead of average
 
     // Combat settings
     combat_simulator.enable_spell_rotation();
@@ -142,10 +143,10 @@ int main()
     combat_simulator.enable_death_wish();
 //    combat_simulator.enable_recklessness();
 //    combat_simulator.display_combat_debug();
-//    combat_simulator.enable_rng_melee();
 
-    int n_batches = 150000;
-    double sim_time = 50;
+
+    int n_batches = 50000;
+    double sim_time = 100;
     auto dps_snapshots = combat_simulator.simulate(character, sim_time, 63, n_batches);
 
     auto hit_table = combat_simulator.get_hit_probabilities_white_mh();
