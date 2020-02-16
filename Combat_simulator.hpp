@@ -101,6 +101,11 @@ public:
 
     }
 
+    void use_heroic_spamm()
+    {
+        heroic_strike_spamm_ = true;
+    }
+
     void use_fast_but_sloppy_rng()
     {
         use_fast_rng_ = true;
@@ -176,13 +181,24 @@ public:
             this->white_oh = this->white_oh + rhs.white_oh;
             this->extra_hit = this->extra_hit + rhs.extra_hit;
             this->heroic_strike = this->heroic_strike + rhs.heroic_strike;
+            this->whirlwind_count = this->whirlwind_count + rhs.whirlwind_count;
+            this->bloodthirst_count = this->bloodthirst_count + rhs.bloodthirst_count;
+            this->execute_count = this->execute_count + rhs.execute_count;
+            this->white_mh_count = this->white_mh_count + rhs.white_mh_count;
+            this->white_oh_count = this->white_oh_count + rhs.white_oh_count;
+            this->extra_hit_count = this->extra_hit_count + rhs.extra_hit_count;
+            this->heroic_strike_count = this->heroic_strike_count + rhs.heroic_strike_count;
             return *(this);
         }
-
 
         constexpr double sum() const
         {
             return white_mh + white_oh + extra_hit + bloodthirst + heroic_strike + whirlwind + execute;
+        }
+
+        constexpr double sum_counts() const
+        {
+            return white_mh_count + white_oh_count + extra_hit_count + bloodthirst_count + heroic_strike_count + whirlwind_count + execute_count;
         }
 
         double white_mh;
@@ -192,6 +208,13 @@ public:
         double execute;
         double heroic_strike;
         double whirlwind;
+        size_t white_mh_count;
+        size_t white_oh_count;
+        size_t extra_hit_count;
+        size_t bloodthirst_count;
+        size_t execute_count;
+        size_t heroic_strike_count;
+        size_t whirlwind_count;
     };
 
     struct Hit_outcome
@@ -372,6 +395,14 @@ public:
         random_melee_hits_ = true;
     }
 
+    void print_damage_sources(const std::string &source_name, double source_percent,
+                              double source_std, double source_count) const
+    {
+        std::cout << source_name << std::setw(5) << std::left << std::setprecision(3)
+                  << 100 * source_percent << " +- " << std::setw(4) << 100 * source_std << ", casts: "
+                  << source_count << "\n";
+    }
+
     template<typename T>
     void print_statement(T t)
     {
@@ -405,6 +436,7 @@ private:
     std::vector<double> batch_damage_{};
     std::vector<Damage_sources> damage_distribution_{};
     bool spell_rotation_{false};
+    bool heroic_strike_spamm_{false};
     bool item_chance_on_hit_{false};
     bool talents_{false};
     bool crusader_enabled_{false};

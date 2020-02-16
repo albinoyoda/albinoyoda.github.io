@@ -86,7 +86,7 @@ struct Armory
 
     Armor leutenant_shoulders{Stats{17, 0}, Special_stats{1, 0, 0}, Armor::Socket::shoulder};
     Armor omokks_girth{Stats{15, 0}, Special_stats{1, 0, 0}, Armor::Socket::belt};
-    Armor cloudkeeper_legplaters{Stats{20, 20}, Special_stats{0, 0, 100}, Armor::Socket::legs};
+    Armor cloudkeeper_legplates{Stats{20, 20}, Special_stats{0, 0, 100}, Armor::Socket::legs};
     Armor knight_leutenants_greaves{Stats{10, 9}, Special_stats{0, 0, 40}, Armor::Socket::boots};
     Armor battleborn_armbraces{Stats{0, 0}, Special_stats{1, 1, 0}, Armor::Socket::wrists};
     Armor strikers_mark{Stats{0, 0}, Special_stats{0, 1, 22}, Armor::Socket::ranged};

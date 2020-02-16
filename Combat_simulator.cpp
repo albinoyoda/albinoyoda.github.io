@@ -385,7 +385,6 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
     for (int iter = 0; iter < n_damage_batches; iter++)
     {
         time_keeper_.reset(); // Class variable that keeps track of the time spent, cooldowns, iteration number
-        double total_damage = 0;
         Damage_sources damage_sources{};
         double rage = 0;
         int flurry_charges = 0;
@@ -435,6 +434,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         heroic_strike_ = false;
                         rage -= 13;
                         damage_sources.heroic_strike += hit_outcome.damage;
+                        damage_sources.heroic_strike_count++;
                         simulator_cout(rage, " rage");
                     }
                     else
@@ -457,14 +457,15 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         if (weapon.get_hand() == Hand::main_hand)
                         {
                             damage_sources.white_mh += hit_outcome.damage;
+                            damage_sources.white_mh_count++;
                         }
                         else
                         {
                             damage_sources.white_oh += hit_outcome.damage;
+                            damage_sources.white_oh_count++;
                         }
                         simulator_cout(rage, " rage");
                     }
-                    total_damage += hit_outcome.damage;
 
                     if (hit_outcome.hit_result != Hit_result::miss &&
                         hit_outcome.hit_result != Hit_result::dodge)
@@ -487,7 +488,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                                     rage = std::min(100.0, rage);
                                     weapons[0].reset_timer();
                                     damage_sources.extra_hit += hit_outcome.damage;
-                                    total_damage += hit_outcome.damage;
+                                    damage_sources.extra_hit_count++;
                                     simulator_cout(rage, " rage");
                                 }
                             }
@@ -633,69 +634,130 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         {
                             rage = 0;
                         }
-                        total_damage += hit_outcome.damage;
                         damage_sources.execute += hit_outcome.damage;
+                        damage_sources.execute_count++;
                         simulator_cout(rage, " rage");
                     }
                 }
                 else
                 {
-                    if (time_keeper_.blood_thirst_cd - dt < 0.0 && time_keeper_.global_cd - dt < 0 && rage > 30)
+                    if (heroic_strike_spamm_)
                     {
-                        simulator_cout("Bloodthirst!");
-                        double damage = special_stats.attack_power * 0.45;
-                        auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand, heroic_strike_,
-                                                        deathwish_active, recklessness_active);
-                        if (hit_outcome.hit_result == Hit_result::crit)
+                        if (time_keeper_.blood_thirst_cd - dt < 0.0 && time_keeper_.global_cd - dt < 0 && rage > 40)
                         {
-                            flurry_charges = 3;
-                            flurry_dt_factor = flurry_speed_bonus;
+                            simulator_cout("Bloodthirst!");
+                            double damage = special_stats.attack_power * 0.45;
+                            auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand, heroic_strike_,
+                                                            deathwish_active, recklessness_active);
+                            if (hit_outcome.hit_result == Hit_result::crit)
+                            {
+                                flurry_charges = 3;
+                                flurry_dt_factor = flurry_speed_bonus;
+                            }
+                            if (hit_outcome.hit_result != Hit_result::dodge)
+                            {
+                                rage -= 30;
+                            }
+                            time_keeper_.blood_thirst_cd = 6.0 + dt;
+                            time_keeper_.global_cd = 1.0 + dt;
+                            damage_sources.bloodthirst += hit_outcome.damage;
+                            damage_sources.bloodthirst_count++;
+                            simulator_cout(rage, " rage");
                         }
-                        if (hit_outcome.hit_result != Hit_result::dodge)
-                        {
-                            rage -= 30;
-                        }
-                        time_keeper_.blood_thirst_cd = 6.0 + dt;
-                        time_keeper_.global_cd = 1.0 + dt;
-                        damage_sources.bloodthirst += hit_outcome.damage;
-                        total_damage += hit_outcome.damage;
-                        simulator_cout(rage, " rage");
-                    }
 
-                    if (time_keeper_.whirlwind_cd - dt < 0.0 &&
-                        rage > 25 &&
-                        time_keeper_.global_cd - dt < 0 &&
-                        time_keeper_.blood_thirst_cd - dt > 1.0)
-                    {
-                        simulator_cout("Whirlwind!");
-                        double damage;
-                        if (random_melee_hits_)
+                        if (time_keeper_.whirlwind_cd - dt < 0.0 &&
+                            rage > 95 &&
+                            time_keeper_.global_cd - dt < 0 &&
+                            time_keeper_.blood_thirst_cd - dt > 3.0)
                         {
-                            damage = weapons[0].random_normalized_swing(special_stats.attack_power);
+                            simulator_cout("Whirlwind!");
+                            double damage;
+                            if (random_melee_hits_)
+                            {
+                                damage = weapons[0].random_normalized_swing(special_stats.attack_power);
+                            }
+                            else
+                            {
+                                damage = weapons[0].normalized_swing(special_stats.attack_power);
+                            }
+                            auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand, heroic_strike_,
+                                                            deathwish_active, recklessness_active);
+                            if (hit_outcome.hit_result == Hit_result::crit)
+                            {
+                                flurry_charges = 3;
+                                flurry_dt_factor = flurry_speed_bonus;
+                            }
+                            rage -= 25;
+                            time_keeper_.whirlwind_cd = 10 + dt;
+                            time_keeper_.global_cd = 1.0 + dt;
+                            damage_sources.whirlwind += hit_outcome.damage;
+                            damage_sources.whirlwind_count++;
+                            simulator_cout(rage, " rage");
                         }
-                        else
+                        if (rage > 13 && !heroic_strike_)
                         {
-                            damage = weapons[0].normalized_swing(special_stats.attack_power);
+                            heroic_strike_ = true;
+                            simulator_cout("Heroic strike activated");
                         }
-                        auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand, heroic_strike_,
-                                                        deathwish_active, recklessness_active);
-                        if (hit_outcome.hit_result == Hit_result::crit)
-                        {
-                            flurry_charges = 3;
-                            flurry_dt_factor = flurry_speed_bonus;
-                        }
-                        rage -= 25;
-                        time_keeper_.whirlwind_cd = 10 + dt;
-                        time_keeper_.global_cd = 1.0 + dt;
-                        damage_sources.whirlwind += hit_outcome.damage;
-                        total_damage += hit_outcome.damage;
-                        simulator_cout(rage, " rage");
                     }
-
-                    if (rage > 50 && !heroic_strike_)
+                    else
                     {
-                        heroic_strike_ = true;
-                        simulator_cout("Heroic strike activated");
+                        if (time_keeper_.blood_thirst_cd - dt < 0.0 && time_keeper_.global_cd - dt < 0 && rage > 30)
+                        {
+                            simulator_cout("Bloodthirst!");
+                            double damage = special_stats.attack_power * 0.45;
+                            auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand, heroic_strike_,
+                                                            deathwish_active, recklessness_active);
+                            if (hit_outcome.hit_result == Hit_result::crit)
+                            {
+                                flurry_charges = 3;
+                                flurry_dt_factor = flurry_speed_bonus;
+                            }
+                            if (hit_outcome.hit_result != Hit_result::dodge)
+                            {
+                                rage -= 30;
+                            }
+                            time_keeper_.blood_thirst_cd = 6.0 + dt;
+                            time_keeper_.global_cd = 1.0 + dt;
+                            damage_sources.bloodthirst += hit_outcome.damage;
+                            damage_sources.bloodthirst_count++;
+                            simulator_cout(rage, " rage");
+                        }
+
+                        if (time_keeper_.whirlwind_cd - dt < 0.0 &&
+                            rage > 25 &&
+                            time_keeper_.global_cd - dt < 0 &&
+                            time_keeper_.blood_thirst_cd - dt > 1.0)
+                        {
+                            simulator_cout("Whirlwind!");
+                            double damage;
+                            if (random_melee_hits_)
+                            {
+                                damage = weapons[0].random_normalized_swing(special_stats.attack_power);
+                            }
+                            else
+                            {
+                                damage = weapons[0].normalized_swing(special_stats.attack_power);
+                            }
+                            auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand, heroic_strike_,
+                                                            deathwish_active, recklessness_active);
+                            if (hit_outcome.hit_result == Hit_result::crit)
+                            {
+                                flurry_charges = 3;
+                                flurry_dt_factor = flurry_speed_bonus;
+                            }
+                            rage -= 25;
+                            time_keeper_.whirlwind_cd = 10 + dt;
+                            time_keeper_.global_cd = 1.0 + dt;
+                            damage_sources.whirlwind += hit_outcome.damage;
+                            damage_sources.whirlwind_count++;
+                            simulator_cout(rage, " rage");
+                        }
+                        if (rage > 50 && !heroic_strike_)
+                        {
+                            heroic_strike_ = true;
+                            simulator_cout("Heroic strike activated");
+                        }
                     }
                 }
             }
@@ -710,7 +772,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
         {
             special_stats.attack_power -= 200;
         }
-        batch_damage_.push_back(total_damage / time_keeper_.time_);
+        batch_damage_.push_back(damage_sources.sum() / time_keeper_.time_);
         damage_distribution_.emplace_back(damage_sources);
     }
     return batch_damage_;
@@ -817,61 +879,61 @@ std::ostream &operator<<(std::ostream &os, Combat_simulator::Stat_weight const &
     switch (stats.stat)
     {
         case Combat_simulator::Stat::agility:
-            os << "Agi stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
+            os << "Agility stat weights : (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
                stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
                << stats.amount << "\n";
             break;
         case Combat_simulator::Stat::strength:
-            os << "Str stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
+            os << "Strength stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
                stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
                << stats.amount << "\n";
             break;
         case Combat_simulator::Stat::crit:
-            os << "Cri stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
+            os << "Crit stat weights    : (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
                stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
                << stats.amount << "\n";
             break;
         case Combat_simulator::Stat::hit:
-            os << "Hit stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
+            os << "Hit stat weights     : (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
                stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
                << stats.amount << "\n";
             break;
         case Combat_simulator::Stat::haste:
-            os << "Haste stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
+            os << "Haste stat weights   : (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", " <<
                stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
-               << stats.amount << "\n";
+               << stats.amount << "%\n";
             break;
         case Combat_simulator::Stat::chance_extra_hit:
-            os << "Extra swing stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
+            os << "Extra swing weights  : (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
                << ", " <<
                stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
-               << stats.amount << "\n";
+               << stats.amount << "%\n";
             break;
         case Combat_simulator::Stat::weapon_damage:
-            os << "Weapon damage stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
+            os << "Weapon damage weight : (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
                << ", " << stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus
                << "). Incremented/decremented by: " << stats.amount << "\n";
             break;
         case Combat_simulator::Stat::skill_sword:
-            os << "Sword skill stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
+            os << "Sword skill weights  : (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
                << ", " << stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus
                << "). Incremented/decremented by: "
                << stats.amount << "\n";
             break;
         case Combat_simulator::Stat::skill_axe:
-            os << "Axe skill stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
+            os << "Axe skill weights    : (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
                << ", " <<
                stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
                << stats.amount << "\n";
             break;
         case Combat_simulator::Stat::skill_mace:
-            os << "Mace skill stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
+            os << "Mace skill weights   : (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
                << ", " <<
                stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
                << stats.amount << "\n";
             break;
         case Combat_simulator::Stat::skill_dagger:
-            os << "Dagger skill stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
+            os << "Dagger skill weights : (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
                << ", " <<
                stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
                << stats.amount << "\n";
@@ -937,11 +999,22 @@ void Combat_simulator::print_damage_distribution() const
 {
     Damage_sources total_sources{};
     double total_damage{0.0};
+    size_t total_counts{0};
+
     for (const auto &damage_source : damage_distribution_)
     {
         total_sources = total_sources + damage_source;
         total_damage += damage_source.sum();
+        total_counts += damage_source.sum_counts();
     }
+
+    double bloodthirst_count = double(total_sources.bloodthirst_count) / damage_distribution_.size();
+    double white_mh_count = double(total_sources.white_mh_count) / damage_distribution_.size();
+    double white_oh_count = double(total_sources.white_oh_count) / damage_distribution_.size();
+    double execute_count = double(total_sources.execute_count) / damage_distribution_.size();
+    double heroic_strike_count = double(total_sources.heroic_strike_count) / damage_distribution_.size();
+    double whirlwind_count = double(total_sources.whirlwind_count) / damage_distribution_.size();
+    double extra_hit_count = double(total_sources.extra_hit_count) / damage_distribution_.size();
 
     double white_mh_std = damage_source_std(&Damage_sources::white_mh);
     double white_oh_std = damage_source_std(&Damage_sources::white_oh);
@@ -951,17 +1024,32 @@ void Combat_simulator::print_damage_distribution() const
     double whirlwind_std = damage_source_std(&Damage_sources::whirlwind);
     double extra_hit_std = damage_source_std(&Damage_sources::extra_hit);
 
-    std::cout << "Damage_sources (%):\n" <<
-              "White hits: " << total_sources.white_mh / total_damage + total_sources.white_oh / total_damage
-              << ". ("
-              << total_sources.white_mh / total_damage << " +- "
-              << white_mh_std << ", " << total_sources.white_oh / total_damage << " +- " << white_oh_std
-              << ") mainhand/offhand" <<
-              "\nbloodthirst: " << total_sources.bloodthirst / total_damage << " +- " << bloodthirst_std <<
-              "\nexecute: " << total_sources.execute / total_damage << " +- " << execute_std <<
-              "\nheroic_strike: " << total_sources.heroic_strike / total_damage << " +- " << heroic_strike_std <<
-              "\nwhirlwind: " << total_sources.whirlwind / total_damage << " +- " << whirlwind_std <<
-              "\nextra_hit: " << total_sources.extra_hit / total_damage << " +- " << extra_hit_std << "\n\n";
+    std::cout << "Damage_sources (%):\n";
+    print_damage_sources("White hits   : ",
+                         (total_sources.white_mh + total_sources.white_oh) / total_damage,
+                         sqrt(white_oh_std * 2 + white_mh_std * 2), white_mh_count + white_oh_count);
+    print_damage_sources("White MH     : ",
+                         total_sources.white_mh / total_damage,
+                         white_mh_std, white_mh_count);
+    print_damage_sources("White OH     : ",
+                         total_sources.white_oh / total_damage,
+                         white_oh_std, white_oh_count);
+    print_damage_sources("Bloodthirst  : ",
+                         total_sources.bloodthirst / total_damage,
+                         bloodthirst_std, bloodthirst_count);
+    print_damage_sources("Execute      : ",
+                         total_sources.execute / total_damage,
+                         execute_std, execute_count);
+    print_damage_sources("Heroic strike: ",
+                         total_sources.heroic_strike / total_damage,
+                         heroic_strike_std, heroic_strike_count);
+    print_damage_sources("Whirlwind    : ",
+                         total_sources.whirlwind / total_damage,
+                         whirlwind_std, whirlwind_count);
+    print_damage_sources("Extra hit    : ",
+                         total_sources.extra_hit / total_damage,
+                         extra_hit_std, extra_hit_count);
+    std::cout << "\n";
 }
 
 void Combat_simulator::enable_death_wish()

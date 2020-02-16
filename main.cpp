@@ -27,7 +27,7 @@
 // TODO setbonuses
 
 // Notes
-// Execute and bloodthirst refunds rage on dodge, not whirlwind tho
+// Execute and bloodthirst refunds rage on dodge, not whirlwind
 // Offhand hit chance is increased if heroic strike is activated
 
 int main()
@@ -95,8 +95,8 @@ int main()
                           );
 
     character.add_buffs(
-            buffs.rallying_cry,
-            buffs.dire_maul,
+//            buffs.rallying_cry,
+//            buffs.dire_maul,
 //            buffs.songflower,
             buffs.blessing_of_kings,
             buffs.blessing_of_might,
@@ -137,16 +137,16 @@ int main()
 
     // Combat settings
     combat_simulator.enable_spell_rotation();
+//    combat_simulator.use_heroic_spamm();
     combat_simulator.enable_talents();
     combat_simulator.enable_item_chance_on_hit_effects();
     combat_simulator.enable_crusader();
     combat_simulator.enable_death_wish();
-//    combat_simulator.enable_recklessness();
+    combat_simulator.enable_recklessness();
 //    combat_simulator.display_combat_debug();
 
-
-    int n_batches = 50000;
-    double sim_time = 100;
+    int n_batches = 10000;
+    double sim_time = 65;
     auto dps_snapshots = combat_simulator.simulate(character, sim_time, 63, n_batches);
 
     auto hit_table = combat_simulator.get_hit_probabilities_white_mh();
@@ -160,7 +160,7 @@ int main()
 
     combat_simulator.print_damage_distribution();
 
-    std::cout << "Code executed in: " << double(clock() - startTime) / (double) CLOCKS_PER_SEC << " seconds."
+    std::cout << "One simulation executed in: " << double(clock() - startTime) / (double) CLOCKS_PER_SEC << " seconds."
               << std::endl;
 
     auto stat_weight_vector = combat_simulator
