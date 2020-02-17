@@ -428,7 +428,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         rage >= 13.0)
                     {
                         simulator_cout("Performing heroic strike");// Unbridled wrath
-                        swing_damage += 157;
+                        swing_damage += 138;
                         hit_outcome = generate_hit(swing_damage, Hit_type::yellow, weapon.get_hand(), heroic_strike_,
                                                    deathwish_active, recklessness_active);
                         heroic_strike_ = false;

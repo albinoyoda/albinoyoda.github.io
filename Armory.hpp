@@ -64,6 +64,7 @@ struct Armory
     Armor don_julios_band{Stats{0, 0}, Special_stats{1, 1, 16}, Armor::Socket::ring};
     Armor magnis_will{Stats{6, 0}, Special_stats{1, 0, 0}, Armor::Socket::ring};
     Armor hand_of_justice{Stats{0, 0}, Special_stats{0, 0, 20}, Armor::Socket::trinket};
+    Armor diamond_flask{Stats{75, 0}, Special_stats{0, 0, 0}, Armor::Socket::trinket};
     Armor blackhands_breadth{Stats{0, 0}, Special_stats{2, 0, 0}, Armor::Socket::trinket};
     Armor satyrs_bow{Stats{0, 3}, Special_stats{0, 1, 0}, Armor::Socket::ranged};
 

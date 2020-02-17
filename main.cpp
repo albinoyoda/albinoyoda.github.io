@@ -7,17 +7,16 @@
 #include "Enchant.hpp"
 #include "Armory.hpp"
 
-// TODO does missing refund rage?
 // TODO move weapon mechanics to the simulator instead of weapon class
 // TODO Graphics?
 // TODO HOJ proc when whirlwind etc.
-
+// TODO Print the same data that is shown in warcraftlogs
 // TODO 2h weapons
 
-// TODO heroic strike bug OH implementation
-
 // TODO anger management
+// TODO blood rage
 // TODO deep wounds
+//
 
 // TODO move battle shout in the simulation
 // TODO cooldowns
@@ -74,7 +73,7 @@ int main()
             armory.magnis_will,
 
             // Trinket
-            armory.blackhands_breadth,
+            armory.diamond_flask,
             armory.hand_of_justice,
 
             // Bow
