@@ -336,11 +336,11 @@ public:
     Combat_simulator::Hit_outcome
     generate_hit_mh(double damage, Hit_type hit_type, bool recklessness_active);
 
-    void compute_hit_table(int opponent_level, int weapon_skill, Special_stats special_stats, Hand weapon_hand);
+    void compute_hit_table(int level_difference, int weapon_skill, Special_stats special_stats, Hand weapon_hand);
 
-    void compute_hit_table_oh_(int opponent_level, int weapon_skill, Special_stats special_stats);
+    void compute_hit_table_oh_(int level_difference, int weapon_skill, Special_stats special_stats);
 
-    void compute_hit_table_mh_(int opponent_level, int weapon_skill, Special_stats special_stats);
+    void compute_hit_table_mh_(int level_difference, int weapon_skill, Special_stats special_stats);
 
     void enable_spell_rotation();
 
@@ -353,6 +353,8 @@ public:
     void enable_death_wish();
 
     void enable_recklessness();
+
+    void enable_bloodrage();
 
     static double average(const std::vector<double> &vec);
 
@@ -442,6 +444,7 @@ private:
     bool crusader_enabled_{false};
     bool death_wish_enabled_{false};
     bool recklessness_enabled_{false};
+    bool bloodrage_enabled_{false};
     bool debug_mode_{false};
     bool use_fast_rng_{false};
     bool random_melee_hits_{false};

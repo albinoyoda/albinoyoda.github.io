@@ -16,7 +16,6 @@
 // TODO anger management
 // TODO blood rage
 // TODO deep wounds
-//
 
 // TODO move battle shout in the simulation
 // TODO cooldowns
@@ -66,22 +65,24 @@ int main()
             armory.devilsaur_leggings,
 
             // boots
-            armory.bloodmail_boots,
+            armory.chromatic_boots,
 
             // Rings
             armory.don_julios_band,
             armory.magnis_will,
 
             // Trinket
-            armory.diamond_flask,
+            armory.blackhands_breadth,
             armory.hand_of_justice,
 
             // Bow
             armory.satyrs_bow
                          );
 
-    character.equip_weapon(armory.brutality_blade,
-                           armory.mirahs_song);
+//    character.equip_weapon(armory.brutality_blade,
+//                           armory.mirahs_song);
+    character.equip_weapon(armory.claw_of_the_black_drake,
+                           armory.brutality_blade);
 
     character.add_enchants(Enchant{Enchant::Socket::head, Enchant::Type::haste},
                            Enchant{Enchant::Socket::back, Enchant::Type::agility},
@@ -93,24 +94,24 @@ int main()
                            Enchant{Enchant::Socket::weapon_oh, Enchant::Type::crusader}
                           );
 
-    character.add_buffs(
+//    character.add_buffs(
 //            buffs.rallying_cry,
 //            buffs.dire_maul,
 //            buffs.songflower,
-            buffs.blessing_of_kings,
-            buffs.blessing_of_might,
-            buffs.gift_of_the_wild,
-            buffs.trueshot_aura,
-            buffs.elixir_mongoose,
-            buffs.dense_stone_mh,
-            buffs.dense_stone_oh,
+//            buffs.blessing_of_kings,
+//            buffs.blessing_of_might,
+//            buffs.gift_of_the_wild,
+//            buffs.trueshot_aura,
+//            buffs.elixir_mongoose,
+//            buffs.dense_stone_mh,
+//            buffs.dense_stone_oh,
 //            buffs.elemental_stone_mh,
 //            buffs.elemental_stone_oh,
-            buffs.blessed_sunfruit,
-            buffs.juju_power,
+//            buffs.blessed_sunfruit,
+//            buffs.juju_power,
 //            buffs.juju_might,
-            buffs.roids
-                       );
+//            buffs.roids
+//                       );
 
     if (!character.check_if_armor_valid())
     {
@@ -130,23 +131,25 @@ int main()
     std::cout << "chance for extra hit: " << character.get_chance_for_extra_hit() << "%" << "\n";
 
     Combat_simulator combat_simulator;
-    combat_simulator.use_fast_but_sloppy_rng(); // Use before set seed!
+//    combat_simulator.use_fast_but_sloppy_rng(); // Use before set seed!
     combat_simulator.set_seed(10); // Use for predictable random numbers
     combat_simulator.enable_rng_melee(); // Uses random swing damage instead of average
 
     // Combat settings
     combat_simulator.enable_spell_rotation();
 //    combat_simulator.use_heroic_spamm();
+    combat_simulator.enable_bloodrage();
     combat_simulator.enable_talents();
     combat_simulator.enable_item_chance_on_hit_effects();
     combat_simulator.enable_crusader();
-    combat_simulator.enable_death_wish();
-    combat_simulator.enable_recklessness();
+//    combat_simulator.enable_death_wish();
+//    combat_simulator.enable_recklessness();
 //    combat_simulator.display_combat_debug();
 
     int n_batches = 10000;
-    double sim_time = 65;
-    auto dps_snapshots = combat_simulator.simulate(character, sim_time, 63, n_batches);
+    double sim_time = 50;
+    int opponent_level = 60;
+    auto dps_snapshots = combat_simulator.simulate(character, sim_time, opponent_level, n_batches);
 
     auto hit_table = combat_simulator.get_hit_probabilities_white_mh();
     double mean_dps = Combat_simulator::average(dps_snapshots);
@@ -163,7 +166,7 @@ int main()
               << std::endl;
 
     auto stat_weight_vector = combat_simulator
-            .compute_stat_weights(character, sim_time, 63, n_batches, mean_dps, sample_std_dps);
+            .compute_stat_weights(character, sim_time, opponent_level, n_batches, mean_dps, sample_std_dps);
     std::cout << "Stat weights: \n";
     for (const auto &stat_weight : stat_weight_vector)
     {

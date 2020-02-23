@@ -225,133 +225,181 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(double damage, Comb
     }
 }
 
-void Combat_simulator::compute_hit_table_mh_(int opponent_level, int weapon_skill, Special_stats special_stats)
-{
-    int target_defence = opponent_level * 5;
-    int skill_diff = target_defence - weapon_skill;
-    int base_skill_diff = target_defence - 300;
-
-    // Crit chance
-    double crit_chance = special_stats.critical_strike - base_skill_diff * 0.2 - 1.8; // 1.8 flat aura modifier
-
-    // Miss chance
-    double base_miss_chance = (skill_diff > 10) ? (5.0 + skill_diff * 0.2) + 1 : (5.0 + skill_diff * 0.1);
-    double dw_miss_chance = (base_miss_chance * 0.8 + 20.0);
-    double miss_chance = dw_miss_chance - special_stats.hit;
-    double two_hand_miss_chance = std::max(base_miss_chance - special_stats.hit, 0.0);
-
-    // Dodge chance
-    double dodge_chance = (5 + skill_diff * 0.1);
-
-    // Glancing blows
-    double glancing_chance = 40.0;
-    double glancing_penalty_mh_;
-    if (skill_diff > 8)
-    {
-        glancing_penalty_mh_ = 35.0 - (15.0 - skill_diff) * 4.0;
-    }
-    else
-    {
-        glancing_penalty_mh_ = 5.0;
-    }
-    glancing_factor_mh_ = (100.0 - glancing_penalty_mh_) / 100.0;
-
-    // Order -> Miss, parry, dodge, block, glancing, crit, hit.
-    hit_probabilities_white_mh_.clear();
-    hit_probabilities_white_mh_.push_back(miss_chance);
-    hit_probabilities_white_mh_.push_back(hit_probabilities_white_mh_.back() + dodge_chance);
-    hit_probabilities_white_mh_.push_back(hit_probabilities_white_mh_.back() + glancing_chance);
-    hit_probabilities_white_mh_.push_back(hit_probabilities_white_mh_.back() + crit_chance);
-
-    hit_probabilities_two_hand_.clear();
-    hit_probabilities_two_hand_.push_back(two_hand_miss_chance);
-    hit_probabilities_two_hand_.push_back(hit_probabilities_two_hand_.back() + dodge_chance);
-    hit_probabilities_two_hand_.push_back(hit_probabilities_two_hand_.back() + glancing_chance);
-    hit_probabilities_two_hand_.push_back(hit_probabilities_two_hand_.back() + crit_chance);
-
-    hit_probabilities_recklessness_mh_.clear();
-    hit_probabilities_recklessness_mh_.push_back(miss_chance);
-    hit_probabilities_recklessness_mh_.push_back(hit_probabilities_recklessness_mh_.back() + dodge_chance);
-    hit_probabilities_recklessness_mh_.push_back(hit_probabilities_recklessness_mh_.back() + glancing_chance);
-    hit_probabilities_recklessness_mh_.push_back(hit_probabilities_recklessness_mh_.back() + 100);
-
-    hit_probabilities_recklessness_two_hand_.clear();
-    hit_probabilities_recklessness_two_hand_.push_back(two_hand_miss_chance);
-    hit_probabilities_recklessness_two_hand_.push_back(hit_probabilities_recklessness_two_hand_.back() + dodge_chance);
-    hit_probabilities_recklessness_two_hand_
-            .push_back(hit_probabilities_recklessness_two_hand_.back() + glancing_chance);
-    hit_probabilities_recklessness_two_hand_.push_back(hit_probabilities_recklessness_two_hand_.back() + 100);
-
-    hit_probabilities_yellow_.clear();
-    hit_probabilities_yellow_.push_back(two_hand_miss_chance);
-    hit_probabilities_yellow_.push_back(hit_probabilities_yellow_.back() + dodge_chance);
-    hit_probabilities_yellow_.push_back(hit_probabilities_yellow_.back() + crit_chance);
-
-    hit_probabilities_recklessness_yellow_.clear();
-    hit_probabilities_recklessness_yellow_.push_back(two_hand_miss_chance);
-    hit_probabilities_recklessness_yellow_.push_back(hit_probabilities_recklessness_yellow_.back() + dodge_chance);
-    hit_probabilities_recklessness_yellow_.push_back(hit_probabilities_recklessness_yellow_.back() + 100);
-}
-
-void Combat_simulator::compute_hit_table_oh_(int opponent_level, int weapon_skill, Special_stats special_stats)
-{
-    int target_defence = opponent_level * 5;
-    int skill_diff = target_defence - weapon_skill;
-    int base_skill_diff = target_defence - 300;
-
-    // Crit chance
-    double crit_chance = special_stats.critical_strike - base_skill_diff * 0.2 - 1.8; // 1.8 flat aura modifier
-
-    // Miss chance
-    double base_miss_chance = (skill_diff > 10) ? (5.0 + skill_diff * 0.2) + 1 : (5.0 + skill_diff * 0.1);
-    double dw_miss_chance = (base_miss_chance * 0.8 + 20.0);
-    double miss_chance = dw_miss_chance - special_stats.hit;
-
-    // Dodge chance
-    double dodge_chance = (5 + skill_diff * 0.1);
-
-    // Glancing blows
-    double glancing_chance = 40.0;
-    double glancing_penalty_oh_;
-    if (skill_diff > 8)
-    {
-        glancing_penalty_oh_ = 35.0 - (15.0 - skill_diff) * 4.0;
-    }
-    else
-    {
-        glancing_penalty_oh_ = 5.0;
-    }
-    glancing_factor_oh_ = (100.0 - glancing_penalty_oh_) / 100.0;
-
-    // Order -> Miss, parry, dodge, block, glancing, crit, hit.
-    hit_probabilities_white_oh_.clear();
-    hit_probabilities_white_oh_.push_back(miss_chance);
-    hit_probabilities_white_oh_.push_back(hit_probabilities_white_oh_.back() + dodge_chance);
-    hit_probabilities_white_oh_.push_back(hit_probabilities_white_oh_.back() + glancing_chance);
-    hit_probabilities_white_oh_.push_back(hit_probabilities_white_oh_.back() + crit_chance);
-
-    hit_probabilities_recklessness_oh_.clear();
-    hit_probabilities_recklessness_oh_.push_back(miss_chance);
-    hit_probabilities_recklessness_oh_.push_back(hit_probabilities_recklessness_oh_.back() + dodge_chance);
-    hit_probabilities_recklessness_oh_.push_back(hit_probabilities_recklessness_oh_.back() + glancing_chance);
-    hit_probabilities_recklessness_oh_.push_back(hit_probabilities_recklessness_oh_.back() + 100);
-}
-
-void Combat_simulator::compute_hit_table(int opponent_level,
+void Combat_simulator::compute_hit_table(int level_difference,
                                          int weapon_skill,
                                          Special_stats special_stats,
                                          Hand weapon_hand)
 {
-    if (weapon_hand == Hand::main_hand)
+    int target_defence_level = (60 + level_difference) * 5;
+    int skill_diff = target_defence_level - weapon_skill;
+    int base_skill_diff = level_difference * 5;
+
+    // Crit chance
+    double crit_chance;
+    if (level_difference == 3)
     {
-        compute_hit_table_mh_(opponent_level, weapon_skill, special_stats);
+        crit_chance = special_stats.critical_strike - base_skill_diff * 0.2 - 1.8; // 1.8 flat aura modifier
+    }
+    else if (level_difference > 0)
+    {
+        crit_chance = special_stats.critical_strike - base_skill_diff * 0.2; // 1.8 flat aura modifier
     }
     else
     {
-        compute_hit_table_oh_(opponent_level, weapon_skill, special_stats);
+        crit_chance = special_stats.critical_strike + base_skill_diff * 0.04;
+    }
+
+    // Miss chance
+    double base_miss_chance;
+    int hit_penalty = 0;
+    if (skill_diff > 10)
+    {
+        base_miss_chance = 5.0 + skill_diff * 0.2;
+        hit_penalty = 1;
+    }
+    else if (skill_diff > 0)
+    {
+        base_miss_chance = 5.0 + skill_diff * 0.1;
+    }
+    else
+    {
+        base_miss_chance = 5.0;
+    }
+    double dw_miss_chance = (base_miss_chance * 0.8 + 20.0);
+    double miss_chance = dw_miss_chance - std::max(special_stats.hit - hit_penalty, 0.0);
+    double two_hand_miss_chance = std::max(base_miss_chance - special_stats.hit, 0.0);
+
+    // Dodge chance
+    double dodge_chance;
+    if (level_difference > 0)
+    {
+        dodge_chance = (5 + skill_diff * 0.1);
+    }
+    else
+    {
+        dodge_chance = std::max(5 - base_skill_diff * 0.04, 0.0);
+    }
+
+    // Glancing blows
+    double glancing_chance = 0.0;
+    if (level_difference > 0)
+    {
+        glancing_chance = 10 + level_difference * 10;
+    }
+
+    double glancing_penalty;
+    if (skill_diff > 8)
+    {
+        glancing_penalty = 35.0 - (15.0 - skill_diff) * 4.0;
+    }
+    else
+    {
+        glancing_penalty = 5.0;
+    }
+
+    if (weapon_hand == Hand::main_hand)
+    {
+        glancing_factor_mh_ = (100.0 - glancing_penalty) / 100.0;
+
+        // Order -> Miss, parry, dodge, block, glancing, crit, hit.
+        hit_probabilities_white_mh_.clear();
+        hit_probabilities_white_mh_.push_back(miss_chance);
+        hit_probabilities_white_mh_.push_back(hit_probabilities_white_mh_.back() + dodge_chance);
+        hit_probabilities_white_mh_.push_back(hit_probabilities_white_mh_.back() + glancing_chance);
+        hit_probabilities_white_mh_.push_back(hit_probabilities_white_mh_.back() + crit_chance);
+
+        hit_probabilities_two_hand_.clear();
+        hit_probabilities_two_hand_.push_back(two_hand_miss_chance);
+        hit_probabilities_two_hand_.push_back(hit_probabilities_two_hand_.back() + dodge_chance);
+        hit_probabilities_two_hand_.push_back(hit_probabilities_two_hand_.back() + glancing_chance);
+        hit_probabilities_two_hand_.push_back(hit_probabilities_two_hand_.back() + crit_chance);
+
+        hit_probabilities_recklessness_mh_.clear();
+        hit_probabilities_recklessness_mh_.push_back(miss_chance);
+        hit_probabilities_recklessness_mh_.push_back(hit_probabilities_recklessness_mh_.back() + dodge_chance);
+        hit_probabilities_recklessness_mh_.push_back(hit_probabilities_recklessness_mh_.back() + glancing_chance);
+        hit_probabilities_recklessness_mh_.push_back(hit_probabilities_recklessness_mh_.back() + 100);
+
+        hit_probabilities_recklessness_two_hand_.clear();
+        hit_probabilities_recklessness_two_hand_.push_back(two_hand_miss_chance);
+        hit_probabilities_recklessness_two_hand_
+                .push_back(hit_probabilities_recklessness_two_hand_.back() + dodge_chance);
+        hit_probabilities_recklessness_two_hand_
+                .push_back(hit_probabilities_recklessness_two_hand_.back() + glancing_chance);
+        hit_probabilities_recklessness_two_hand_.push_back(hit_probabilities_recklessness_two_hand_.back() + 100);
+
+        hit_probabilities_yellow_.clear();
+        hit_probabilities_yellow_.push_back(two_hand_miss_chance);
+        hit_probabilities_yellow_.push_back(hit_probabilities_yellow_.back() + dodge_chance);
+        hit_probabilities_yellow_.push_back(hit_probabilities_yellow_.back() + crit_chance);
+
+        hit_probabilities_recklessness_yellow_.clear();
+        hit_probabilities_recklessness_yellow_.push_back(two_hand_miss_chance);
+        hit_probabilities_recklessness_yellow_.push_back(hit_probabilities_recklessness_yellow_.back() + dodge_chance);
+        hit_probabilities_recklessness_yellow_.push_back(hit_probabilities_recklessness_yellow_.back() + 100);
+    }
+    else
+    {
+        glancing_factor_oh_ = (100.0 - glancing_penalty) / 100.0;
+
+        // Order -> Miss, parry, dodge, block, glancing, crit, hit.
+        hit_probabilities_white_oh_.clear();
+        hit_probabilities_white_oh_.push_back(miss_chance);
+        hit_probabilities_white_oh_.push_back(hit_probabilities_white_oh_.back() + dodge_chance);
+        hit_probabilities_white_oh_.push_back(hit_probabilities_white_oh_.back() + glancing_chance);
+        hit_probabilities_white_oh_.push_back(hit_probabilities_white_oh_.back() + crit_chance);
+
+        hit_probabilities_recklessness_oh_.clear();
+        hit_probabilities_recklessness_oh_.push_back(miss_chance);
+        hit_probabilities_recklessness_oh_.push_back(hit_probabilities_recklessness_oh_.back() + dodge_chance);
+        hit_probabilities_recklessness_oh_.push_back(hit_probabilities_recklessness_oh_.back() + glancing_chance);
+        hit_probabilities_recklessness_oh_.push_back(hit_probabilities_recklessness_oh_.back() + 100);
     }
 }
-
+//
+//void Combat_simulator::compute_hit_table_oh_(int level_difference, int weapon_skill, Special_stats special_stats)
+//{
+//    int target_defence = opponent_level * 5;
+//    int skill_diff = target_defence - weapon_skill;
+//    int base_skill_diff = target_defence - 300;
+//
+//    // Crit chance
+//    double crit_chance = special_stats.critical_strike - base_skill_diff * 0.2 - 1.8; // 1.8 flat aura modifier
+//
+//    // Miss chance
+//    double base_miss_chance = (skill_diff > 10) ? (5.0 + skill_diff * 0.2) + 1 : (5.0 + skill_diff * 0.1);
+//    double dw_miss_chance = (base_miss_chance * 0.8 + 20.0);
+//    double miss_chance = dw_miss_chance - special_stats.hit;
+//
+//    // Dodge chance
+//    double dodge_chance = (5 + skill_diff * 0.1);
+//
+//    // Glancing blows
+//    double glancing_chance = 40.0;
+//    double glancing_penalty_oh_;
+//    if (skill_diff > 8)
+//    {
+//        glancing_penalty_oh_ = 35.0 - (15.0 - skill_diff) * 4.0;
+//    }
+//    else
+//    {
+//        glancing_penalty_oh_ = 5.0;
+//    }
+//    glancing_factor_oh_ = (100.0 - glancing_penalty_oh_) / 100.0;
+//
+//    // Order -> Miss, parry, dodge, block, glancing, crit, hit.
+//    hit_probabilities_white_oh_.clear();
+//    hit_probabilities_white_oh_.push_back(miss_chance);
+//    hit_probabilities_white_oh_.push_back(hit_probabilities_white_oh_.back() + dodge_chance);
+//    hit_probabilities_white_oh_.push_back(hit_probabilities_white_oh_.back() + glancing_chance);
+//    hit_probabilities_white_oh_.push_back(hit_probabilities_white_oh_.back() + crit_chance);
+//
+//    hit_probabilities_recklessness_oh_.clear();
+//    hit_probabilities_recklessness_oh_.push_back(miss_chance);
+//    hit_probabilities_recklessness_oh_.push_back(hit_probabilities_recklessness_oh_.back() + dodge_chance);
+//    hit_probabilities_recklessness_oh_.push_back(hit_probabilities_recklessness_oh_.back() + glancing_chance);
+//    hit_probabilities_recklessness_oh_.push_back(hit_probabilities_recklessness_oh_.back() + 100);
+//}
 
 std::vector<double> &
 Combat_simulator::simulate(const Character &character, double sim_time, int opponent_level, int n_damage_batches)
@@ -374,8 +422,8 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
     weapons[0].compute_weapon_damage(character.get_mh_bonus_damage());
     weapons[1].compute_weapon_damage(character.get_oh_bonus_damage());
 
-    compute_hit_table(opponent_level, character.get_weapon_skill_mh(), special_stats, Hand::main_hand);
-    compute_hit_table(opponent_level, character.get_weapon_skill_oh(), special_stats, Hand::off_hand);
+    compute_hit_table(opponent_level - 60, character.get_weapon_skill_mh(), special_stats, Hand::main_hand);
+    compute_hit_table(opponent_level - 60, character.get_weapon_skill_oh(), special_stats, Hand::off_hand);
 
     double armor_reduction_from_spells = 640 + 450 * 5 + 505;
     double boss_armor = 3731 - armor_reduction_from_spells; // Armor for Warrior class monsters
@@ -1060,6 +1108,11 @@ void Combat_simulator::enable_death_wish()
 void Combat_simulator::enable_recklessness()
 {
     recklessness_enabled_ = true;
+}
+
+void Combat_simulator::enable_bloodrage()
+{
+    bloodrage_enabled_ = true;
 }
 
 

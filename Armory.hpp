@@ -76,6 +76,10 @@ struct Armory
                         Skill_type::axe};
     Weapon core_hound_tooth{1.6, {57, 107}, Stats{0, 0}, Special_stats{1, 0, 20}, Weapon::Socket::one_hand,
                             Skill_type::dagger};
+    Weapon stormstike_hammer{2.7, {80, 150}, Stats{15, 0}, Special_stats{0, 0, 0}, Weapon::Socket::one_hand,
+                            Skill_type::mace};
+    Weapon claw_of_the_black_drake{2.6, {102, 191}, Stats{13, 0}, Special_stats{1, 0, 0}, Weapon::Socket::main_hand,
+                             Skill_type::none};
 
     // Others
     Armor expert_goldminers_head{Stats{0, 5}, Special_stats{0, 0, 0}, Armor::Socket::head};
@@ -92,6 +96,7 @@ struct Armory
     Armor battleborn_armbraces{Stats{0, 0}, Special_stats{1, 1, 0}, Armor::Socket::wrists};
     Armor strikers_mark{Stats{0, 0}, Special_stats{0, 1, 22}, Armor::Socket::ranged};
     Armor battlechasers{Stats{0, 0}, Special_stats{0, 1, 22}, Armor::Socket::boots};
+    Armor vambraces_of_the_sadist{Stats{6, 0}, Special_stats{1, 0, 0}, Armor::Socket::wrists};
 
     /** BWL */
     // Armor
