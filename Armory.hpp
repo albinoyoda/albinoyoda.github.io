@@ -55,10 +55,12 @@ struct Armory
     Armor savage_gladiator_chain{Stats{13, 14}, Special_stats{2, 0, 0}, Armor::Socket::chest};
     Armor cadaverous_armor{Stats{8, 8}, Special_stats{0, 0, 60}, Armor::Socket::chest};
     Armor wristguards_of_stability{Stats{24, 0}, Special_stats{0, 0, 0}, Armor::Socket::wrists};
-    Armor devilsaur_gauntlets{Stats{0, 0}, Special_stats{1, 1, 28}, Armor::Socket::hands};
+    Armor devilsaur_gauntlets{Stats{0, 0}, Special_stats{1, 0, 28}, Armor::Socket::hands};
+    Armor devilsaur_gauntlets_set{Stats{0, 0}, Special_stats{1, 1, 28}, Armor::Socket::hands};
     Armor edgemasters_handguards{Stats{0, 0}, Special_stats{0, 0, 0}, Armor::Socket::hands};
     Armor onslaught_girdle{Stats{31, 0}, Special_stats{1, 1, 0}, Armor::Socket::belt};
-    Armor devilsaur_leggings{Stats{0, 0}, Special_stats{1, 1, 46}, Armor::Socket::legs};
+    Armor devilsaur_leggings{Stats{0, 0}, Special_stats{1, 0, 46}, Armor::Socket::legs};
+    Armor devilsaur_leggings_set{Stats{0, 0}, Special_stats{1, 1, 46}, Armor::Socket::legs};
     Armor windreaver_greaves{Stats{0, 20}, Special_stats{0, 1, 0}, Armor::Socket::boots};
     Armor bloodmail_boots{Stats{9, 9}, Special_stats{0, 1, 0}, Armor::Socket::boots};
     Armor don_julios_band{Stats{0, 0}, Special_stats{1, 1, 16}, Armor::Socket::ring};
@@ -67,6 +69,8 @@ struct Armory
     Armor diamond_flask{Stats{75, 0}, Special_stats{0, 0, 0}, Armor::Socket::trinket};
     Armor blackhands_breadth{Stats{0, 0}, Special_stats{2, 0, 0}, Armor::Socket::trinket};
     Armor satyrs_bow{Stats{0, 3}, Special_stats{0, 1, 0}, Armor::Socket::ranged};
+    Armor spaulders_of_valor{Stats{11, 9}, Special_stats{0, 0, 0}, Armor::Socket::shoulder};
+    Armor brd_legs{Stats{28, 0}, Special_stats{0, 0, 0}, Armor::Socket::legs};
 
     Weapon brutality_blade{2.5, {90, 168}, Stats{9, 9}, Special_stats{1, 0, 0}, Weapon::Socket::one_hand,
                            Skill_type::sword};
@@ -96,6 +100,7 @@ struct Armory
     Armor battleborn_armbraces{Stats{0, 0}, Special_stats{1, 1, 0}, Armor::Socket::wrists};
     Armor strikers_mark{Stats{0, 0}, Special_stats{0, 1, 22}, Armor::Socket::ranged};
     Armor battlechasers{Stats{0, 0}, Special_stats{0, 1, 22}, Armor::Socket::boots};
+    Armor eldritch_legplates{Stats{15, 9}, Special_stats{1, 0, 0}, Armor::Socket::legs};
     Armor vambraces_of_the_sadist{Stats{6, 0}, Special_stats{1, 0, 0}, Armor::Socket::wrists};
 
     /** BWL */

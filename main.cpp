@@ -56,13 +56,13 @@ int main()
             armory.wristguards_of_stability,
 
             // Hands
-            armory.devilsaur_gauntlets,
+            armory.flameguard_gauntlets,
 
             // Waist
             armory.onslaught_girdle,
 
             // Legs
-            armory.devilsaur_leggings,
+            armory.eldritch_legplates,
 
             // boots
             armory.chromatic_boots,
@@ -79,39 +79,41 @@ int main()
             armory.satyrs_bow
                          );
 
-//    character.equip_weapon(armory.brutality_blade,
-//                           armory.mirahs_song);
-    character.equip_weapon(armory.claw_of_the_black_drake,
-                           armory.brutality_blade);
+    character.equip_weapon(armory.brutality_blade,
+                           armory.mirahs_song);
+//    character.equip_weapon(armory.maladath,
+//                           armory.brutality_blade);
+//    character.equip_weapon(armory.claw_of_the_black_drake,
+//                           armory.brutality_blade);
 
     character.add_enchants(Enchant{Enchant::Socket::head, Enchant::Type::haste},
                            Enchant{Enchant::Socket::back, Enchant::Type::agility},
-                           Enchant{Enchant::Socket::chest, Enchant::Type::minor_stats},
-                           Enchant{Enchant::Socket::wrists, Enchant::Type::strength7},
-                           Enchant{Enchant::Socket::hands, Enchant::Type::strength},
+                           Enchant{Enchant::Socket::chest, Enchant::Type::major_stats},
+                           Enchant{Enchant::Socket::wrists, Enchant::Type::strength9},
+                           Enchant{Enchant::Socket::hands, Enchant::Type::haste},
                            Enchant{Enchant::Socket::legs, Enchant::Type::haste},
                            Enchant{Enchant::Socket::weapon_mh, Enchant::Type::crusader},
                            Enchant{Enchant::Socket::weapon_oh, Enchant::Type::crusader}
                           );
 
-//    character.add_buffs(
-//            buffs.rallying_cry,
-//            buffs.dire_maul,
+    character.add_buffs(
+            buffs.rallying_cry,
+            buffs.dire_maul,
 //            buffs.songflower,
-//            buffs.blessing_of_kings,
-//            buffs.blessing_of_might,
-//            buffs.gift_of_the_wild,
-//            buffs.trueshot_aura,
-//            buffs.elixir_mongoose,
-//            buffs.dense_stone_mh,
-//            buffs.dense_stone_oh,
+            buffs.blessing_of_kings,
+            buffs.blessing_of_might,
+            buffs.gift_of_the_wild,
+            buffs.trueshot_aura,
+            buffs.elixir_mongoose,
+            buffs.dense_stone_mh,
+            buffs.dense_stone_oh,
 //            buffs.elemental_stone_mh,
 //            buffs.elemental_stone_oh,
-//            buffs.blessed_sunfruit,
-//            buffs.juju_power,
+            buffs.blessed_sunfruit,
+            buffs.juju_power,
 //            buffs.juju_might,
-//            buffs.roids
-//                       );
+            buffs.roids
+                       );
 
     if (!character.check_if_armor_valid())
     {
@@ -131,24 +133,30 @@ int main()
     std::cout << "chance for extra hit: " << character.get_chance_for_extra_hit() << "%" << "\n";
 
     Combat_simulator combat_simulator;
-//    combat_simulator.use_fast_but_sloppy_rng(); // Use before set seed!
-    combat_simulator.set_seed(10); // Use for predictable random numbers
+    combat_simulator.use_fast_but_sloppy_rng(); // Use before set seed!
+//    combat_simulator.set_seed(100); // Use for predictable random numbers
     combat_simulator.enable_rng_melee(); // Uses random swing damage instead of average
 
     // Combat settings
     combat_simulator.enable_spell_rotation();
 //    combat_simulator.use_heroic_spamm();
+
+    combat_simulator.use_mighty_rage_potion();
+    combat_simulator.enable_anger_management();
     combat_simulator.enable_bloodrage();
+
+//    combat_simulator.fuel_extra_rage(2, 500);
+
     combat_simulator.enable_talents();
     combat_simulator.enable_item_chance_on_hit_effects();
     combat_simulator.enable_crusader();
-//    combat_simulator.enable_death_wish();
+    combat_simulator.enable_death_wish();
 //    combat_simulator.enable_recklessness();
 //    combat_simulator.display_combat_debug();
 
     int n_batches = 10000;
-    double sim_time = 50;
-    int opponent_level = 60;
+    double sim_time = 100;
+    int opponent_level = 63;
     auto dps_snapshots = combat_simulator.simulate(character, sim_time, opponent_level, n_batches);
 
     auto hit_table = combat_simulator.get_hit_probabilities_white_mh();

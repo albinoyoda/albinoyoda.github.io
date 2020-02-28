@@ -356,6 +356,10 @@ public:
 
     void enable_bloodrage();
 
+    void use_mighty_rage_potion();
+
+    void enable_anger_management();
+
     static double average(const std::vector<double> &vec);
 
     static double standard_deviation(const std::vector<double> &vec, double ave);
@@ -395,6 +399,13 @@ public:
     void enable_rng_melee()
     {
         random_melee_hits_ = true;
+    }
+
+    void fuel_extra_rage(double interval, double damage_amount)
+    {
+        fuel_extra_rage_ = true;
+        interval_ = interval;
+        damage_amount_ = damage_amount;
     }
 
     void print_damage_sources(const std::string &source_name, double source_percent,
@@ -448,6 +459,11 @@ private:
     bool debug_mode_{false};
     bool use_fast_rng_{false};
     bool random_melee_hits_{false};
+    bool use_mighty_rage_potion_{false};
+    bool anger_management_enabled_{false};
+    bool fuel_extra_rage_ = true;
+    double interval_;
+    double damage_amount_;
     double glancing_factor_mh_{0.0};
     double glancing_factor_oh_{0.0};
     double armor_reduction_factor_{};

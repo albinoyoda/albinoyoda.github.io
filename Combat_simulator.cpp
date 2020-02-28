@@ -1,9 +1,14 @@
 #include "Combat_simulator.hpp"
 
-constexpr double rage_factor = 15.0 / 4.0 / 230.6;
-
 namespace
 {
+    constexpr double rage_factor = 15.0 / 4.0 / 230.6;
+
+    constexpr double rage_from_damage(double damage)
+    {
+        return damage * 5 / 2 / 230.6;
+    }
+
     constexpr double rage_generation(double damage, double weapon_speed, bool crit, bool is_main_hand)
     {
         if (damage > 0.0)
@@ -356,50 +361,6 @@ void Combat_simulator::compute_hit_table(int level_difference,
         hit_probabilities_recklessness_oh_.push_back(hit_probabilities_recklessness_oh_.back() + 100);
     }
 }
-//
-//void Combat_simulator::compute_hit_table_oh_(int level_difference, int weapon_skill, Special_stats special_stats)
-//{
-//    int target_defence = opponent_level * 5;
-//    int skill_diff = target_defence - weapon_skill;
-//    int base_skill_diff = target_defence - 300;
-//
-//    // Crit chance
-//    double crit_chance = special_stats.critical_strike - base_skill_diff * 0.2 - 1.8; // 1.8 flat aura modifier
-//
-//    // Miss chance
-//    double base_miss_chance = (skill_diff > 10) ? (5.0 + skill_diff * 0.2) + 1 : (5.0 + skill_diff * 0.1);
-//    double dw_miss_chance = (base_miss_chance * 0.8 + 20.0);
-//    double miss_chance = dw_miss_chance - special_stats.hit;
-//
-//    // Dodge chance
-//    double dodge_chance = (5 + skill_diff * 0.1);
-//
-//    // Glancing blows
-//    double glancing_chance = 40.0;
-//    double glancing_penalty_oh_;
-//    if (skill_diff > 8)
-//    {
-//        glancing_penalty_oh_ = 35.0 - (15.0 - skill_diff) * 4.0;
-//    }
-//    else
-//    {
-//        glancing_penalty_oh_ = 5.0;
-//    }
-//    glancing_factor_oh_ = (100.0 - glancing_penalty_oh_) / 100.0;
-//
-//    // Order -> Miss, parry, dodge, block, glancing, crit, hit.
-//    hit_probabilities_white_oh_.clear();
-//    hit_probabilities_white_oh_.push_back(miss_chance);
-//    hit_probabilities_white_oh_.push_back(hit_probabilities_white_oh_.back() + dodge_chance);
-//    hit_probabilities_white_oh_.push_back(hit_probabilities_white_oh_.back() + glancing_chance);
-//    hit_probabilities_white_oh_.push_back(hit_probabilities_white_oh_.back() + crit_chance);
-//
-//    hit_probabilities_recklessness_oh_.clear();
-//    hit_probabilities_recklessness_oh_.push_back(miss_chance);
-//    hit_probabilities_recklessness_oh_.push_back(hit_probabilities_recklessness_oh_.back() + dodge_chance);
-//    hit_probabilities_recklessness_oh_.push_back(hit_probabilities_recklessness_oh_.back() + glancing_chance);
-//    hit_probabilities_recklessness_oh_.push_back(hit_probabilities_recklessness_oh_.back() + 100);
-//}
 
 std::vector<double> &
 Combat_simulator::simulate(const Character &character, double sim_time, int opponent_level, int n_damage_batches)
@@ -425,6 +386,8 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
     compute_hit_table(opponent_level - 60, character.get_weapon_skill_mh(), special_stats, Hand::main_hand);
     compute_hit_table(opponent_level - 60, character.get_weapon_skill_oh(), special_stats, Hand::off_hand);
 
+    double heroic_strike_rage_cost = 13.0;
+
     double armor_reduction_from_spells = 640 + 450 * 5 + 505;
     double boss_armor = 3731 - armor_reduction_from_spells; // Armor for Warrior class monsters
     double target_mitigation = armor_mitigation(boss_armor);
@@ -445,6 +408,15 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
         bool deathwish_active = false;
         bool recklessness_active = false;
         bool have_printed_execute_phase = false;
+        bool bloodrage_active = false;
+        bool used_mighty_rage_potion = false;
+        bool reset_mighty_rage_potion = false;
+        double mightyrage_init_time = 10000000.0;
+        int bloodrage_ticks = 0;
+        int anger_management_ticks = 0;
+        int fuel_ticks = 0;
+        double bloodrage_init_time = 0.0;
+        double bloodrage_cooldown = -1e-5;
 
         weapons[0].set_internal_swing_timer(0.0);
         weapons[1].set_internal_swing_timer(0.0);
@@ -473,14 +445,14 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                     if (spell_rotation_ &&
                         heroic_strike_ &&
                         (weapon.get_hand() == Hand::main_hand) &&
-                        rage >= 13.0)
+                        rage >= heroic_strike_rage_cost)
                     {
                         simulator_cout("Performing heroic strike");// Unbridled wrath
                         swing_damage += 138;
                         hit_outcome = generate_hit(swing_damage, Hit_type::yellow, weapon.get_hand(), heroic_strike_,
                                                    deathwish_active, recklessness_active);
                         heroic_strike_ = false;
-                        rage -= 13;
+                        rage -= heroic_strike_rage_cost;
                         damage_sources.heroic_strike += hit_outcome.damage;
                         damage_sources.heroic_strike_count++;
                         simulator_cout(rage, " rage");
@@ -632,6 +604,73 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                 }
             }
 
+            if (fuel_extra_rage_)
+            {
+                if (time_keeper_.time_ - interval_ * fuel_ticks > 0.0)
+                {
+                    rage += rage_from_damage(damage_amount_);
+                    rage = std::min(100.0, rage);
+                    fuel_ticks++;
+                    simulator_cout("Rage from damage: ", damage_amount_, " damage, yielding: ",
+                                   rage_from_damage(damage_amount_), " rage");
+                }
+            }
+
+            if (anger_management_enabled_)
+            {
+                if (time_keeper_.time_ - 3 * anger_management_ticks > 0.0)
+                {
+                    simulator_cout("Anger management tick, +1 rage");
+                    rage += 1;
+                    rage = std::min(100.0, rage);
+                    anger_management_ticks++;
+                }
+            }
+
+            if (bloodrage_enabled_)
+            {
+                if (!bloodrage_active && bloodrage_cooldown - dt < 0.0)
+                {
+                    simulator_cout("Bloodrage activated!");
+                    bloodrage_active = true;
+                    rage += 10;
+                    rage = std::min(100.0, rage);
+                    bloodrage_init_time = time_keeper_.time_;
+                    bloodrage_cooldown = 60.0 + dt;
+                }
+                if (bloodrage_active && time_keeper_.time_ - (bloodrage_init_time + bloodrage_ticks) > 1.0)
+                {
+                    simulator_cout("Bloodrage tick, +1 rage");
+                    rage += 1;
+                    rage = std::min(100.0, rage);
+                    bloodrage_ticks++;
+                    if (bloodrage_ticks == 10)
+                    {
+                        bloodrage_active = false;
+                        bloodrage_ticks = 0;
+                    }
+                }
+                bloodrage_cooldown -= dt;
+            }
+
+            if (use_mighty_rage_potion_)
+            {
+                if (sim_time - time_keeper_.time_ < 30.0 && !used_mighty_rage_potion && rage < 50)
+                {
+                    simulator_cout("------------ Mighty Rage Potion! ------------");
+                    rage += 45 + 30 * get_random_1();
+                    rage = std::min(100.0, rage);
+                    special_stats.attack_power += 120;
+                    used_mighty_rage_potion = true;
+                    mightyrage_init_time = time_keeper_.time_;
+                }
+                if (time_keeper_.time_ - mightyrage_init_time > 20.0 && !reset_mighty_rage_potion)
+                {
+                    special_stats.attack_power -= 120;
+                    reset_mighty_rage_potion = true;
+                }
+            }
+
             if (spell_rotation_)
             {
                 if (death_wish_enabled_)
@@ -653,16 +692,16 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         simulator_cout("------------ Recklessness activated! ------------");
                     }
                 }
-                // Execute phase
-                if (time_keeper_.time_ > sim_time * 0.83)
-                {
 
+                // Execute phase, starts at 80% in with 1 sec activation time
+                if (time_keeper_.time_ + dt > sim_time * 0.8 + 1)
+                {
                     if (!have_printed_execute_phase)
                     {
                         simulator_cout("------------ Execute phase! ------------");
                         have_printed_execute_phase = true;
                     }
-                    if (time_keeper_.global_cd < 0 && rage > 10)
+                    if (time_keeper_.global_cd - dt < 0 && rage > 10)
                     {
                         simulator_cout("Execute!");
                         double damage = 600 + (rage - 10) * 15;
@@ -695,7 +734,8 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         {
                             simulator_cout("Bloodthirst!");
                             double damage = special_stats.attack_power * 0.45;
-                            auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand, heroic_strike_,
+                            auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand,
+                                                            heroic_strike_,
                                                             deathwish_active, recklessness_active);
                             if (hit_outcome.hit_result == Hit_result::crit)
                             {
@@ -728,7 +768,8 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                             {
                                 damage = weapons[0].normalized_swing(special_stats.attack_power);
                             }
-                            auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand, heroic_strike_,
+                            auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand,
+                                                            heroic_strike_,
                                                             deathwish_active, recklessness_active);
                             if (hit_outcome.hit_result == Hit_result::crit)
                             {
@@ -742,7 +783,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                             damage_sources.whirlwind_count++;
                             simulator_cout(rage, " rage");
                         }
-                        if (rage > 13 && !heroic_strike_)
+                        if (rage > heroic_strike_rage_cost && !heroic_strike_)
                         {
                             heroic_strike_ = true;
                             simulator_cout("Heroic strike activated");
@@ -754,7 +795,8 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         {
                             simulator_cout("Bloodthirst!");
                             double damage = special_stats.attack_power * 0.45;
-                            auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand, heroic_strike_,
+                            auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand,
+                                                            heroic_strike_,
                                                             deathwish_active, recklessness_active);
                             if (hit_outcome.hit_result == Hit_result::crit)
                             {
@@ -787,7 +829,8 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                             {
                                 damage = weapons[0].normalized_swing(special_stats.attack_power);
                             }
-                            auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand, heroic_strike_,
+                            auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand,
+                                                            heroic_strike_,
                                                             deathwish_active, recklessness_active);
                             if (hit_outcome.hit_result == Hit_result::crit)
                             {
@@ -819,6 +862,10 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
         if (crusader_mh_active)
         {
             special_stats.attack_power -= 200;
+        }
+        if (use_mighty_rage_potion_ && !reset_mighty_rage_potion)
+        {
+            special_stats.attack_power -= 120;
         }
         batch_damage_.push_back(damage_sources.sum() / time_keeper_.time_);
         damage_distribution_.emplace_back(damage_sources);
@@ -1075,7 +1122,8 @@ void Combat_simulator::print_damage_distribution() const
     std::cout << "Damage_sources (%):\n";
     print_damage_sources("White hits   : ",
                          (total_sources.white_mh + total_sources.white_oh) / total_damage,
-                         sqrt(white_oh_std * 2 + white_mh_std * 2), white_mh_count + white_oh_count);
+                         sqrt(white_oh_std * white_oh_std + white_mh_std * white_mh_std),
+                         white_mh_count + white_oh_count);
     print_damage_sources("White MH     : ",
                          total_sources.white_mh / total_damage,
                          white_mh_std, white_mh_count);
@@ -1113,6 +1161,16 @@ void Combat_simulator::enable_recklessness()
 void Combat_simulator::enable_bloodrage()
 {
     bloodrage_enabled_ = true;
+}
+
+void Combat_simulator::use_mighty_rage_potion()
+{
+    use_mighty_rage_potion_ = true;
+}
+
+void Combat_simulator::enable_anger_management()
+{
+    anger_management_enabled_ = true;
 }
 
 
