@@ -77,7 +77,7 @@ Character create_character_1()
             armory.magnis_will,
 
             // Trinket
-            armory.diamond_flask,
+            armory.blackhands_breadth,
             armory.hand_of_justice,
 
             // Bow
@@ -163,7 +163,7 @@ Character create_character_2()
             armory.magnis_will,
 
             // Trinket
-            armory.diamond_flask,
+            armory.blackhands_breadth,
             armory.hand_of_justice,
 
             // Bow
