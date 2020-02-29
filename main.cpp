@@ -28,13 +28,18 @@
 // Execute and bloodthirst refunds rage on dodge, not whirlwind
 // Offhand hit chance is increased if heroic strike is activated
 
-int main()
+void print_stat(const std::string &stat_name, double amount_1, double amount_2)
 {
-    clock_t startTime = clock();
+    std::cout << stat_name << std::setw(6) << std::left << std::setprecision(6)
+              << amount_1 << ", " << std::setw(5) << amount_2 << "\n";
+}
 
-    Character character{Race::human};
+Character create_character_1()
+{
     Armory armory;
     Buffs buffs;
+
+    Character character{Race::human};
 
     character.equip_armor(
             //Helmet
@@ -72,7 +77,7 @@ int main()
             armory.magnis_will,
 
             // Trinket
-            armory.blackhands_breadth,
+            armory.diamond_flask,
             armory.hand_of_justice,
 
             // Bow
@@ -81,10 +86,6 @@ int main()
 
     character.equip_weapon(armory.brutality_blade,
                            armory.mirahs_song);
-//    character.equip_weapon(armory.maladath,
-//                           armory.brutality_blade);
-//    character.equip_weapon(armory.claw_of_the_black_drake,
-//                           armory.brutality_blade);
 
     character.add_enchants(Enchant{Enchant::Socket::head, Enchant::Type::haste},
                            Enchant{Enchant::Socket::back, Enchant::Type::agility},
@@ -111,74 +112,206 @@ int main()
 //            buffs.elemental_stone_oh,
             buffs.blessed_sunfruit,
             buffs.juju_power,
-//            buffs.juju_might,
+            buffs.juju_might,
             buffs.roids
                        );
 
-    if (!character.check_if_armor_valid())
-    {
-        std::cout << "Incorrect armor setup!\n";
-        return -1;
-    }
-    if (!character.check_if_weapons_valid())
-    {
-        std::cout << "Incorrect weapon setup!\n";
-        return -1;
-    }
+    character.compute_all_stats(Character::Talent::fury);
+    return character;
+}
+
+Character create_character_2()
+{
+    Armory armory;
+    Buffs buffs;
+
+    Character character{Race::human};
+
+    character.equip_armor(
+            //Helmet
+            armory.lionheart_helm,
+
+            // Neck
+            armory.onyxia_tooth_pendant,
+
+            // Shoulders
+            armory.truestrike_shoulders,
+
+            // Back
+            armory.cape_of_the_black_baron,
+
+            // Chest
+            armory.savage_gladiator_chain,
+
+            // Wrists
+            armory.wristguards_of_stability,
+
+            // Hands
+            armory.flameguard_gauntlets,
+
+            // Waist
+            armory.onslaught_girdle,
+
+            // Legs
+            armory.eldritch_legplates,
+
+            // boots
+            armory.chromatic_boots,
+
+            // Rings
+            armory.don_julios_band,
+            armory.magnis_will,
+
+            // Trinket
+            armory.diamond_flask,
+            armory.hand_of_justice,
+
+            // Bow
+            armory.satyrs_bow
+                         );
+
+    character.equip_weapon(armory.brutality_blade,
+                           armory.mirahs_song);
+
+    character.add_enchants(Enchant{Enchant::Socket::head, Enchant::Type::haste},
+                           Enchant{Enchant::Socket::back, Enchant::Type::agility},
+                           Enchant{Enchant::Socket::chest, Enchant::Type::major_stats},
+                           Enchant{Enchant::Socket::wrists, Enchant::Type::strength9},
+                           Enchant{Enchant::Socket::hands, Enchant::Type::haste},
+                           Enchant{Enchant::Socket::legs, Enchant::Type::haste},
+                           Enchant{Enchant::Socket::weapon_mh, Enchant::Type::crusader},
+                           Enchant{Enchant::Socket::weapon_oh, Enchant::Type::crusader}
+                          );
+
+    character.add_buffs(
+            buffs.rallying_cry,
+            buffs.dire_maul,
+//            buffs.songflower,
+            buffs.blessing_of_kings,
+            buffs.blessing_of_might,
+            buffs.gift_of_the_wild,
+            buffs.trueshot_aura,
+            buffs.elixir_mongoose,
+            buffs.dense_stone_mh,
+            buffs.dense_stone_oh,
+//            buffs.elemental_stone_mh,
+//            buffs.elemental_stone_oh,
+            buffs.blessed_sunfruit,
+            buffs.juju_power,
+            buffs.juju_might,
+            buffs.roids
+                       );
 
     character.compute_all_stats(Character::Talent::fury);
-    std::cout << character.get_stats() << "\n";
-    std::cout << character.get_total_special_stats();
-    std::cout << "haste: " << character.get_haste() << "\n";
-    std::cout << "chance for extra hit: " << character.get_chance_for_extra_hit() << "%" << "\n";
+    return character;
+}
 
-    Combat_simulator combat_simulator;
-    combat_simulator.use_fast_but_sloppy_rng(); // Use before set seed!
-//    combat_simulator.set_seed(100); // Use for predictable random numbers
-    combat_simulator.enable_rng_melee(); // Uses random swing damage instead of average
+int main()
+{
+    clock_t startTime = clock();
+    std::vector<Character> characters;
+
+    characters.emplace_back(create_character_1());
+    characters.emplace_back(create_character_2());
 
     // Combat settings
-    combat_simulator.enable_spell_rotation();
-//    combat_simulator.use_heroic_spamm();
-
-    combat_simulator.use_mighty_rage_potion();
-    combat_simulator.enable_anger_management();
-    combat_simulator.enable_bloodrage();
-
-//    combat_simulator.fuel_extra_rage(2, 500);
-
-    combat_simulator.enable_talents();
-    combat_simulator.enable_item_chance_on_hit_effects();
-    combat_simulator.enable_crusader();
-    combat_simulator.enable_death_wish();
-//    combat_simulator.enable_recklessness();
-//    combat_simulator.display_combat_debug();
-
-    int n_batches = 10000;
-    double sim_time = 100;
+    int n_batches = 50000;
+    double sim_time = 70;
     int opponent_level = 63;
-    auto dps_snapshots = combat_simulator.simulate(character, sim_time, opponent_level, n_batches);
 
-    auto hit_table = combat_simulator.get_hit_probabilities_white_mh();
-    double mean_dps = Combat_simulator::average(dps_snapshots);
-    double std_dps = Combat_simulator::standard_deviation(dps_snapshots, mean_dps);
-    double sample_std_dps = Combat_simulator::sample_deviation(std_dps, n_batches);
-    std::cout << "Crit % left to crit cap: " << 100 - hit_table.back() << ". (Negative number means capped)\n\n";
-    std::cout << "DPS from simulation: \n" << mean_dps << " +- " << 1.96 * sample_std_dps
-              << " (95% confidence interval)\n";
-    std::cout << "DPS standard deviation in simulations: " << std_dps << "\n\n";
+    std::vector<Combat_simulator> simulators;
+    simulators.emplace_back(Combat_simulator());
+    simulators.emplace_back(Combat_simulator());
 
-    combat_simulator.print_damage_distribution();
+    simulators[0].use_fast_but_sloppy_rng(); // Use before set seed!
+//    simulators[0].set_seed(100); // Use for predictable random numbers
+    simulators[0].enable_rng_melee(); // Uses random swing damage instead of average
+    simulators[0].enable_spell_rotation();
+//    simulators[0].use_heroic_spamm();
+    simulators[0].use_mighty_rage_potion();
+    simulators[0].enable_anger_management();
+    simulators[0].enable_bloodrage();
+//    simulators[0].fuel_extra_rage(0.01, 5000);
+    simulators[0].enable_talents();
+    simulators[0].enable_item_chance_on_hit_effects();
+    simulators[0].enable_crusader();
+    simulators[0].enable_death_wish();
+//    simulators[0].enable_recklessness();
+//    simulators[0].display_combat_debug();
 
-    std::cout << "One simulation executed in: " << double(clock() - startTime) / (double) CLOCKS_PER_SEC << " seconds."
+    simulators[1].use_fast_but_sloppy_rng(); // Use before set seed!
+//    simulators[1].set_seed(100); // Use for predictable random numbers
+    simulators[1].enable_rng_melee(); // Uses random swing damage instead of average
+    simulators[1].enable_spell_rotation();
+//    simulators[1].use_heroic_spamm();
+    simulators[1].use_mighty_rage_potion();
+    simulators[1].enable_anger_management();
+    simulators[1].enable_bloodrage();
+//    simulators[1].fuel_extra_rage(0.01, 5000);
+    simulators[1].enable_talents();
+    simulators[1].enable_item_chance_on_hit_effects();
+    simulators[1].enable_crusader();
+    simulators[1].enable_death_wish();
+//    simulators[1].enable_recklessness();
+//    simulators[1].display_combat_debug();
+
+    for (size_t i = 0; i < characters.size(); ++i)
+    {
+        if (!characters[i].check_if_armor_valid())
+        {
+            std::cout << "Char " << i + 1 << " has incorrect armor setup!\n";
+            return -1;
+        }
+        if (!characters[i].check_if_weapons_valid())
+        {
+            std::cout << "Char " << i + 1 << " has incorrect weapon setup!\n";
+            return -1;
+        }
+    }
+    print_stat("Strength: ", characters[0].get_stats().strength, characters[1].get_stats().strength);
+    print_stat("Agility : ", characters[0].get_stats().agility, characters[1].get_stats().agility);
+    print_stat("Hit:    : ", characters[0].get_total_special_stats().hit, characters[1].get_total_special_stats().hit);
+    print_stat("Crit    : ", characters[0].get_total_special_stats().critical_strike,
+               characters[1].get_total_special_stats().critical_strike);
+    print_stat("Atk Pwr : ", characters[0].get_total_special_stats().attack_power,
+               characters[1].get_total_special_stats().attack_power);
+    print_stat("Haste   : ", characters[0].get_haste(), characters[1].get_haste());
+    print_stat("Extr Hit: ", characters[0].get_chance_for_extra_hit(), characters[1].get_chance_for_extra_hit());
+    std::cout << "\n";
+
+    std::vector<std::vector<double>> dps_snapshots;
+    std::vector<double> mean_dps;
+    std::vector<double> std_dps;
+    std::vector<double> sample_std_dps;
+    for (size_t i = 0; i < characters.size(); ++i)
+    {
+        dps_snapshots.emplace_back(simulators[i].simulate(characters[i], sim_time, opponent_level, n_batches));
+        mean_dps.emplace_back(Combat_simulator::average(dps_snapshots[i]));
+        std_dps.emplace_back(Combat_simulator::standard_deviation(dps_snapshots[i], mean_dps[i]));
+        sample_std_dps.emplace_back(Combat_simulator::sample_deviation(std_dps[i], n_batches));
+        std::cout << std::setprecision(5);
+        std::cout << "DPS from simulation: \n" << mean_dps[i] << " +- " << 1.96 * sample_std_dps[i]
+                  << " (95% confidence interval)\n";
+        std::cout << "DPS standard deviation in simulations: " << std_dps[i] << "\n";
+        std::cout << "Crit % left to crit cap: " << 100 - simulators[i].get_hit_probabilities_white_mh().back()
+                  << ". (Negative number means capped)\n\n";
+        simulators[i].print_damage_distribution();
+    }
+
+    std::cout << "Simulations executed in: " << double(clock() - startTime) / (double) CLOCKS_PER_SEC << " seconds."
               << std::endl;
 
-    auto stat_weight_vector = combat_simulator
-            .compute_stat_weights(character, sim_time, opponent_level, n_batches, mean_dps, sample_std_dps);
-    std::cout << "Stat weights: \n";
-    for (const auto &stat_weight : stat_weight_vector)
+    for (size_t i = 0; i < characters.size(); ++i)
     {
-        std::cout << stat_weight;
+        auto stat_weight_vector = simulators[i]
+                .compute_stat_weights(characters[i], sim_time, opponent_level, n_batches, mean_dps[i],
+                                      sample_std_dps[i]);
+        std::cout << "Stat weights: \n";
+        for (const auto &stat_weight : stat_weight_vector)
+        {
+            std::cout << stat_weight;
+        }
+        std::cout << "\n";
     }
 
     std::cout << "Code executed in: " << double(clock() - startTime) / (double) CLOCKS_PER_SEC << " seconds."

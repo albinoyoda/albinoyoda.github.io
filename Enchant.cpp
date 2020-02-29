@@ -114,6 +114,18 @@ Enchant::Enchant(Enchant::Socket socket, Enchant::Type type)
             }
             break;
         }
+        case Enchant::Socket::boots :
+        {
+            switch (type)
+            {
+                case Enchant::Type::agility:
+                    stats_ = Stats{0, 7};
+                    break;
+                default:
+                    assert(false);
+            }
+            break;
+        }
         case Enchant::Socket::weapon_mh:
         {
             switch (type)

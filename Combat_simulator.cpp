@@ -247,7 +247,7 @@ void Combat_simulator::compute_hit_table(int level_difference,
     }
     else if (level_difference > 0)
     {
-        crit_chance = special_stats.critical_strike - base_skill_diff * 0.2; // 1.8 flat aura modifier
+        crit_chance = special_stats.critical_strike - base_skill_diff * 0.2;
     }
     else
     {
@@ -374,7 +374,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
     damage_distribution_.clear();
     damage_distribution_.reserve(n_damage_batches);
     double character_haste = character.get_haste();
-    auto special_stats = character.get_total_special_stats();
+    const auto starting_special_stats = character.get_total_special_stats();
     auto weapons = character.get_weapons();
     double chance_for_extra_hit = character.get_chance_for_extra_hit();
     double crusader_proc_chance_mh = character.is_crusader_mh() * weapons[0].get_swing_speed() / 40;
@@ -383,8 +383,8 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
     weapons[0].compute_weapon_damage(character.get_mh_bonus_damage());
     weapons[1].compute_weapon_damage(character.get_oh_bonus_damage());
 
-    compute_hit_table(opponent_level - 60, character.get_weapon_skill_mh(), special_stats, Hand::main_hand);
-    compute_hit_table(opponent_level - 60, character.get_weapon_skill_oh(), special_stats, Hand::off_hand);
+    compute_hit_table(opponent_level - 60, character.get_weapon_skill_mh(), starting_special_stats, Hand::main_hand);
+    compute_hit_table(opponent_level - 60, character.get_weapon_skill_oh(), starting_special_stats, Hand::off_hand);
 
     double heroic_strike_rage_cost = 13.0;
 
@@ -396,6 +396,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
     for (int iter = 0; iter < n_damage_batches; iter++)
     {
         time_keeper_.reset(); // Class variable that keeps track of the time spent, cooldowns, iteration number
+        auto special_stats = starting_special_stats;
         Damage_sources damage_sources{};
         double rage = 0;
         int flurry_charges = 0;
@@ -524,16 +525,10 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                                     time_keeper_.crusader_mh_buff_timer = 15.0 + dt;
                                     if (!crusader_mh_active)
                                     {
-                                        special_stats.attack_power += 200;
+                                        special_stats.attack_power += 220;
                                         crusader_mh_active = true;
                                     }
                                 }
-                            }
-                            if (time_keeper_.crusader_mh_buff_timer - dt < 0.0 && crusader_mh_active)
-                            {
-                                simulator_cout("MH crusader procc run out");
-                                special_stats.attack_power -= 200;
-                                crusader_mh_active = false;
                             }
                             if (weapon.get_hand() == Hand::off_hand)
                             {
@@ -544,15 +539,21 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                                     time_keeper_.crusader_oh_buff_timer = 15.0 + dt;
                                     if (!crusader_oh_active)
                                     {
-                                        special_stats.attack_power += 200;
+                                        special_stats.attack_power += 220;
                                         crusader_oh_active = true;
                                     }
                                 }
                             }
+                            if (time_keeper_.crusader_mh_buff_timer - dt < 0.0 && crusader_mh_active)
+                            {
+                                simulator_cout("MH crusader procc run out");
+                                special_stats.attack_power -= 220;
+                                crusader_mh_active = false;
+                            }
                             if (time_keeper_.crusader_oh_buff_timer - dt < 0.0 && crusader_oh_active)
                             {
                                 simulator_cout("OH crusader procc run out");
-                                special_stats.attack_power -= 200;
+                                special_stats.attack_power -= 220;
                                 crusader_oh_active = false;
                             }
                         }
@@ -660,13 +661,13 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                     simulator_cout("------------ Mighty Rage Potion! ------------");
                     rage += 45 + 30 * get_random_1();
                     rage = std::min(100.0, rage);
-                    special_stats.attack_power += 120;
+                    special_stats.attack_power += 132;
                     used_mighty_rage_potion = true;
                     mightyrage_init_time = time_keeper_.time_;
                 }
                 if (time_keeper_.time_ - mightyrage_init_time > 20.0 && !reset_mighty_rage_potion)
                 {
-                    special_stats.attack_power -= 120;
+                    special_stats.attack_power -= 132;
                     reset_mighty_rage_potion = true;
                 }
             }
@@ -694,7 +695,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                 }
 
                 // Execute phase, starts at 80% in with 1 sec activation time
-                if (time_keeper_.time_ + dt > sim_time * 0.8 + 1)
+                if (time_keeper_.time_ + dt > sim_time * 0.84 + 1)
                 {
                     if (!have_printed_execute_phase)
                     {
@@ -844,7 +845,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                             damage_sources.whirlwind_count++;
                             simulator_cout(rage, " rage");
                         }
-                        if (rage > 50 && !heroic_strike_)
+                        if (rage > 60 && !heroic_strike_)
                         {
                             heroic_strike_ = true;
                             simulator_cout("Heroic strike activated");
@@ -853,19 +854,6 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                 }
             }
             time_keeper_.increment(dt);
-        }
-        // Remove crusader if the simulation ends
-        if (crusader_oh_active)
-        {
-            special_stats.attack_power -= 200;
-        }
-        if (crusader_mh_active)
-        {
-            special_stats.attack_power -= 200;
-        }
-        if (use_mighty_rage_potion_ && !reset_mighty_rage_potion)
-        {
-            special_stats.attack_power -= 120;
         }
         batch_damage_.push_back(damage_sources.sum() / time_keeper_.time_);
         damage_distribution_.emplace_back(damage_sources);

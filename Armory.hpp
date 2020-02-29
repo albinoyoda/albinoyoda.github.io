@@ -71,6 +71,7 @@ struct Armory
     Armor satyrs_bow{Stats{0, 3}, Special_stats{0, 1, 0}, Armor::Socket::ranged};
     Armor spaulders_of_valor{Stats{11, 9}, Special_stats{0, 0, 0}, Armor::Socket::shoulder};
     Armor brd_legs{Stats{28, 0}, Special_stats{0, 0, 0}, Armor::Socket::legs};
+    Armor blackstone_ring{Stats{0, 0}, Special_stats{0, 1, 20}, Armor::Socket::ring};
 
     Weapon brutality_blade{2.5, {90, 168}, Stats{9, 9}, Special_stats{1, 0, 0}, Weapon::Socket::one_hand,
                            Skill_type::sword};
@@ -114,7 +115,7 @@ struct Armory
     Armor dragonbreath_hand_cannon{Stats{0, 14}, Special_stats{0, 0, 0}, Armor::Socket::ranged};
     Armor circle_of_applied_force{Stats{12, 22}, Special_stats{0, 0, 0}, Armor::Socket::ring};
     Armor girdle_of_the_fallen_crusader{Stats{20, 10}, Special_stats{0, 0, 0}, Armor::Socket::belt};
-    Armor chromatic_boots{Stats{20, 2}, Special_stats{0, 1, 0}, Armor::Socket::boots};
+    Armor chromatic_boots{Stats{20, 20}, Special_stats{0, 1, 0}, Armor::Socket::boots};
     Armor prestors_talisman_of_connivery{Stats{0, 30}, Special_stats{0, 1, 0}, Armor::Socket::neck};
     Armor boots_of_shadow_flame{Stats{0, 0}, Special_stats{0, 2, 44}, Armor::Socket::boots};
     Armor drake_fang_talisman{Stats{0, 0}, Special_stats{0, 2, 56}, Armor::Socket::trinket};

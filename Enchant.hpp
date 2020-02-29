@@ -15,6 +15,7 @@ public:
         wrists,
         hands,
         legs,
+        boots,
         weapon_mh,
         weapon_oh,
     };
