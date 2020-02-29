@@ -64,6 +64,7 @@ struct Armory
     Armor truestrike_shoulders{Stats{0, 0}, Special_stats{0, 2, 24}, Armor::Socket::shoulder};
     Armor drake_talon_pauldrons{Stats{20, 20}, Special_stats{0, 0, 0}, Armor::Socket::shoulder};
     Armor leutenant_shoulders{Stats{17, 0}, Special_stats{1, 0, 0}, Armor::Socket::shoulder};
+    Armor spaulders_of_valor{Stats{11, 9}, Special_stats{0, 0, 0}, Armor::Socket::shoulder};
 
     // Back
     Armor cape_of_the_black_baron{Stats{0, 15}, Special_stats{0, 0, 20}, Armor::Socket::back};
@@ -98,6 +99,8 @@ struct Armory
 //    Armor devilsaur_leggings_set{Stats{0, 0}, Special_stats{1, 1, 46}, Armor::Socket::legs};
     Armor black_dragonscale_leggings{Stats{0, 0}, Special_stats{2, 1, 54}, Armor::Socket::legs,
                                      Set_name::black_dragonscale};
+    Armor eldritch_legplates{Stats{15, 9}, Special_stats{1, 0, 0}, Armor::Socket::legs};
+    Armor ubrs_legs{Stats{29, 0}, Special_stats{0, 0, 0}, Armor::Socket::legs};
     Armor cloudkeeper_legplaters{Stats{20, 20}, Special_stats{0, 0, 100}, Armor::Socket::legs};
     Armor legguards_of_the_fallen_crusader{Stats{28, 22}, Special_stats{0, 0, 0}, Armor::Socket::legs};
 
@@ -117,9 +120,11 @@ struct Armory
     Armor quick_strike_ring{Stats{8, 0}, Special_stats{1, 0, 30}, Armor::Socket::ring};
     Armor master_dragonslayers_ring{Stats{0, 0}, Special_stats{0, 1, 48}, Armor::Socket::ring};
     Armor circle_of_applied_force{Stats{12, 22}, Special_stats{0, 0, 0}, Armor::Socket::ring};
+    Armor blackstone_ring{Stats{0, 0}, Special_stats{0, 1, 20}, Armor::Socket::ring};
 
     // Trinket
     Armor hand_of_justice{Stats{0, 0}, Special_stats{0, 0, 20}, Armor::Socket::trinket};
+    Armor diamond_flask{Stats{75, 0}, Special_stats{0, 0, 0}, Armor::Socket::trinket};
     Armor blackhands_breadth{Stats{0, 0}, Special_stats{2, 0, 0}, Armor::Socket::trinket};
     Armor drake_fang_talisman{Stats{0, 0}, Special_stats{0, 2, 56}, Armor::Socket::trinket};
 
@@ -157,6 +162,10 @@ struct Armory
     // Maces
     Weapon spineshatter = Weapon{2.5, {99.0, 184.0}, Stats{9.0, 0.0}, Special_stats{0.0, 0.0, 0.0},
                                  Weapon::Socket::main_hand, Skill_type::mace};
+    Weapon stormstike_hammer{2.7, {80, 150}, Stats{15, 0}, Special_stats{0, 0, 0}, Weapon::Socket::one_hand,
+                             Skill_type::mace};
+    Weapon claw_of_the_black_drake{2.6, {102, 191}, Stats{13, 0}, Special_stats{1, 0, 0}, Weapon::Socket::main_hand,
+                                   Skill_type::none};
 
     // Setbonuses
     Set_bonus devilsaur_set_bonus{Stats{0, 0}, Special_stats{2, 0, 0}, 2, Set_name::devilsaur};

@@ -98,7 +98,7 @@ public:
 
     void reset_timer();
 
-    constexpr void compute_average_damage(double bonus_damage)
+    constexpr void compute_weapon_damage(double bonus_damage)
     {
         damage_interval_.first += bonus_damage;
         damage_interval_.second += bonus_damage;
