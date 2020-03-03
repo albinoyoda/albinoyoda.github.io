@@ -313,18 +313,18 @@ public:
     simulate(const Character &character, double sim_time, int opponent_level, int n_damage_batches);
 
     template<typename Struct_t, typename Field_t>
-    Stat_weight permute_stat(const Character &character, Struct_t struct_t, Field_t field_t, Stat stat, double amount,
+    Stat_weight permute_stat(const Character &character, const Armory& armory, Struct_t struct_t, Field_t field_t, Stat stat, double amount,
                              double sim_time, int opponent_level, int n_batches, double mean_init,
                              double sample_std_init);
 
     template<typename Function_ptr>
     Combat_simulator::Stat_weight
-    permute_stat(const Character &character, Function_ptr function_ptr,
+    permute_stat(const Character &character,  const Armory& armory, Function_ptr function_ptr,
                  Combat_simulator::Stat stat, double amount, double sim_time, int opponent_level,
                  int n_batches, double mean_init, double sample_std_init);
 
     std::vector<Combat_simulator::Stat_weight>
-    compute_stat_weights(const Character &character, double sim_time, int opponent_level, int n_batches,
+    compute_stat_weights(const Character &character, const Armory &armory,double sim_time, int opponent_level, int n_batches,
                          double mean_init, double sample_std_init);
 
     Combat_simulator::Hit_outcome

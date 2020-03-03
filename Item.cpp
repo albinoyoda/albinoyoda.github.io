@@ -174,3 +174,22 @@ std::ostream &operator<<(std::ostream &os, Armor::Socket const &socket)
     }
     return os;
 }
+
+int rank(Set_name value)
+{
+    switch (value)
+    {
+        case Set_name::devilsaur:
+            return 0;
+        case Set_name::black_dragonscale:
+            return 1;
+        case Set_name::none:
+            return 100;
+        default:
+            return -1;
+    }
+}
+
+bool operator<(Set_name left, Set_name right) {
+    return rank(left) < rank(right);
+}

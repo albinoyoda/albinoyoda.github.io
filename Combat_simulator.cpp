@@ -877,7 +877,7 @@ void Combat_simulator::enable_item_chance_on_hit_effects()
 }
 
 std::vector<Combat_simulator::Stat_weight>
-Combat_simulator::compute_stat_weights(const Character &character, double sim_time, int opponent_level,
+Combat_simulator::compute_stat_weights(const Character &character, const Armory &armory, double sim_time, int opponent_level,
                                        int n_batches, double mean_init, double sample_std_init)
 {
     if (!debug_mode_)
@@ -887,28 +887,28 @@ Combat_simulator::compute_stat_weights(const Character &character, double sim_ti
         double skill_permutation_amount = 5;
         double damage_permutation_amount = 8;
 
-        auto stat_weight_agi = permute_stat(character, &Character::permutated_stats_, &Stats::agility, Stat::agility,
+        auto stat_weight_agi = permute_stat(character, armory, &Character::permutated_stats_, &Stats::agility, Stat::agility,
                                             stat_permutation_amount,
                                             sim_time, opponent_level, n_batches, mean_init, sample_std_init);
-        auto stat_weight_str = permute_stat(character, &Character::permutated_stats_, &Stats::strength, Stat::strength,
+        auto stat_weight_str = permute_stat(character, armory, &Character::permutated_stats_, &Stats::strength, Stat::strength,
                                             stat_permutation_amount,
                                             sim_time, opponent_level, n_batches, mean_init, sample_std_init);
-        auto stat_weight_crit = permute_stat(character, &Character::permutated_special_stats_,
+        auto stat_weight_crit = permute_stat(character, armory, &Character::permutated_special_stats_,
                                              &Special_stats::critical_strike, Stat::crit,
                                              special_stat_permutation_amount,
                                              sim_time, opponent_level, n_batches, mean_init, sample_std_init);
-        auto stat_weight_hit = permute_stat(character, &Character::permutated_special_stats_,
+        auto stat_weight_hit = permute_stat(character, armory, &Character::permutated_special_stats_,
                                             &Special_stats::hit, Stat::hit,
                                             special_stat_permutation_amount,
                                             sim_time, opponent_level, n_batches, mean_init, sample_std_init);
-        auto stat_weight_haste = permute_stat(character, &Character::set_extra_haste, Stat::haste,
+        auto stat_weight_haste = permute_stat(character, armory, &Character::set_extra_haste, Stat::haste,
                                               special_stat_permutation_amount,
                                               sim_time, opponent_level, n_batches, mean_init, sample_std_init);
-        auto stat_weight_extra_hit = permute_stat(character, &Character::increase_chance_for_extra_hit,
+        auto stat_weight_extra_hit = permute_stat(character, armory, &Character::increase_chance_for_extra_hit,
                                                   Stat::chance_extra_hit,
                                                   special_stat_permutation_amount,
                                                   sim_time, opponent_level, n_batches, mean_init, sample_std_init);
-        auto stat_weight_dense_stone = permute_stat(character, &Character::increase_weapon_damage,
+        auto stat_weight_dense_stone = permute_stat(character, armory, &Character::increase_weapon_damage,
                                                     Stat::weapon_damage, damage_permutation_amount,
                                                     sim_time, opponent_level, n_batches, mean_init, sample_std_init);
 
@@ -920,7 +920,7 @@ Combat_simulator::compute_stat_weights(const Character &character, double sim_ti
         if (character.get_weapons()[0].get_weapon_type() == Skill_type::sword ||
             character.get_weapons()[1].get_weapon_type() == Skill_type::sword)
         {
-            stat_weight_extra_skill_sword = permute_stat(character, &Character::set_extra_weapon_skill_sword,
+            stat_weight_extra_skill_sword = permute_stat(character, armory, &Character::set_extra_weapon_skill_sword,
                                                          Stat::skill_sword, skill_permutation_amount,
                                                          sim_time, opponent_level, n_batches, mean_init,
                                                          sample_std_init);
@@ -928,7 +928,7 @@ Combat_simulator::compute_stat_weights(const Character &character, double sim_ti
         if (character.get_weapons()[0].get_weapon_type() == Skill_type::axe ||
             character.get_weapons()[1].get_weapon_type() == Skill_type::axe)
         {
-            stat_weight_extra_skill_axe = permute_stat(character, &Character::set_extra_weapon_skill_axe,
+            stat_weight_extra_skill_axe = permute_stat(character, armory, &Character::set_extra_weapon_skill_axe,
                                                        Stat::skill_axe, skill_permutation_amount,
                                                        sim_time, opponent_level, n_batches, mean_init,
                                                        sample_std_init);
@@ -936,7 +936,7 @@ Combat_simulator::compute_stat_weights(const Character &character, double sim_ti
         if (character.get_weapons()[0].get_weapon_type() == Skill_type::mace ||
             character.get_weapons()[1].get_weapon_type() == Skill_type::mace)
         {
-            stat_weight_extra_skill_mace = permute_stat(character, &Character::set_extra_weapon_skill_mace,
+            stat_weight_extra_skill_mace = permute_stat(character, armory, &Character::set_extra_weapon_skill_mace,
                                                         Stat::skill_mace, skill_permutation_amount,
                                                         sim_time, opponent_level, n_batches, mean_init,
                                                         sample_std_init);
@@ -944,7 +944,7 @@ Combat_simulator::compute_stat_weights(const Character &character, double sim_ti
         if (character.get_weapons()[0].get_weapon_type() == Skill_type::dagger ||
             character.get_weapons()[1].get_weapon_type() == Skill_type::dagger)
         {
-            stat_weight_extra_skill_dagger = permute_stat(character, &Character::set_extra_weapon_skill_dagger,
+            stat_weight_extra_skill_dagger = permute_stat(character, armory, &Character::set_extra_weapon_skill_dagger,
                                                           Stat::skill_dagger, skill_permutation_amount,
                                                           sim_time, opponent_level, n_batches, mean_init,
                                                           sample_std_init);

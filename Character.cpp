@@ -66,7 +66,7 @@ void Character::set_base_stats(const Race &race)
     }
 }
 
-void Character::compute_all_stats(Talent talent, std::vector<Set_bonus> set_bonuses)
+void Character::compute_all_stats(Talent talent, Armory::set_bonuses_t set_bonuses)
 {
     clean_all();
     total_stats_ += base_stats_;
@@ -83,21 +83,47 @@ void Character::compute_all_stats(Talent talent, std::vector<Set_bonus> set_bonu
         set_names.emplace_back(armor.get_set());
     }
 
-    for (Set_bonus &set_bonus : set_bonuses)
+    size_t set_pieces_devil = 0;
+    size_t set_pieces_bds = 0;
+    size_t set_pieces_pvp = 0;
+    std::sort(set_names.begin(), set_names.end());
+    for (Set_name &set_name : set_names)
     {
-//        for (const Set_name &set_name : set_names)
-//        {
-//            std::vector<int> myvector (myints,myints+4);
-//            std::vector<int>::iterator it;
-            auto it __attribute__ ((unused)) = find (set_names.begin(), set_names.end(), set_bonus.get_set_name());
-//            if (it != set_bonuses.end())
-//            {
-//
-//            }
-//                std::cout << "Element found in myvector: " << *it << '\n';
-//        }
+        switch (set_name)
+        {
+            case Set_name::devilsaur:
+                set_pieces_devil++;
+                break;
+            case Set_name::black_dragonscale:
+                set_pieces_bds++;
+                break;
+            case Set_name::rare_pvp_set:
+                set_pieces_pvp++;
+                break;
+            default:
+                break;
+        }
     }
-
+    if (set_pieces_devil >= set_bonuses.devilsaur_set_bonus.get_pieces())
+    {
+        total_stats_ += set_bonuses.devilsaur_set_bonus.get_stats();
+        total_special_stats_ += set_bonuses.devilsaur_set_bonus.get_special_stats();
+    }
+    if (set_pieces_bds >= set_bonuses.black_dragonscale_bonus2.get_pieces())
+    {
+        total_stats_ += set_bonuses.black_dragonscale_bonus2.get_stats();
+        total_special_stats_ += set_bonuses.black_dragonscale_bonus2.get_special_stats();
+    }
+    if (set_pieces_bds >= set_bonuses.black_dragonscale_bonus3.get_pieces())
+    {
+        total_stats_ += set_bonuses.black_dragonscale_bonus3.get_stats();
+        total_special_stats_ += set_bonuses.black_dragonscale_bonus3.get_special_stats();
+    }
+    if (set_pieces_pvp >= set_bonuses.rare_pvp_set_bonus_1.get_pieces())
+    {
+        total_stats_ += set_bonuses.rare_pvp_set_bonus_1.get_stats();
+        total_special_stats_ += set_bonuses.rare_pvp_set_bonus_1.get_special_stats();
+    }
 
     for (const Weapon &weapon : weapons_)
     {

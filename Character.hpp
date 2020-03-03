@@ -6,6 +6,7 @@
 #include "Stats.hpp"
 #include "Item.hpp"
 #include "Enchant.hpp"
+#include "Armory.hpp"
 
 enum class Race
 {
@@ -32,7 +33,7 @@ public:
 
     void set_base_stats(const Race &race);
 
-    void compute_all_stats(Talent talent, std::vector<Set_bonus> set_bonuses);
+    void compute_all_stats(Talent talent, Armory::set_bonuses_t set_bonuses);
 
     void clean_all();
 

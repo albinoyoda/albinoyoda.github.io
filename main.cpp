@@ -43,49 +43,49 @@ Character create_character_1()
 
     character.equip_armor(
             //Helmet
-            armory.lionheart_helm,
+            armory.helmet.lionheart_helm,
 
             // Neck
-            armory.onyxia_tooth_pendant,
+            armory.neck.onyxia_tooth_pendant,
 
             // Shoulders
-            armory.truestrike_shoulders,
+            armory.shoulder.black_dragonscale_shoulders,
 
             // Back
-            armory.cape_of_the_black_baron,
+            armory.back.cape_of_the_black_baron,
 
             // Chest
-            armory.savage_gladiator_chain,
+            armory.chest.savage_gladiator_chain,
 
             // Wrists
-            armory.wristguards_of_stability,
+            armory.wrist.wristguards_of_stability,
 
             // Hands
-            armory.flameguard_gauntlets,
+            armory.hands.devilsaur_gauntlets,
 
-            // Waist
-            armory.onslaught_girdle,
+            // Belt
+            armory.belt.onslaught_girdle,
 
             // Legs
-            armory.eldritch_legplates,
+            armory.legs.black_dragonscale_leggings,
 
             // boots
-            armory.chromatic_boots,
+            armory.boots.black_dragonscale_boots,
 
             // Rings
-            armory.don_julios_band,
-            armory.magnis_will,
+            armory.rings.don_julios_band,
+            armory.rings.magnis_will,
 
             // Trinket
-            armory.blackhands_breadth,
-            armory.hand_of_justice,
+            armory.trinket.blackhands_breadth,
+            armory.trinket.hand_of_justice,
 
             // Bow
-            armory.satyrs_bow
+            armory.ranged.satyrs_bow
                          );
 
-    character.equip_weapon(armory.brutality_blade,
-                           armory.mirahs_song);
+    character.equip_weapon(armory.swords.brutality_blade,
+                           armory.swords.mirahs_song);
 
     character.add_enchants(Enchant{Enchant::Socket::head, Enchant::Type::haste},
                            Enchant{Enchant::Socket::back, Enchant::Type::agility},
@@ -116,7 +116,7 @@ Character create_character_1()
             buffs.roids
                        );
 
-    character.compute_all_stats(Character::Talent::fury);
+    character.compute_all_stats(Character::Talent::fury, armory.get_set_bonuses());
     return character;
 }
 
@@ -129,49 +129,49 @@ Character create_character_2()
 
     character.equip_armor(
             //Helmet
-            armory.lionheart_helm,
+            armory.helmet.lionheart_helm,
 
             // Neck
-            armory.onyxia_tooth_pendant,
+            armory.neck.onyxia_tooth_pendant,
 
             // Shoulders
-            armory.truestrike_shoulders,
+            armory.shoulder.truestrike_shoulders,
 
             // Back
-            armory.cape_of_the_black_baron,
+            armory.back.cape_of_the_black_baron,
 
             // Chest
-            armory.savage_gladiator_chain,
+            armory.chest.savage_gladiator_chain,
 
             // Wrists
-            armory.wristguards_of_stability,
+            armory.wrist.wristguards_of_stability,
 
             // Hands
-            armory.flameguard_gauntlets,
+            armory.hands.flameguard_gauntlets,
 
-            // Waist
-            armory.onslaught_girdle,
+            // Belt
+            armory.belt.onslaught_girdle,
 
             // Legs
-            armory.eldritch_legplates,
+            armory.legs.eldritch_legplates,
 
             // boots
-            armory.chromatic_boots,
+            armory.boots.chromatic_boots,
 
             // Rings
-            armory.don_julios_band,
-            armory.magnis_will,
+            armory.rings.don_julios_band,
+            armory.rings.magnis_will,
 
             // Trinket
-            armory.blackhands_breadth,
-            armory.hand_of_justice,
+            armory.trinket.blackhands_breadth,
+            armory.trinket.hand_of_justice,
 
             // Bow
-            armory.satyrs_bow
+            armory.ranged.satyrs_bow
                          );
 
-    character.equip_weapon(armory.brutality_blade,
-                           armory.mirahs_song);
+    character.equip_weapon(armory.swords.brutality_blade,
+                           armory.swords.mirahs_song);
 
     character.add_enchants(Enchant{Enchant::Socket::head, Enchant::Type::haste},
                            Enchant{Enchant::Socket::back, Enchant::Type::agility},
@@ -202,7 +202,7 @@ Character create_character_2()
             buffs.roids
                        );
 
-    character.compute_all_stats(Character::Talent::fury);
+    character.compute_all_stats(Character::Talent::fury, armory.get_set_bonuses());
     return character;
 }
 
@@ -210,12 +210,13 @@ int main()
 {
     clock_t startTime = clock();
     std::vector<Character> characters;
+    Armory armory;
 
     characters.emplace_back(create_character_1());
     characters.emplace_back(create_character_2());
 
     // Combat settings
-    int n_batches = 50000;
+    int n_batches = 500;
     double sim_time = 70;
     int opponent_level = 63;
 
@@ -304,7 +305,7 @@ int main()
     for (size_t i = 0; i < characters.size(); ++i)
     {
         auto stat_weight_vector = simulators[i]
-                .compute_stat_weights(characters[i], sim_time, opponent_level, n_batches, mean_dps[i],
+                .compute_stat_weights(characters[i], armory, sim_time, opponent_level, n_batches, mean_dps[i],
                                       sample_std_dps[i]);
         std::cout << "Stat weights: \n";
         for (const auto &stat_weight : stat_weight_vector)

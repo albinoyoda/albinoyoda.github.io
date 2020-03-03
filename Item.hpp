@@ -150,8 +150,13 @@ enum class Set_name
 {
     none,
     devilsaur,
-    black_dragonscale
+    black_dragonscale,
+    rare_pvp_set,
 };
+
+int rank(Set_name value);
+
+bool operator<(Set_name left, Set_name right);
 
 class Armor : public Item
 {
@@ -200,6 +205,11 @@ public:
     Set_name get_set_name()
     {
         return set_name_;
+    }
+
+    size_t get_pieces()
+    {
+        return pieces_;
     }
 
 private:
