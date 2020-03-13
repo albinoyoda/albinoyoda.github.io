@@ -1,6 +1,6 @@
 #include <algorithm>
 #include <iostream>
-#include "Character.hpp"
+#include "../include/Character.hpp"
 
 Character::Character(const Race &race)
         : permutated_stats_{},
@@ -332,6 +332,24 @@ void Character::clean_all()
     mh_bonus_damage_ = 0.0;
 }
 
+const std::vector<Armor> &Character::get_armor() const
+{
+    return armor_;
+}
+
+std::ostream &operator<<(std::ostream &os, const Character &character)
+{
+    os << "Character items:" << "\n";
+    for (const auto &item : character.get_armor())
+    {
+        os << item;
+    }
+    os << "Main hand:" << "\n";
+    os << character.get_weapons()[0].get_name() << "\n";
+    os << "Off hand:" << "\n";
+    os << character.get_weapons()[1].get_name() << "\n";
+    return os;
+}
 
 
 

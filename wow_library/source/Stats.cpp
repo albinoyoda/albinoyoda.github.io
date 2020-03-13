@@ -1,4 +1,4 @@
-#include "Stats.hpp"
+#include "../include/Stats.hpp"
 
 Stats Stats::operator+(const Stats &rhs)
 {

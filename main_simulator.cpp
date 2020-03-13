@@ -1,11 +1,11 @@
 #include <iostream>
 #include <ctime>
 
-#include "Stats.hpp"
-#include "Combat_simulator.hpp"
-#include "Character.hpp"
-#include "Enchant.hpp"
-#include "Armory.hpp"
+//#include "wow_library/include/Stats.hpp"
+#include "wow_library/include/Combat_simulator.hpp"
+#include "wow_library/include/Character.hpp"
+#include "wow_library/include/Enchant.hpp"
+#include "wow_library/include/Armory.hpp"
 
 // TODO move weapon mechanics to the simulator instead of weapon class
 // TODO Graphics?
@@ -49,7 +49,7 @@ Character create_character_1()
             armory.neck.onyxia_tooth_pendant,
 
             // Shoulders
-            armory.shoulder.black_dragonscale_shoulders,
+            armory.shoulder.truestrike_shoulders,
 
             // Back
             armory.back.cape_of_the_black_baron,
@@ -61,16 +61,16 @@ Character create_character_1()
             armory.wrist.wristguards_of_stability,
 
             // Hands
-            armory.hands.devilsaur_gauntlets,
+            armory.hands.flameguard_gauntlets,
 
             // Belt
             armory.belt.onslaught_girdle,
 
             // Legs
-            armory.legs.black_dragonscale_leggings,
+            armory.legs.eldritch_legplates,
 
             // boots
-            armory.boots.black_dragonscale_boots,
+            armory.boots.chromatic_boots,
 
             // Rings
             armory.rings.don_julios_band,
@@ -84,8 +84,8 @@ Character create_character_1()
             armory.ranged.satyrs_bow
                          );
 
-    character.equip_weapon(armory.swords.brutality_blade,
-                           armory.swords.mirahs_song);
+    character.equip_weapon(armory.swords.maladath,
+                           armory.swords.brutality_blade);
 
     character.add_enchants(Enchant{Enchant::Socket::head, Enchant::Type::haste},
                            Enchant{Enchant::Socket::back, Enchant::Type::agility},
@@ -98,22 +98,22 @@ Character create_character_1()
                           );
 
     character.add_buffs(
-            buffs.rallying_cry,
-            buffs.dire_maul,
+//            buffs.rallying_cry,
+//            buffs.dire_maul,
 //            buffs.songflower,
             buffs.blessing_of_kings,
             buffs.blessing_of_might,
             buffs.gift_of_the_wild,
-            buffs.trueshot_aura,
-            buffs.elixir_mongoose,
-            buffs.dense_stone_mh,
-            buffs.dense_stone_oh,
+            buffs.trueshot_aura
+//            buffs.elixir_mongoose,
+//            buffs.dense_stone_mh,
+//            buffs.dense_stone_oh,
 //            buffs.elemental_stone_mh,
 //            buffs.elemental_stone_oh,
-            buffs.blessed_sunfruit,
-            buffs.juju_power,
-            buffs.juju_might,
-            buffs.roids
+//            buffs.blessed_sunfruit,
+//            buffs.juju_power,
+//            buffs.juju_might,
+//            buffs.roids
                        );
 
     character.compute_all_stats(Character::Talent::fury, armory.get_set_bonuses());
@@ -170,8 +170,8 @@ Character create_character_2()
             armory.ranged.satyrs_bow
                          );
 
-    character.equip_weapon(armory.swords.brutality_blade,
-                           armory.swords.mirahs_song);
+    character.equip_weapon(armory.swords.chromatically_tempered_sword,
+                           armory.swords.maladath);
 
     character.add_enchants(Enchant{Enchant::Socket::head, Enchant::Type::haste},
                            Enchant{Enchant::Socket::back, Enchant::Type::agility},
@@ -184,22 +184,22 @@ Character create_character_2()
                           );
 
     character.add_buffs(
-            buffs.rallying_cry,
-            buffs.dire_maul,
+//            buffs.rallying_cry,
+//            buffs.dire_maul,
 //            buffs.songflower,
             buffs.blessing_of_kings,
             buffs.blessing_of_might,
             buffs.gift_of_the_wild,
-            buffs.trueshot_aura,
-            buffs.elixir_mongoose,
-            buffs.dense_stone_mh,
-            buffs.dense_stone_oh,
+            buffs.trueshot_aura
+//            buffs.elixir_mongoose,
+//            buffs.dense_stone_mh,
+//            buffs.dense_stone_oh,
 //            buffs.elemental_stone_mh,
 //            buffs.elemental_stone_oh,
-            buffs.blessed_sunfruit,
-            buffs.juju_power,
-            buffs.juju_might,
-            buffs.roids
+//            buffs.blessed_sunfruit,
+//            buffs.juju_power,
+//            buffs.juju_might,
+//            buffs.roids
                        );
 
     character.compute_all_stats(Character::Talent::fury, armory.get_set_bonuses());
@@ -216,7 +216,7 @@ int main()
     characters.emplace_back(create_character_2());
 
     // Combat settings
-    int n_batches = 500;
+    int n_batches = 100000;
     double sim_time = 70;
     int opponent_level = 63;
 
@@ -232,7 +232,7 @@ int main()
     simulators[0].use_mighty_rage_potion();
     simulators[0].enable_anger_management();
     simulators[0].enable_bloodrage();
-//    simulators[0].fuel_extra_rage(0.01, 5000);
+    simulators[0].fuel_extra_rage(3.0, 150);
     simulators[0].enable_talents();
     simulators[0].enable_item_chance_on_hit_effects();
     simulators[0].enable_crusader();
@@ -248,7 +248,7 @@ int main()
     simulators[1].use_mighty_rage_potion();
     simulators[1].enable_anger_management();
     simulators[1].enable_bloodrage();
-//    simulators[1].fuel_extra_rage(0.01, 5000);
+    simulators[1].fuel_extra_rage(3.0, 150);
     simulators[1].enable_talents();
     simulators[1].enable_item_chance_on_hit_effects();
     simulators[1].enable_crusader();
@@ -297,6 +297,7 @@ int main()
         std::cout << "Crit % left to crit cap: " << 100 - simulators[i].get_hit_probabilities_white_mh().back()
                   << ". (Negative number means capped)\n\n";
         simulators[i].print_damage_distribution();
+
     }
 
     std::cout << "Simulations executed in: " << double(clock() - startTime) / (double) CLOCKS_PER_SEC << " seconds."

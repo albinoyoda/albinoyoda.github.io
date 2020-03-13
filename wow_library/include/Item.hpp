@@ -34,7 +34,7 @@ class Item
 public:
     Item() = delete;
 
-    Item(Stats stats, Special_stats special_stats);
+    Item(std::string name, Stats stats, Special_stats special_stats);
 
     const Stats &get_stats() const;
 
@@ -48,7 +48,10 @@ public:
 
     void set_bonus_skill(Extra_skill bonus_skill);
 
+    const std::string &get_name() const;
+
 private:
+    std::string name_;
     Stats stats_;
     Special_stats special_stats_;
     double chance_for_extra_hit;
@@ -65,7 +68,8 @@ public:
         off_hand,
     };
 
-    Weapon(double swing_speed, std::pair<double, double> damage_interval, Stats stats, Special_stats special_stats,
+    Weapon(std::string name, double swing_speed, std::pair<double, double> damage_interval, Stats stats,
+           Special_stats special_stats,
            Socket socket, Skill_type skill_type);
 
     double step(double time, double attack_power, bool is_random);
@@ -180,7 +184,8 @@ public:
 
     Armor() = delete;
 
-    Armor(Stats stats, Special_stats special_stats, Socket socket, Set_name set_name = Set_name::none);
+    Armor(std::string name, Stats stats, Special_stats special_stats, Socket socket,
+          Set_name set_name = Set_name::none);
 
     Socket get_socket() const;
 
@@ -191,12 +196,16 @@ private:
     Set_name set_;
 };
 
+std::ostream &operator<<(std::ostream &os, const Armor& armor);
+
 class Set_bonus : public Item
 {
 public:
     Set_bonus() = delete;
 
-    Set_bonus(Stats stats, Special_stats special_stats, size_t pieces, Set_name set_name) : Item(stats, special_stats),
+    Set_bonus(std::string name, Stats stats, Special_stats special_stats, size_t pieces, Set_name set_name) : Item(name,
+                                                                                                                   stats,
+                                                                                                                   special_stats),
             pieces_(pieces)
     {
         set_name_ = set_name;
@@ -224,7 +233,7 @@ class Buff : public Item
 public:
     Buff() = delete;
 
-    Buff(Stats stats, Special_stats special_stats) : Item(stats, special_stats),
+    Buff(std::string name, Stats stats, Special_stats special_stats) : Item(name, stats, special_stats),
             stat_multiplier_{1.0},
             oh_bonus_damage_{0.0},
             mh_bonus_damage_{0.0} {};
@@ -277,14 +286,9 @@ public:
 
     World_buff() = delete;
 
-    World_buff(Stats stats, Special_stats special_stats, Id name) : Buff(stats, special_stats),
-            name_{name}
+    World_buff(std::string name, Stats stats, Special_stats special_stats) : Buff(name, stats, special_stats)
     {
-        name_ = name;
     };
-
-private:
-    Id name_;
 };
 
 class Player_buff : public Buff
@@ -301,9 +305,8 @@ public:
 
     Player_buff() = delete;
 
-    Player_buff(Stats stats, Special_stats special_stats, Id name) : Buff(stats, special_stats)
+    Player_buff(std::string name, Stats stats, Special_stats special_stats) : Buff(name, stats, special_stats)
     {
-        name_ = name;
     };
 
 private:
@@ -329,11 +332,7 @@ public:
 
     Consumable() = delete;
 
-    Consumable(Stats stats, Special_stats special_stats, Id name) : Buff(stats, special_stats),
-            name_{name}
-    {
-        name_ = name;
-    };
+    Consumable(std::string name, Stats stats, Special_stats special_stats) : Buff(name, stats, special_stats) {};
 
 private:
     Id name_;

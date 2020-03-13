@@ -191,6 +191,8 @@ public:
 
     double get_mh_bonus_damage() const;
 
+    const std::vector<Armor> &get_armor() const;
+
     // Used to compute
     Stats permutated_stats_;
     Special_stats permutated_special_stats_;
@@ -216,5 +218,7 @@ private:
     std::vector<Buff> buffs_;
     Race race_;
 };
+
+std::ostream &operator<<(std::ostream &os, const Character &socket);
 
 #endif //WOW_SIMULATOR_CHARACTER_HPP

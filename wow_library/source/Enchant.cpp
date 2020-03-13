@@ -1,5 +1,5 @@
 #include <cassert>
-#include "Enchant.hpp"
+#include "../include/Enchant.hpp"
 
 Enchant::Enchant(Enchant::Socket socket, Enchant::Type type)
         : stats_{},

@@ -1,4 +1,4 @@
-#include "Item.hpp"
+#include "../include/Item.hpp"
 
 /**
 ITEM
@@ -8,7 +8,7 @@ const Stats &Item::get_stats() const
     return stats_;
 }
 
-Item::Item(Stats stats, Special_stats special_stats) : stats_{stats},
+Item::Item(std::string name, Stats stats, Special_stats special_stats) : name_(name), stats_{stats},
         special_stats_{special_stats},
         chance_for_extra_hit{0.0},
         bonus_skill_{Skill_type::none, 0} {};
@@ -38,12 +38,18 @@ const Extra_skill &Item::get_bonus_skill() const
     return bonus_skill_;
 }
 
+const std::string &Item::get_name() const
+{
+    return name_;
+}
+
 /**
 WEAPON
  */
-Weapon::Weapon(double swing_speed, std::pair<double, double> damage_interval, Stats stats, Special_stats special_stats,
+Weapon::Weapon(std::string name, double swing_speed, std::pair<double, double> damage_interval, Stats stats,
+               Special_stats special_stats,
                Socket socket, Skill_type skill_type)
-        : Item{stats, special_stats},
+        : Item{name, stats, special_stats},
         swing_speed_{swing_speed},
         internal_swing_timer_{0.0},
         damage_interval_{std::move(damage_interval)},
@@ -119,8 +125,8 @@ void Weapon::set_internal_swing_timer(double internal_swing_timer)
 /**
 ARMOR
  */
-Armor::Armor(Stats stats, Special_stats special_stats, Socket socket, Set_name set_name) :
-        Item(stats, special_stats), socket_(socket), set_(set_name) {}
+Armor::Armor(std::string name, Stats stats, Special_stats special_stats, Socket socket, Set_name set_name) :
+        Item(name, stats, special_stats), socket_(socket), set_(set_name) {}
 
 Armor::Socket Armor::get_socket() const
 {
@@ -129,7 +135,7 @@ Armor::Socket Armor::get_socket() const
 
 std::ostream &operator<<(std::ostream &os, Armor::Socket const &socket)
 {
-    os << "Item slot:" << "\n";
+    os << "Item slot ";
     switch (socket)
     {
         case Armor::Socket::head:
@@ -175,6 +181,13 @@ std::ostream &operator<<(std::ostream &os, Armor::Socket const &socket)
     return os;
 }
 
+std::ostream &operator<<(std::ostream &os, const Armor& armor)
+{
+//    os << armor.get_socket();
+    os << armor.get_name() << "\n";
+    return os;
+}
+
 int rank(Set_name value)
 {
     switch (value)
@@ -190,6 +203,7 @@ int rank(Set_name value)
     }
 }
 
-bool operator<(Set_name left, Set_name right) {
+bool operator<(Set_name left, Set_name right)
+{
     return rank(left) < rank(right);
 }
