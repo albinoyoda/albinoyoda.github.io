@@ -56,6 +56,8 @@ struct Armory
                                      Armor::Socket::head};
         Armor crown_of_destruction{"crown_of_destruction", Stats{0, 0}, Special_stats{2, 0, 44}, Armor::Socket::head};
         Armor helm_of_endless_rage{"helm_of_endless_rage", Stats{26, 26}, Special_stats{0, 0, 0}, Armor::Socket::head};
+
+
     } helmet;
 
     struct neck_t
@@ -63,6 +65,8 @@ struct Armory
         Armor onyxia_tooth_pendant{"onyxia_tooth_pendant", Stats{0, 13}, Special_stats{1, 1, 0}, Armor::Socket::neck};
         Armor prestors_talisman_of_connivery{"prestors_talisman_of_connivery", Stats{0, 30}, Special_stats{0, 1, 0},
                                              Armor::Socket::neck};
+        Armor aq_barbed_choker{"aq_barbed_choker", Stats{0, 0}, Special_stats{1, 0, 44},
+                               Armor::Socket::neck};
     } neck;
 
     struct shoulder_t
@@ -76,6 +80,12 @@ struct Armory
         Armor leutenant_shoulders{"leutenant_shoulders", Stats{17, 0}, Special_stats{1, 0, 0}, Armor::Socket::shoulder,
                                   Set_name::rare_pvp_set};
         Armor spaulders_of_valor{"spaulders_of_valor", Stats{11, 9}, Special_stats{0, 0, 0}, Armor::Socket::shoulder};
+        Armor aq_chitinous_shoulderguards{"aq_chitinous_shoulderguards", Stats{11, 25}, Special_stats{0, 0, 0},
+                                          Armor::Socket::shoulder};
+        Armor aq_mantle_of_wicked_revenge{"aq_mantle_of_wicked_revenge", Stats{16, 30}, Special_stats{0, 0, 0},
+                                          Armor::Socket::shoulder};
+        Armor aq_conquerors_spaulders{"aq_conquerors_spaulders", Stats{20, 16}, Special_stats{0, 1, 0},
+                                      Armor::Socket::shoulder};
     } shoulder;
 
     struct back_t
@@ -85,6 +95,8 @@ struct Armory
         Armor cloak_of_firemaw{"cloak_of_firemaw", Stats{0, 0}, Special_stats{0, 0, 50}, Armor::Socket::back};
         Armor cloak_of_draconic_might{"cloak_of_draconic_might", Stats{16, 16}, Special_stats{0, 0, 0},
                                       Armor::Socket::back};
+        Armor aq_cloak_of_concentrated_hate{"aq_cloak_of_concentrated_hate", Stats{11, 16}, Special_stats{0, 1, 0},
+                                            Armor::Socket::back};
     } back;
 
     struct chest_t
@@ -94,6 +106,12 @@ struct Armory
         Armor savage_gladiator_chain{"savage_gladiator_chain", Stats{13, 14}, Special_stats{2, 0, 0},
                                      Armor::Socket::chest};
         Armor cadaverous_armor{"cadaverous_armor", Stats{8, 8}, Special_stats{0, 0, 60}, Armor::Socket::chest};
+        Armor aq_breatplate_of_annihilation{"aq_breatplate_of_annihilation", Stats{37, 0}, Special_stats{1, 1, 0},
+                                            Armor::Socket::chest};
+        Armor aq_vest_of_swift_execution{"aq_vest_of_swift_execution", Stats{21, 41}, Special_stats{0, 0, 0},
+                                         Armor::Socket::chest};
+        Armor aq_conquerors_breastplate{"aq_conquerors_breastplate", Stats{34, 24}, Special_stats{0, 0, 0},
+                                        Armor::Socket::chest};
     } chest;
 
     struct wrists_t
@@ -105,6 +123,12 @@ struct Armory
         Armor wristhuards_of_true_flight{"wristhuards_of_true_flight", Stats{0, 19}, Special_stats{0, 1, 0},
                                          Armor::Socket::wrists};
         Armor battleborn_armbraces{"battleborn_armbraces", Stats{0, 0}, Special_stats{1, 1, 0}, Armor::Socket::wrists};
+        Armor aq_bracers_of_brutality{"aq_bracers_of_brutality", Stats{21, 12}, Special_stats{0, 0, 0},
+                                      Armor::Socket::wrists};
+        Armor aq_hive_defiler_wristguards{"aq_hive_defiler_wristguards", Stats{23, 18}, Special_stats{0, 0, 0},
+                                          Armor::Socket::wrists};
+        Armor aq_quiraji_execution_bracers{"aq_quiraji_execution_bracers", Stats{15, 16}, Special_stats{0, 1, 0},
+                                           Armor::Socket::wrists};
     } wrist;
 
     struct hands_t
@@ -114,6 +138,10 @@ struct Armory
         Armor edgemasters_handguards{"edgemasters_handguards", Stats{0, 0}, Special_stats{0, 0, 0},
                                      Armor::Socket::hands};
         Armor flameguard_gauntlets{"flameguard_gauntlets", Stats{0, 0}, Special_stats{1, 0, 54}, Armor::Socket::hands};
+        Armor aq_gloves_of_enforcement{"aq_gloves_of_enforcement", Stats{28, 20}, Special_stats{0, 1, 0},
+                                       Armor::Socket::hands};
+        Armor aq_gauntlets_of_annihilation{"aq_gauntlets_of_annihilation", Stats{35, 20}, Special_stats{1, 1, 0},
+                                           Armor::Socket::hands};
     } hands;
 
     struct belt_t
@@ -139,6 +167,13 @@ struct Armory
                                                Special_stats{0, 0, 0}, Armor::Socket::legs};
         Armor knight_captain_plate_leggings{"knight_captain_plate_leggings", Stats{12, 0},
                                             Special_stats{2, 0, 0}, Armor::Socket::legs, Set_name::rare_pvp_set};
+
+        Armor aq_legplates_of_the_qiraji_command{"aq_legplates_of_the_qiraji_command", Stats{20, 0},
+                                                 Special_stats{2, 0, 0}, Armor::Socket::legs};
+        Armor aq_scaled_sand_reaver_leggings{"aq_scaled_sand_reaver_leggings", Stats{0, 0},
+                                             Special_stats{2, 0, 62}, Armor::Socket::legs};
+        Armor aq_conquerors_legguards{"aq_conquerors_legguards", Stats{33, 21}, Special_stats{0, 1, 0},
+                                      Armor::Socket::legs};
     } legs;
 
     struct boots_t
@@ -153,6 +188,8 @@ struct Armory
         Armor chromatic_boots{"chromatic_boots", Stats{20, 20}, Special_stats{0, 1, 0}, Armor::Socket::boots};
         Armor boots_of_shadow_flame{"boots_of_shadow_flame", Stats{0, 0}, Special_stats{0, 2, 44},
                                     Armor::Socket::boots};
+        Armor aq_boots_of_the_vanguard{"aq_boots_of_the_vanguard", Stats{22, 22}, Special_stats{0, 0, 0},
+                                       Armor::Socket::boots};
     } boots;
 
     struct rings_t
@@ -183,6 +220,10 @@ struct Armory
         Armor blastershot{"blastershot", Stats{0, 0}, Special_stats{1, 0, 0}, Armor::Socket::ranged};
         Armor dragonbreath_hand_cannon{"dragonbreath_hand_cannon", Stats{0, 14}, Special_stats{0, 0, 0},
                                        Armor::Socket::ranged};
+        Armor aq_crossbow_of_imminent_doom{"aq_crossbow_of_imminent_doom", Stats{5, 7}, Special_stats{0, 1, 0},
+                                           Armor::Socket::ranged};
+        Armor aq_larvae_of_the_great_worm{"aq_larvae_of_the_great_worm", Stats{0, 0}, Special_stats{1, 0, 18},
+                                          Armor::Socket::ranged};
     } ranged;
 
     // ---------------- Weapons ------------------
@@ -202,6 +243,8 @@ struct Armory
                       Skill_type::sword};
         Weapon quel_serrar{"quel_serrar", 2.0, {84, 126}, Stats{0, 0}, Special_stats{0, 0, 0}, Weapon::Socket::one_hand,
                            Skill_type::sword};
+        Weapon aq_ancient_quiraj_ripper{"aq_ancient_quiraj_ripper", 2.8, {114, 213}, Stats{0, 0},
+                                        Special_stats{1, 0, 20}, Weapon::Socket::one_hand, Skill_type::sword};
     } swords;
 
     struct axes_t
@@ -217,8 +260,9 @@ struct Armory
     struct daggers_t
     {
         Weapon core_hound_tooth{"core_hound_tooth", 1.6, {57, 107}, Stats{0, 0}, Special_stats{1, 0, 20},
-                                Weapon::Socket::one_hand,
-                                Skill_type::dagger};
+                                Weapon::Socket::one_hand, Skill_type::dagger};
+        Weapon aq_deaths_sting{"aq_deaths_sting", 1.8, {95, 144}, Stats{0, 0}, Special_stats{0, 0, 38},
+                               Weapon::Socket::one_hand, Skill_type::dagger};
     } daggers;
 
     struct maces_t
@@ -227,9 +271,17 @@ struct Armory
                             Weapon::Socket::main_hand, Skill_type::mace};
         Weapon stormstike_hammer{"stormstike_hammer", 2.7, {80, 150}, Stats{15, 0}, Special_stats{0, 0, 0},
                                  Weapon::Socket::one_hand, Skill_type::mace};
+        Weapon aq_sand_polished_hammer{"aq_sand_polished_hammer", 2.6, {97, 181}, Stats{0, 0}, Special_stats{1, 0, 20},
+                                       Weapon::Socket::one_hand, Skill_type::mace};
+        Weapon aq_anubisath_warhammer{"aq_anubisath_warhammer", 1.8, {66, 123}, Stats{0, 0}, Special_stats{0, 0, 32},
+                                      Weapon::Socket::one_hand, Skill_type::mace};
+    } maces;
+
+    struct fists_t
+    {
         Weapon claw_of_the_black_drake{"claw_of_the_black_drake", 2.6, {102, 191}, Stats{13, 0}, Special_stats{1, 0, 0},
                                        Weapon::Socket::main_hand, Skill_type::none};
-    } maces;
+    } fists;
 
     struct set_bonuses_t
     {
@@ -250,6 +302,8 @@ struct Armory
         swords.maladath.set_bonus_skill(Extra_skill{Skill_type::sword, 4});
         helmet.expert_goldminers_head.set_bonus_skill(Extra_skill{Skill_type::axe, 7});
         belt.mugglers_belt.set_bonus_skill(Extra_skill{Skill_type::dagger, 5});
+        daggers.aq_deaths_sting.set_bonus_skill(Extra_skill{Skill_type::dagger, 3});
+        maces.aq_anubisath_warhammer.set_bonus_skill(Extra_skill{Skill_type::mace, 4});
     }
 
     auto get_set_bonuses() const

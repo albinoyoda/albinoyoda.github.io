@@ -347,18 +347,14 @@ int main()
 
     for (size_t i = 0; i < batches_per_iteration.size(); i++)
     {
+        clock_t startTime = clock();
+        std::cout << "Iteration " << i + 1 << " of " << batches_per_iteration.size() << "\n";
         std::cout << "total_keepers: " << n << "\n";
-        size_t print_each = std::max(n / 100, 1u);
         double best_dps = 0;
         double best_dps_std = 0;
         size_t iter = 0;
         for (auto &idx : keepers)
         {
-            if (iter % print_each == 0)
-            {
-                std::cout << iter;
-            }
-            std::cout << "\b";
             auto dps_vector = simulator
                     .simulate(characters[idx].character, sim_time, opponent_level, batches_per_iteration[i]);
             characters[idx].mean_dps = Combat_simulator::average(dps_vector);
@@ -370,6 +366,24 @@ int main()
                 best_dps_std = characters[idx].sample_std_dps;
             }
             iter++;
+            if (keepers.size() < 100)
+            {
+                if (iter == 2)
+                {
+                    double time_spent = double(clock() - startTime) / (double) CLOCKS_PER_SEC;
+                    double n_samples = keepers.size() / double(iter);
+                    std::cout << "Batch done in: " << time_spent * n_samples << " seconds.";
+                }
+            }
+            else
+            {
+                if (iter == 10)
+                {
+                    double time_spent = double(clock() - startTime) / (double) CLOCKS_PER_SEC;
+                    double n_samples = keepers.size() / double(iter);
+                    std::cout << "Batch done in: " << time_spent * n_samples << " seconds.";
+                }
+            }
         }
 
         std::cout << "Deleting the low 95% percentile" << "\n";
@@ -393,14 +407,47 @@ int main()
 
     std::cout << "\n" << "Printing best item sets:" << "\n";
     std::vector<Item_optimizer::Sim_result_t> best_characters;
-    best_characters.reserve(keepers.size());
-    for (const size_t &index : keepers)
+    best_characters.
+            reserve(keepers
+                            .
+
+                                    size()
+
+                   );
+    for (
+        const size_t &index
+            : keepers)
     {
-        best_characters.emplace_back(characters[index]);
+        best_characters.
+                emplace_back(characters[index]);
     }
-    std::sort(best_characters.begin(), best_characters.end());
-    std::reverse(best_characters.begin(), best_characters.end());
-    for (size_t i = 0; i < best_characters.size(); i++)
+    std::sort(best_characters
+                      .
+
+                              begin(), best_characters
+
+                      .
+
+                              end()
+
+             );
+    std::reverse(best_characters
+                         .
+
+                                 begin(), best_characters
+
+                         .
+
+                                 end()
+
+                );
+    for (
+            size_t i = 0;
+            i < best_characters.
+
+                    size();
+
+            i++)
     {
         std::cout << "Character #" << i << "\n";
         std::cout << "DPS: " << best_characters[i].mean_dps << "\n";
