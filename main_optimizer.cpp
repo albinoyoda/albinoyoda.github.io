@@ -29,13 +29,13 @@ public:
         double sample_std_dps;
     };
 
-    std::vector<std::vector<Weapon>> get_weapon_combinations(const std::vector<Weapon> &weapons);
+    static std::vector<std::vector<Weapon>> get_weapon_combinations(const std::vector<Weapon> &weapons);
 
     std::vector<std::vector<Armor>> get_combinations(const std::vector<Armor> &armors);
 
-    void add_enchants(Character &character);
+    static void add_enchants(Character &character);
 
-    void add_buffs(Character &character, Buffs buffs);
+    static void add_buffs(Character &character, const Buffs &buffs);
 
     std::vector<Sim_result_t> item_setup();
 };
@@ -123,51 +123,78 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
     helmets = {armory.helmet.lionheart_helm};
 
     std::vector<Armor> necks;
-    necks = {armory.neck.onyxia_tooth_pendant};
+    necks = {
+            armory.neck.onyxia_tooth_pendant,
+            armory.neck.aq_barbed_choker
+    };
 
     std::vector<Armor> shoulders;
-    shoulders = {armory.shoulder.truestrike_shoulders, armory.shoulder.drake_talon_pauldrons};
+    shoulders = {
+//            armory.shoulder.drake_talon_pauldrons,
+//            armory.shoulder.aq_chitinous_shoulderguards,
+            armory.shoulder.aq_mantle_of_wicked_revenge,
+//            armory.shoulder.aq_conquerors_spaulders
+    };
 
     std::vector<Armor> backs;
-    backs = {armory.back.cape_of_the_black_baron};
+    backs = {
+//            armory.back.cloak_of_draconic_might,
+            armory.back.aq_cloak_of_concentrated_hate
+    };
 
     std::vector<Armor> chests;
-    chests = {armory.chest.savage_gladiator_chain};
+    chests = {
+//            armory.chest.savage_gladiator_chain,
+            armory.chest.aq_breatplate_of_annihilation,
+//            armory.chest.aq_conquerors_breastplate,
+//            armory.chest.aq_vest_of_swift_execution
+    };
 
     std::vector<Armor> wrists;
-    wrists = {armory.wrist.wristguards_of_stability};
+    wrists = {
+            armory.wrist.aq_hive_defiler_wristguards,
+//            armory.wrist.aq_quiraji_execution_bracers
+    };
 
     std::vector<Armor> hands;
-    hands = {armory.hands.flameguard_gauntlets, armory.hands.devilsaur_gauntlets, armory.hands.edgemasters_handguards};
+    hands = {
+//            armory.hands.flameguard_gauntlets,
+            armory.hands.aq_gauntlets_of_annihilation,
+//            armory.hands.aq_gloves_of_enforcement,
+    };
 
     std::vector<Armor> belts;
     belts = {armory.belt.onslaught_girdle};
 
     std::vector<Armor> legs;
-    legs = {armory.legs.legguards_of_the_fallen_crusader, armory.legs.devilsaur_leggings};
+    legs = {
+//            armory.legs.aq_conquerors_legguards,
+            armory.legs.aq_scaled_sand_reaver_leggings
+    };
 
     std::vector<Armor> boots;
     boots = {armory.boots.chromatic_boots};
 
     std::vector<Armor> ranged;
-    ranged = {armory.ranged.strikers_mark, armory.ranged.blastershot};
+    ranged = {armory.ranged.aq_larvae_of_the_great_worm};
 
     std::vector<Armor> rings;
-    rings = {armory.rings.don_julios_band,
-             armory.rings.quick_strike_ring,
-             armory.rings.circle_of_applied_force
+    rings = {
+            armory.rings.don_julios_band,
+            armory.rings.quick_strike_ring,
     };
 
     std::vector<Armor> trinkets;
-    trinkets = {armory.trinket.blackhands_breadth,
-                armory.trinket.hand_of_justice,
-                armory.trinket.diamond_flask};
+    trinkets = {
+            armory.trinket.diamond_flask,
+            armory.trinket.drake_fang_talisman,
+//            armory.trinket.blackhands_breadth,
+    };
 
     std::vector<Weapon> weapons;
     weapons = {
-            armory.swords.brutality_blade,
-//            armory.swords.viskag,
-            armory.swords.maladath
+            armory.swords.maladath,
+            armory.swords.brutality_blade
     };
 
     size_t n_helmet = helmets.size();
@@ -246,6 +273,9 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
                                                                     weapon_combinations[i_wep][1]
                                                                                   );
 
+                                                            character.check_if_armor_valid();
+                                                            character.check_if_weapons_valid();
+
                                                             characters.emplace_back(character, 0, 0);
                                                         }
                                                     }
@@ -278,25 +308,25 @@ void Item_optimizer::add_enchants(Character &character)
                           );
 }
 
-void Item_optimizer::add_buffs(Character &character, Buffs buffs)
+void Item_optimizer::add_buffs(Character &character, const Buffs &buffs)
 {
     character.add_buffs(
-//            buffs.rallying_cry,
-//            buffs.dire_maul,
-//            buffs.songflower,
+            buffs.rallying_cry,
+            buffs.dire_maul,
+            buffs.songflower,
             buffs.blessing_of_kings,
             buffs.blessing_of_might,
             buffs.gift_of_the_wild,
-            buffs.trueshot_aura
-//            buffs.elixir_mongoose,
-//            buffs.dense_stone_mh,
-//            buffs.dense_stone_oh,
+            buffs.trueshot_aura,
+            buffs.elixir_mongoose,
+            buffs.dense_stone_mh,
+            buffs.dense_stone_oh,
 //            buffs.elemental_stone_mh,
 //            buffs.elemental_stone_oh,
-//            buffs.blessed_sunfruit,
-//            buffs.juju_power,
-//            buffs.juju_might,
-//            buffs.roids
+            buffs.blessed_sunfruit,
+            buffs.juju_power,
+            buffs.juju_might,
+            buffs.roids
                        );
 }
 
@@ -407,54 +437,19 @@ int main()
 
     std::cout << "\n" << "Printing best item sets:" << "\n";
     std::vector<Item_optimizer::Sim_result_t> best_characters;
-    best_characters.
-            reserve(keepers
-                            .
-
-                                    size()
-
-                   );
-    for (
-        const size_t &index
-            : keepers)
+    best_characters.reserve(keepers.size());
+    for (const size_t &index: keepers)
     {
-        best_characters.
-                emplace_back(characters[index]);
+        best_characters.emplace_back(characters[index]);
     }
-    std::sort(best_characters
-                      .
-
-                              begin(), best_characters
-
-                      .
-
-                              end()
-
-             );
-    std::reverse(best_characters
-                         .
-
-                                 begin(), best_characters
-
-                         .
-
-                                 end()
-
-                );
-    for (
-            size_t i = 0;
-            i < best_characters.
-
-                    size();
-
-            i++)
+    std::sort(best_characters.begin(), best_characters.end());
+    std::reverse(best_characters.begin(), best_characters.end());
+    for (size_t i = 0; i < best_characters.size(); i++)
     {
         std::cout << "Character #" << i << "\n";
         std::cout << "DPS: " << best_characters[i].mean_dps << "\n";
         std::cout << "std: " << best_characters[i].sample_std_dps << "\n";
         std::cout << best_characters[i].character << "\n\n";
-
     }
-
 }
 

@@ -140,7 +140,9 @@ struct Armory
         Armor flameguard_gauntlets{"flameguard_gauntlets", Stats{0, 0}, Special_stats{1, 0, 54}, Armor::Socket::hands};
         Armor aq_gloves_of_enforcement{"aq_gloves_of_enforcement", Stats{28, 20}, Special_stats{0, 1, 0},
                                        Armor::Socket::hands};
-        Armor aq_gauntlets_of_annihilation{"aq_gauntlets_of_annihilation", Stats{35, 20}, Special_stats{1, 1, 0},
+        Armor aged_core_leather_gloves{"aged_core_leather_gloves", Stats{15, 0}, Special_stats{1, 0, 0},
+                                       Armor::Socket::hands};
+        Armor aq_gauntlets_of_annihilation{"aq_gauntlets_of_annihilation", Stats{35, 0}, Special_stats{1, 1, 0},
                                            Armor::Socket::hands};
     } hands;
 
@@ -304,6 +306,9 @@ struct Armory
         belt.mugglers_belt.set_bonus_skill(Extra_skill{Skill_type::dagger, 5});
         daggers.aq_deaths_sting.set_bonus_skill(Extra_skill{Skill_type::dagger, 3});
         maces.aq_anubisath_warhammer.set_bonus_skill(Extra_skill{Skill_type::mace, 4});
+        hands.aged_core_leather_gloves.set_bonus_skill(Extra_skill{Skill_type::dagger, 5});
+
+
     }
 
     auto get_set_bonuses() const

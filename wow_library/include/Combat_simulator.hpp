@@ -461,7 +461,7 @@ private:
     bool random_melee_hits_{false};
     bool use_mighty_rage_potion_{false};
     bool anger_management_enabled_{false};
-    bool fuel_extra_rage_ = true;
+    bool fuel_extra_rage_{false};
     double interval_;
     double damage_amount_;
     double glancing_factor_mh_{0.0};

@@ -67,21 +67,21 @@ Character create_character()
             armory.belt.onslaught_girdle,
 
             // Legs
-            armory.legs.eldritch_legplates,
+            armory.legs.legguards_of_the_fallen_crusader,
 
             // boots
             armory.boots.chromatic_boots,
 
             // Rings
             armory.rings.don_julios_band,
-            armory.rings.magnis_will,
+            armory.rings.quick_strike_ring,
 
             // Trinket
             armory.trinket.blackhands_breadth,
-            armory.trinket.hand_of_justice,
+            armory.trinket.diamond_flask,
 
             // Bow
-            armory.ranged.satyrs_bow
+            armory.ranged.strikers_mark
                          );
 
     character.equip_weapon(armory.swords.maladath,
@@ -98,22 +98,22 @@ Character create_character()
                           );
 
     character.add_buffs(
-//            buffs.rallying_cry,
-//            buffs.dire_maul,
-//            buffs.songflower,
+            buffs.rallying_cry,
+            buffs.dire_maul,
+            buffs.songflower,
             buffs.blessing_of_kings,
             buffs.blessing_of_might,
             buffs.gift_of_the_wild,
-            buffs.trueshot_aura
-//            buffs.elixir_mongoose,
-//            buffs.dense_stone_mh,
-//            buffs.dense_stone_oh,
+            buffs.trueshot_aura,
+            buffs.elixir_mongoose,
+            buffs.dense_stone_mh,
+            buffs.dense_stone_oh,
 //            buffs.elemental_stone_mh,
 //            buffs.elemental_stone_oh,
-//            buffs.blessed_sunfruit,
-//            buffs.juju_power,
-//            buffs.juju_might,
-//            buffs.roids
+            buffs.blessed_sunfruit,
+            buffs.juju_power,
+            buffs.juju_might,
+            buffs.roids
                        );
 
     character.compute_all_stats(Character::Talent::fury, armory.get_set_bonuses());
@@ -127,10 +127,11 @@ Character delta_gear(const Character &character)
 
     Character delta_character = character;
 
-    delta_character.change_weapon(armory.swords.chromatically_tempered_sword, Hand::main_hand);
+    delta_character.change_weapon(armory.swords.brutality_blade, Hand::main_hand);
+    delta_character.change_weapon(armory.swords.maladath, Hand::off_hand);
 
-    delta_character.change_armor(armory.helmet.crown_of_destruction);
-    delta_character.change_armor(armory.trinket.drake_fang_talisman, false);
+//    delta_character.change_armor(armory.helmet.crown_of_destruction);
+//    delta_character.change_armor(armory.trinket.drake_fang_talisman, false);
 
     delta_character.compute_all_stats(Character::Talent::fury, armory.get_set_bonuses());
     return delta_character;
@@ -146,8 +147,8 @@ int main()
     characters.emplace_back(delta_gear(characters[0]));
 
     // Combat settings
-    int n_batches = 100000;
-    double sim_time = 70;
+    int n_batches = 20;
+    double sim_time = 60;
     int opponent_level = 63;
 
     std::vector<Combat_simulator> simulators;
@@ -155,14 +156,14 @@ int main()
     simulators.emplace_back(Combat_simulator());
 
     simulators[0].use_fast_but_sloppy_rng(); // Use before set seed!
-//    simulators[0].set_seed(100); // Use for predictable random numbers
-    simulators[0].enable_rng_melee(); // Uses random swing damage instead of average
+    simulators[0].set_seed(100); // Use for predictable random numbers
+//    simulators[0].enable_rng_melee(); // Uses random swing damage instead of average
     simulators[0].enable_spell_rotation();
 //    simulators[0].use_heroic_spamm();
     simulators[0].use_mighty_rage_potion();
     simulators[0].enable_anger_management();
     simulators[0].enable_bloodrage();
-    simulators[0].fuel_extra_rage(3.0, 150);
+//    simulators[0].fuel_extra_rage(3.0, 150);
     simulators[0].enable_talents();
     simulators[0].enable_item_chance_on_hit_effects();
     simulators[0].enable_crusader();
@@ -171,14 +172,14 @@ int main()
 //    simulators[0].display_combat_debug();
 
     simulators[1].use_fast_but_sloppy_rng(); // Use before set seed!
-//    simulators[1].set_seed(100); // Use for predictable random numbers
-    simulators[1].enable_rng_melee(); // Uses random swing damage instead of average
+    simulators[1].set_seed(100); // Use for predictable random numbers
+//    simulators[1].enable_rng_melee(); // Uses random swing damage instead of average
     simulators[1].enable_spell_rotation();
 //    simulators[1].use_heroic_spamm();
     simulators[1].use_mighty_rage_potion();
     simulators[1].enable_anger_management();
     simulators[1].enable_bloodrage();
-    simulators[1].fuel_extra_rage(3.0, 150);
+//    simulators[1].fuel_extra_rage(3.0, 150);
     simulators[1].enable_talents();
     simulators[1].enable_item_chance_on_hit_effects();
     simulators[1].enable_crusader();
