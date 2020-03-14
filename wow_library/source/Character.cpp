@@ -337,6 +337,44 @@ const std::vector<Armor> &Character::get_armor() const
     return armor_;
 }
 
+void Character::change_weapon(const Weapon &weapon, const Hand &hand)
+{
+    switch (hand)
+    {
+        case Hand::main_hand:
+            weapons_[0] = weapon;
+            break;
+        case Hand::off_hand:
+            weapons_[1] = weapon;
+            break;
+    }
+}
+
+void Character::change_armor(const Armor &armor, bool first_misc_slot)
+{
+    auto socket = armor.get_socket();
+    for (auto &armor_piece : armor_)
+    {
+        if (armor_piece.get_socket() == socket)
+        {
+            if (socket == Armor::Socket::ring || socket == Armor::Socket::trinket)
+            {
+                if (first_misc_slot)
+                {
+                    armor_piece = armor;
+                    return;
+                }
+                first_misc_slot = true; // Will trigger on the second hit instead
+            }
+            else
+            {
+                armor_piece = armor;
+                return;
+            }
+        }
+    }
+}
+
 std::ostream &operator<<(std::ostream &os, const Character &character)
 {
     os << "Character items:" << "\n";

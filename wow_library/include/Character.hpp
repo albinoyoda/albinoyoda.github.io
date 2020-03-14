@@ -193,6 +193,10 @@ public:
 
     const std::vector<Armor> &get_armor() const;
 
+    void change_weapon(const Weapon &weapon, const Hand &hand);
+
+    void change_armor(const Armor &armor, bool first_misc_slot = true);
+
     // Used to compute
     Stats permutated_stats_;
     Special_stats permutated_special_stats_;

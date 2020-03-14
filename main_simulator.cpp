@@ -34,7 +34,7 @@ void print_stat(const std::string &stat_name, double amount_1, double amount_2)
               << amount_1 << ", " << std::setw(5) << amount_2 << "\n";
 }
 
-Character create_character_1()
+Character create_character()
 {
     Armory armory;
     Buffs buffs;
@@ -120,90 +120,20 @@ Character create_character_1()
     return character;
 }
 
-Character create_character_2()
+Character delta_gear(const Character &character)
 {
     Armory armory;
     Buffs buffs;
 
-    Character character{Race::human};
+    Character delta_character = character;
 
-    character.equip_armor(
-            //Helmet
-            armory.helmet.lionheart_helm,
+    delta_character.change_weapon(armory.swords.chromatically_tempered_sword, Hand::main_hand);
 
-            // Neck
-            armory.neck.onyxia_tooth_pendant,
+    delta_character.change_armor(armory.helmet.crown_of_destruction);
+    delta_character.change_armor(armory.trinket.drake_fang_talisman, false);
 
-            // Shoulders
-            armory.shoulder.truestrike_shoulders,
-
-            // Back
-            armory.back.cape_of_the_black_baron,
-
-            // Chest
-            armory.chest.savage_gladiator_chain,
-
-            // Wrists
-            armory.wrist.wristguards_of_stability,
-
-            // Hands
-            armory.hands.flameguard_gauntlets,
-
-            // Belt
-            armory.belt.onslaught_girdle,
-
-            // Legs
-            armory.legs.eldritch_legplates,
-
-            // boots
-            armory.boots.chromatic_boots,
-
-            // Rings
-            armory.rings.don_julios_band,
-            armory.rings.magnis_will,
-
-            // Trinket
-            armory.trinket.blackhands_breadth,
-            armory.trinket.hand_of_justice,
-
-            // Bow
-            armory.ranged.satyrs_bow
-                         );
-
-    character.equip_weapon(armory.swords.chromatically_tempered_sword,
-                           armory.swords.maladath);
-
-    character.add_enchants(Enchant{Enchant::Socket::head, Enchant::Type::haste},
-                           Enchant{Enchant::Socket::back, Enchant::Type::agility},
-                           Enchant{Enchant::Socket::chest, Enchant::Type::major_stats},
-                           Enchant{Enchant::Socket::wrists, Enchant::Type::strength9},
-                           Enchant{Enchant::Socket::hands, Enchant::Type::haste},
-                           Enchant{Enchant::Socket::legs, Enchant::Type::haste},
-                           Enchant{Enchant::Socket::weapon_mh, Enchant::Type::crusader},
-                           Enchant{Enchant::Socket::weapon_oh, Enchant::Type::crusader}
-                          );
-
-    character.add_buffs(
-//            buffs.rallying_cry,
-//            buffs.dire_maul,
-//            buffs.songflower,
-            buffs.blessing_of_kings,
-            buffs.blessing_of_might,
-            buffs.gift_of_the_wild,
-            buffs.trueshot_aura
-//            buffs.elixir_mongoose,
-//            buffs.dense_stone_mh,
-//            buffs.dense_stone_oh,
-//            buffs.elemental_stone_mh,
-//            buffs.elemental_stone_oh,
-//            buffs.blessed_sunfruit,
-//            buffs.juju_power,
-//            buffs.juju_might,
-//            buffs.roids
-                       );
-
-    character.compute_all_stats(Character::Talent::fury, armory.get_set_bonuses());
-    return character;
+    delta_character.compute_all_stats(Character::Talent::fury, armory.get_set_bonuses());
+    return delta_character;
 }
 
 int main()
@@ -212,8 +142,8 @@ int main()
     std::vector<Character> characters;
     Armory armory;
 
-    characters.emplace_back(create_character_1());
-    characters.emplace_back(create_character_2());
+    characters.emplace_back(create_character());
+    characters.emplace_back(delta_gear(characters[0]));
 
     // Combat settings
     int n_batches = 100000;
