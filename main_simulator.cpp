@@ -1,7 +1,7 @@
 #include <iostream>
 #include <ctime>
 
-//#include "wow_library/include/Stats.hpp"
+//#include "wow_library/include/Attributes.hpp"
 #include "wow_library/include/Combat_simulator.hpp"
 #include "wow_library/include/Character.hpp"
 #include "wow_library/include/Enchant.hpp"

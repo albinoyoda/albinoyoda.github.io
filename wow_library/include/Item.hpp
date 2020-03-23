@@ -3,7 +3,7 @@
 
 #include <utility>
 
-#include "Stats.hpp"
+#include "Attributes.hpp"
 
 enum class Hand
 {
@@ -11,146 +11,27 @@ enum class Hand
     off_hand
 };
 
-enum class Skill_type
+enum class Socket
 {
-    sword,
-    axe,
-    mace,
-    dagger,
-    all,
-    none
+    head,
+    neck,
+    shoulder,
+    back,
+    chest,
+    wrists,
+    hands,
+    belt,
+    legs,
+    boots,
+    ring,
+    trinket,
+    ranged,
+    main_hand,
+    one_hand,
+    off_hand,
 };
 
-struct Extra_skill
-{
-    Extra_skill(Skill_type type, int amount) : type(type), amount(amount) {}
-
-    Skill_type type;
-    int amount;
-};
-
-class Item
-{
-public:
-    Item() = delete;
-
-    Item(std::string name, Stats stats, Special_stats special_stats);
-
-    const Stats &get_stats() const;
-
-    const Special_stats &get_special_stats() const;
-
-    void set_chance_for_extra_hit(int chance_for_extra_hit_input);
-
-    double get_chance_for_extra_hit() const;
-
-    const Extra_skill &get_bonus_skill() const;
-
-    void set_bonus_skill(Extra_skill bonus_skill);
-
-    const std::string &get_name() const;
-
-private:
-    std::string name_;
-    Stats stats_;
-    Special_stats special_stats_;
-    double chance_for_extra_hit;
-    Extra_skill bonus_skill_;
-};
-
-class Weapon : public Item
-{
-public:
-    enum class Socket
-    {
-        main_hand,
-        one_hand,
-        off_hand,
-    };
-
-    Weapon(std::string name, double swing_speed, std::pair<double, double> damage_interval, Stats stats,
-           Special_stats special_stats,
-           Socket socket, Skill_type skill_type);
-
-    double step(double time, double attack_power, bool is_random);
-
-    constexpr double swing(double attack_power)
-    {
-        return average_damage_ + attack_power * swing_speed_ / 14;
-    }
-
-    double random_swing(double attack_power)
-    {
-        double damage = damage_interval_.first + (damage_interval_.second - damage_interval_
-                .first) * static_cast<double>(rand()) / RAND_MAX
-                        + attack_power * swing_speed_ / 14;
-        return damage;
-    }
-
-    double random_normalized_swing(double attack_power)
-    {
-        return damage_interval_.first + (damage_interval_.second - damage_interval_
-                .first) * static_cast<double>(rand()) / RAND_MAX
-               + attack_power * normalized_swing_speed_ / 14;
-    }
-
-    constexpr double normalized_swing(double attack_power)
-    {
-        // TODO random damage?
-        return average_damage_ + attack_power * normalized_swing_speed_ / 14;
-    }
-
-    void reset_timer();
-
-    constexpr void compute_weapon_damage(double bonus_damage)
-    {
-        damage_interval_.first += bonus_damage;
-        damage_interval_.second += bonus_damage;
-        average_damage_ = (damage_interval_.second + damage_interval_.first) / 2;
-    }
-
-    constexpr double get_average_damage()
-    {
-        return average_damage_;
-    }
-
-    constexpr double get_swing_speed()
-    {
-        return swing_speed_;
-    }
-
-    constexpr double get_internal_swing_timer()
-    {
-        return internal_swing_timer_;
-    }
-
-    Socket get_socket() const;
-
-    void set_weapon_type(Skill_type weapon_type);
-
-    Skill_type get_weapon_type() const;
-
-    constexpr Hand get_hand() const
-    {
-        return hand_;
-    }
-
-    void set_hand(Hand hand);
-
-    void set_internal_swing_timer(double internal_swing_timer);
-
-private:
-    double swing_speed_;
-    double normalized_swing_speed_;
-    double internal_swing_timer_;
-    std::pair<double, double> damage_interval_;
-    double average_damage_;
-    Socket socket_;
-    Skill_type weapon_type_;
-    Hand hand_;
-};
-
-enum class Set_name
+enum class Set
 {
     none,
     devilsaur,
@@ -158,105 +39,152 @@ enum class Set_name
     rare_pvp_set,
 };
 
-int rank(Set_name value);
-
-bool operator<(Set_name left, Set_name right);
-
-class Armor : public Item
+class Stat_base
 {
 public:
-    enum class Socket
+    Stat_base() = delete;
+
+    Stat_base(Attributes stats, Special_stats special_stats)
+            :
+            stats_(stats),
+            special_stats_(special_stats) {};
+
+    constexpr const Attributes &get_stats() const
     {
-        head,
-        neck,
-        shoulder,
-        back,
-        chest,
-        wrists,
-        hands,
-        belt,
-        legs,
-        boots,
-        ring,
-        trinket,
-        ranged
-    };
+        return stats_;
+    }
 
-    Armor() = delete;
-
-    Armor(std::string name, Stats stats, Special_stats special_stats, Socket socket,
-          Set_name set_name = Set_name::none);
-
-    Socket get_socket() const;
-
-    Set_name get_set() const { return set_; }
+    constexpr const Special_stats &get_special_stats() const
+    {
+        return special_stats_;
+    }
 
 private:
-    Socket socket_;
-    Set_name set_;
+    Attributes stats_;
+    Special_stats special_stats_;
+
 };
 
-std::ostream &operator<<(std::ostream &os, const Armor& armor);
-
-class Set_bonus : public Item
+class Armor : public Stat_base
 {
 public:
-    Set_bonus() = delete;
+    Armor() = delete;
 
-    Set_bonus(std::string name, Stats stats, Special_stats special_stats, size_t pieces, Set_name set_name) : Item(name,
-                                                                                                                   stats,
-                                                                                                                   special_stats),
-            pieces_(pieces)
+    Armor(std::string name, Attributes stats, Special_stats special_stats, Socket socket, Set set_name = Set::none) :
+            Stat_base{stats, special_stats},
+            name_(std::move(name)),
+            socket_(socket),
+            set_name_(set_name) {};
+
+    constexpr const std::string &get_name() const
     {
-        set_name_ = set_name;
-    };
+        return name_;
+    }
 
-    Set_name get_set_name()
+    constexpr const Socket &get_socket() const
+    {
+        return socket_;
+    }
+
+    constexpr const Set &get_set() const
     {
         return set_name_;
     }
 
-    size_t get_pieces()
+private:
+    std::string name_;
+    Socket socket_;
+    Set set_name_;
+};
+
+class Weapon : public Armor
+{
+public:
+    Weapon() = delete;
+
+    Weapon(std::string name, double swing_speed, std::pair<double, double> damage_interval, Attributes stats,
+           Special_stats special_stats, Socket socket, Skill_type skill_type, Set set_name = Set::none) :
+            Armor{std::move(name), stats, special_stats, socket, set_name},
+            swing_speed_{swing_speed},
+            damage_interval_{std::move(damage_interval)},
+            weapon_type_{skill_type} {}
+
+    constexpr const double &get_swing_speed() const
+    {
+        return swing_speed_;
+    }
+
+    constexpr const std::pair<double, double> &get_damage_interval() const
+    {
+        return damage_interval_;
+    }
+
+    constexpr const Skill_type &get_weapon_type() const
+    {
+        return weapon_type_;
+    }
+
+private:
+    double swing_speed_;
+    std::pair<double, double> damage_interval_;
+    Skill_type weapon_type_;
+};
+
+class Set_bonus : public Stat_base
+{
+public:
+    Set_bonus() = delete;
+
+    Set_bonus(Attributes stats, Special_stats special_stats, size_t pieces, Set set_name) :
+            Stat_base{stats, special_stats},
+            pieces_(pieces),
+            set_name_(set_name) {};
+
+    constexpr const size_t &get_pieces() const
     {
         return pieces_;
     }
 
+    constexpr const Set &get_set_name() const
+    {
+        return set_name_;
+    }
+
 private:
-    Set_name set_name_;
     size_t pieces_;
+    Set set_name_;
 };
 
-std::ostream &operator<<(std::ostream &os, Armor::Socket const &socket);
-
-class Buff : public Item
+class Buff : public Stat_base
 {
 public:
     Buff() = delete;
 
-    Buff(std::string name, Stats stats, Special_stats special_stats) : Item(name, stats, special_stats),
-            stat_multiplier_{1.0},
-            oh_bonus_damage_{0.0},
-            mh_bonus_damage_{0.0} {};
-
-    void set_stat_multiplier(double stat_multiplier)
-    {
-        stat_multiplier_ = stat_multiplier;
-    }
-
-    void set_oh_bonus_damage(double oh_bonus_damage)
-    {
-        oh_bonus_damage_ = oh_bonus_damage;
-    }
-
-    void set_mh_bonus_damage(double mh_bonus_damage)
-    {
-        mh_bonus_damage_ = mh_bonus_damage;
-    }
+    Buff(std::string name, Attributes stats, Special_stats special_stats, double stat_multiplier) :
+            Stat_base{stats, special_stats},
+            name_(std::move(name)), stat_multiplier_(stat_multiplier) {};
 
     double get_stat_multiplier() const
     {
         return stat_multiplier_;
     }
+
+private:
+    std::string name_;
+    double stat_multiplier_;
+};
+
+class Weapon_buff : public Stat_base
+{
+public:
+    Weapon_buff() = delete;
+
+    Weapon_buff(std::string name, Attributes stats, Special_stats special_stats, double oh_bonus_damage,
+                double mh_bonus_damage) :
+            Stat_base{stats, special_stats},
+            name_(std::move(name)),
+            oh_bonus_damage_{oh_bonus_damage},
+            mh_bonus_damage_{mh_bonus_damage} {};
 
     double get_oh_bonus_damage() const
     {
@@ -269,74 +197,73 @@ public:
     }
 
 private:
-    double stat_multiplier_;
+    std::string name_;
     double oh_bonus_damage_;
     double mh_bonus_damage_;
 };
 
-class World_buff : public Buff
+std::ostream &operator<<(std::ostream &os, Socket const &socket)
 {
-public:
-    enum class Id
+    os << "Item slot ";
+    switch (socket)
     {
-        rallying_cry,
-        dire_maul,
-        songflower,
-    };
+        case Socket::head:
+            os << "head." << "\n";
+            break;
+        case Socket::neck:
+            os << "neck." << "\n";
+            break;
+        case Socket::shoulder:
+            os << "shoulder." << "\n";
+            break;
+        case Socket::back:
+            os << "back." << "\n";
+            break;
+        case Socket::chest:
+            os << "chest." << "\n";
+            break;
+        case Socket::wrists:
+            os << "wrists." << "\n";
+            break;
+        case Socket::hands:
+            os << "hands." << "\n";
+            break;
+        case Socket::belt:
+            os << "belt." << "\n";
+            break;
+        case Socket::legs:
+            os << "legs." << "\n";
+            break;
+        case Socket::boots:
+            os << "boots." << "\n";
+            break;
+        case Socket::ring:
+            os << "ring." << "\n";
+            break;
+        case Socket::trinket:
+            os << "trinket." << "\n";
+            break;
+        case Socket::ranged:
+            os << "ranged." << "\n";
+            break;
+        case Socket::main_hand:
+            os << "ranged." << "\n";
+            break;
+        case Socket::off_hand:
+            os << "ranged." << "\n";
+            break;
+        case Socket::one_hand:
+            assert(true);
+            break;
+    }
+    return os;
+}
 
-    World_buff() = delete;
-
-    World_buff(std::string name, Stats stats, Special_stats special_stats) : Buff(name, stats, special_stats)
-    {
-    };
-};
-
-class Player_buff : public Buff
+std::ostream &operator<<(std::ostream &os, const Armor &armor)
 {
-public:
-
-    enum class Id
-    {
-        blessing_of_kings,
-        blessing_of_might,
-        mark_of_the_wild,
-        trueshot_aura,
-    };
-
-    Player_buff() = delete;
-
-    Player_buff(std::string name, Stats stats, Special_stats special_stats) : Buff(name, stats, special_stats)
-    {
-    };
-
-private:
-    Id name_;
-};
-
-class Consumable : public Buff
-{
-public:
-    enum class Id
-    {
-        elixir_mongoose,
-        dense_stone_mh,
-        dense_stone_oh,
-        elemental_stone_mh,
-        elemental_stone_oh,
-        blessed_sunfruit,
-        juju_power,
-        juju_might,
-        roids,
-    };
-
-
-    Consumable() = delete;
-
-    Consumable(std::string name, Stats stats, Special_stats special_stats) : Buff(name, stats, special_stats) {};
-
-private:
-    Id name_;
-};
+    os << armor.get_name() << "\n";
+    return os;
+}
 
 #endif //WOW_SIMULATOR_ITEM_HPP
 

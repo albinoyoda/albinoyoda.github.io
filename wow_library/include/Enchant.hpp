@@ -2,7 +2,7 @@
 #define WOW_SIMULATOR_ENCHANT_HPP
 
 
-#include "Stats.hpp"
+#include "Attributes.hpp"
 
 class Enchant
 {
@@ -42,14 +42,14 @@ public:
 
     double get_haste() const;
 
-    const Stats &get_stats() const;
+    const Attributes &get_stats() const;
 
     bool is_crusader_mh() const;
 
     bool is_crusader_oh() const;
 
 private:
-    Stats stats_;
+    Attributes stats_;
     double haste;
     bool crusader_mh_;
     bool crusader_oh_;

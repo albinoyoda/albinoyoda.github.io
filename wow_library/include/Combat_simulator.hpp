@@ -9,7 +9,7 @@
 #include <iomanip>
 #include <random>
 
-#include "Stats.hpp"
+#include "Attributes.hpp"
 #include "Character.hpp"
 
 class Time_keeper

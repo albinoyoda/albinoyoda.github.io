@@ -16,11 +16,11 @@ Enchant::Enchant(Enchant::Socket socket, Enchant::Type type)
             switch (type)
             {
                 case Enchant::Type::agility:
-                    stats_ = Stats{0, 8};
+                    stats_ = Attributes{0, 8};
 
                     break;
                 case Enchant::Type::strength:
-                    stats_ = Stats{8, 0};
+                    stats_ = Attributes{8, 0};
                     break;
                 case Enchant::Type::haste:
                     haste = 1.01;
@@ -35,7 +35,7 @@ Enchant::Enchant(Enchant::Socket socket, Enchant::Type type)
             switch (type)
             {
                 case Enchant::Type::agility:
-                    stats_ = Stats{0, 3};
+                    stats_ = Attributes{0, 3};
                     break;
                 default:
                     assert(false);
@@ -47,10 +47,10 @@ Enchant::Enchant(Enchant::Socket socket, Enchant::Type type)
             switch (type)
             {
                 case Enchant::Type::minor_stats:
-                    stats_ = Stats{3, 3};
+                    stats_ = Attributes{3, 3};
                     break;
                 case Enchant::Type::major_stats:
-                    stats_ = Stats{4, 4};
+                    stats_ = Attributes{4, 4};
                     break;
                 default:
                     assert(false);
@@ -62,16 +62,16 @@ Enchant::Enchant(Enchant::Socket socket, Enchant::Type type)
             switch (type)
             {
                 case Enchant::Type::agility7:
-                    stats_ = Stats{0, 7};
+                    stats_ = Attributes{0, 7};
                     break;
                 case Enchant::Type::agility9:
-                    stats_ = Stats{0, 9};
+                    stats_ = Attributes{0, 9};
                     break;
                 case Enchant::Type::strength7:
-                    stats_ = Stats{7, 0};
+                    stats_ = Attributes{7, 0};
                     break;
                 case Enchant::Type::strength9:
-                    stats_ = Stats{9, 0};
+                    stats_ = Attributes{9, 0};
                     break;
                 default:
                     assert(false);
@@ -83,10 +83,10 @@ Enchant::Enchant(Enchant::Socket socket, Enchant::Type type)
             switch (type)
             {
                 case Enchant::Type::agility:
-                    stats_ = Stats{0, 7};
+                    stats_ = Attributes{0, 7};
                     break;
                 case Enchant::Type::strength:
-                    stats_ = Stats{7, 0};
+                    stats_ = Attributes{7, 0};
                     break;
                 case Enchant::Type::haste:
                     haste = 1.01;
@@ -101,10 +101,10 @@ Enchant::Enchant(Enchant::Socket socket, Enchant::Type type)
             switch (type)
             {
                 case Enchant::Type::agility:
-                    stats_ = Stats{0, 8};
+                    stats_ = Attributes{0, 8};
                     break;
                 case Enchant::Type::strength:
-                    stats_ = Stats{8, 0};
+                    stats_ = Attributes{8, 0};
                     break;
                 case Enchant::Type::haste:
                     haste = 1.01;
@@ -119,7 +119,7 @@ Enchant::Enchant(Enchant::Socket socket, Enchant::Type type)
             switch (type)
             {
                 case Enchant::Type::agility:
-                    stats_ = Stats{0, 7};
+                    stats_ = Attributes{0, 7};
                     break;
                 default:
                     assert(false);
@@ -163,7 +163,7 @@ double Enchant::get_haste() const
     return haste;
 }
 
-const Stats &Enchant::get_stats() const
+const Attributes &Enchant::get_stats() const
 {
     return stats_;
 }
