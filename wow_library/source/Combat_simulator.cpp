@@ -695,7 +695,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                 }
 
                 // Execute phase, starts at 80% in with 1 sec activation time
-                if (time_keeper_.time_ + dt > sim_time * 0.84 + 1)
+                if (time_keeper_.time_ + dt > sim_time * 0.85 + 1)
                 {
                     if (!have_printed_execute_phase)
                     {

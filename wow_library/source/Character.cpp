@@ -169,11 +169,11 @@ const Special_stats &Character::get_total_special_stats() const
 
 int Character::get_weapon_skill_oh() const
 {
-    auto oh_wep_type = weapons_[1].get_weapon_type();
+    auto wep_type = weapons_[1].get_weapon_type();
     int extra_skill = 0;
     for (const auto &skill : extra_skills_)
     {
-        if (skill.type == oh_wep_type)
+        if (skill.type == wep_type|| skill.type == Skill_type::all)
         {
             extra_skill += skill.amount;
         }
@@ -183,11 +183,11 @@ int Character::get_weapon_skill_oh() const
 
 int Character::get_weapon_skill_mh() const
 {
-    auto oh_wep_type = weapons_[0].get_weapon_type();
+    auto wep_type = weapons_[0].get_weapon_type();
     int extra_skill = 0;
     for (const auto &skill : extra_skills_)
     {
-        if (skill.type == oh_wep_type || skill.type == Skill_type::all)
+        if (skill.type == wep_type || skill.type == Skill_type::all)
         {
             extra_skill += skill.amount;
         }

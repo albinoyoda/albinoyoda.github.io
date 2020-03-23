@@ -105,6 +105,10 @@ struct Armory
                                          Armor::Socket::chest};
         Armor savage_gladiator_chain{"savage_gladiator_chain", Stats{13, 14}, Special_stats{2, 0, 0},
                                      Armor::Socket::chest};
+        Armor knight_captains_plate_hauberk{"knight_captains_plate_hauberk", Stats{21, 0}, Special_stats{1, 0, 0},
+                                            Armor::Socket::chest, Set_name::rare_pvp_set};
+        Armor tombstone_breastplate{"tombstone_breastplate", Stats{10, 10}, Special_stats{2, 0, 0},
+                                    Armor::Socket::chest};
         Armor cadaverous_armor{"cadaverous_armor", Stats{8, 8}, Special_stats{0, 0, 60}, Armor::Socket::chest};
         Armor aq_breatplate_of_annihilation{"aq_breatplate_of_annihilation", Stats{37, 0}, Special_stats{1, 1, 0},
                                             Armor::Socket::chest};
@@ -176,6 +180,8 @@ struct Armory
                                              Special_stats{2, 0, 62}, Armor::Socket::legs};
         Armor aq_conquerors_legguards{"aq_conquerors_legguards", Stats{33, 21}, Special_stats{0, 1, 0},
                                       Armor::Socket::legs};
+        Armor titanic_leggings{"titanic_leggings", Stats{30, 0}, Special_stats{1, 2, 0},
+                               Armor::Socket::legs};
     } legs;
 
     struct boots_t
@@ -186,7 +192,7 @@ struct Armory
                                       Armor::Socket::boots, Set_name::black_dragonscale};
         Armor knight_leutenants_greaves{"knight_leutenants_greaves", Stats{10, 9}, Special_stats{0, 0, 40},
                                         Armor::Socket::boots, Set_name::rare_pvp_set};
-        Armor battlechasers{"battlechasers", Stats{0, 0}, Special_stats{0, 1, 22}, Armor::Socket::boots};
+        Armor battlechasers{"battlechasers", Stats{14, 13}, Special_stats{0, 0, 0}, Armor::Socket::boots};
         Armor chromatic_boots{"chromatic_boots", Stats{20, 20}, Special_stats{0, 1, 0}, Armor::Socket::boots};
         Armor boots_of_shadow_flame{"boots_of_shadow_flame", Stats{0, 0}, Special_stats{0, 2, 44},
                                     Armor::Socket::boots};
@@ -204,6 +210,7 @@ struct Armory
         Armor circle_of_applied_force{"circle_of_applied_force", Stats{12, 22}, Special_stats{0, 0, 0},
                                       Armor::Socket::ring};
         Armor blackstone_ring{"blackstone_ring", Stats{0, 0}, Special_stats{0, 1, 20}, Armor::Socket::ring};
+        Armor tarnished_elven{"tarnished_elven", Stats{0, 15}, Special_stats{0, 1, 0}, Armor::Socket::ring};
     } rings;
 
     struct trinket_t
@@ -217,6 +224,8 @@ struct Armory
     struct ranged_t
     {
         Armor satyrs_bow{"satyrs_bow", Stats{0, 3}, Special_stats{0, 1, 0}, Armor::Socket::ranged};
+        Armor precisely_calibrated_boomstick{"precisely_calibrated_boomstick", Stats{0, 14}, Special_stats{0, 0, 0},
+                                             Armor::Socket::ranged};
         Armor strikers_mark{"strikers_mark", Stats{0, 0}, Special_stats{0, 1, 22}, Armor::Socket::ranged};
         Armor heartstriker{"heartstriker", Stats{0, 0}, Special_stats{0, 0, 24}, Armor::Socket::ranged};
         Armor blastershot{"blastershot", Stats{0, 0}, Special_stats{1, 0, 0}, Armor::Socket::ranged};

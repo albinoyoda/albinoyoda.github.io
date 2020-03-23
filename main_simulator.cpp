@@ -43,7 +43,7 @@ Character create_character()
 
     character.equip_armor(
             //Helmet
-            armory.helmet.lionheart_helm,
+            armory.helmet.crown_of_destruction,
 
             // Neck
             armory.neck.onyxia_tooth_pendant,
@@ -55,52 +55,53 @@ Character create_character()
             armory.back.cape_of_the_black_baron,
 
             // Chest
-            armory.chest.savage_gladiator_chain,
+            armory.chest.cadaverous_armor,
 
             // Wrists
-            armory.wrist.wristguards_of_stability,
+            armory.wrist.vambraces_of_the_sadist,
 
             // Hands
-            armory.hands.flameguard_gauntlets,
+            armory.hands.devilsaur_gauntlets,
 
             // Belt
-            armory.belt.onslaught_girdle,
+            armory.belt.omokks_girth,
 
             // Legs
-            armory.legs.legguards_of_the_fallen_crusader,
+            armory.legs.knight_captain_plate_leggings,
 
             // boots
-            armory.boots.chromatic_boots,
+            armory.boots.battlechasers,
 
             // Rings
             armory.rings.don_julios_band,
-            armory.rings.quick_strike_ring,
+            armory.rings.magnis_will,
 
             // Trinket
             armory.trinket.blackhands_breadth,
             armory.trinket.diamond_flask,
 
             // Bow
-            armory.ranged.strikers_mark
+            armory.ranged.satyrs_bow
                          );
 
-    character.equip_weapon(armory.swords.maladath,
-                           armory.swords.brutality_blade);
+    character.equip_weapon(armory.swords.viskag,
+                           armory.daggers.core_hound_tooth);
 
-    character.add_enchants(Enchant{Enchant::Socket::head, Enchant::Type::haste},
-                           Enchant{Enchant::Socket::back, Enchant::Type::agility},
-                           Enchant{Enchant::Socket::chest, Enchant::Type::major_stats},
-                           Enchant{Enchant::Socket::wrists, Enchant::Type::strength9},
-                           Enchant{Enchant::Socket::hands, Enchant::Type::haste},
-                           Enchant{Enchant::Socket::legs, Enchant::Type::haste},
-                           Enchant{Enchant::Socket::weapon_mh, Enchant::Type::crusader},
-                           Enchant{Enchant::Socket::weapon_oh, Enchant::Type::crusader}
+    character.add_enchants(
+            Enchant{Enchant::Socket::head, Enchant::Type::haste},
+            Enchant{Enchant::Socket::back, Enchant::Type::agility},
+            Enchant{Enchant::Socket::chest, Enchant::Type::major_stats},
+            Enchant{Enchant::Socket::wrists, Enchant::Type::strength9},
+            Enchant{Enchant::Socket::hands, Enchant::Type::haste},
+            Enchant{Enchant::Socket::legs, Enchant::Type::haste},
+            Enchant{Enchant::Socket::weapon_mh, Enchant::Type::crusader},
+            Enchant{Enchant::Socket::weapon_oh, Enchant::Type::crusader}
                           );
 
     character.add_buffs(
             buffs.rallying_cry,
             buffs.dire_maul,
-            buffs.songflower,
+//            buffs.songflower,
             buffs.blessing_of_kings,
             buffs.blessing_of_might,
             buffs.gift_of_the_wild,
@@ -127,10 +128,13 @@ Character delta_gear(const Character &character)
 
     Character delta_character = character;
 
-    delta_character.change_weapon(armory.swords.brutality_blade, Hand::main_hand);
-    delta_character.change_weapon(armory.swords.maladath, Hand::off_hand);
+//    delta_character.change_weapon(armory.axes.crul_shorukh_edge_of_chaos, Hand::main_hand);
+//    delta_character.change_weapon(armory.axes.deathbringer, Hand::off_hand);
 
-//    delta_character.change_armor(armory.helmet.crown_of_destruction);
+//    delta_character.change_armor(armory.chest.knight_captains_plate_hauberk);
+//    delta_character.change_armor(armory.legs.knight_captain_plate_leggings);
+//    delta_character.change_armor(armory.hands.flameguard_gauntlets);
+    delta_character.change_armor(armory.boots.bloodmail_boots);
 //    delta_character.change_armor(armory.trinket.drake_fang_talisman, false);
 
     delta_character.compute_all_stats(Character::Talent::fury, armory.get_set_bonuses());
@@ -147,7 +151,7 @@ int main()
     characters.emplace_back(delta_gear(characters[0]));
 
     // Combat settings
-    int n_batches = 20;
+    int n_batches = 10000;
     double sim_time = 60;
     int opponent_level = 63;
 
@@ -155,8 +159,8 @@ int main()
     simulators.emplace_back(Combat_simulator());
     simulators.emplace_back(Combat_simulator());
 
-    simulators[0].use_fast_but_sloppy_rng(); // Use before set seed!
-    simulators[0].set_seed(100); // Use for predictable random numbers
+//    simulators[0].use_fast_but_sloppy_rng(); // Use before set seed!
+//    simulators[0].set_seed(10000); // Use for predictable random numbers
 //    simulators[0].enable_rng_melee(); // Uses random swing damage instead of average
     simulators[0].enable_spell_rotation();
 //    simulators[0].use_heroic_spamm();
@@ -171,8 +175,8 @@ int main()
 //    simulators[0].enable_recklessness();
 //    simulators[0].display_combat_debug();
 
-    simulators[1].use_fast_but_sloppy_rng(); // Use before set seed!
-    simulators[1].set_seed(100); // Use for predictable random numbers
+//    simulators[1].use_fast_but_sloppy_rng(); // Use before set seed!
+//    simulators[1].set_seed(100); // Use for predictable random numbers
 //    simulators[1].enable_rng_melee(); // Uses random swing damage instead of average
     simulators[1].enable_spell_rotation();
 //    simulators[1].use_heroic_spamm();

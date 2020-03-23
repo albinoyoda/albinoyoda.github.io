@@ -8,6 +8,34 @@
 #include "wow_library/include/Item.hpp"
 #include "wow_library/include/Armory.hpp"
 
+inline double normalCDF(double value)
+{
+    return 0.5 * erfc(-value * M_SQRT1_2);
+}
+
+double find_cdf_quantile(double target_quantile, double precision)
+{
+    double x = 0.0;
+    double quantile = 0.5;
+    while (quantile < target_quantile)
+    {
+        x += precision;
+        quantile = normalCDF(x);
+    }
+    return x;
+}
+
+std::vector<double> find_cdf_quantile(const std::vector<double> &target_quantiles, double precision)
+{
+    std::vector<double> x_values;
+    x_values.reserve(target_quantiles.size());
+    for (const auto &quantile : target_quantiles)
+    {
+        x_values.emplace_back(find_cdf_quantile(quantile, precision));
+    }
+    return x_values;
+}
+
 class Item_optimizer
 {
 public:
@@ -124,77 +152,96 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
 
     std::vector<Armor> necks;
     necks = {
-            armory.neck.onyxia_tooth_pendant,
-            armory.neck.aq_barbed_choker
+            armory.neck.onyxia_tooth_pendant
+//            armory.neck.aq_barbed_choker
     };
 
     std::vector<Armor> shoulders;
     shoulders = {
 //            armory.shoulder.drake_talon_pauldrons,
 //            armory.shoulder.aq_chitinous_shoulderguards,
-            armory.shoulder.aq_mantle_of_wicked_revenge,
+            armory.shoulder.spaulders_of_valor,
+            armory.shoulder.truestrike_shoulders
 //            armory.shoulder.aq_conquerors_spaulders
     };
 
     std::vector<Armor> backs;
     backs = {
 //            armory.back.cloak_of_draconic_might,
-            armory.back.aq_cloak_of_concentrated_hate
+            armory.back.cape_of_the_black_baron
     };
 
     std::vector<Armor> chests;
     chests = {
 //            armory.chest.savage_gladiator_chain,
-            armory.chest.aq_breatplate_of_annihilation,
+            armory.chest.cadaverous_armor,
+            armory.chest.knight_captains_plate_hauberk,
+            armory.chest.tombstone_breastplate
 //            armory.chest.aq_conquerors_breastplate,
 //            armory.chest.aq_vest_of_swift_execution
     };
 
     std::vector<Armor> wrists;
     wrists = {
-            armory.wrist.aq_hive_defiler_wristguards,
+            armory.wrist.vambraces_of_the_sadist,
+            armory.wrist.battleborn_armbraces,
 //            armory.wrist.aq_quiraji_execution_bracers
     };
 
     std::vector<Armor> hands;
     hands = {
-//            armory.hands.flameguard_gauntlets,
-            armory.hands.aq_gauntlets_of_annihilation,
-//            armory.hands.aq_gloves_of_enforcement,
+            armory.hands.flameguard_gauntlets,
+            armory.hands.devilsaur_gauntlets,
     };
 
     std::vector<Armor> belts;
-    belts = {armory.belt.onslaught_girdle};
+    belts = {
+            armory.belt.omokks_girth,
+            armory.belt.mugglers_belt
+    };
 
     std::vector<Armor> legs;
     legs = {
 //            armory.legs.aq_conquerors_legguards,
-            armory.legs.aq_scaled_sand_reaver_leggings
+            armory.legs.devilsaur_leggings,
+            armory.legs.knight_captain_plate_leggings,
+//            armory.legs.titanic_leggings
     };
 
     std::vector<Armor> boots;
-    boots = {armory.boots.chromatic_boots};
+    boots = {
+            armory.boots.battlechasers,
+            armory.boots.bloodmail_boots
+    };
 
     std::vector<Armor> ranged;
-    ranged = {armory.ranged.aq_larvae_of_the_great_worm};
+    ranged = {
+            armory.ranged.satyrs_bow,
+            armory.ranged.precisely_calibrated_boomstick
+    };
 
     std::vector<Armor> rings;
     rings = {
             armory.rings.don_julios_band,
-            armory.rings.quick_strike_ring,
+            armory.rings.magnis_will,
+            armory.rings.blackstone_ring,
+            armory.rings.tarnished_elven
     };
 
     std::vector<Armor> trinkets;
     trinkets = {
             armory.trinket.diamond_flask,
-            armory.trinket.drake_fang_talisman,
-//            armory.trinket.blackhands_breadth,
+//            armory.trinket.drake_fang_talisman,
+            armory.trinket.blackhands_breadth,
     };
 
     std::vector<Weapon> weapons;
     weapons = {
-            armory.swords.maladath,
-            armory.swords.brutality_blade
+            armory.swords.viskag,
+            armory.daggers.core_hound_tooth,
+            armory.maces.stormstike_hammer,
+            armory.swords.mirahs_song,
+
     };
 
     size_t n_helmet = helmets.size();
@@ -340,14 +387,13 @@ int main()
 
     // Combat settings
     std::vector<int> batches_per_iteration = {20, 100, 1000, 10000};
-    std::vector<double> quantiles = {2.8, 2.2, 1.8, 1.5};
     double sim_time = 60;
     int opponent_level = 63;
 
     Combat_simulator simulator = Combat_simulator();
 
     simulator.use_fast_but_sloppy_rng(); // Use before set seed!
-    simulator.set_seed(100); // Use for predictable random numbers
+//    simulator.set_seed(100); // Use for predictable random numbers
 //    simulator.enable_rng_melee(); // Uses random swing damage instead of average
     simulator.enable_spell_rotation();
 //    simulator.use_heroic_spamm();
@@ -396,7 +442,7 @@ int main()
                 best_dps_std = characters[idx].sample_std_dps;
             }
             iter++;
-            if (keepers.size() < 100)
+            if (keepers.size() < 200)
             {
                 if (iter == 2)
                 {
@@ -416,13 +462,16 @@ int main()
             }
         }
 
-        std::cout << "Deleting the low 95% percentile" << "\n";
-        double filter_value = best_dps - quantiles[i] * best_dps_std;
+        double quantile = find_cdf_quantile(1 - 1 / static_cast<double>(n), 0.01);
+        double filter_value = best_dps - quantile * best_dps_std;
+        std::cout << "Best combination DPS: " << best_dps << ", deleting sets below: "
+                  << best_dps - quantile * best_dps_std << "\n";
+
         std::vector<size_t> temp_keepers;
         temp_keepers.reserve(n);
         for (const size_t &index : keepers)
         {
-            if (characters[index].mean_dps + quantiles[i] * characters[index].sample_std_dps > filter_value)
+            if (characters[index].mean_dps > filter_value)
             {
                 temp_keepers.emplace_back(index);
             }
