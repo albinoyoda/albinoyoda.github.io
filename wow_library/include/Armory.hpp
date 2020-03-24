@@ -67,6 +67,8 @@ struct Armory
                                              Armor::Socket::neck};
         Armor aq_barbed_choker{"aq_barbed_choker", Stats{0, 0}, Special_stats{1, 0, 44},
                                Armor::Socket::neck};
+        Armor mark_of_fordring{"mark_of_fordring", Stats{0, 0}, Special_stats{1, 0, 26},
+                               Armor::Socket::neck};
     } neck;
 
     struct shoulder_t
@@ -86,10 +88,14 @@ struct Armory
                                           Armor::Socket::shoulder};
         Armor aq_conquerors_spaulders{"aq_conquerors_spaulders", Stats{20, 16}, Special_stats{0, 1, 0},
                                       Armor::Socket::shoulder};
+        Armor big_bad_pauldrons{"big_bad_pauldrons", Stats{12, 0}, Special_stats{0, 0, 0},
+                                Armor::Socket::shoulder};
     } shoulder;
 
     struct back_t
     {
+        Armor shadewood_cloak{"shadewood_cloak", Stats{13, 0}, Special_stats{0, 0, 0},
+                              Armor::Socket::back};
         Armor cape_of_the_black_baron{"cape_of_the_black_baron", Stats{0, 15}, Special_stats{0, 0, 20},
                                       Armor::Socket::back};
         Armor cloak_of_firemaw{"cloak_of_firemaw", Stats{0, 0}, Special_stats{0, 0, 50}, Armor::Socket::back};
@@ -107,8 +113,10 @@ struct Armory
                                      Armor::Socket::chest};
         Armor knight_captains_plate_hauberk{"knight_captains_plate_hauberk", Stats{21, 0}, Special_stats{1, 0, 0},
                                             Armor::Socket::chest, Set_name::rare_pvp_set};
-        Armor tombstone_breastplate{"tombstone_breastplate", Stats{10, 10}, Special_stats{2, 0, 0},
+        Armor tombstone_breastplate{"tombstone_breastplate", Stats{10, 0}, Special_stats{2, 0, 0},
                                     Armor::Socket::chest};
+        Armor breastplate_of_bloodthirts{"breastplate_of_bloodthirts", Stats{10, 0}, Special_stats{2, 0, 0},
+                                         Armor::Socket::chest};
         Armor cadaverous_armor{"cadaverous_armor", Stats{8, 8}, Special_stats{0, 0, 60}, Armor::Socket::chest};
         Armor aq_breatplate_of_annihilation{"aq_breatplate_of_annihilation", Stats{37, 0}, Special_stats{1, 1, 0},
                                             Armor::Socket::chest};
@@ -116,6 +124,10 @@ struct Armory
                                          Armor::Socket::chest};
         Armor aq_conquerors_breastplate{"aq_conquerors_breastplate", Stats{34, 24}, Special_stats{0, 0, 0},
                                         Armor::Socket::chest};
+        Armor carapace_of_anub{"carapace_of_anub", Stats{11, 11}, Special_stats{0, 0, 0},
+                               Armor::Socket::chest};
+        Armor black_dragonscale_chest{"black_dragonscale_chest", Stats{0, 0}, Special_stats{0, 0, 50},
+                                      Armor::Socket::chest, Set_name::black_dragonscale};
     } chest;
 
     struct wrists_t
@@ -133,6 +145,8 @@ struct Armory
                                           Armor::Socket::wrists};
         Armor aq_quiraji_execution_bracers{"aq_quiraji_execution_bracers", Stats{15, 16}, Special_stats{0, 1, 0},
                                            Armor::Socket::wrists};
+        Armor slashclaw_bracers{"slashclaw_bracers", Stats{0, 7}, Special_stats{0, 1, 0},
+                                Armor::Socket::wrists};
     } wrist;
 
     struct hands_t
@@ -163,7 +177,7 @@ struct Armory
     {
         Armor devilsaur_leggings{"devilsaur_leggings", Stats{0, 0}, Special_stats{1, 0, 46}, Armor::Socket::legs,
                                  Set_name::devilsaur};
-        Armor black_dragonscale_leggings{"black_dragonscale_leggings", Stats{0, 0}, Special_stats{2, 1, 54},
+        Armor black_dragonscale_leggings{"black_dragonscale_leggings", Stats{0, 0}, Special_stats{0, 0, 54},
                                          Armor::Socket::legs, Set_name::black_dragonscale};
         Armor eldritch_legplates{"eldritch_legplates", Stats{15, 9}, Special_stats{1, 0, 0}, Armor::Socket::legs};
         Armor ubrs_legs{"ubrs_legs", Stats{29, 0}, Special_stats{0, 0, 0}, Armor::Socket::legs};
@@ -235,6 +249,9 @@ struct Armory
                                            Armor::Socket::ranged};
         Armor aq_larvae_of_the_great_worm{"aq_larvae_of_the_great_worm", Stats{0, 0}, Special_stats{1, 0, 18},
                                           Armor::Socket::ranged};
+        Armor bloodseeker{"bloodseeker", Stats{8, 7}, Special_stats{0, 0, 0},
+                          Armor::Socket::ranged};
+        Armor riphook{"riphook", Stats{0, 0}, Special_stats{0, 0, 22}, Armor::Socket::ranged};
     } ranged;
 
     // ---------------- Weapons ------------------

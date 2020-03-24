@@ -160,88 +160,95 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
     shoulders = {
 //            armory.shoulder.drake_talon_pauldrons,
 //            armory.shoulder.aq_chitinous_shoulderguards,
-            armory.shoulder.spaulders_of_valor,
-            armory.shoulder.truestrike_shoulders
-//            armory.shoulder.aq_conquerors_spaulders
+//            armory.shoulder.big_bad_pauldrons,
+            armory.shoulder.truestrike_shoulders,
+            armory.shoulder.black_dragonscale_shoulders
     };
 
     std::vector<Armor> backs;
     backs = {
 //            armory.back.cloak_of_draconic_might,
-            armory.back.cape_of_the_black_baron
+            armory.back.shadewood_cloak
     };
 
     std::vector<Armor> chests;
     chests = {
 //            armory.chest.savage_gladiator_chain,
-            armory.chest.cadaverous_armor,
-            armory.chest.knight_captains_plate_hauberk,
-            armory.chest.tombstone_breastplate
+            armory.chest.breastplate_of_bloodthirts,
+            armory.chest.black_dragonscale_chest,
+//            armory.chest.knight_captains_plate_hauberk,
+//            armory.chest.tombstone_breastplate
 //            armory.chest.aq_conquerors_breastplate,
 //            armory.chest.aq_vest_of_swift_execution
     };
 
     std::vector<Armor> wrists;
     wrists = {
-            armory.wrist.vambraces_of_the_sadist,
+            armory.wrist.slashclaw_bracers,
             armory.wrist.battleborn_armbraces,
+            armory.wrist.vambraces_of_the_sadist,
+//            armory.wrist.wristguards_of_stability,
+//            armory.wrist.battleborn_armbraces,
 //            armory.wrist.aq_quiraji_execution_bracers
     };
 
     std::vector<Armor> hands;
     hands = {
-            armory.hands.flameguard_gauntlets,
             armory.hands.devilsaur_gauntlets,
+//            armory.hands.devilsaur_gauntlets,
     };
 
     std::vector<Armor> belts;
     belts = {
             armory.belt.omokks_girth,
-            armory.belt.mugglers_belt
+//            armory.belt.mugglers_belt
     };
 
     std::vector<Armor> legs;
     legs = {
 //            armory.legs.aq_conquerors_legguards,
             armory.legs.devilsaur_leggings,
-            armory.legs.knight_captain_plate_leggings,
+            armory.legs.black_dragonscale_leggings,
 //            armory.legs.titanic_leggings
     };
 
     std::vector<Armor> boots;
     boots = {
             armory.boots.battlechasers,
-            armory.boots.bloodmail_boots
+            armory.boots.bloodmail_boots,
+            armory.boots.black_dragonscale_boots,
     };
 
     std::vector<Armor> ranged;
     ranged = {
+            armory.ranged.riphook,
             armory.ranged.satyrs_bow,
-            armory.ranged.precisely_calibrated_boomstick
+            armory.ranged.bloodseeker,
+//            armory.ranged.precisely_calibrated_boomstick
     };
 
     std::vector<Armor> rings;
     rings = {
-            armory.rings.don_julios_band,
+            armory.rings.quick_strike_ring,
             armory.rings.magnis_will,
-            armory.rings.blackstone_ring,
+//            armory.rings.blackstone_ring,
             armory.rings.tarnished_elven
     };
 
     std::vector<Armor> trinkets;
     trinkets = {
             armory.trinket.diamond_flask,
+            armory.trinket.hand_of_justice,
 //            armory.trinket.drake_fang_talisman,
             armory.trinket.blackhands_breadth,
     };
 
     std::vector<Weapon> weapons;
     weapons = {
-            armory.swords.viskag,
-            armory.daggers.core_hound_tooth,
-            armory.maces.stormstike_hammer,
+            armory.swords.quel_serrar,
+//            armory.daggers.core_hound_tooth,
+//            armory.maces.stormstike_hammer,
             armory.swords.mirahs_song,
-
     };
 
     size_t n_helmet = helmets.size();
@@ -360,7 +367,7 @@ void Item_optimizer::add_buffs(Character &character, const Buffs &buffs)
     character.add_buffs(
             buffs.rallying_cry,
             buffs.dire_maul,
-            buffs.songflower,
+//            buffs.songflower,
             buffs.blessing_of_kings,
             buffs.blessing_of_might,
             buffs.gift_of_the_wild,
@@ -400,7 +407,7 @@ int main()
     simulator.use_mighty_rage_potion();
     simulator.enable_anger_management();
     simulator.enable_bloodrage();
-//    simulator.fuel_extra_rage(3.0, 150);
+//    simulator.fuel_extra_rage(2.0, 500);
     simulator.enable_talents();
     simulator.enable_item_chance_on_hit_effects();
     simulator.enable_crusader();

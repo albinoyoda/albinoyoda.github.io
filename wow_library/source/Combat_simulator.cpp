@@ -882,7 +882,7 @@ Combat_simulator::compute_stat_weights(const Character &character, const Armory 
 {
     if (!debug_mode_)
     {
-        double stat_permutation_amount = 8;
+        double stat_permutation_amount = 20;
         double special_stat_permutation_amount = 1;
         double skill_permutation_amount = 5;
         double damage_permutation_amount = 8;
