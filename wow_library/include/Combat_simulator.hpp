@@ -12,6 +12,140 @@
 #include "Attributes.hpp"
 #include "Character.hpp"
 
+namespace
+{
+    constexpr double get_normalized_swing_speed(Skill_type skill_type)
+    {
+        if (skill_type == Skill_type::dagger)
+        {
+            return 1.7;
+        }
+        else
+        {
+            return 2.5;
+        }
+    }
+
+    size_t get_weapon_skill(Special_stats special_stats, Skill_type skill_type, size_t character_level)
+    {
+        size_t skill = character_level * 5; // TODO based on level
+        for (const auto &bonus_skill : special_stats.bonus_skill)
+        {
+            switch (skill_type)
+            {
+                case Skill_type::sword :
+                    skill += bonus_skill.sword_skill;
+                    break;
+                case Skill_type::axe :
+                    skill += bonus_skill.axe_skill;
+                    break;
+                case Skill_type::dagger :
+                    skill += bonus_skill.dagger_skill;
+                    break;
+                case Skill_type::mace :
+                    skill += bonus_skill.mace_skill;
+                    break;
+                default:
+                    break;
+            }
+        }
+        return skill;
+    }
+}
+
+class Weapon_sim
+{
+public:
+    Weapon_sim(const Weapon &weapon, Socket socket, std::vector<Enchant> enchants, std::vector<Buff> buffs) :
+            swing_speed_(weapon.get_swing_speed()),
+            skill_type_(weapon.get_weapon_type()),
+            normalized_swing_speed_(get_normalized_swing_speed(skill_type_)),
+            internal_swing_timer_(weapon.get_swing_speed()),
+            damage_interval_(weapon.get_damage_interval()),
+            socket_(socket)
+    {
+        if (weapon.get_hit_effect().get_type() != Hit_effect::Type::none)
+        {
+            hit_effects_.emplace_back(weapon.get_hit_effect());
+        }
+
+        for (const auto &enchant : enchants)
+        {
+            if (enchant.get_hit_effect().get_type() != Hit_effect::Type::none)
+            {
+                hit_effects_.emplace_back(enchant.get_hit_effect());
+            }
+        }
+
+        for (const auto &buff : buffs)
+        {
+            if (buff.get_socket() == socket)
+            {
+                damage_interval_.first += buff.get_bonus_damage();
+                damage_interval_.second += buff.get_bonus_damage();
+            }
+        }
+        average_damage_ = (damage_interval_.first + damage_interval_.second) / 2;
+    }
+
+    constexpr double step(double dt, double attack_power)
+    {
+        internal_swing_timer_ -= dt;
+        if (internal_swing_timer_ < 0.0)
+        {
+            internal_swing_timer_ += swing_speed_;
+            double damage = swing(attack_power);
+            if (get_hand() == Socket::off_hand)
+            {
+                // TODO talents here
+                return damage *= 0.625;
+            }
+            return damage;
+        }
+        return 0.0;
+    }
+
+    constexpr double swing(double attack_power) const
+    {
+        return average_damage_ + attack_power * swing_speed_ / 14;
+    }
+
+    constexpr double normalized_swing(double attack_power)
+    {
+        return average_damage_ + attack_power * normalized_swing_speed_ / 14;
+    }
+
+    constexpr Socket get_hand() const
+    {
+        return socket_;
+    }
+
+private:
+    double swing_speed_;
+    Skill_type skill_type_;
+    double normalized_swing_speed_;
+    double internal_swing_timer_;
+    std::pair<double, double> damage_interval_;
+    double average_damage_;
+    Socket socket_;
+    std::vector<Hit_effect> hit_effects_;
+};
+
+//double random_swing(double attack_power)
+//{
+//    double damage = damage_interval_.first + (damage_interval_.second - damage_interval_
+//            .first) * static_cast<double>(rand()) / RAND_MAX
+//                    + attack_power * swing_speed_ / 14;
+//    return damage;
+//}
+//
+//double random_normalized_swing(double attack_power)
+//{
+//    return damage_interval_.first + (damage_interval_.second - damage_interval_
+//            .first) * static_cast<double>(rand()) / RAND_MAX
+//           + attack_power * normalized_swing_speed_ / 14;
+//}
+
 class Time_keeper
 {
 public:
@@ -85,8 +219,10 @@ public:
 class Combat_simulator
 {
 public:
-    explicit Combat_simulator() : eng_{static_cast<long unsigned int>(time(nullptr))},
-            dist100_{0.0, 100.0}, dist1_(0.0, 1.0) {}
+    explicit Combat_simulator() :
+            eng_{static_cast<long unsigned int>(time(nullptr))},
+            dist100_{0.0, 100.0},
+            dist1_(0.0, 1.0) {}
 
     void set_seed(long unsigned int seed)
     {
@@ -98,7 +234,6 @@ public:
         {
             eng_ = std::default_random_engine{seed};
         }
-
     }
 
     void use_heroic_spamm()
@@ -237,7 +372,8 @@ public:
         };
 
         Stat_weight(double d_dps_plus, double std_d_dps_plus, double d_dps_minus, double std_d_dps_minus, double amount,
-                    Stat stat) : d_dps_plus{d_dps_plus},
+                    Stat stat) :
+                d_dps_plus{d_dps_plus},
                 std_d_dps_plus{std_d_dps_plus},
                 d_dps_minus{d_dps_minus},
                 std_d_dps_minus{std_d_dps_minus},
@@ -312,19 +448,22 @@ public:
     std::vector<double> &
     simulate(const Character &character, double sim_time, int opponent_level, int n_damage_batches);
 
-    template<typename Struct_t, typename Field_t>
-    Stat_weight permute_stat(const Character &character, const Armory& armory, Struct_t struct_t, Field_t field_t, Stat stat, double amount,
-                             double sim_time, int opponent_level, int n_batches, double mean_init,
-                             double sample_std_init);
-
-    template<typename Function_ptr>
-    Combat_simulator::Stat_weight
-    permute_stat(const Character &character,  const Armory& armory, Function_ptr function_ptr,
-                 Combat_simulator::Stat stat, double amount, double sim_time, int opponent_level,
-                 int n_batches, double mean_init, double sample_std_init);
+//    template<typename Struct_t, typename Field_t>
+//    Stat_weight
+//    permute_stat(const Character &character, const Armory &armory, Struct_t struct_t, Field_t field_t, Stat stat,
+//                 double amount,
+//                 double sim_time, int opponent_level, int n_batches, double mean_init,
+//                 double sample_std_init);
+//
+//    template<typename Function_ptr>
+//    Combat_simulator::Stat_weight
+//    permute_stat(const Character &character, const Armory &armory, Function_ptr function_ptr,
+//                 Combat_simulator::Stat stat, double amount, double sim_time, int opponent_level,
+//                 int n_batches, double mean_init, double sample_std_init);
 
     std::vector<Combat_simulator::Stat_weight>
-    compute_stat_weights(const Character &character, const Armory &armory,double sim_time, int opponent_level, int n_batches,
+    compute_stat_weights(const Character &character, const Armory &armory, double sim_time, int opponent_level,
+                         int n_batches,
                          double mean_init, double sample_std_init);
 
     Combat_simulator::Hit_outcome
@@ -464,8 +603,8 @@ private:
     bool fuel_extra_rage_{false};
     double interval_;
     double damage_amount_;
-    double glancing_factor_mh_{0.0};
-    double glancing_factor_oh_{0.0};
+    double glancing_factor_mh_{};
+    double glancing_factor_oh_{};
     double armor_reduction_factor_{};
     Time_keeper time_keeper_{};
     std::default_random_engine eng_;

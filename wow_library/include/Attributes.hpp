@@ -2,6 +2,7 @@
 #define WOW_SIMULATOR_STATS_HPP
 
 #include <ostream>
+#include <vector>
 
 enum class Skill_type
 {
@@ -62,23 +63,29 @@ struct Special_stats
 {
     Special_stats() = default;
 
-    Special_stats(double critical_strike, double hit, double attack_power, double chance_for_extra_hit,
+    Special_stats(double critical_strike, double hit, double attack_power, double chance_for_extra_hit = 0.0,
+                  double haste = 0.0,
                   const std::vector<Bonus_skill> &bonus_skill = std::vector<Bonus_skill>()) :
             critical_strike{critical_strike},
             hit{hit},
             attack_power{attack_power},
-            chance_for_extra_hit(chance_for_extra_hit)
+            chance_for_extra_hit(chance_for_extra_hit),
+            haste(haste)
     {
         for (const auto &skill : bonus_skill)
         {
             this->bonus_skill.emplace_back(skill);
         }
     };
-    double critical_strike{};
-    double hit{};
-    double attack_power{};
-    double chance_for_extra_hit{};
-    std::vector<Bonus_skill> bonus_skill;
+
+    void clear()
+    {
+        critical_strike = 0;
+        hit = 0;
+        attack_power = 0;
+        chance_for_extra_hit = 0;
+        haste = 0;
+    }
 
     Special_stats operator+(const Special_stats &rhs)
     {
@@ -89,6 +96,7 @@ struct Special_stats
         return {this->critical_strike + rhs.critical_strike, this->hit + rhs.hit,
                 this->attack_power + rhs.attack_power,
                 this->chance_for_extra_hit + rhs.chance_for_extra_hit,
+                this->haste + rhs.haste,
                 this->bonus_skill};
     }
 
@@ -97,6 +105,13 @@ struct Special_stats
         *this = *this + rhs;
         return *this;
     }
+
+    double critical_strike{};
+    double hit{};
+    double attack_power{};
+    double chance_for_extra_hit{};
+    double haste{};
+    std::vector<Bonus_skill> bonus_skill;
 };
 
 class Attributes
@@ -105,6 +120,17 @@ public:
     Attributes() = default;
 
     Attributes(double strength, double agility) : strength{strength}, agility{agility} {};
+
+    void clear()
+    {
+        strength = 0;
+        agility = 0;
+    }
+
+    Special_stats convert_to_special_stats() const
+    {
+        return {this->agility / 20, 0, this->strength * 2, 0, 0};
+    }
 
     Attributes operator+(const Attributes &rhs)
     {
@@ -128,20 +154,9 @@ public:
         return *this;
     }
 
-    Special_stats convert_to_special_stats() const
-    {
-        return {this->agility / 20, 0, this->strength * 2, 0};
-    }
-
     double strength;
     double agility;
 };
-
-std::ostream &operator<<(std::ostream &os, Attributes const &stats);
-
-std::ostream &operator<<(std::ostream &os, Special_stats const &special_stats);
-
-#endif //WOW_SIMULATOR_STATS_HPP
 
 std::ostream &operator<<(std::ostream &os, Special_stats const &special_stats)
 {
@@ -159,3 +174,5 @@ std::ostream &operator<<(std::ostream &os, Attributes const &stats)
     os << "agility: " << stats.agility << "\n";
     return os;
 }
+
+#endif //WOW_SIMULATOR_STATS_HPP

@@ -2,17 +2,14 @@
 #define WOW_SIMULATOR_ITEM_HPP
 
 #include <utility>
+#include <cassert>
 
 #include "Attributes.hpp"
-
-enum class Hand
-{
-    main_hand,
-    off_hand
-};
+#include "Hit_effect.hpp"
 
 enum class Socket
 {
+    none,
     head,
     neck,
     shoulder,
@@ -47,7 +44,7 @@ public:
     Stat_base(Attributes stats, Special_stats special_stats)
             :
             stats_(stats),
-            special_stats_(special_stats) {};
+            special_stats_(std::move(special_stats)) {};
 
     constexpr const Attributes &get_stats() const
     {
@@ -71,7 +68,7 @@ public:
     Armor() = delete;
 
     Armor(std::string name, Attributes stats, Special_stats special_stats, Socket socket, Set set_name = Set::none) :
-            Stat_base{stats, special_stats},
+            Stat_base{stats, std::move(special_stats)},
             name_(std::move(name)),
             socket_(socket),
             set_name_(set_name) {};
@@ -103,11 +100,14 @@ public:
     Weapon() = delete;
 
     Weapon(std::string name, double swing_speed, std::pair<double, double> damage_interval, Attributes stats,
-           Special_stats special_stats, Socket socket, Skill_type skill_type, Set set_name = Set::none) :
-            Armor{std::move(name), stats, special_stats, socket, set_name},
+           Special_stats special_stats, Socket socket, Skill_type skill_type,
+           Hit_effect hit_effect = Hit_effect(),
+           Set set_name = Set::none) :
+            Armor{std::move(name), stats, std::move(special_stats), socket, set_name},
             swing_speed_{swing_speed},
             damage_interval_{std::move(damage_interval)},
-            weapon_type_{skill_type} {}
+            weapon_type_{skill_type},
+            hit_effect_(hit_effect) {}
 
     constexpr const double &get_swing_speed() const
     {
@@ -124,10 +124,16 @@ public:
         return weapon_type_;
     }
 
+    constexpr const Hit_effect &get_hit_effect() const
+    {
+        return hit_effect_;
+    }
+
 private:
     double swing_speed_;
     std::pair<double, double> damage_interval_;
     Skill_type weapon_type_;
+    Hit_effect hit_effect_;
 };
 
 class Set_bonus : public Stat_base
@@ -136,7 +142,7 @@ public:
     Set_bonus() = delete;
 
     Set_bonus(Attributes stats, Special_stats special_stats, size_t pieces, Set set_name) :
-            Stat_base{stats, special_stats},
+            Stat_base{stats, std::move(special_stats)},
             pieces_(pieces),
             set_name_(set_name) {};
 
@@ -160,46 +166,61 @@ class Buff : public Stat_base
 public:
     Buff() = delete;
 
-    Buff(std::string name, Attributes stats, Special_stats special_stats, double stat_multiplier) :
-            Stat_base{stats, special_stats},
-            name_(std::move(name)), stat_multiplier_(stat_multiplier) {};
+    Buff(std::string name, Attributes stats, Special_stats special_stats, double stat_multiplier = 0,
+         double bonus_damage = 0, Socket socket = Socket::none) :
+            Stat_base{stats, std::move(special_stats)},
+            name_(std::move(name)), stat_multiplier_(stat_multiplier), bonus_damage_(bonus_damage), socket_(socket) {};
 
-    double get_stat_multiplier() const
+    constexpr double get_stat_multiplier() const
     {
         return stat_multiplier_;
+    }
+
+    constexpr double get_bonus_damage() const
+    {
+        return bonus_damage_;
+    }
+
+    constexpr Socket get_socket() const
+    {
+        return socket_;
     }
 
 private:
     std::string name_;
     double stat_multiplier_;
+    double bonus_damage_;
+    Socket socket_;
 };
 
-class Weapon_buff : public Stat_base
+class Enchant : public Stat_base
 {
 public:
-    Weapon_buff() = delete;
-
-    Weapon_buff(std::string name, Attributes stats, Special_stats special_stats, double oh_bonus_damage,
-                double mh_bonus_damage) :
-            Stat_base{stats, special_stats},
-            name_(std::move(name)),
-            oh_bonus_damage_{oh_bonus_damage},
-            mh_bonus_damage_{mh_bonus_damage} {};
-
-    double get_oh_bonus_damage() const
+    enum class Type
     {
-        return oh_bonus_damage_;
-    }
+        strength,
+        strength7,
+        strength9,
+        agility,
+        haste,
+        crusader,
+        minor_stats,
+        major_stats
+    };
 
-    double get_mh_bonus_damage() const
+    Enchant() = delete;
+
+    Enchant(Socket socket, Type type);
+
+    constexpr const Hit_effect &get_hit_effect() const
     {
-        return mh_bonus_damage_;
+        return hit_effect_;
     }
 
 private:
-    std::string name_;
-    double oh_bonus_damage_;
-    double mh_bonus_damage_;
+    Socket socket_;
+    Type type_;
+    Hit_effect hit_effect_;
 };
 
 std::ostream &operator<<(std::ostream &os, Socket const &socket)
@@ -247,12 +268,15 @@ std::ostream &operator<<(std::ostream &os, Socket const &socket)
             os << "ranged." << "\n";
             break;
         case Socket::main_hand:
-            os << "ranged." << "\n";
+            os << "main hand." << "\n";
             break;
         case Socket::off_hand:
-            os << "ranged." << "\n";
+            os << "off hand." << "\n";
             break;
         case Socket::one_hand:
+            os << "one hand." << "\n";
+            break;
+        case Socket::none:
             assert(true);
             break;
     }

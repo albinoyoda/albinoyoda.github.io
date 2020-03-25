@@ -6,8 +6,6 @@ Character::Character(const Race &race)
         :
         total_attributes_{},
         total_special_stats_{},
-        chance_for_extra_hit_{0.0},
-        stat_multipliers_{1.0},
         race_{race}
 {
     set_base_stats(race_);
@@ -19,35 +17,35 @@ void Character::set_base_stats(const Race &race)
     {
         case Race::human:
             base_attributes_ = Attributes{120, 80};
-            base_special_stats_ = Special_stats{0, 0, 160, 0, {{Skill_type::sword, 5}, {Skill_type::mace, 5}}};
+            base_special_stats_ = Special_stats{0, 0, 160, 0, 0, {{Skill_type::sword, 5}, {Skill_type::mace, 5}}};
             break;
         case Race::dwarf:
             base_attributes_ = Attributes{122, 76};
-            base_special_stats_ = Special_stats{0, 0, 160, 0};
+            base_special_stats_ = Special_stats{0, 0, 160, 0, 0};
             break;
         case Race::night_elf:
             base_attributes_ = Attributes{117, 85};
-            base_special_stats_ = Special_stats{0, 0, 160, 0};
+            base_special_stats_ = Special_stats{0, 0, 160, 0, 0};
             break;
         case Race::gnome:
             base_attributes_ = Attributes{115, 83};
-            base_special_stats_ = Special_stats{0, 0, 160, 0};
+            base_special_stats_ = Special_stats{0, 0, 160, 0, 0};
             break;
         case Race::orc:
             base_attributes_ = Attributes{123, 77};
-            base_special_stats_ = Special_stats{0, 0, 160, 0, {{Skill_type::axe, 5}}};
+            base_special_stats_ = Special_stats{0, 0, 160, 0, 0, {{Skill_type::axe, 5}}};
             break;
         case Race::tauren:
             base_attributes_ = Attributes{125, 75};
-            base_special_stats_ = Special_stats{0, 0, 160, 0};
+            base_special_stats_ = Special_stats{0, 0, 160, 0, 0};
             break;
         case Race::troll:
             base_attributes_ = Attributes{121, 82};
-            base_special_stats_ = Special_stats{0, 0, 160, 0};
+            base_special_stats_ = Special_stats{0, 0, 160, 0, 0};
             break;
         case Race::undead:
             base_attributes_ = Attributes{119, 78};
-            base_special_stats_ = Special_stats{0, 0, 160, 0};
+            base_special_stats_ = Special_stats{0, 0, 160, 0, 0};
             break;
         default:
             assert(false);
@@ -57,16 +55,21 @@ void Character::set_base_stats(const Race &race)
 void Character::compute_all_stats(Talent talent, Armory::set_bonuses_t set_bonuses)
 {
     clean_all();
+    double stat_multiplier_percent = 0;
     total_attributes_ += base_attributes_;
-    total_attributes_ += permutated_stats_;
     total_special_stats_ += base_special_stats_;
-    total_special_stats_ += permutated_special_stats_;
     std::vector<Set> set_names{};
     for (const Armor &armor : armor_)
     {
         total_attributes_ += armor.get_stats();
         total_special_stats_ += armor.get_special_stats();
         set_names.emplace_back(armor.get_set());
+    }
+
+    for (const Weapon &weapon : weapons_)
+    {
+        total_attributes_ += weapon.get_stats();
+        total_special_stats_ += weapon.get_special_stats();
     }
 
     // TODO fix this mess
@@ -111,37 +114,35 @@ void Character::compute_all_stats(Talent talent, Armory::set_bonuses_t set_bonus
         total_special_stats_ += set_bonuses.rare_pvp_set_bonus_1.get_special_stats();
     }
 
-    for (const Weapon &weapon : weapons_)
-    {
-        total_attributes_ += weapon.get_stats();
-        total_special_stats_ += weapon.get_special_stats();
-    }
-
     for (const Enchant &ench : enchants_)
     {
         total_attributes_ += ench.get_stats();
-        haste_ *= ench.get_haste();
-        crusader_mh_ += ench.is_crusader_mh();
-        crusader_oh_ += ench.is_crusader_oh();
+        total_special_stats_ += ench.get_special_stats();
     }
 
     for (const auto &buff : buffs_)
     {
         total_attributes_ += buff.get_stats();
         total_special_stats_ += buff.get_special_stats();
-        stat_multipliers_ *= buff.get_stat_multiplier();
-        mh_bonus_damage_ += buff.get_mh_bonus_damage();
-        oh_bonus_damage_ += buff.get_oh_bonus_damage();
+        stat_multiplier_percent += buff.get_stat_multiplier();
     }
 
     if (talent == Talent::fury)
     {
+        // TODO implement shout in simulator instead
         total_special_stats_.attack_power += 241;  // battle shout
         total_special_stats_.critical_strike += 5; // crit from talent
-        total_special_stats_.critical_strike += 3; // crit from talent
+        total_special_stats_.critical_strike += 3; // crit from berserker stance?
     }
 
-    total_attributes_ *= stat_multipliers_;
+    // TODO wep enchants and buffs
+//    for (const Weapon &weapon : weapons_)
+//    {
+//        total_attributes_ += weapon.get_stats();
+//        total_special_stats_ += weapon.get_special_stats();
+//    }
+
+    total_attributes_ *= (1.0 + stat_multiplier_percent / 100);
 
     total_special_stats_ += total_attributes_.convert_to_special_stats();
 }
@@ -202,18 +203,17 @@ bool Character::check_if_armor_valid()
     return true;
 }
 
-
 bool Character::check_if_weapons_valid()
 {
     bool is_unique{true};
     is_unique &= weapons_.size() <= 2;
     is_unique &= !(weapons_[0].get_socket() == Socket::off_hand);
     is_unique &= !(weapons_[1].get_socket() == Socket::main_hand);
-    if (weapons_.size() == 2)
-    {
-        weapons_[0].set_hand(Hand::main_hand);
-        weapons_[1].set_hand(Hand::off_hand);
-    }
+//    if (weapons_.size() == 2)
+//    {
+//        weapons_[0].set_hand(Hand::main_hand);
+//        weapons_[1].set_hand(Hand::off_hand);
+//    }
     return is_unique;
 }
 
@@ -222,24 +222,20 @@ const Attributes &Character::get_stats() const
     return total_attributes_;
 }
 
-void Character::clean_all()
+const std::vector<Buff> &Character::get_buffs() const
 {
-    total_special_stats_.clear();
-    total_attributes_.clear();
-    extra_skills_ = {};
-    set_base_stats(race_);
-    haste_ = 1.0;
-    crusader_mh_ = false;
-    crusader_oh_ = false;
-    chance_for_extra_hit_ = 0.0;
-    stat_multipliers_ = 1.0;
-    oh_bonus_damage_ = 0.0;
-    mh_bonus_damage_ = 0.0;
+    return buffs_;
 }
 
-const std::vector<Armor> &Character::get_armor() const
+const std::vector<Enchant> &Character::get_enchants() const
 {
-    return armor_;
+    return enchants_;
+}
+
+void Character::clean_all()
+{
+    total_attributes_.clear();
+    total_special_stats_.clear();
 }
 
 void Character::change_weapon(const Weapon &weapon, const Hand &hand)
@@ -262,7 +258,7 @@ void Character::change_armor(const Armor &armor, bool first_misc_slot)
     {
         if (armor_piece.get_socket() == socket)
         {
-            if (socket == Armor::Socket::ring || socket == Armor::Socket::trinket)
+            if (socket == Socket::ring || socket == Socket::trinket)
             {
                 if (first_misc_slot)
                 {

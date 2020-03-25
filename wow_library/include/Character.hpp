@@ -5,7 +5,6 @@
 #include <vector>
 #include "Attributes.hpp"
 #include "Item.hpp"
-#include "Enchant.hpp"
 #include "Armory.hpp"
 
 enum class Race
@@ -47,6 +46,10 @@ public:
     const std::vector<Armor> &get_armor() const;
 
     const std::vector<Weapon> &get_weapons() const;
+
+    const std::vector<Buff> &get_buffs() const;
+
+    const std::vector<Enchant> &get_enchants() const;
 
     const Attributes &get_stats() const;
 
@@ -102,45 +105,15 @@ public:
         buffs_.emplace_back(buff);
     }
 
-    void increase_weapon_damage(double weapon_damage)
-    {
-        mh_bonus_damage_ += weapon_damage;
-        oh_bonus_damage_ += weapon_damage;
-    }
-
-    bool is_crusader_mh() const;
-
-    bool is_crusader_oh() const;
-
-    template<typename T>
-    auto &get_field(T t)
-    {
-        return (*this).*t;
-    }
-
-    void clear_permutations()
-    {
-        permutated_stats_ = Attributes{};
-        permutated_special_stats_ = Special_stats{};
-    }
-
-    const std::vector<Armor> &get_armor() const;
-
     void change_weapon(const Weapon &weapon, const Hand &hand);
 
     void change_armor(const Armor &armor, bool first_misc_slot = true);
 
-    // Used to compute
-    Attributes permutated_stats_;
-    Special_stats permutated_special_stats_;
-
 private:
     Attributes base_attributes_;
-    Special_stats base_special_stats_;
     Attributes total_attributes_;
+    Special_stats base_special_stats_;
     Special_stats total_special_stats_;
-    double chance_for_extra_hit_;
-    double stat_multipliers_;
     std::vector<Armor> armor_;
     std::vector<Weapon> weapons_;
     std::vector<Enchant> enchants_;

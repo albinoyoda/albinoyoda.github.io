@@ -1,172 +1,5 @@
 #include "../include/Combat_simulator.hpp"
 
-//class Weapon : public Stat_base
-//{
-//public:
-//
-//    Weapon(std::string name, double swing_speed, std::pair<double, double> damage_interval, Attributes stats,
-//           Special_stats special_stats,
-//           Socket socket, Skill_type skill_type);
-//
-//    double step(double time, double attack_power, bool is_random);
-//
-//    constexpr double swing(double attack_power)
-//    {
-//        return average_damage_ + attack_power * swing_speed_ / 14;
-//    }
-//
-//    double random_swing(double attack_power)
-//    {
-//        double damage = damage_interval_.first + (damage_interval_.second - damage_interval_
-//                .first) * static_cast<double>(rand()) / RAND_MAX
-//                        + attack_power * swing_speed_ / 14;
-//        return damage;
-//    }
-//
-//    double random_normalized_swing(double attack_power)
-//    {
-//        return damage_interval_.first + (damage_interval_.second - damage_interval_
-//                .first) * static_cast<double>(rand()) / RAND_MAX
-//               + attack_power * normalized_swing_speed_ / 14;
-//    }
-//
-//    constexpr double normalized_swing(double attack_power)
-//    {
-//        // TODO random damage?
-//        return average_damage_ + attack_power * normalized_swing_speed_ / 14;
-//    }
-//
-//    void reset_timer();
-//
-//    constexpr void compute_weapon_damage(double bonus_damage)
-//    {
-//        damage_interval_.first += bonus_damage;
-//        damage_interval_.second += bonus_damage;
-//        average_damage_ = (damage_interval_.second + damage_interval_.first) / 2;
-//    }
-//
-//    constexpr double get_average_damage()
-//    {
-//        return average_damage_;
-//    }
-//
-//    constexpr double get_swing_speed()
-//    {
-//        return swing_speed_;
-//    }
-//
-//    constexpr double get_internal_swing_timer()
-//    {
-//        return internal_swing_timer_;
-//    }
-//
-//    Socket get_socket() const;
-//
-//    void set_weapon_type(Skill_type weapon_type);
-//
-//    Skill_type get_weapon_type() const;
-//
-//    constexpr Hand get_hand() const
-//    {
-//        return hand_;
-//    }
-//
-//    void set_hand(Hand hand);
-//
-//    void set_internal_swing_timer(double internal_swing_timer);
-//
-//private:
-//    double swing_speed_;
-//    double normalized_swing_speed_;
-//    double internal_swing_timer_;
-//    std::pair<double, double> damage_interval_;
-//    double average_damage_;
-//    Socket socket_;
-//    Skill_type weapon_type_;
-//    Hand hand_;
-//};
-
-//if (skill_type == Skill_type::dagger)
-//{
-//normalized_swing_speed_ = 1.7;
-//}
-//else
-//{
-//normalized_swing_speed_ = 2.5;
-//}
-
-//void Weapon::reset_timer()
-//{
-//    internal_swing_timer_ = swing_speed_;
-//}
-//
-//double Weapon::step(double dt, double attack_power, bool is_random)
-//{
-//    internal_swing_timer_ -= dt;
-//    if (internal_swing_timer_ < 0.0)
-//    {
-//        internal_swing_timer_ += swing_speed_;
-//        double damage;
-//        if (is_random)
-//        {
-//            damage = random_swing(attack_power);
-//        }
-//        else
-//        {
-//            damage = swing(attack_power);
-//        }
-//        if (get_hand() == Hand::off_hand)
-//        {
-//            damage *= 0.625;
-//        }
-//        return damage;
-//    }
-//    return 0.0;
-//}
-//
-//Weapon::Socket Weapon::get_socket() const
-//{
-//    return socket_;
-//}
-//
-//void Weapon::set_weapon_type(Skill_type weapon_type)
-//{
-//    weapon_type_ = weapon_type;
-//}
-//
-//void Weapon::set_internal_swing_timer(double internal_swing_timer)
-//{
-//    internal_swing_timer_ = internal_swing_timer;
-//}
-
-//int Character::get_weapon_skill_oh() const
-//{
-//    auto wep_type = weapons_[1].get_weapon_type();
-//    int extra_skill = 0;
-//    for (const auto &skill : extra_skills_)
-//    {
-//        if (skill.type == wep_type || skill.type == Skill_type::all)
-//        {
-//            extra_skill += skill.amount;
-//        }
-//    }
-//    return 300 + extra_skill;
-//}
-//
-//int Character::get_weapon_skill_mh() const
-//{
-//    auto wep_type = weapons_[0].get_weapon_type();
-//    int extra_skill = 0;
-//    for (const auto &skill : extra_skills_)
-//    {
-//        if (skill.type == wep_type || skill.type == Skill_type::all)
-//        {
-//            extra_skill += skill.amount;
-//        }
-//    }
-//    return 300 + extra_skill;
-//}
-
 namespace
 {
     constexpr double rage_factor = 15.0 / 4.0 / 230.6;
@@ -309,6 +142,7 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(double damage, Comb
         hit_outcome.damage *= armor_reduction_factor_;
         if (death_wish_active)
         {
+            // TODO talent here
             hit_outcome.damage *= 1.2;
         }
         if (hit_type == Hit_type::white)
@@ -540,12 +374,12 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
     batch_damage_.reserve(n_damage_batches);
     damage_distribution_.clear();
     damage_distribution_.reserve(n_damage_batches);
-    double character_haste = character.get_haste();
-    const auto starting_special_stats = character.get_total_special_stats();
-    auto weapons = character.get_weapons();
-    double chance_for_extra_hit = character.get_chance_for_extra_hit();
-    double crusader_proc_chance_mh = character.is_crusader_mh() * weapons[0].get_swing_speed() / 40;
-    double crusader_proc_chance_oh = character.is_crusader_oh() * weapons[1].get_swing_speed() / 40;
+    const Special_stats &starting_special_stats = character.get_total_special_stats();
+    Weapon_sim weapon_mh{character.get_weapons()[0], Socket::main_hand, character.get_enchants(), character.get_buffs()};
+    if (character.get_weapons().size() == 2)
+    {
+        Weapon_sim weapon_oh{character.get_weapons()[0], Socket::main_hand, character.get_enchants(), character.get_buffs()};
+    }
 
     weapons[0].compute_weapon_damage(character.get_mh_bonus_damage());
     weapons[1].compute_weapon_damage(character.get_oh_bonus_damage());
@@ -553,6 +387,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
     compute_hit_table(opponent_level - 60, character.get_weapon_skill_mh(), starting_special_stats, Hand::main_hand);
     compute_hit_table(opponent_level - 60, character.get_weapon_skill_oh(), starting_special_stats, Hand::off_hand);
 
+    // TODO talent
     double heroic_strike_rage_cost = 13.0;
 
     double armor_reduction_from_spells = 640 + 450 * 5 + 505;
@@ -1044,7 +879,8 @@ void Combat_simulator::enable_item_chance_on_hit_effects()
 }
 
 std::vector<Combat_simulator::Stat_weight>
-Combat_simulator::compute_stat_weights(const Character &character, const Armory &armory, double sim_time, int opponent_level,
+Combat_simulator::compute_stat_weights(const Character &character, const Armory &armory, double sim_time,
+                                       int opponent_level,
                                        int n_batches, double mean_init, double sample_std_init)
 {
     if (!debug_mode_)
@@ -1054,10 +890,12 @@ Combat_simulator::compute_stat_weights(const Character &character, const Armory 
         double skill_permutation_amount = 5;
         double damage_permutation_amount = 8;
 
-        auto stat_weight_agi = permute_stat(character, armory, &Character::permutated_stats_, &Attributes::agility, Stat::agility,
+        auto stat_weight_agi = permute_stat(character, armory, &Character::permutated_stats_, &Attributes::agility,
+                                            Stat::agility,
                                             stat_permutation_amount,
                                             sim_time, opponent_level, n_batches, mean_init, sample_std_init);
-        auto stat_weight_str = permute_stat(character, armory, &Character::permutated_stats_, &Attributes::strength, Stat::strength,
+        auto stat_weight_str = permute_stat(character, armory, &Character::permutated_stats_, &Attributes::strength,
+                                            Stat::strength,
                                             stat_permutation_amount,
                                             sim_time, opponent_level, n_batches, mean_init, sample_std_init);
         auto stat_weight_crit = permute_stat(character, armory, &Character::permutated_special_stats_,
