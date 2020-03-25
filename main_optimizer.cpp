@@ -160,22 +160,22 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
     shoulders = {
 //            armory.shoulder.drake_talon_pauldrons,
 //            armory.shoulder.aq_chitinous_shoulderguards,
-//            armory.shoulder.big_bad_pauldrons,
+            armory.shoulder.spaulders_of_valor,
             armory.shoulder.truestrike_shoulders,
-            armory.shoulder.black_dragonscale_shoulders
+//            armory.shoulder.black_dragonscale_shoulders
     };
 
     std::vector<Armor> backs;
     backs = {
 //            armory.back.cloak_of_draconic_might,
-            armory.back.shadewood_cloak
+            armory.back.cape_of_the_black_baron
     };
 
     std::vector<Armor> chests;
     chests = {
-//            armory.chest.savage_gladiator_chain,
-            armory.chest.breastplate_of_bloodthirts,
-            armory.chest.black_dragonscale_chest,
+            armory.chest.savage_gladiator_chain,
+//            armory.chest.breastplate_of_bloodthirts,
+//            armory.chest.black_dragonscale_chest,
 //            armory.chest.knight_captains_plate_hauberk,
 //            armory.chest.tombstone_breastplate
 //            armory.chest.aq_conquerors_breastplate,
@@ -184,23 +184,23 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
 
     std::vector<Armor> wrists;
     wrists = {
-            armory.wrist.slashclaw_bracers,
-            armory.wrist.battleborn_armbraces,
-            armory.wrist.vambraces_of_the_sadist,
-//            armory.wrist.wristguards_of_stability,
+//            armory.wrist.slashclaw_bracers,
 //            armory.wrist.battleborn_armbraces,
+//            armory.wrist.vambraces_of_the_sadist,
+            armory.wrist.wristguards_of_stability,
+            armory.wrist.battleborn_armbraces,
 //            armory.wrist.aq_quiraji_execution_bracers
     };
 
     std::vector<Armor> hands;
     hands = {
-            armory.hands.devilsaur_gauntlets,
+            armory.hands.flameguard_gauntlets,
 //            armory.hands.devilsaur_gauntlets,
     };
 
     std::vector<Armor> belts;
     belts = {
-            armory.belt.omokks_girth,
+            armory.belt.onslaught_girdle,
 //            armory.belt.mugglers_belt
     };
 
@@ -208,30 +208,30 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
     legs = {
 //            armory.legs.aq_conquerors_legguards,
             armory.legs.devilsaur_leggings,
-            armory.legs.black_dragonscale_leggings,
+            armory.legs.eldritch_legplates,
 //            armory.legs.titanic_leggings
     };
 
     std::vector<Armor> boots;
     boots = {
-            armory.boots.battlechasers,
-            armory.boots.bloodmail_boots,
-            armory.boots.black_dragonscale_boots,
+            armory.boots.chromatic_boots,
+//            armory.boots.bloodmail_boots,
+//            armory.boots.black_dragonscale_boots,
     };
 
     std::vector<Armor> ranged;
     ranged = {
-            armory.ranged.riphook,
+//            armory.ranged.riphook,
             armory.ranged.satyrs_bow,
-            armory.ranged.bloodseeker,
+            armory.ranged.blastershot,
 //            armory.ranged.precisely_calibrated_boomstick
     };
 
     std::vector<Armor> rings;
     rings = {
-            armory.rings.quick_strike_ring,
+            armory.rings.don_julios_band,
             armory.rings.magnis_will,
-//            armory.rings.blackstone_ring,
+            armory.rings.blackstone_ring,
             armory.rings.tarnished_elven
     };
 
@@ -245,10 +245,10 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
 
     std::vector<Weapon> weapons;
     weapons = {
-            armory.swords.quel_serrar,
+            armory.swords.maladath,
 //            armory.daggers.core_hound_tooth,
 //            armory.maces.stormstike_hammer,
-            armory.swords.mirahs_song,
+            armory.swords.brutality_blade,
     };
 
     size_t n_helmet = helmets.size();
