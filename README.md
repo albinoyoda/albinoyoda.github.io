@@ -22,3 +22,8 @@ The output will be expected DPS vs a monster of level 60 - 63,
 All data outputs are given with 95% confidence intervals, meaning that  
 you will know how sure the simulator are that it have converged  
 towards the true value of the DPS.
+
+
+Algorithm
+swing weapons:
+possible re-swing

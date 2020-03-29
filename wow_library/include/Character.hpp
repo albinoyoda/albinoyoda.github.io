@@ -5,7 +5,6 @@
 #include <vector>
 #include "Attributes.hpp"
 #include "Item.hpp"
-#include "Armory.hpp"
 
 enum class Race
 {
@@ -29,96 +28,81 @@ enum class Talent
 class Character
 {
 public:
-    explicit Character(const Race &race);
+    Character(const Race &race, size_t level);
 
-    void set_base_stats(const Race &race);
-
-    void compute_all_stats(Talent talent, Armory::set_bonuses_t set_bonuses);
-
-    void clean_all();
-
-    bool check_if_armor_valid();
-
-    bool check_if_weapons_valid();
-
-    const Special_stats &get_total_special_stats() const;
-
-    const std::vector<Armor> &get_armor() const;
-
-    const std::vector<Weapon> &get_weapons() const;
-
-    const std::vector<Buff> &get_buffs() const;
-
-    const std::vector<Enchant> &get_enchants() const;
-
-    const Attributes &get_stats() const;
-
-    template<typename T, typename ...Ts>
-    void equip_armor(T piece, Ts ...pieces)
+    void equip_armor(const Armor &piece)
     {
-        equip_armor(piece);
-        equip_armor(pieces...);
+        armor.emplace_back(piece);
     }
 
-    template<typename T>
-    void equip_armor(T piece)
+    void equip_weapon(Weapon weapon)
     {
-        armor_.emplace_back(piece);
+        if (weapon.weapon_socket != Weapon_socket::two_hand)
+        {
+            std::cout << "WARN: Wielding single weapon that is not two handed." << "\n";
+        }
+        weapon.socket = Socket::main_hand;
+        weapons.emplace_back(weapon);
     }
 
-    template<typename T, typename ...Ts>
-    void equip_weapon(T piece, Ts ...pieces)
+    void equip_weapon(Weapon &weapon1, Weapon &weapon2)
     {
-        equip_weapon(piece);
-        equip_weapon(pieces...);
+        weapon1.socket = Socket::main_hand;
+        weapon2.socket = Socket::off_hand;
+        weapons.emplace_back(weapon1);
+        weapons.emplace_back(weapon2);
     }
 
-    template<typename T>
-    void equip_weapon(T piece)
+    void add_enchant(const Socket socket, const Enchant::Type type)
     {
-        weapons_.emplace_back(piece);
+        for (auto &wep : weapons)
+        {
+            if (socket == wep.socket)
+            {
+                wep.enchant = Enchant{type};
+            }
+        }
+        for (auto &item : armor)
+        {
+            if (socket == item.socket)
+            {
+                item.enchant = Enchant{type};
+                return;
+            }
+        }
     }
 
-    template<typename T, typename ...Ts>
-    void add_enchants(T en, Ts ...ens)
+    void add_buff(const Buff &buff)
     {
-        add_enchants(en);
-        add_enchants(ens...);
+        buffs.emplace_back(buff);
     }
 
-    template<typename T>
-    void add_enchants(T piece)
+    void add_weapon_buff(const Socket socket, const Weapon_buff &buff)
     {
-        enchants_.emplace_back(piece);
+        if (socket == Socket::main_hand)
+        {
+            weapons[0].buff = buff;
+        }
+        else if (socket == Socket::off_hand)
+        {
+            if (weapons.size() <= 1)
+            {
+                std::cout << "cant buff offhand with only 1 weapon equipped \n";
+                assert(true);
+            }
+            weapons[1].buff = buff;
+        }
     }
 
-    template<typename T, typename ...Ts>
-    void add_buffs(T buff, Ts ...buffs)
-    {
-        add_buffs(buff);
-        add_buffs(buffs...);
-    }
-
-    template<typename T>
-    void add_buffs(T buff)
-    {
-        buffs_.emplace_back(buff);
-    }
-
-    void change_weapon(const Weapon &weapon, const Hand &hand);
-
-    void change_armor(const Armor &armor, bool first_misc_slot = true);
-
-private:
-    Attributes base_attributes_;
-    Attributes total_attributes_;
-    Special_stats base_special_stats_;
-    Special_stats total_special_stats_;
-    std::vector<Armor> armor_;
-    std::vector<Weapon> weapons_;
-    std::vector<Enchant> enchants_;
-    std::vector<Buff> buffs_;
-    Race race_;
+    Attributes base_attributes;
+    Attributes total_attributes;
+    Special_stats base_special_stats;
+    Special_stats total_special_stats;
+    std::vector<Armor> armor;
+    std::vector<Weapon> weapons;
+    std::vector<Buff> buffs;
+    Race race;
+    size_t level;
 };
 
 std::ostream &operator<<(std::ostream &os, const Character &socket);

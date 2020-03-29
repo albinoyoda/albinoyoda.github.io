@@ -22,10 +22,33 @@ enum class Socket
     boots,
     ring,
     trinket,
+    main_hand,
+    off_hand,
     ranged,
+};
+
+enum class Weapon_socket
+{
     main_hand,
     one_hand,
     off_hand,
+    two_hand
+};
+
+enum class Weapon_type
+{
+    sword,
+    axe,
+    dagger,
+    mace,
+    unarmed
+};
+
+enum class Consumable_socket
+{
+    agility,
+    strength,
+
 };
 
 enum class Set
@@ -36,166 +59,8 @@ enum class Set
     rare_pvp_set,
 };
 
-class Stat_base
+struct Enchant
 {
-public:
-    Stat_base() = delete;
-
-    Stat_base(Attributes stats, Special_stats special_stats)
-            :
-            stats_(stats),
-            special_stats_(std::move(special_stats)) {};
-
-    constexpr const Attributes &get_stats() const
-    {
-        return stats_;
-    }
-
-    constexpr const Special_stats &get_special_stats() const
-    {
-        return special_stats_;
-    }
-
-private:
-    Attributes stats_;
-    Special_stats special_stats_;
-
-};
-
-class Armor : public Stat_base
-{
-public:
-    Armor() = delete;
-
-    Armor(std::string name, Attributes stats, Special_stats special_stats, Socket socket, Set set_name = Set::none) :
-            Stat_base{stats, std::move(special_stats)},
-            name_(std::move(name)),
-            socket_(socket),
-            set_name_(set_name) {};
-
-    constexpr const std::string &get_name() const
-    {
-        return name_;
-    }
-
-    constexpr const Socket &get_socket() const
-    {
-        return socket_;
-    }
-
-    constexpr const Set &get_set() const
-    {
-        return set_name_;
-    }
-
-private:
-    std::string name_;
-    Socket socket_;
-    Set set_name_;
-};
-
-class Weapon : public Armor
-{
-public:
-    Weapon() = delete;
-
-    Weapon(std::string name, double swing_speed, std::pair<double, double> damage_interval, Attributes stats,
-           Special_stats special_stats, Socket socket, Skill_type skill_type,
-           Hit_effect hit_effect = Hit_effect(),
-           Set set_name = Set::none) :
-            Armor{std::move(name), stats, std::move(special_stats), socket, set_name},
-            swing_speed_{swing_speed},
-            damage_interval_{std::move(damage_interval)},
-            weapon_type_{skill_type},
-            hit_effect_(hit_effect) {}
-
-    constexpr const double &get_swing_speed() const
-    {
-        return swing_speed_;
-    }
-
-    constexpr const std::pair<double, double> &get_damage_interval() const
-    {
-        return damage_interval_;
-    }
-
-    constexpr const Skill_type &get_weapon_type() const
-    {
-        return weapon_type_;
-    }
-
-    constexpr const Hit_effect &get_hit_effect() const
-    {
-        return hit_effect_;
-    }
-
-private:
-    double swing_speed_;
-    std::pair<double, double> damage_interval_;
-    Skill_type weapon_type_;
-    Hit_effect hit_effect_;
-};
-
-class Set_bonus : public Stat_base
-{
-public:
-    Set_bonus() = delete;
-
-    Set_bonus(Attributes stats, Special_stats special_stats, size_t pieces, Set set_name) :
-            Stat_base{stats, std::move(special_stats)},
-            pieces_(pieces),
-            set_name_(set_name) {};
-
-    constexpr const size_t &get_pieces() const
-    {
-        return pieces_;
-    }
-
-    constexpr const Set &get_set_name() const
-    {
-        return set_name_;
-    }
-
-private:
-    size_t pieces_;
-    Set set_name_;
-};
-
-class Buff : public Stat_base
-{
-public:
-    Buff() = delete;
-
-    Buff(std::string name, Attributes stats, Special_stats special_stats, double stat_multiplier = 0,
-         double bonus_damage = 0, Socket socket = Socket::none) :
-            Stat_base{stats, std::move(special_stats)},
-            name_(std::move(name)), stat_multiplier_(stat_multiplier), bonus_damage_(bonus_damage), socket_(socket) {};
-
-    constexpr double get_stat_multiplier() const
-    {
-        return stat_multiplier_;
-    }
-
-    constexpr double get_bonus_damage() const
-    {
-        return bonus_damage_;
-    }
-
-    constexpr Socket get_socket() const
-    {
-        return socket_;
-    }
-
-private:
-    std::string name_;
-    double stat_multiplier_;
-    double bonus_damage_;
-    Socket socket_;
-};
-
-class Enchant : public Stat_base
-{
-public:
     enum class Type
     {
         strength,
@@ -208,19 +73,93 @@ public:
         major_stats
     };
 
-    Enchant() = delete;
+    Enchant() = default;
 
-    Enchant(Socket socket, Type type);
+    explicit Enchant(Type type) : type(type) {};
 
-    constexpr const Hit_effect &get_hit_effect() const
-    {
-        return hit_effect_;
-    }
+    Type type{};
+    Attributes attributes{};
+    Special_stats special_stats{};
+};
 
-private:
-    Socket socket_;
-    Type type_;
-    Hit_effect hit_effect_;
+struct Set_bonus
+{
+    Set_bonus(Attributes attributes, Special_stats special_stats, size_t pieces, Set set) :
+            attributes(attributes), special_stats(special_stats), pieces(pieces), set(set) {};
+
+    Attributes attributes;
+    Special_stats special_stats;
+    size_t pieces;
+    Set set;
+};
+
+struct Buff
+{
+    Buff(std::string name, Attributes attributes, Special_stats special_stats, double stat_multiplier = 0,
+         double bonus_damage = 0) :
+            name(std::move(name)), attributes(attributes), special_stats(special_stats),
+            stat_multiplier(stat_multiplier), bonus_damage(bonus_damage) {};
+
+    std::string name;
+    Attributes attributes;
+    Special_stats special_stats;
+    double stat_multiplier;
+    double bonus_damage;
+};
+
+struct Weapon_buff
+{
+    Weapon_buff() = default;
+
+    Weapon_buff(std::string name, Attributes attributes, Special_stats special_stats, double stat_multiplier = 0,
+                double bonus_damage = 0) :
+            name(std::move(name)), attributes(attributes), special_stats(special_stats),
+            stat_multiplier(stat_multiplier), bonus_damage(bonus_damage) {};
+
+    std::string name{};
+    Attributes attributes{};
+    Special_stats special_stats{};
+    double stat_multiplier{};
+    double bonus_damage{};
+};
+
+struct Armor
+{
+    Armor(std::string name, Attributes attributes, Special_stats special_stats, Socket socket, Set set_name = Set::none)
+            :
+            name(std::move(name)), attributes(attributes), special_stats(special_stats),
+            socket(socket),
+            set_name(set_name) {};
+    std::string name;
+    Attributes attributes;
+    Special_stats special_stats;
+    Socket socket;
+    Set set_name;
+    Enchant enchant;
+};
+
+struct Weapon
+{
+    Weapon(std::string name, Attributes attributes, Special_stats special_stats, double swing_speed, double min_damage,
+           double max_damage, Weapon_socket weapon_socket, Weapon_type weapon_type,
+           std::vector<Hit_effect> hit_effects = std::vector<Hit_effect>(), Set set_name = Set::none) :
+            name(std::move(name)), attributes(attributes), special_stats(special_stats), swing_speed(swing_speed),
+            min_damage(min_damage), max_damage(max_damage), weapon_socket(weapon_socket), type(weapon_type),
+            hit_effects(std::move(hit_effects)), set_name(set_name) {};
+
+    std::string name;
+    Attributes attributes;
+    Special_stats special_stats;
+    double swing_speed;
+    double min_damage;
+    double max_damage;
+    Weapon_socket weapon_socket;
+    Weapon_type type;
+    std::vector<Hit_effect> hit_effects;
+    Set set_name;
+    Socket socket;
+    Enchant enchant;
+    Weapon_buff buff;
 };
 
 std::ostream &operator<<(std::ostream &os, Socket const &socket)
@@ -273,19 +212,37 @@ std::ostream &operator<<(std::ostream &os, Socket const &socket)
         case Socket::off_hand:
             os << "off hand." << "\n";
             break;
-        case Socket::one_hand:
-            os << "one hand." << "\n";
-            break;
         case Socket::none:
-            assert(true);
+            os << "none." << "\n";
             break;
     }
     return os;
 }
 
+size_t Special_stats::get_weapon_skill(Weapon_type weapon_type)
+{
+    switch (weapon_type)
+    {
+        case Weapon_type::sword:
+            return sword_skill;
+        case Weapon_type::axe:
+            return axe_skill;
+        case Weapon_type::dagger:
+            return dagger_skill;
+        case Weapon_type::mace:
+            return mace_skill;
+        case Weapon_type::unarmed:
+            //TODO
+            return 300;
+        default:
+            assert(true);
+            return 0;
+    }
+}
+
 std::ostream &operator<<(std::ostream &os, const Armor &armor)
 {
-    os << armor.get_name() << "\n";
+    os << armor.name << "\n";
     return os;
 }
 

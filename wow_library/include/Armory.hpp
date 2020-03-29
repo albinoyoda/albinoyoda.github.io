@@ -1,7 +1,7 @@
 #ifndef WOW_SIMULATOR_ARMORY_HPP
 #define WOW_SIMULATOR_ARMORY_HPP
 
-#include "Item.hpp"
+#include "Character.hpp"
 
 struct Buffs
 {
@@ -23,18 +23,12 @@ struct Buffs
     Buff juju_might{"juju_might", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 40}};
     Buff roids{"roids", Attributes{25.0, 0.0}, Special_stats{0.0, 0.0, 0.0}};
 
-    Buff dense_stone_mh{"dense_stone", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, 0, 8, Socket::main_hand};
-    Buff dense_stone_oh{"dense_stone", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, 0, 8, Socket::off_hand};
+    Weapon_buff dense_stone{"dense_stone", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, 0, 8};
     Buff elemental_stone{"elemental_stone", Attributes{0.0, 0.0}, Special_stats{2.0, 0.0, 0.0}};
 };
 
 struct Armory
 {
-    Armory()
-    {
-        set_extra_item_properties();
-    }
-
     struct helmet_t
     {
         Armor lionheart_helm{"lionheart_helm", Attributes{18, 0}, Special_stats{2, 2, 0}, Socket::head};
@@ -137,8 +131,7 @@ struct Armory
                                   Set::devilsaur};
 
         Armor edgemasters_handguards{"edgemasters_handguards", Attributes{0, 0},
-                                     Special_stats{0, 0, 0, 0, 0, {{Skill_type::sword, 7}, {Skill_type::axe, 7},
-                                                                   {Skill_type::dagger, 7}}}, Socket::hands};
+                                     Special_stats{0, 0, 0, 0, 0, 7, 7, 7}, Socket::hands};
         Armor flameguard_gauntlets{"flameguard_gauntlets", Attributes{0, 0}, Special_stats{1, 0, 54},
                                    Socket::hands};
         Armor aq_gloves_of_enforcement{"aq_gloves_of_enforcement", Attributes{28, 20}, Special_stats{0, 1, 0},
@@ -242,65 +235,66 @@ struct Armory
     // ---------------- Weapons ------------------
     struct swords_t
     {
-        Weapon maladath{"maladath", 2.2, {86.0, 162.0}, Attributes{0.0, 0.0},
-                        Special_stats{0.0, 0.0, 0.0, 0, 0, {{Skill_type::sword, 4}}},
-                        Socket::one_hand, Skill_type::sword};
-        Weapon chromatically_tempered_sword{"chromatically_tempered_sword", 2.6, {106.0, 198.0}, Attributes{14.0, 14.0},
-                                            Special_stats{0.0, 0.0, 0.0}, Socket::one_hand, Skill_type::sword};
-        Weapon brutality_blade{"brutality_blade", 2.5, {90, 168}, Attributes{9, 9}, Special_stats{1, 0, 0},
-                               Socket::one_hand, Skill_type::sword};
-        Weapon assassination_blade{"assassination_blade", 2.7, {71, 132}, Attributes{3, 0}, Special_stats{1, 0, 0},
-                                   Socket::one_hand, Skill_type::sword};
-        Weapon mirahs_song{"mirahs_song", 1.8, {57, 87}, Attributes{9, 9}, Special_stats{0, 0, 0},
-                           Socket::one_hand,
-                           Skill_type::sword};
-        Weapon viskag{"viskag", 2.6, {100, 187}, Attributes{0, 0}, Special_stats{0, 0, 0}, Socket::one_hand,
-                      Skill_type::sword};
-        Weapon quel_serrar{"quel_serrar", 2.0, {84, 126}, Attributes{0, 0}, Special_stats{0, 0, 0},
-                           Socket::one_hand,
-                           Skill_type::sword};
-        Weapon aq_ancient_quiraj_ripper{"aq_ancient_quiraj_ripper", 2.8, {114, 213}, Attributes{0, 0},
-                                        Special_stats{1, 0, 20}, Socket::one_hand, Skill_type::sword};
+        Weapon maladath{"maladath", Attributes{0.0, 0.0},
+                        Special_stats{0.0, 0.0, 0.0, 0, 0, 4}, 2.2, 86.0, 162.0,
+                        Weapon_socket::one_hand, Weapon_type::sword};
+//        Weapon chromatically_tempered_sword{"chromatically_tempered_sword", 2.6, {106.0, 198.0}, Attributes{14.0, 14.0},
+//                                            Special_stats{0.0, 0.0, 0.0}, Socket::one_hand, Skill_type::sword};
+        Weapon brutality_blade{"brutality_blade", Attributes{9, 9}, Special_stats{1, 0, 0}, 2.5, 90, 168,
+                               Weapon_socket::one_hand, Weapon_type::sword};
+//        Weapon assassination_blade{"assassination_blade", 2.7, {71, 132}, Attributes{3, 0}, Special_stats{1, 0, 0},
+//                                   Socket::one_hand, Skill_type::sword};
+//        Weapon mirahs_song{"mirahs_song", 1.8, {57, 87}, Attributes{9, 9}, Special_stats{0, 0, 0},
+//                           Socket::one_hand,
+//                           Skill_type::sword};
+//        Weapon viskag{"viskag", 2.6, {100, 187}, Attributes{0, 0}, Special_stats{0, 0, 0}, Socket::one_hand,
+//                      Skill_type::sword};
+//        Weapon quel_serrar{"quel_serrar", 2.0, {84, 126}, Attributes{0, 0}, Special_stats{0, 0, 0},
+//                           Socket::one_hand,
+//                           Skill_type::sword};
+//        Weapon aq_ancient_quiraj_ripper{"aq_ancient_quiraj_ripper", 2.8, {114, 213}, Attributes{0, 0},
+//                                        Special_stats{1, 0, 20}, Socket::one_hand, Skill_type::sword};
     } swords;
 
     struct axes_t
     {
-        Weapon deathbringer{"deathbringer", 2.9, {114, 213}, Attributes{0, 0}, Special_stats{0, 0, 0},
-                            Socket::one_hand, Skill_type::axe};
-        Weapon crul_shorukh_edge_of_chaos{"crul_shorukh_edge_of_chaos", 2.3, {101.0, 188.0}, Attributes{0.0, 0.0},
-                                          Special_stats{0.0, 0.0, 36.0}, Socket::one_hand, Skill_type::axe};
-        Weapon dooms_edge{"dooms_edge", 2.3, {83.0, 154.0}, Attributes{9.0, 16.0}, Special_stats{0.0, 0.0, 0.0},
-                          Socket::one_hand, Skill_type::axe};
+//        Weapon deathbringer{"deathbringer", 2.9, {114, 213}, Attributes{0, 0}, Special_stats{0, 0, 0},
+//                            Socket::one_hand, Skill_type::axe};
+        Weapon crul_shorukh_edge_of_chaos{"crul_shorukh_edge_of_chaos", Attributes{0.0, 0.0},
+                                          Special_stats{0.0, 0.0, 36.0}, 2.3, 101.0, 188.0, Weapon_socket::one_hand,
+                                          Weapon_type::axe};
+//        Weapon dooms_edge{"dooms_edge", 2.3, {83.0, 154.0}, Attributes{9.0, 16.0}, Special_stats{0.0, 0.0, 0.0},
+//                          Socket::one_hand, Skill_type::axe};
     } axes;
 
-    struct daggers_t
-    {
-        Weapon core_hound_tooth{"core_hound_tooth", 1.6, {57, 107}, Attributes{0, 0}, Special_stats{1, 0, 20},
-                                Socket::one_hand, Skill_type::dagger};
-        Weapon aq_deaths_sting{"aq_deaths_sting", 1.8, {95, 144}, Attributes{0, 0}, Special_stats{0, 0, 38},
-                               Socket::one_hand, Skill_type::dagger};
-    } daggers;
-
-    struct maces_t
-    {
-        Weapon spineshatter{"spineshatter", 2.5, {99.0, 184.0}, Attributes{9.0, 0.0}, Special_stats{0.0, 0.0, 0.0},
-                            Socket::main_hand, Skill_type::mace};
-        Weapon stormstike_hammer{"stormstike_hammer", 2.7, {80, 150}, Attributes{15, 0}, Special_stats{0, 0, 0},
-                                 Socket::one_hand, Skill_type::mace};
-        Weapon aq_sand_polished_hammer{"aq_sand_polished_hammer", 2.6, {97, 181}, Attributes{0, 0},
-                                       Special_stats{1, 0, 20},
-                                       Socket::one_hand, Skill_type::mace};
-        Weapon aq_anubisath_warhammer{"aq_anubisath_warhammer", 1.8, {66, 123}, Attributes{0, 0},
-                                      Special_stats{0, 0, 32},
-                                      Socket::one_hand, Skill_type::mace};
-    } maces;
-
-    struct fists_t
-    {
-        Weapon claw_of_the_black_drake{"claw_of_the_black_drake", 2.6, {102, 191}, Attributes{13, 0},
-                                       Special_stats{1, 0, 0},
-                                       Socket::main_hand, Skill_type::none};
-    } fists;
+//    struct daggers_t
+//    {
+//        Weapon core_hound_tooth{"core_hound_tooth", 1.6, {57, 107}, Attributes{0, 0}, Special_stats{1, 0, 20},
+//                                Socket::one_hand, Skill_type::dagger};
+//        Weapon aq_deaths_sting{"aq_deaths_sting", 1.8, {95, 144}, Attributes{0, 0}, Special_stats{0, 0, 38},
+//                               Socket::one_hand, Skill_type::dagger};
+//    } daggers;
+//
+//    struct maces_t
+//    {
+//        Weapon spineshatter{"spineshatter", 2.5, {99.0, 184.0}, Attributes{9.0, 0.0}, Special_stats{0.0, 0.0, 0.0},
+//                            Socket::main_hand, Skill_type::mace};
+//        Weapon stormstike_hammer{"stormstike_hammer", 2.7, {80, 150}, Attributes{15, 0}, Special_stats{0, 0, 0},
+//                                 Socket::one_hand, Skill_type::mace};
+//        Weapon aq_sand_polished_hammer{"aq_sand_polished_hammer", 2.6, {97, 181}, Attributes{0, 0},
+//                                       Special_stats{1, 0, 20},
+//                                       Socket::one_hand, Skill_type::mace};
+//        Weapon aq_anubisath_warhammer{"aq_anubisath_warhammer", 1.8, {66, 123}, Attributes{0, 0},
+//                                      Special_stats{0, 0, 32},
+//                                      Socket::one_hand, Skill_type::mace};
+//    } maces;
+//
+//    struct fists_t
+//    {
+//        Weapon claw_of_the_black_drake{"claw_of_the_black_drake", 2.6, {102, 191}, Attributes{13, 0},
+//                                       Special_stats{1, 0, 0},
+//                                       Socket::main_hand, Skill_type::none};
+//    } fists;
 
     struct set_bonuses_t
     {
@@ -310,20 +304,366 @@ struct Armory
         Set_bonus rare_pvp_set_bonus_1{Attributes{0, 0}, Special_stats{0, 0, 40}, 2, Set::rare_pvp_set};
     } set_bonuses;
 
-    void set_extra_item_properties()
-    {
-        //TODO add these
+
+    //TODO add these
 //        helmet.expert_goldminers_head.set_bonus_skill(Bonus_skill{Skill_type::axe, 7});
 //        belt.mugglers_belt.set_bonus_skill(Bonus_skill{Skill_type::dagger, 5});
 //        daggers.aq_deaths_sting.set_bonus_skill(Bonus_skill{Skill_type::dagger, 3});
 //        maces.aq_anubisath_warhammer.set_bonus_skill(Bonus_skill{Skill_type::mace, 4});
 //        hands.aged_core_leather_gloves.set_bonus_skill(Bonus_skill{Skill_type::dagger, 5});
-    }
 
     auto get_set_bonuses() const
     {
         return set_bonuses;
     }
+
+    Attributes get_enchant_attributes(Socket socket, Enchant::Type type)
+    {
+        switch (socket)
+        {
+            case Socket::head:
+            {
+                switch (type)
+                {
+                    case Enchant::Type::agility:
+                        return {0, 8};
+                    case Enchant::Type::strength:
+                        return {8, 0};
+                    default:
+                        assert(false);
+                }
+                break;
+            }
+            case Socket::back:
+            {
+                switch (type)
+                {
+                    case Enchant::Type::agility:
+                        return {0, 3};
+                    default:
+                        assert(false);
+                }
+                break;
+            }
+            case Socket::chest:
+            {
+                switch (type)
+                {
+                    case Enchant::Type::minor_stats:
+                        return {3, 3};
+                    case Enchant::Type::major_stats:
+                        return {4, 4};
+                    default:
+                        assert(false);
+                }
+                break;
+            }
+            case Socket::wrists :
+            {
+                switch (type)
+                {
+                    case Enchant::Type::strength7:
+                        return {7, 0};
+                    case Enchant::Type::strength9:
+                        return {9, 0};
+                    default:
+                        assert(false);
+                }
+                break;
+            }
+            case Socket::hands :
+            {
+                switch (type)
+                {
+                    case Enchant::Type::agility:
+                        return {0, 7};
+                    case Enchant::Type::strength:
+                        return {7, 0};
+                    default:
+                        assert(false);
+                }
+                break;
+            }
+            case Socket::legs :
+            {
+                switch (type)
+                {
+                    case Enchant::Type::agility:
+                        return {0, 8};
+                        break;
+                    case Enchant::Type::strength:
+                        return {8, 0};
+                        break;
+                    default:
+                        assert(false);
+                }
+                break;
+            }
+            case Socket::boots :
+            {
+                switch (type)
+                {
+                    case Enchant::Type::agility:
+                        return {0, 7};
+                        break;
+                    default:
+                        assert(false);
+                }
+                break;
+            }
+            default:
+                break;
+        }
+        return {0, 0};
+    }
+
+    Special_stats get_enchant_special_stats(Socket socket, Enchant::Type type)
+    {
+        switch (socket)
+        {
+            case Socket::head:
+            {
+                switch (type)
+                {
+                    case Enchant::Type::haste:
+                        return {0, 0, 0, 0, 1};
+                    default:
+                        assert(false);
+                }
+                break;
+            }
+            case Socket::hands :
+            {
+                switch (type)
+                {
+                    case Enchant::Type::haste:
+                        return {0, 0, 0, 0, 1};
+                    default:
+                        assert(false);
+                }
+                break;
+            }
+            case Socket::legs:
+            {
+                switch (type)
+                {
+                    case Enchant::Type::haste:
+                        return {0, 0, 0, 0, 1};
+                    default:
+                        assert(false);
+                }
+                break;
+            }
+            default:
+                break;
+        }
+        return {0, 0, 0};
+    }
+
+    Hit_effect enchant_hit_effect(double weapon_speed, Enchant::Type type)
+    {
+        switch (type)
+        {
+            case Enchant::Type::crusader:
+                return {Hit_effect::Type::stat_boost, {100, 0}, {0, 0, 0}, 0, 15, weapon_speed / 40};
+            default:
+                assert(true);
+        }
+        return {Hit_effect::Type::none, {}, {}, 0, 0, 0};
+    }
+
+    Special_stats compute_total_stats(Character &character)
+    {
+        check_if_weapons_valid(character.weapons);
+        check_if_armor_valid(character.armor);
+        Attributes total_attributes{};
+        Special_stats total_special_stats{};
+        double stat_multiplier_percent = 0;
+
+        total_attributes += character.base_attributes;
+        total_special_stats += character.base_special_stats;
+        std::vector<Set> set_names{};
+        for (const Armor &armor : character.armor)
+        {
+            total_attributes += armor.attributes;
+            total_special_stats += armor.special_stats;
+
+            total_attributes += get_enchant_attributes(armor.socket, armor.enchant.type);
+            total_special_stats += get_enchant_special_stats(armor.socket, armor.enchant.type);
+
+            set_names.emplace_back(armor.set_name);
+        }
+
+        for (Weapon &weapon : character.weapons)
+        {
+            total_attributes += weapon.attributes;
+            total_special_stats += weapon.special_stats;
+
+            total_attributes += get_enchant_attributes(weapon.socket, weapon.enchant.type);
+            total_special_stats += get_enchant_special_stats(weapon.socket, weapon.enchant.type);
+            weapon.hit_effects.emplace_back(enchant_hit_effect(weapon.swing_speed, weapon.enchant.type));
+            set_names.emplace_back(weapon.set_name);
+        }
+
+        // TODO fix this mess
+        size_t set_pieces_devil = 0;
+        size_t set_pieces_bds = 0;
+        size_t set_pieces_pvp = 0;
+        for (Set &set_name : set_names)
+        {
+            switch (set_name)
+            {
+                case Set::devilsaur:
+                    set_pieces_devil++;
+                    break;
+                case Set::black_dragonscale:
+                    set_pieces_bds++;
+                    break;
+                case Set::rare_pvp_set:
+                    set_pieces_pvp++;
+                    break;
+                default:
+                    break;
+            }
+        }
+        if (set_pieces_devil >= set_bonuses.devilsaur_set_bonus.pieces)
+        {
+            total_attributes += set_bonuses.devilsaur_set_bonus.attributes;
+            total_special_stats += set_bonuses.devilsaur_set_bonus.special_stats;
+        }
+        if (set_pieces_bds >= set_bonuses.black_dragonscale_bonus2.pieces)
+        {
+            total_attributes += set_bonuses.black_dragonscale_bonus2.attributes;
+            total_special_stats += set_bonuses.black_dragonscale_bonus2.special_stats;
+        }
+        if (set_pieces_bds >= set_bonuses.black_dragonscale_bonus3.pieces)
+        {
+            total_attributes += set_bonuses.black_dragonscale_bonus3.attributes;
+            total_special_stats += set_bonuses.black_dragonscale_bonus3.special_stats;
+        }
+        if (set_pieces_pvp >= set_bonuses.rare_pvp_set_bonus_1.pieces)
+        {
+            total_attributes += set_bonuses.rare_pvp_set_bonus_1.attributes;
+            total_special_stats += set_bonuses.rare_pvp_set_bonus_1.special_stats;
+        }
+
+        for (const auto &buff : character.buffs)
+        {
+            total_attributes += buff.attributes;
+            total_special_stats += buff.special_stats;
+            stat_multiplier_percent += buff.stat_multiplier;
+        }
+
+        // TODO implement shout in simulator instead
+        total_special_stats.attack_power += 241;  // battle shout
+        total_special_stats.critical_strike += 5; // crit from talent
+        total_special_stats.critical_strike += 3; // crit from berserker stance
+
+        if (total_special_stats.chance_for_extra_hit > 0)
+        {
+            for (Weapon &weapon : character.weapons)
+            {
+                weapon.hit_effects.emplace_back(Hit_effect{Hit_effect::Type::extra_hit, {}, {}, 0, 0,
+                                                           total_special_stats.chance_for_extra_hit});
+            }
+        }
+
+        total_attributes *= (1.0 + stat_multiplier_percent / 100);
+
+        total_special_stats += total_attributes.convert_to_special_stats();
+    }
+
+    bool check_if_armor_valid(const std::vector<Armor> &armor)
+    {
+        std::vector<Socket> sockets;
+        bool one_ring{false};
+        bool one_trinket{false};
+        for (auto const &armor_piece : armor)
+        {
+            for (auto const &socket : sockets)
+            {
+                if (armor_piece.socket == socket)
+                {
+                    if (armor_piece.socket == Socket::ring)
+                    {
+                        if (armor_piece.socket == Socket::ring && one_ring)
+                        {
+                            std::cout << "extra copy of " << armor_piece.socket << "\n";
+                            return false;
+                        }
+                        one_ring = true;
+                    }
+                    else if (armor_piece.socket == Socket::trinket)
+                    {
+                        if (armor_piece.socket == Socket::trinket && one_trinket)
+                        {
+                            std::cout << "extra copy of " << armor_piece.socket << "\n";
+                            return false;
+                        }
+                        one_trinket = true;
+                    }
+                    else
+                    {
+                        std::cout << "extra copy of " << armor_piece.socket << "\n";
+                        return false;
+                    }
+                }
+            }
+            sockets.emplace_back(armor_piece.socket);
+        }
+        return true;
+    }
+
+    bool check_if_weapons_valid(std::vector<Weapon> &weapons)
+    {
+        bool is_valid{true};
+        is_valid &= weapons.size() <= 2;
+        is_valid &= (weapons[0].socket != Socket::off_hand);
+        if (weapons.size() == 2)
+        {
+            is_valid &= (weapons[1].socket != Socket::main_hand);
+        }
+        return is_valid;
+    }
+
+//    void Character::change_weapon(const Weapon &weapon, const Hand &hand)
+//    {
+//        switch (hand)
+//        {
+//            case Hand::main_hand:
+//                weapons_[0] = weapon;
+//                break;
+//            case Hand::off_hand:
+//                weapons_[1] = weapon;
+//                break;
+//        }
+//    }
+//
+//    void Character::change_armor(const Armor &armor, bool first_misc_slot)
+//    {
+//        auto socket = armor.get_socket();
+//        for (auto &armor_piece : armor_)
+//        {
+//            if (armor_piece.get_socket() == socket)
+//            {
+//                if (socket == Socket::ring || socket == Socket::trinket)
+//                {
+//                    if (first_misc_slot)
+//                    {
+//                        armor_piece = armor;
+//                        return;
+//                    }
+//                    first_misc_slot = true; // Will trigger on the second hit instead
+//                }
+//                else
+//                {
+//                    armor_piece = armor;
+//                    return;
+//                }
+//            }
+//        }
+//    }
+
 
 };
 
