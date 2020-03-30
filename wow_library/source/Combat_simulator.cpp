@@ -252,7 +252,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
     double flurry_speed_bonus = 1 + (config.talent_flurry > 0) * 0.05 + config.talent_flurry * 0.05;
     double flurry_dt_factor = 1;
 
-    bool heroic_strike_ = false;
+    bool heroic_strike = false;
     bool crusader_oh_active = false;
     bool crusader_mh_active = false;
     bool deathwish_active = false;
@@ -283,25 +283,21 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
 
         for (auto &weapon : weapons)
         {
-            weapon.increment(dt * special_stats.haste);
-        }
-
-        for (auto &weapon : weapons)
-        {
-            double swing_damage = weapon.swing(special_stats.attack_power);
+            Hit_outcome hit_outcome{0, Hit_result::TBD};
+            double swing_damage = weapon.step(dt * special_stats.haste, special_stats.attack_power, rage);
 
             // Check if heroic strike should be performed
             if (swing_damage > 0.0)
             {
-                if (heroic_strike_ &&
-                    (weapon.get_hand() == Hand::main_hand) &&
+                if (heroic_strike &&
+                    (weapon.socket == Socket::main_hand) &&
                     rage >= heroic_strike_rage_cost)
                 {
                     simulator_cout("Performing heroic strike");
                     swing_damage += 138;
-                    hit_outcome = generate_hit(swing_damage, Hit_type::yellow, weapon.get_hand(), heroic_strike_,
+                    hit_outcome = generate_hit(swing_damage, Hit_type::yellow, weapon.socket, heroic_strike,
                                                deathwish_active, recklessness_active);
-                    heroic_strike_ = false;
+                    heroic_strike = false;
                     rage -= heroic_strike_rage_cost;
                     damage_sources.heroic_strike += hit_outcome.damage;
                     damage_sources.heroic_strike_count++;
@@ -309,15 +305,15 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                 }
                 else
                 {
-                    if (weapon.get_hand() == Hand::main_hand && heroic_strike_)
+                    if (weapon.get_hand() == Hand::main_hand && heroic_strike)
                     {
                         // Failed to pay rage for heroic strike
                         simulator_cout("Failed to pay heroic strike rage");
-                        heroic_strike_ = false;
+                        heroic_strike = false;
                     }
 
                     // Otherwise do white hit
-                    hit_outcome = generate_hit(swing_damage, Hit_type::white, weapon.get_hand(), heroic_strike_,
+                    hit_outcome = generate_hit(swing_damage, Hit_type::white, weapon.get_hand(), heroic_strike,
                                                deathwish_active, recklessness_active);
                     rage += rage_generation(hit_outcome.damage,
                                             weapon.get_swing_speed(),
@@ -350,7 +346,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                                 simulator_cout("HoJ procc");
                                 double damage = weapons[0].swing(special_stats.attack_power);
                                 hit_outcome = generate_hit(damage, Hit_type::white, weapons[0].get_hand(),
-                                                           heroic_strike_, deathwish_active, recklessness_active);
+                                                           heroic_strike, deathwish_active, recklessness_active);
                                 rage += rage_generation(hit_outcome.damage,
                                                         weapons[0].get_swing_speed(),
                                                         hit_outcome.hit_result == Hit_result::crit,
@@ -555,7 +551,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                 {
                     simulator_cout("Execute!");
                     double damage = 600 + (rage - 10) * 15;
-                    auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand, heroic_strike_,
+                    auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand, heroic_strike,
                                                     deathwish_active, recklessness_active);
                     if (hit_outcome.hit_result == Hit_result::crit)
                     {
@@ -585,7 +581,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                         simulator_cout("Bloodthirst!");
                         double damage = special_stats.attack_power * 0.45;
                         auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand,
-                                                        heroic_strike_,
+                                                        heroic_strike,
                                                         deathwish_active, recklessness_active);
                         if (hit_outcome.hit_result == Hit_result::crit)
                         {
@@ -619,7 +615,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                             damage = weapons[0].normalized_swing(special_stats.attack_power);
                         }
                         auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand,
-                                                        heroic_strike_,
+                                                        heroic_strike,
                                                         deathwish_active, recklessness_active);
                         if (hit_outcome.hit_result == Hit_result::crit)
                         {
@@ -633,9 +629,9 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                         damage_sources.whirlwind_count++;
                         simulator_cout(rage, " rage");
                     }
-                    if (rage > heroic_strike_rage_cost && !heroic_strike_)
+                    if (rage > heroic_strike_rage_cost && !heroic_strike)
                     {
-                        heroic_strike_ = true;
+                        heroic_strike = true;
                         simulator_cout("Heroic strike activated");
                     }
                 }
@@ -646,7 +642,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                         simulator_cout("Bloodthirst!");
                         double damage = special_stats.attack_power * 0.45;
                         auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand,
-                                                        heroic_strike_,
+                                                        heroic_strike,
                                                         deathwish_active, recklessness_active);
                         if (hit_outcome.hit_result == Hit_result::crit)
                         {
@@ -680,7 +676,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                             damage = weapons[0].normalized_swing(special_stats.attack_power);
                         }
                         auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand,
-                                                        heroic_strike_,
+                                                        heroic_strike,
                                                         deathwish_active, recklessness_active);
                         if (hit_outcome.hit_result == Hit_result::crit)
                         {
@@ -694,9 +690,9 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                         damage_sources.whirlwind_count++;
                         simulator_cout(rage, " rage");
                     }
-                    if (rage > 60 && !heroic_strike_)
+                    if (rage > 60 && !heroic_strike)
                     {
-                        heroic_strike_ = true;
+                        heroic_strike = true;
                         simulator_cout("Heroic strike activated");
                     }
                 }

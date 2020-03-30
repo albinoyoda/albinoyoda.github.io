@@ -59,6 +59,36 @@ enum class Set
     rare_pvp_set,
 };
 
+class Hit_effect
+{
+public:
+    enum class Type
+    {
+        none,
+        extra_hit,
+        stat_boost,
+        damage,
+    };
+
+    Hit_effect() = default;
+
+    Hit_effect(Type type, Attributes attribute_boost, Special_stats special_stats_boost, double damage, double duration,
+               double probability) :
+            type(type),
+            attribute_boost(attribute_boost),
+            special_stats_boost(special_stats_boost),
+            damage(damage),
+            duration(duration),
+            probability(probability) {};
+
+    Type type;
+    Attributes attribute_boost;
+    Special_stats special_stats_boost;
+    double damage;
+    double duration;
+    double probability;
+};
+
 struct Enchant
 {
     enum class Type

@@ -25,7 +25,7 @@ public:
 
         for (const auto &hit_effect : weapon.hit_effects)
         {
-            if (hit_effect.get_type() != Hit_effect::Type::none)
+            if (hit_effect.type != Hit_effect::Type::none)
             {
                 hit_effects.emplace_back(hit_effect);
             }
@@ -119,38 +119,48 @@ public:
     }
 
 
-    double random_var = get_random_100();
-        if (recklessness_active)
-        {
-            simulator_cout("Drawing outcome from MH recklessness table");
-            int outcome = std::lower_bound(hit_probabilities_recklessness_mh_.begin(),
-                                           hit_probabilities_recklessness_mh_.end(),
-                                           random_var) - hit_probabilities_recklessness_mh_.begin();
-            return {damage * lookup_outcome_mh_white(outcome), Hit_result(outcome)};
-        }
-        else
-        {
-            simulator_cout("Drawing outcome from MH hit table");
-            int outcome = std::lower_bound(hit_probabilities_white_mh_.begin(), hit_probabilities_white_mh_.end(),
-                                           random_var) - hit_probabilities_white_mh_.begin();
-            return {damage * lookup_outcome_mh_white(outcome), Hit_result(outcome)};
+//    double random_var = get_random_100();
+//        if (recklessness_active)
+//        {
+//            simulator_cout("Drawing outcome from MH recklessness table");
+//            int outcome = std::lower_bound(hit_probabilities_recklessness_mh_.begin(),
+//                                           hit_probabilities_recklessness_mh_.end(),
+//                                           random_var) - hit_probabilities_recklessness_mh_.begin();
+//            return {damage * lookup_outcome_mh_white(outcome), Hit_result(outcome)};
+//        }
+//        else
+//        {
+//            simulator_cout("Drawing outcome from MH hit table");
+//            int outcome = std::lower_bound(hit_probabilities_white_mh_.begin(), hit_probabilities_white_mh_.end(),
+//                                           random_var) - hit_probabilities_white_mh_.begin();
+//            return {damage * lookup_outcome_mh_white(outcome), Hit_result(outcome)};
 
-    constexpr void increment(double dt)
+    constexpr double step(double dt, double attack_power, double &rage)
     {
         internal_swing_timer -= dt;
-    }
-
-    constexpr double swing(double attack_power)
-    {
-        internal_swing_timer += swing_speed;
-
-        double damage = swing(attack_power);
-        if (socket == Socket::off_hand)
+        if (internal_swing_timer < 0.0)
         {
-            damage *= 0.625;
+            internal_swing_timer += swing_speed;
+            double damage = swing(attack_power);
+            if (heroic_strike)
+            {
+                simulator_cout("Performing heroic strike");
+                damage += 138;
+                
+                hit_outcome = generate_hit(swing_damage, Hit_type::yellow, weapon.socket, heroic_strike,
+                                           deathwish_active, recklessness_active);
+                heroic_strike = false;
+                rage -= heroic_strike_rage_cost;
+                damage_sources.heroic_strike += hit_outcome.damage;
+                damage_sources.heroic_strike_count++;
+                simulator_cout(rage, " rage");
+            }
+            if (socket == Socket::off_hand)
+            {
+                damage *= 0.625;
+            }
+            return damage;
         }
-        return damage;
-
         return 0.0;
     }
 
@@ -185,6 +195,24 @@ public:
         }
     }
 
+    template<typename T>
+    void print_statement(T t)
+    {
+        std::cout << std::setprecision(4) << t;
+    }
+
+    template<typename... Args>
+    void simulator_cout(Args &&... args)
+    {
+        if (debug_mode)
+        {
+            std::cout << "Time: " << std::setw(8) << std::left << time_keeper_.time + time_keeper_.dt
+                      << "s. Loop idx:" << std::setw(4) << time_keeper_.step_index << "Event: ";
+            __attribute__((unused)) int dummy[] = {0, ((void) print_statement(std::forward<Args>(args)), 0)...};
+            std::cout << "\n";
+        }
+    }
+
     double swing_speed;
     double average_damage;
     Socket socket;
@@ -199,6 +227,9 @@ public:
     std::vector<double> hit_table_white_dw_reck{};
     std::vector<double> hit_table_yellow{};
     std::vector<double> hit_table_yellow_reck{};
+
+    Time_keeper &time_keeper_;
+    bool debug_mode;
 
     bool heroic_strike;
     bool cleave;
