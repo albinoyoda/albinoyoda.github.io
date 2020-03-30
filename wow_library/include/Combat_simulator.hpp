@@ -122,22 +122,6 @@ class Combat_simulator
 public:
     explicit Combat_simulator(Combat_simulator_config config) : config(config) {};
 
-    enum class Hit_result
-    {
-        miss,
-        dodge,
-        glancing,
-        crit,
-        hit,
-        TBD
-    };
-
-    enum class Hit_type
-    {
-        white,
-        yellow
-    };
-
     struct Hit_outcome
     {
         Hit_outcome(double damage, Hit_result hit_result) : damage{damage}, hit_result{hit_result} {};

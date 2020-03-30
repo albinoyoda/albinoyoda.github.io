@@ -4,7 +4,6 @@
 
 #include "wow_library/include/Combat_simulator.hpp"
 #include "wow_library/include/Character.hpp"
-#include "wow_library/include/Enchant.hpp"
 #include "wow_library/include/Item.hpp"
 #include "wow_library/include/Armory.hpp"
 
@@ -41,7 +40,7 @@ class Item_optimizer
 public:
     struct Sim_result_t
     {
-        Sim_result_t() : character{Character(Race::human)}
+        Sim_result_t() : character{Character(Race::human, 60)}
         {
             mean_dps = 0;
             sample_std_dps = 0;
@@ -81,15 +80,15 @@ std::vector<std::vector<Weapon>> Item_optimizer::get_weapon_combinations(const s
     std::vector<std::vector<Weapon>> weapon_combinations;
     for (const auto &wep : weapons)
     {
-        switch (wep.get_socket())
+        switch (wep.socket)
         {
-            case Weapon::Socket::main_hand:
+            case Socket::main_hand:
                 main_hands.emplace_back(wep);
                 break;
-            case Weapon::Socket::one_hand:
+            case Socket::one_hand:
                 one_hands.emplace_back(wep);
                 break;
-            case Weapon::Socket::off_hand:
+            case Socket::off_hand:
                 off_hands.emplace_back(wep);
                 break;
         }
@@ -298,7 +297,7 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
                                                             Character character{Race::human};
 
                                                             character.equip_armor(
-                                                                    helmets[i_helm],
+                                                                    helmets[i_helm]);
                                                                     necks[i_neck],
                                                                     shoulders[i_shoulder],
                                                                     backs[i_back],

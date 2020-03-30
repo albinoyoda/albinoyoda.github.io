@@ -35,7 +35,7 @@ void print_stat(const std::string &stat_name, double amount_1, double amount_2)
 void print_character_stat(const Character &character1, const Character &character2)
 {
     print_stat("Strength: ", character1.total_attributes.strength, character2.total_attributes.strength);
-    print_stat("Agility : ", character2.total_attributes.agility, character2.total_attributes.agility);
+    print_stat("Agility : ", character1.total_attributes.agility, character2.total_attributes.agility);
 //    print_stat("Hit:    : ", charactersget_total_special_stats().hit, characters[1].get_total_special_stats().hit);
 //    print_stat("Crit    : ", charactersget_total_special_stats().critical_strike,
 //               characters[1].get_total_special_stats().critical_strike);
@@ -128,28 +128,92 @@ int main()
 
     print_character_stat(character1, character2);
 
+    std::vector<Character> characters{character1, character2};
+
     // Combat settings
-    Combat_simulator_config config{};
-    config.sim_time = 60;
-    config.target_level = 63;
-    config.n_damage_batches = 1;
+    int n_batches = 100000;
+    double sim_time = 60;
+    int opponent_level = 63;
 
-    config.talent_improved_heroic_strike = 2;
+    std::vector<Combat_simulator> simulators;
+    simulators.emplace_back(Combat_simulator());
+    simulators.emplace_back(Combat_simulator());
 
-    Combat_simulator simulator(config);
-    simulator.simulate(character1);
-    mean_dps.emplace_back(Combat_simulator::average(dps_snapshots[i]));
-    std_dps.emplace_back(Combat_simulator::standard_deviation(dps_snapshots[i], mean_dps[i]));
-    sample_std_dps.emplace_back(Combat_simulator::sample_deviation(std_dps[i], n_batches));
-    std::cout << std::setprecision(5);
-    std::cout << "DPS from simulation: \n" << mean_dps[i] << " +- " << 1.96 * sample_std_dps[i]
-              << " (95% confidence interval)\n";
-    std::cout << "DPS standard deviation in simulations: " << std_dps[i] << "\n";
-    std::cout << "Crit % left to crit cap: " << 100 - simulators[i].get_hit_probabilities_white_mh().back()
-              << ". (Negative number means capped)\n\n";
-    simulators[i].print_damage_distribution();
+//    simulators[0].use_fast_but_sloppy_rng(); // Use before set seed!
+//    simulators[0].set_seed(10000); // Use for predictable random numbers
+//    simulators[0].enable_rng_melee(); // Uses random swing damage instead of average
+    simulators[0].enable_spell_rotation();
+//    simulators[0].use_heroic_spamm();
+    simulators[0].use_mighty_rage_potion();
+    simulators[0].enable_anger_management();
+    simulators[0].enable_bloodrage();
+//    simulators[0].fuel_extra_rage(3.0, 150);
+    simulators[0].enable_talents();
+    simulators[0].enable_item_chance_on_hit_effects();
+    simulators[0].enable_crusader();
+    simulators[0].enable_death_wish();
+//    simulators[0].enable_recklessness();
+//    simulators[0].display_combat_debug();
 
-//    }
+//    simulators[1].use_fast_but_sloppy_rng(); // Use before set seed!
+//    simulators[1].set_seed(100); // Use for predictable random numbers
+//    simulators[1].enable_rng_melee(); // Uses random swing damage instead of average
+    simulators[1].enable_spell_rotation();
+//    simulators[1].use_heroic_spamm();
+    simulators[1].use_mighty_rage_potion();
+    simulators[1].enable_anger_management();
+    simulators[1].enable_bloodrage();
+//    simulators[1].fuel_extra_rage(3.0, 150);
+    simulators[1].enable_talents();
+    simulators[1].enable_item_chance_on_hit_effects();
+    simulators[1].enable_crusader();
+    simulators[1].enable_death_wish();
+//    simulators[1].enable_recklessness();
+//    simulators[1].display_combat_debug();
+
+    for (size_t i = 0; i < characters.size(); ++i)
+    {
+        if (!characters[i].check_if_armor_valid())
+        {
+            std::cout << "Char " << i + 1 << " has incorrect armor setup!\n";
+            return -1;
+        }
+        if (!characters[i].check_if_weapons_valid())
+        {
+            std::cout << "Char " << i + 1 << " has incorrect weapon setup!\n";
+            return -1;
+        }
+    }
+    print_stat("Strength: ", characters[0].get_stats().strength, characters[1].get_stats().strength);
+    print_stat("Agility : ", characters[0].get_stats().agility, characters[1].get_stats().agility);
+    print_stat("Hit:    : ", characters[0].get_total_special_stats().hit, characters[1].get_total_special_stats().hit);
+    print_stat("Crit    : ", characters[0].get_total_special_stats().critical_strike,
+               characters[1].get_total_special_stats().critical_strike);
+    print_stat("Atk Pwr : ", characters[0].get_total_special_stats().attack_power,
+               characters[1].get_total_special_stats().attack_power);
+    print_stat("Haste   : ", characters[0].get_haste(), characters[1].get_haste());
+    print_stat("Extr Hit: ", characters[0].get_chance_for_extra_hit(), characters[1].get_chance_for_extra_hit());
+    std::cout << "\n";
+
+    std::vector<std::vector<double>> dps_snapshots;
+    std::vector<double> mean_dps;
+    std::vector<double> std_dps;
+    std::vector<double> sample_std_dps;
+    for (size_t i = 0; i < characters.size(); ++i)
+    {
+        dps_snapshots.emplace_back(simulators[i].simulate(characters[i], sim_time, opponent_level, n_batches));
+        mean_dps.emplace_back(Combat_simulator::average(dps_snapshots[i]));
+        std_dps.emplace_back(Combat_simulator::standard_deviation(dps_snapshots[i], mean_dps[i]));
+        sample_std_dps.emplace_back(Combat_simulator::sample_deviation(std_dps[i], n_batches));
+        std::cout << std::setprecision(5);
+        std::cout << "DPS from simulation: \n" << mean_dps[i] << " +- " << 1.96 * sample_std_dps[i]
+                  << " (95% confidence interval)\n";
+        std::cout << "DPS standard deviation in simulations: " << std_dps[i] << "\n";
+        std::cout << "Crit % left to crit cap: " << 100 - simulators[i].get_hit_probabilities_white_mh().back()
+                  << ". (Negative number means capped)\n\n";
+        simulators[i].print_damage_distribution();
+
+    }
 
     std::cout << "Simulations executed in: " << double(clock() - startTime) / (double) CLOCKS_PER_SEC << " seconds."
               << std::endl;

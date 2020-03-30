@@ -3,6 +3,22 @@
 
 #include "Item.hpp"
 
+enum class Hit_result
+{
+    miss,
+    dodge,
+    glancing,
+    crit,
+    hit,
+    TBD
+};
+
+enum class Hit_type
+{
+    white,
+    yellow
+};
+
 class Weapon_sim
 {
 public:
@@ -118,22 +134,59 @@ public:
         hit_table_yellow_reck = create_hit_table_vector(two_hand_miss_chance, dodge_chance, 0, 100);
     }
 
+    enum class Hit_result
+    {
+        miss,
+        dodge,
+        glancing,
+        crit,
+        hit,
+        TBD
+    };
 
-//    double random_var = get_random_100();
-//        if (recklessness_active)
-//        {
-//            simulator_cout("Drawing outcome from MH recklessness table");
-//            int outcome = std::lower_bound(hit_probabilities_recklessness_mh_.begin(),
-//                                           hit_probabilities_recklessness_mh_.end(),
-//                                           random_var) - hit_probabilities_recklessness_mh_.begin();
-//            return {damage * lookup_outcome_mh_white(outcome), Hit_result(outcome)};
-//        }
-//        else
-//        {
-//            simulator_cout("Drawing outcome from MH hit table");
-//            int outcome = std::lower_bound(hit_probabilities_white_mh_.begin(), hit_probabilities_white_mh_.end(),
-//                                           random_var) - hit_probabilities_white_mh_.begin();
-//            return {damage * lookup_outcome_mh_white(outcome), Hit_result(outcome)};
+    Hit_result get_hit_result(Hit_type hit_type, bool recklessness_active)
+    {
+        double random_var = get_uniform_random();
+        switch (hit_type)
+        {
+            case Hit_type::white:
+                if (heroic_strike && socket == Socket::off_hand)
+                {
+                    simulator_cout("Drawing outcome white hit table");
+                    int outcome = std::distance(hit_table_white.begin(),
+                                                std::lower_bound(hit_table_white.begin(), hit_table_white.end(),
+                                                                 random_var));
+                    return Hit_result(outcome);
+                }
+                else
+                {
+                    simulator_cout("Drawing outcome white hit table");
+                    int outcome = std::distance(hit_table_white_dw.begin(),
+                                                std::lower_bound(hit_table_white_dw.begin(), hit_table_white_dw.end(),
+                                                                 random_var));
+                    return Hit_result(outcome);
+                }
+            case Hit_type::yellow:
+                if (heroic_strike && socket == Socket::off_hand)
+                {
+                    simulator_cout("Drawing outcome white hit table");
+                    int outcome = std::distance(hit_table_white.begin(),
+                                                std::lower_bound(hit_table_white.begin(), hit_table_white.end(),
+                                                                 random_var));
+                    return Hit_result(outcome);
+                }
+                else
+                {
+                    simulator_cout("Drawing outcome white hit table");
+                    int outcome = std::distance(hit_table_white_dw.begin(),
+                                                std::lower_bound(hit_table_white_dw.begin(), hit_table_white_dw.end(),
+                                                                 random_var));
+                    return Hit_result(outcome);
+                }
+        }
+
+
+    }
 
     constexpr double step(double dt, double attack_power, double &rage)
     {
@@ -146,7 +199,7 @@ public:
             {
                 simulator_cout("Performing heroic strike");
                 damage += 138;
-                
+
                 hit_outcome = generate_hit(swing_damage, Hit_type::yellow, weapon.socket, heroic_strike,
                                            deathwish_active, recklessness_active);
                 heroic_strike = false;
@@ -193,6 +246,11 @@ public:
                 assert(false);
                 return 0.0;
         }
+    }
+
+    double get_uniform_random()
+    {
+        return static_cast<double>(rand()) / RAND_MAX;
     }
 
     template<typename T>

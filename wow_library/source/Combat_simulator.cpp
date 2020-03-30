@@ -21,9 +21,9 @@ namespace
         return 0.0;
     }
 
-    constexpr double armor_mitigation(double target_armor, size_t target_level)
+    constexpr double armor_mitigation(double target_armor)
     {
-        return target_armor / (target_armor + 400.0 + 85.0 * target_level);
+        return target_armor / (target_armor + 400 + 85 * 60);
     }
 }
 
