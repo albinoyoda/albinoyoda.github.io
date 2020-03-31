@@ -122,6 +122,7 @@ Character delta_gear(const Character &character)
 int main()
 {
     clock_t startTime = clock();
+    Armory armory;
 
     Character character1 = character_setup();
     Character character2 = delta_gear(character1);
@@ -171,28 +172,16 @@ int main()
 //    simulators[1].enable_recklessness();
 //    simulators[1].display_combat_debug();
 
-    for (size_t i = 0; i < characters.size(); ++i)
-    {
-        if (!characters[i].check_if_armor_valid())
-        {
-            std::cout << "Char " << i + 1 << " has incorrect armor setup!\n";
-            return -1;
-        }
-        if (!characters[i].check_if_weapons_valid())
-        {
-            std::cout << "Char " << i + 1 << " has incorrect weapon setup!\n";
-            return -1;
-        }
-    }
-    print_stat("Strength: ", characters[0].get_stats().strength, characters[1].get_stats().strength);
-    print_stat("Agility : ", characters[0].get_stats().agility, characters[1].get_stats().agility);
-    print_stat("Hit:    : ", characters[0].get_total_special_stats().hit, characters[1].get_total_special_stats().hit);
-    print_stat("Crit    : ", characters[0].get_total_special_stats().critical_strike,
-               characters[1].get_total_special_stats().critical_strike);
-    print_stat("Atk Pwr : ", characters[0].get_total_special_stats().attack_power,
-               characters[1].get_total_special_stats().attack_power);
-    print_stat("Haste   : ", characters[0].get_haste(), characters[1].get_haste());
-    print_stat("Extr Hit: ", characters[0].get_chance_for_extra_hit(), characters[1].get_chance_for_extra_hit());
+    print_stat("Strength: ", characters[0].total_attributes.strength, characters[1].total_attributes.strength);
+    print_stat("Agility : ", characters[0].total_attributes.agility, characters[1].total_attributes.agility);
+    print_stat("Hit:    : ", characters[0].total_special_stats.hit, characters[1].total_special_stats.hit);
+    print_stat("Crit    : ", characters[0].total_special_stats.critical_strike,
+               characters[1].total_special_stats.critical_strike);
+    print_stat("Atk Pwr : ", characters[0].total_special_stats.attack_power,
+               characters[1].total_special_stats.attack_power);
+    print_stat("Haste   : ", characters[0].total_special_stats.haste, characters[1].total_special_stats.haste);
+    print_stat("Extr Hit: ", characters[0].total_special_stats.chance_for_extra_hit,
+               characters[1].total_special_stats.chance_for_extra_hit);
     std::cout << "\n";
 
     std::vector<std::vector<double>> dps_snapshots;
