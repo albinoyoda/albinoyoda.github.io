@@ -3,6 +3,16 @@
 
 #include <vector>
 
+enum class Damage_source
+{
+    white_mh,
+    white_oh,
+    bloodthirst,
+    execute,
+    heroic_strike,
+    whirlwind,
+};
+
 struct Damage_sources
 {
     Damage_sources() = default;
@@ -34,16 +44,6 @@ struct Damage_sources
         return white_mh_count + white_oh_count + bloodthirst_count + heroic_strike_count + whirlwind_count + execute_count;
     }
 
-    enum class Damage_source
-    {
-        white_mh,
-        white_oh,
-        bloodthirst,
-        execute,
-        heroic_strike,
-        whirlwind,
-    };
-
     void add_damage(Damage_source source, double damage)
     {
         switch (source)
@@ -51,31 +51,29 @@ struct Damage_sources
             case Damage_source::white_mh:
                 white_mh_damage += damage;
                 white_mh_count++;
+                break;
             case Damage_source::white_oh:
                 white_oh_damage += damage;
                 white_oh_count++;
+                break;
             case Damage_source::bloodthirst:
                 bloodthirst_damage += damage;
                 bloodthirst_count++;
+                break;
             case Damage_source::execute:
                 execute_damage += damage;
                 execute_count++;
+                break;
             case Damage_source::heroic_strike:
                 heroic_strike_damage += damage;
                 heroic_strike_count++;
+                break;
             case Damage_source::whirlwind:
                 whirlwind_damage += damage;
                 whirlwind_count++;
+                break;
         }
     }
-
-//    void print(const std::string &source_name, double source_percent,
-//                              double source_std, double source_count) const
-//    {
-//        std::cout << source_name << std::setw(5) << std::left << std::setprecision(3)
-//                  << 100 * source_percent << " +- " << std::setw(4) << 100 * source_std << ", casts: "
-//                  << source_count << "\n";
-//    }
 
     double white_mh_damage{};
     double white_oh_damage{};

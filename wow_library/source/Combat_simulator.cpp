@@ -469,8 +469,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                                                    deathwish_active, recklessness_active);
                         heroic_strike_ = false;
                         rage -= heroic_strike_rage_cost;
-                        damage_sources.heroic_strike += hit_outcome.damage;
-                        damage_sources.heroic_strike_count++;
+                        damage_sources.add_damage(Damage_source::heroic_strike, hit_outcome.damage);
                         simulator_cout(rage, " rage");
                     }
                     else
@@ -492,13 +491,11 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         rage = std::min(100.0, rage);
                         if (weapon.get_socket() == Socket::main_hand)
                         {
-                            damage_sources.white_mh += hit_outcome.damage;
-                            damage_sources.white_mh_count++;
+                            damage_sources.add_damage(Damage_source::white_mh, hit_outcome.damage);
                         }
                         else
                         {
-                            damage_sources.white_oh += hit_outcome.damage;
-                            damage_sources.white_oh_count++;
+                            damage_sources.add_damage(Damage_source::white_oh, hit_outcome.damage);
                         }
                         simulator_cout(rage, " rage");
                     }
@@ -523,8 +520,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                                                             true);
                                     rage = std::min(100.0, rage);
                                     weapons[0].reset_timer();
-                                    damage_sources.extra_hit += hit_outcome.damage;
-                                    damage_sources.extra_hit_count++;
+                                    damage_sources.add_damage(Damage_source::white_mh, hit_outcome.damage);
                                     simulator_cout(rage, " rage");
                                 }
                             }
@@ -737,8 +733,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         {
                             rage = 0;
                         }
-                        damage_sources.execute += hit_outcome.damage;
-                        damage_sources.execute_count++;
+                        damage_sources.add_damage(Damage_source::execute, hit_outcome.damage);
                         simulator_cout(rage, " rage");
                     }
                 }
@@ -764,8 +759,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                             }
                             time_keeper_.blood_thirst_cd = 6.0 + dt;
                             time_keeper_.global_cd = 1.0 + dt;
-                            damage_sources.bloodthirst += hit_outcome.damage;
-                            damage_sources.bloodthirst_count++;
+                            damage_sources.add_damage(Damage_source::bloodthirst, hit_outcome.damage);
                             simulator_cout(rage, " rage");
                         }
 
@@ -795,8 +789,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                             rage -= 25;
                             time_keeper_.whirlwind_cd = 10 + dt;
                             time_keeper_.global_cd = 1.0 + dt;
-                            damage_sources.whirlwind += hit_outcome.damage;
-                            damage_sources.whirlwind_count++;
+                            damage_sources.add_damage(Damage_source::whirlwind, hit_outcome.damage);
                             simulator_cout(rage, " rage");
                         }
                         if (rage > heroic_strike_rage_cost && !heroic_strike_)
@@ -825,8 +818,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                             }
                             time_keeper_.blood_thirst_cd = 6.0 + dt;
                             time_keeper_.global_cd = 1.0 + dt;
-                            damage_sources.bloodthirst += hit_outcome.damage;
-                            damage_sources.bloodthirst_count++;
+                            damage_sources.add_damage(Damage_source::bloodthirst, hit_outcome.damage);
                             simulator_cout(rage, " rage");
                         }
 
@@ -856,8 +848,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                             rage -= 25;
                             time_keeper_.whirlwind_cd = 10 + dt;
                             time_keeper_.global_cd = 1.0 + dt;
-                            damage_sources.whirlwind += hit_outcome.damage;
-                            damage_sources.whirlwind_count++;
+                            damage_sources.add_damage(Damage_source::whirlwind, hit_outcome.damage);
                             simulator_cout(rage, " rage");
                         }
                         if (rage > 60 && !heroic_strike_)
@@ -870,7 +861,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
             }
             time_keeper_.increment(dt);
         }
-        batch_damage_.push_back(damage_sources.sum() / time_keeper_.time_);
+        batch_damage_.push_back(damage_sources.sum_damage_sources() / time_keeper_.time_);
         damage_distribution_.emplace_back(damage_sources);
     }
     return batch_damage_;
@@ -1088,11 +1079,6 @@ const std::vector<double> &Combat_simulator::get_hit_probabilities_white_mh() co
     return hit_probabilities_white_mh_;
 }
 
-const std::vector<Combat_simulator::Damage_sources> &Combat_simulator::get_damage_distribution() const
-{
-    return damage_distribution_;
-}
-
 void Combat_simulator::print_damage_distribution() const
 {
     Damage_sources total_sources{};
@@ -1102,7 +1088,7 @@ void Combat_simulator::print_damage_distribution() const
     for (const auto &damage_source : damage_distribution_)
     {
         total_sources = total_sources + damage_source;
-        total_damage += damage_source.sum();
+        total_damage += damage_source.sum_damage_sources();
         total_counts += damage_source.sum_counts();
     }
 
@@ -1112,42 +1098,37 @@ void Combat_simulator::print_damage_distribution() const
     double execute_count = double(total_sources.execute_count) / damage_distribution_.size();
     double heroic_strike_count = double(total_sources.heroic_strike_count) / damage_distribution_.size();
     double whirlwind_count = double(total_sources.whirlwind_count) / damage_distribution_.size();
-    double extra_hit_count = double(total_sources.extra_hit_count) / damage_distribution_.size();
 
-    double white_mh_std = damage_source_std(&Damage_sources::white_mh);
-    double white_oh_std = damage_source_std(&Damage_sources::white_oh);
-    double bloodthirst_std = damage_source_std(&Damage_sources::bloodthirst);
-    double execute_std = damage_source_std(&Damage_sources::execute);
-    double heroic_strike_std = damage_source_std(&Damage_sources::heroic_strike);
-    double whirlwind_std = damage_source_std(&Damage_sources::whirlwind);
-    double extra_hit_std = damage_source_std(&Damage_sources::extra_hit);
+    double white_mh_std = damage_source_std(&Damage_sources::white_mh_count);
+    double white_oh_std = damage_source_std(&Damage_sources::white_oh_count);
+    double bloodthirst_std = damage_source_std(&Damage_sources::bloodthirst_count);
+    double execute_std = damage_source_std(&Damage_sources::execute_count);
+    double heroic_strike_std = damage_source_std(&Damage_sources::heroic_strike_count);
+    double whirlwind_std = damage_source_std(&Damage_sources::whirlwind_count);
 
     std::cout << "Damage_sources (%):\n";
     print_damage_sources("White hits   : ",
-                         (total_sources.white_mh + total_sources.white_oh) / total_damage,
+                         (total_sources.white_mh_damage + total_sources.white_mh_damage) / total_damage,
                          sqrt(white_oh_std * white_oh_std + white_mh_std * white_mh_std),
                          white_mh_count + white_oh_count);
     print_damage_sources("White MH     : ",
-                         total_sources.white_mh / total_damage,
+                         total_sources.white_mh_damage / total_damage,
                          white_mh_std, white_mh_count);
     print_damage_sources("White OH     : ",
-                         total_sources.white_oh / total_damage,
+                         total_sources.white_oh_damage / total_damage,
                          white_oh_std, white_oh_count);
     print_damage_sources("Bloodthirst  : ",
-                         total_sources.bloodthirst / total_damage,
+                         total_sources.bloodthirst_damage / total_damage,
                          bloodthirst_std, bloodthirst_count);
     print_damage_sources("Execute      : ",
-                         total_sources.execute / total_damage,
+                         total_sources.execute_damage / total_damage,
                          execute_std, execute_count);
     print_damage_sources("Heroic strike: ",
-                         total_sources.heroic_strike / total_damage,
+                         total_sources.heroic_strike_damage / total_damage,
                          heroic_strike_std, heroic_strike_count);
     print_damage_sources("Whirlwind    : ",
-                         total_sources.whirlwind / total_damage,
+                         total_sources.whirlwind_damage / total_damage,
                          whirlwind_std, whirlwind_count);
-    print_damage_sources("Extra hit    : ",
-                         total_sources.extra_hit / total_damage,
-                         extra_hit_std, extra_hit_count);
     std::cout << "\n";
 }
 

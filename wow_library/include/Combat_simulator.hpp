@@ -10,6 +10,7 @@
 #include <random>
 
 #include "Character.hpp"
+#include "damage_sources.hpp"
 
 class Weapon_sim
 {
@@ -244,55 +245,6 @@ public:
         yellow
     };
 
-    struct Damage_sources
-    {
-        Damage_sources() = default;
-
-        Damage_sources &operator+(const Damage_sources &rhs)
-        {
-            this->whirlwind = this->whirlwind + rhs.whirlwind;
-            this->bloodthirst = this->bloodthirst + rhs.bloodthirst;
-            this->execute = this->execute + rhs.execute;
-            this->white_mh = this->white_mh + rhs.white_mh;
-            this->white_oh = this->white_oh + rhs.white_oh;
-            this->extra_hit = this->extra_hit + rhs.extra_hit;
-            this->heroic_strike = this->heroic_strike + rhs.heroic_strike;
-            this->whirlwind_count = this->whirlwind_count + rhs.whirlwind_count;
-            this->bloodthirst_count = this->bloodthirst_count + rhs.bloodthirst_count;
-            this->execute_count = this->execute_count + rhs.execute_count;
-            this->white_mh_count = this->white_mh_count + rhs.white_mh_count;
-            this->white_oh_count = this->white_oh_count + rhs.white_oh_count;
-            this->extra_hit_count = this->extra_hit_count + rhs.extra_hit_count;
-            this->heroic_strike_count = this->heroic_strike_count + rhs.heroic_strike_count;
-            return *(this);
-        }
-
-        constexpr double sum() const
-        {
-            return white_mh + white_oh + extra_hit + bloodthirst + heroic_strike + whirlwind + execute;
-        }
-
-        constexpr double sum_counts() const
-        {
-            return white_mh_count + white_oh_count + extra_hit_count + bloodthirst_count + heroic_strike_count + whirlwind_count + execute_count;
-        }
-
-        double white_mh;
-        double white_oh;
-        double extra_hit;
-        double bloodthirst;
-        double execute;
-        double heroic_strike;
-        double whirlwind;
-        size_t white_mh_count;
-        size_t white_oh_count;
-        size_t extra_hit_count;
-        size_t bloodthirst_count;
-        size_t execute_count;
-        size_t heroic_strike_count;
-        size_t whirlwind_count;
-    };
-
     struct Hit_outcome
     {
         Hit_outcome(double damage, Hit_result hit_result) : damage{damage}, hit_result{hit_result} {};
@@ -448,8 +400,6 @@ public:
 
     const std::vector<double> &get_hit_probabilities_white_mh() const;
 
-    const std::vector<Damage_sources> &get_damage_distribution() const;
-
     template<typename T>
     double damage_source_std(T field_ptr) const
     {
@@ -457,7 +407,7 @@ public:
         damage_vec.reserve(damage_distribution_.size());
         for (const auto &damage_source : damage_distribution_)
         {
-            damage_vec.push_back(damage_source.*field_ptr / damage_source.sum());
+            damage_vec.push_back(damage_source.*field_ptr / damage_source.sum_counts());
         }
         double mean_dps = Combat_simulator::average(damage_vec);
         double std_dps = Combat_simulator::standard_deviation(damage_vec, mean_dps);
