@@ -5,7 +5,6 @@
 #include <cassert>
 
 #include "Attributes.hpp"
-#include "Hit_effect.hpp"
 
 enum class Socket
 {
@@ -93,6 +92,7 @@ struct Enchant
 {
     enum class Type
     {
+        none,
         strength,
         strength7,
         strength9,
@@ -165,7 +165,7 @@ struct Armor
     Special_stats special_stats;
     Socket socket;
     Set set_name;
-    Enchant enchant;
+    Enchant enchant{};
 };
 
 struct Weapon
@@ -192,89 +192,9 @@ struct Weapon
     Weapon_buff buff;
 };
 
-std::ostream &operator<<(std::ostream &os, Socket const &socket)
-{
-    os << "Item slot ";
-    switch (socket)
-    {
-        case Socket::head:
-            os << "head." << "\n";
-            break;
-        case Socket::neck:
-            os << "neck." << "\n";
-            break;
-        case Socket::shoulder:
-            os << "shoulder." << "\n";
-            break;
-        case Socket::back:
-            os << "back." << "\n";
-            break;
-        case Socket::chest:
-            os << "chest." << "\n";
-            break;
-        case Socket::wrists:
-            os << "wrists." << "\n";
-            break;
-        case Socket::hands:
-            os << "hands." << "\n";
-            break;
-        case Socket::belt:
-            os << "belt." << "\n";
-            break;
-        case Socket::legs:
-            os << "legs." << "\n";
-            break;
-        case Socket::boots:
-            os << "boots." << "\n";
-            break;
-        case Socket::ring:
-            os << "ring." << "\n";
-            break;
-        case Socket::trinket:
-            os << "trinket." << "\n";
-            break;
-        case Socket::ranged:
-            os << "ranged." << "\n";
-            break;
-        case Socket::main_hand:
-            os << "main hand." << "\n";
-            break;
-        case Socket::off_hand:
-            os << "off hand." << "\n";
-            break;
-        case Socket::none:
-            os << "none." << "\n";
-            break;
-    }
-    return os;
-}
+std::ostream &operator<<(std::ostream &os, const Socket &socket);
 
-size_t Special_stats::get_weapon_skill(Weapon_type weapon_type)
-{
-    switch (weapon_type)
-    {
-        case Weapon_type::sword:
-            return sword_skill;
-        case Weapon_type::axe:
-            return axe_skill;
-        case Weapon_type::dagger:
-            return dagger_skill;
-        case Weapon_type::mace:
-            return mace_skill;
-        case Weapon_type::unarmed:
-            //TODO
-            return 300;
-        default:
-            assert(true);
-            return 0;
-    }
-}
-
-std::ostream &operator<<(std::ostream &os, const Armor &armor)
-{
-    os << armor.name << "\n";
-    return os;
-}
+size_t get_weapon_skill(const Special_stats& special_stats, Weapon_type weapon_type);
 
 #endif //WOW_SIMULATOR_ITEM_HPP
 

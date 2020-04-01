@@ -1,5 +1,4 @@
 #include "../include/Combat_simulator.hpp"
-#include "../include/Armory.hpp"
 
 namespace
 {
@@ -375,24 +374,32 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
     batch_damage_.reserve(n_damage_batches);
     damage_distribution_.clear();
     damage_distribution_.reserve(n_damage_batches);
-    double character_haste = character.total_special_stats.haste;
+    double character_haste = 1 + character.total_special_stats.haste;
     const auto starting_special_stats = character.total_special_stats;
     std::vector<Weapon_sim> weapons;
-    Weapon_sim a{character.weapons[0].swing_speed, {character.weapons[0].min_damage, character.weapons[0].max_damage}, Weapon_sim::Socket::main_hand, character.weapons[0].type};
-    auto weapons = character.weapons;
+    Weapon_sim a{character.weapons[0].swing_speed, {character.weapons[0].min_damage, character.weapons[0].max_damage},
+                 Socket::main_hand, character.weapons[0].type};
+    Weapon_sim b{character.weapons[1].swing_speed, {character.weapons[1].min_damage, character.weapons[1].max_damage},
+                 Socket::off_hand, character.weapons[1].type};
+    weapons.emplace_back(a);
+    weapons.emplace_back(b);
     double chance_for_extra_hit = character.total_special_stats.chance_for_extra_hit;
 
 //    double crusader_proc_chance_mh = character.is_crusader_mh() * weapons[0].get_swing_speed() / 40;
 //    double crusader_proc_chance_oh = character.is_crusader_oh() * weapons[1].get_swing_speed() / 40;
 
-    double crusader_proc_chance_mh = weapons[0].swing_speed / 40;
-    double crusader_proc_chance_oh = weapons[1].swing_speed / 40;
+    double crusader_proc_chance_mh = weapons[0].get_swing_speed() / 40;
+    double crusader_proc_chance_oh = weapons[1].get_swing_speed() / 40;
 
-    weapons[0].compute_weapon_damage(character.get_mh_bonus_damage());
-    weapons[1].compute_weapon_damage(character.get_oh_bonus_damage());
+    weapons[0].compute_weapon_damage(character.weapons[0].buff.bonus_damage);
+    weapons[1].compute_weapon_damage(character.weapons[1].buff.bonus_damage);
 
-    compute_hit_table(opponent_level - 60, character.get_weapon_skill_mh(), starting_special_stats, Hand::main_hand);
-    compute_hit_table(opponent_level - 60, character.get_weapon_skill_oh(), starting_special_stats, Hand::off_hand);
+    compute_hit_table(opponent_level - 60,
+                      get_weapon_skill(character.total_special_stats, weapons[0].get_weapon_type()),
+                      starting_special_stats, Socket::main_hand);
+    compute_hit_table(opponent_level - 60,
+                      get_weapon_skill(character.total_special_stats, weapons[1].get_weapon_type()),
+                      starting_special_stats, Socket::off_hand);
 
     double heroic_strike_rage_cost = 13.0;
 
@@ -453,12 +460,12 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                 {
                     if (spell_rotation_ &&
                         heroic_strike_ &&
-                        (weapon.get_hand() == Hand::main_hand) &&
+                        (weapon.get_socket() == Socket::main_hand) &&
                         rage >= heroic_strike_rage_cost)
                     {
                         simulator_cout("Performing heroic strike");// Unbridled wrath
                         swing_damage += 138;
-                        hit_outcome = generate_hit(swing_damage, Hit_type::yellow, weapon.get_hand(), heroic_strike_,
+                        hit_outcome = generate_hit(swing_damage, Hit_type::yellow, weapon.get_socket(), heroic_strike_,
                                                    deathwish_active, recklessness_active);
                         heroic_strike_ = false;
                         rage -= heroic_strike_rage_cost;
@@ -468,7 +475,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                     }
                     else
                     {
-                        if (weapon.get_hand() == Hand::main_hand && heroic_strike_)
+                        if (weapon.get_socket() == Socket::main_hand && heroic_strike_)
                         {
                             // Failed to pay rage for heroic strike
                             simulator_cout("Failed to pay heroic strike rage");
@@ -476,14 +483,14 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         }
 
                         // Otherwise do white hit
-                        hit_outcome = generate_hit(swing_damage, Hit_type::white, weapon.get_hand(), heroic_strike_,
+                        hit_outcome = generate_hit(swing_damage, Hit_type::white, weapon.get_socket(), heroic_strike_,
                                                    deathwish_active, recklessness_active);
                         rage += rage_generation(hit_outcome.damage,
                                                 weapon.get_swing_speed(),
                                                 hit_outcome.hit_result == Hit_result::crit,
-                                                weapon.get_hand() == Hand::main_hand);
+                                                weapon.get_socket() == Socket::main_hand);
                         rage = std::min(100.0, rage);
-                        if (weapon.get_hand() == Hand::main_hand)
+                        if (weapon.get_socket() == Socket::main_hand)
                         {
                             damage_sources.white_mh += hit_outcome.damage;
                             damage_sources.white_mh_count++;
@@ -508,7 +515,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                                 {
                                     simulator_cout("HoJ procc");
                                     double damage = weapons[0].swing(special_stats.attack_power);
-                                    hit_outcome = generate_hit(damage, Hit_type::white, weapons[0].get_hand(),
+                                    hit_outcome = generate_hit(damage, Hit_type::white, weapons[0].get_socket(),
                                                                heroic_strike_, deathwish_active, recklessness_active);
                                     rage += rage_generation(hit_outcome.damage,
                                                             weapons[0].get_swing_speed(),
@@ -524,7 +531,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         }
                         if (crusader_enabled_)
                         {
-                            if (weapon.get_hand() == Hand::main_hand)
+                            if (weapon.get_socket() == Socket::main_hand)
                             {
                                 double random_variable = get_random_1();
                                 if (random_variable < crusader_proc_chance_mh)
@@ -538,7 +545,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                                     }
                                 }
                             }
-                            if (weapon.get_hand() == Hand::off_hand)
+                            if (weapon.get_socket() == Socket::off_hand)
                             {
                                 double random_variable = get_random_1();
                                 if (random_variable < crusader_proc_chance_oh)
@@ -714,7 +721,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                     {
                         simulator_cout("Execute!");
                         double damage = 600 + (rage - 10) * 15;
-                        auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand, heroic_strike_,
+                        auto hit_outcome = generate_hit(damage, Hit_type::yellow, Socket::main_hand, heroic_strike_,
                                                         deathwish_active, recklessness_active);
                         if (hit_outcome.hit_result == Hit_result::crit)
                         {
@@ -743,7 +750,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         {
                             simulator_cout("Bloodthirst!");
                             double damage = special_stats.attack_power * 0.45;
-                            auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand,
+                            auto hit_outcome = generate_hit(damage, Hit_type::yellow, Socket::main_hand,
                                                             heroic_strike_,
                                                             deathwish_active, recklessness_active);
                             if (hit_outcome.hit_result == Hit_result::crit)
@@ -777,7 +784,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                             {
                                 damage = weapons[0].normalized_swing(special_stats.attack_power);
                             }
-                            auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand,
+                            auto hit_outcome = generate_hit(damage, Hit_type::yellow, Socket::main_hand,
                                                             heroic_strike_,
                                                             deathwish_active, recklessness_active);
                             if (hit_outcome.hit_result == Hit_result::crit)
@@ -804,7 +811,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         {
                             simulator_cout("Bloodthirst!");
                             double damage = special_stats.attack_power * 0.45;
-                            auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand,
+                            auto hit_outcome = generate_hit(damage, Hit_type::yellow, Socket::main_hand,
                                                             heroic_strike_,
                                                             deathwish_active, recklessness_active);
                             if (hit_outcome.hit_result == Hit_result::crit)
@@ -838,7 +845,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                             {
                                 damage = weapons[0].normalized_swing(special_stats.attack_power);
                             }
-                            auto hit_outcome = generate_hit(damage, Hit_type::yellow, Hand::main_hand,
+                            auto hit_outcome = generate_hit(damage, Hit_type::yellow, Socket::main_hand,
                                                             heroic_strike_,
                                                             deathwish_active, recklessness_active);
                             if (hit_outcome.hit_result == Hit_result::crit)
@@ -1174,16 +1181,15 @@ void Combat_simulator::enable_anger_management()
 WEAPON
  */
 Weapon_sim::Weapon_sim(double swing_speed, std::pair<double, double> damage_interval,
-                       Socket socket, Skill_type skill_type) :
+                       Socket socket, Weapon_type skill_type) :
         swing_speed_{swing_speed},
         internal_swing_timer_{0.0},
         damage_interval_{std::move(damage_interval)},
         average_damage_{0.0},
         socket_{socket},
-        weapon_type_{skill_type},
-        hand_{}
+        weapon_type_{skill_type}
 {
-    if (skill_type == Skill_type::dagger)
+    if (weapon_type_ == Weapon_type::dagger)
     {
         normalized_swing_speed_ = 1.7;
     }
@@ -1213,7 +1219,7 @@ double Weapon_sim::step(double dt, double attack_power, bool is_random)
         {
             damage = swing(attack_power);
         }
-        if (get_hand() == Hand::off_hand)
+        if (get_socket() == Socket::off_hand)
         {
             damage *= 0.625;
         }
@@ -1222,24 +1228,9 @@ double Weapon_sim::step(double dt, double attack_power, bool is_random)
     return 0.0;
 }
 
-Weapon_sim::Socket Weapon_sim::get_socket() const
+Socket Weapon_sim::get_socket() const
 {
     return socket_;
-}
-
-Skill_type Weapon_sim::get_weapon_type() const
-{
-    return weapon_type_;
-}
-
-void Weapon_sim::set_weapon_type(Skill_type weapon_type)
-{
-    weapon_type_ = weapon_type;
-}
-
-void Weapon_sim::set_hand(Hand hand)
-{
-    hand_ = hand;
 }
 
 void Weapon_sim::set_internal_swing_timer(double internal_swing_timer)

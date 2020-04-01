@@ -4,8 +4,6 @@
 #include <ostream>
 #include <vector>
 
-enum class Weapon_type;
-
 struct Special_stats
 {
     Special_stats() = default;
@@ -22,8 +20,6 @@ struct Special_stats
             axe_skill(axe_skill),
             dagger_skill(dagger_skill),
             mace_skill(mace_skill) {}
-
-    size_t get_weapon_skill(Weapon_type weapon_type);
 
     void clear()
     {
@@ -113,21 +109,21 @@ public:
     double agility;
 };
 
-std::ostream &operator<<(std::ostream &os, Special_stats const &special_stats)
-{
-    os << "Characters special stats: " << "\n";
-    os << "hit: " << special_stats.hit << "\n";
-    os << "crit: " << special_stats.critical_strike << "\n";
-    os << "attack power: " << special_stats.attack_power << "\n";
-    return os;
-}
+std::ostream &operator<<(std::ostream &os, Special_stats const &special_stats);
+//{
+//    os << "Characters special stats: " << "\n";
+//    os << "hit: " << special_stats.hit << "\n";
+//    os << "crit: " << special_stats.critical_strike << "\n";
+//    os << "attack power: " << special_stats.attack_power << "\n";
+//    return os;
+//}
 
-std::ostream &operator<<(std::ostream &os, Attributes const &stats)
-{
-    os << "Characters stats: " << "\n";
-    os << "strength: " << stats.strength << "\n";
-    os << "agility: " << stats.agility << "\n";
-    return os;
-}
+std::ostream &operator<<(std::ostream &os, Attributes const &stats);
+//{
+//    os << "Characters stats: " << "\n";
+//    os << "strength: " << stats.strength << "\n";
+//    os << "agility: " << stats.agility << "\n";
+//    return os;
+//}
 
 #endif //WOW_SIMULATOR_STATS_HPP

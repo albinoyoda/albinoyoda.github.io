@@ -11,7 +11,7 @@ struct Buffs
     Buff songflower{"songflower", Attributes{15, 15}, Special_stats{5, 0, 0}};
 
     // Player_buffs
-    Buff blessing_of_kings{"blessing_of_kings", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, 10};
+    Buff blessing_of_kings{"blessing_of_kings", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, .10};
     Buff blessing_of_might{"blessing_of_might", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 155}};
     Buff gift_of_the_wild{"gift_of_the_wild", Attributes{12.0, 12.0}, Special_stats{0.0, 0.0, 0.0}};
     Buff trueshot_aura{"trueshot_aura", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 100}};
@@ -207,7 +207,7 @@ struct Armory
 
     struct trinket_t
     {
-        Armor hand_of_justice{"hand_of_justice", Attributes{0, 0}, Special_stats{0, 0, 20}, Socket::trinket};
+        Armor hand_of_justice{"hand_of_justice", Attributes{0, 0}, Special_stats{0, 0, 20, .02}, Socket::trinket};
         Armor diamond_flask{"diamond_flask", Attributes{75, 0}, Special_stats{0, 0, 0}, Socket::trinket};
         Armor blackhands_breadth{"blackhands_breadth", Attributes{0, 0}, Special_stats{2, 0, 0},
                                  Socket::trinket};
@@ -242,6 +242,8 @@ struct Armory
 //                                            Special_stats{0.0, 0.0, 0.0}, Socket::one_hand, Skill_type::sword};
         Weapon brutality_blade{"brutality_blade", Attributes{9, 9}, Special_stats{1, 0, 0}, 2.5, 90, 168,
                                Weapon_socket::one_hand, Weapon_type::sword};
+        Weapon thrash_blade{"thrash_blade", Attributes{0, 0}, Special_stats{0, 0, 0, 0.038}, 2.7, 66, 124,
+                            Weapon_socket::one_hand, Weapon_type::sword};
 //        Weapon assassination_blade{"assassination_blade", 2.7, {71, 132}, Attributes{3, 0}, Special_stats{1, 0, 0},
 //                                   Socket::one_hand, Skill_type::sword};
 //        Weapon mirahs_song{"mirahs_song", 1.8, {57, 87}, Attributes{9, 9}, Special_stats{0, 0, 0},
@@ -275,8 +277,11 @@ struct Armory
 //                               Socket::one_hand, Skill_type::dagger};
 //    } daggers;
 //
-//    struct maces_t
-//    {
+    struct maces_t
+    {
+        Weapon ebon_hand{"ebon_hand", Attributes{0.0, 0.0},
+                         Special_stats{0.0, 0.0, 0.0}, 2.3, 83.0, 154.0, Weapon_socket::one_hand,
+                         Weapon_type::mace, {{Hit_effect::Type::damage, {}, {}, 200, 0, 0.08}}};
 //        Weapon spineshatter{"spineshatter", 2.5, {99.0, 184.0}, Attributes{9.0, 0.0}, Special_stats{0.0, 0.0, 0.0},
 //                            Socket::main_hand, Skill_type::mace};
 //        Weapon stormstike_hammer{"stormstike_hammer", 2.7, {80, 150}, Attributes{15, 0}, Special_stats{0, 0, 0},
@@ -287,7 +292,7 @@ struct Armory
 //        Weapon aq_anubisath_warhammer{"aq_anubisath_warhammer", 1.8, {66, 123}, Attributes{0, 0},
 //                                      Special_stats{0, 0, 32},
 //                                      Socket::one_hand, Skill_type::mace};
-//    } maces;
+    } maces;
 //
 //    struct fists_t
 //    {
@@ -330,9 +335,8 @@ struct Armory
                     case Enchant::Type::strength:
                         return {8, 0};
                     default:
-                        assert(false);
+                        return {0, 0};
                 }
-                break;
             }
             case Socket::back:
             {
@@ -341,9 +345,8 @@ struct Armory
                     case Enchant::Type::agility:
                         return {0, 3};
                     default:
-                        assert(false);
+                        return {0, 0};
                 }
-                break;
             }
             case Socket::chest:
             {
@@ -354,9 +357,8 @@ struct Armory
                     case Enchant::Type::major_stats:
                         return {4, 4};
                     default:
-                        assert(false);
+                        return {0, 0};
                 }
-                break;
             }
             case Socket::wrists :
             {
@@ -367,9 +369,8 @@ struct Armory
                     case Enchant::Type::strength9:
                         return {9, 0};
                     default:
-                        assert(false);
+                        return {0, 0};
                 }
-                break;
             }
             case Socket::hands :
             {
@@ -380,9 +381,8 @@ struct Armory
                     case Enchant::Type::strength:
                         return {7, 0};
                     default:
-                        assert(false);
+                        return {0, 0};
                 }
-                break;
             }
             case Socket::legs :
             {
@@ -390,14 +390,11 @@ struct Armory
                 {
                     case Enchant::Type::agility:
                         return {0, 8};
-                        break;
                     case Enchant::Type::strength:
                         return {8, 0};
-                        break;
                     default:
-                        assert(false);
+                        return {0, 0};
                 }
-                break;
             }
             case Socket::boots :
             {
@@ -405,16 +402,13 @@ struct Armory
                 {
                     case Enchant::Type::agility:
                         return {0, 7};
-                        break;
                     default:
-                        assert(false);
+                        return {0, 0};
                 }
-                break;
             }
             default:
-                break;
+                return {0, 0};
         }
-        return {0, 0};
     }
 
     Special_stats get_enchant_special_stats(Socket socket, Enchant::Type type)
@@ -426,59 +420,52 @@ struct Armory
                 switch (type)
                 {
                     case Enchant::Type::haste:
-                        return {0, 0, 0, 0, 1};
+                        return {0, 0, 0, 0, .01};
                     default:
-                        assert(false);
+                        return {0, 0, 0};
                 }
-                break;
             }
             case Socket::hands :
             {
                 switch (type)
                 {
                     case Enchant::Type::haste:
-                        return {0, 0, 0, 0, 1};
+                        return {0, 0, 0, 0, .01};
                     default:
-                        assert(false);
+                        return {0, 0, 0};
                 }
-                break;
             }
             case Socket::legs:
             {
                 switch (type)
                 {
                     case Enchant::Type::haste:
-                        return {0, 0, 0, 0, 1};
+                        return {0, 0, 0, 0, .01};
                     default:
-                        assert(false);
+                        return {0, 0, 0};
                 }
-                break;
             }
             default:
-                break;
+                return {0, 0, 0};
         }
-        return {0, 0, 0};
     }
 
     Hit_effect enchant_hit_effect(double weapon_speed, Enchant::Type type)
     {
-        switch (type)
+        if (type == Enchant::Type::crusader)
         {
-            case Enchant::Type::crusader:
-                return {Hit_effect::Type::stat_boost, {100, 0}, {0, 0, 0}, 0, 15, weapon_speed / 40};
-            default:
-                assert(true);
+            return {Hit_effect::Type::stat_boost, {100, 0}, {0, 0, 0}, 0, 15, weapon_speed / 40};
         }
         return {Hit_effect::Type::none, {}, {}, 0, 0, 0};
     }
 
-    Special_stats compute_total_stats(Character &character)
+    void compute_total_stats(Character &character)
     {
         check_if_weapons_valid(character.weapons);
         check_if_armor_valid(character.armor);
         Attributes total_attributes{};
         Special_stats total_special_stats{};
-        double stat_multiplier_percent = 0;
+        double stat_multiplier = 0;
 
         total_attributes += character.base_attributes;
         total_special_stats += character.base_special_stats;
@@ -494,14 +481,33 @@ struct Armory
             set_names.emplace_back(armor.set_name);
         }
 
+        if (total_special_stats.chance_for_extra_hit > 0)
+        {
+            for (Weapon &weapon : character.weapons)
+            {
+                weapon.hit_effects.emplace_back(Hit_effect{Hit_effect::Type::extra_hit, {}, {}, 0, 0,
+                                                           total_special_stats.chance_for_extra_hit});
+            }
+        }
+
         for (Weapon &weapon : character.weapons)
         {
             total_attributes += weapon.attributes;
-            total_special_stats += weapon.special_stats;
+            auto special_stats = weapon.special_stats;
+
+            if (special_stats.chance_for_extra_hit > 0)
+            {
+                weapon.hit_effects.emplace_back(Hit_effect{Hit_effect::Type::extra_hit, {}, {}, 0, 0,
+                                                           special_stats.chance_for_extra_hit});
+                special_stats.chance_for_extra_hit = 0;
+            }
+            total_special_stats += special_stats;
 
             total_attributes += get_enchant_attributes(weapon.socket, weapon.enchant.type);
             total_special_stats += get_enchant_special_stats(weapon.socket, weapon.enchant.type);
+
             weapon.hit_effects.emplace_back(enchant_hit_effect(weapon.swing_speed, weapon.enchant.type));
+
             set_names.emplace_back(weapon.set_name);
         }
 
@@ -551,7 +557,7 @@ struct Armory
         {
             total_attributes += buff.attributes;
             total_special_stats += buff.special_stats;
-            stat_multiplier_percent += buff.stat_multiplier;
+            stat_multiplier += buff.stat_multiplier;
         }
 
         // TODO implement shout in simulator instead
@@ -559,18 +565,10 @@ struct Armory
         total_special_stats.critical_strike += 5; // crit from talent
         total_special_stats.critical_strike += 3; // crit from berserker stance
 
-        if (total_special_stats.chance_for_extra_hit > 0)
-        {
-            for (Weapon &weapon : character.weapons)
-            {
-                weapon.hit_effects.emplace_back(Hit_effect{Hit_effect::Type::extra_hit, {}, {}, 0, 0,
-                                                           total_special_stats.chance_for_extra_hit});
-            }
-        }
-
-        total_attributes *= (1.0 + stat_multiplier_percent / 100);
+        total_attributes *= (1.0 + stat_multiplier);
 
         total_special_stats += total_attributes.convert_to_special_stats();
+        character.total_special_stats = total_special_stats;
     }
 
     bool check_if_armor_valid(const std::vector<Armor> &armor)

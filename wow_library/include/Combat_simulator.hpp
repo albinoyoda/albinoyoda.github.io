@@ -11,42 +11,19 @@
 
 #include "Character.hpp"
 
-enum class Hand
-{
-    main_hand,
-    off_hand
-};
-
-enum class Skill_type
-{
-    sword,
-    axe,
-    mace,
-    dagger,
-    all,
-    none
-};
-
 struct Extra_skill
 {
-    Extra_skill(Skill_type type, int amount) : type(type), amount(amount) {}
+    Extra_skill(Weapon_type type, int amount) : type(type), amount(amount) {}
 
-    Skill_type type;
+    Weapon_type type;
     int amount;
 };
 
 class Weapon_sim
 {
 public:
-    enum class Socket
-    {
-        main_hand,
-        one_hand,
-        off_hand,
-    };
-
     Weapon_sim(double swing_speed, std::pair<double, double> damage_interval,
-               Socket socket, Skill_type skill_type);
+               Socket socket, Weapon_type skill_type);
 
     double step(double time, double attack_power, bool is_random);
 
@@ -102,16 +79,10 @@ public:
 
     Socket get_socket() const;
 
-    void set_weapon_type(Skill_type weapon_type);
-
-    Skill_type get_weapon_type() const;
-
-    constexpr Hand get_hand() const
+    Weapon_type get_weapon_type() const
     {
-        return hand_;
+        return weapon_type_;
     }
-
-    void set_hand(Hand hand);
 
     void set_internal_swing_timer(double internal_swing_timer);
 
@@ -122,8 +93,7 @@ private:
     std::pair<double, double> damage_interval_;
     double average_damage_;
     Socket socket_;
-    Skill_type weapon_type_;
-    Hand hand_;
+    Weapon_type weapon_type_;
 };
 
 class Time_keeper

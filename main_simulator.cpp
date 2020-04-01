@@ -2,7 +2,6 @@
 #include <ctime>
 
 #include "wow_library/include/Combat_simulator.hpp"
-#include "wow_library/include/Character.hpp"
 #include "wow_library/include/Armory.hpp"
 
 // TODO move weapon mechanics to the simulator instead of weapon class
@@ -51,27 +50,27 @@ Character character_setup()
     Armory armory;
     Buffs buffs;
 
-    Character character{Race::human, 60};
+    Character character{Race::gnome, 60};
 
     // Armor
     character.equip_armor(armory.helmet.crown_of_destruction);
     character.equip_armor(armory.neck.onyxia_tooth_pendant);
-    character.equip_armor(armory.shoulder.truestrike_shoulders);
+    character.equip_armor(armory.shoulder.leutenant_shoulders);
     character.equip_armor(armory.back.cape_of_the_black_baron);
     character.equip_armor(armory.chest.cadaverous_armor);
     character.equip_armor(armory.wrist.vambraces_of_the_sadist);
-    character.equip_armor(armory.hands.devilsaur_gauntlets);
+    character.equip_armor(armory.hands.edgemasters_handguards);
     character.equip_armor(armory.belt.omokks_girth);
     character.equip_armor(armory.legs.knight_captain_plate_leggings);
     character.equip_armor(armory.boots.battlechasers);
     character.equip_armor(armory.rings.don_julios_band);
     character.equip_armor(armory.rings.magnis_will);
-    character.equip_armor(armory.trinket.blackhands_breadth);
+    character.equip_armor(armory.trinket.hand_of_justice);
     character.equip_armor(armory.trinket.diamond_flask);
     character.equip_armor(armory.ranged.satyrs_bow);
 
     // Weapons
-    character.equip_weapon(armory.swords.maladath, armory.swords.brutality_blade);
+    character.equip_weapon(armory.swords.thrash_blade, armory.maces.ebon_hand);
 
     // Enchants
     character.add_enchant(Socket::head, Enchant::Type::haste);
@@ -80,6 +79,7 @@ Character character_setup()
     character.add_enchant(Socket::wrists, Enchant::Type::strength9);
     character.add_enchant(Socket::hands, Enchant::Type::haste);
     character.add_enchant(Socket::legs, Enchant::Type::haste);
+//    character.add_enchant(Socket::boots, Enchant::Type::agility);
     character.add_enchant(Socket::main_hand, Enchant::Type::crusader);
     character.add_enchant(Socket::off_hand, Enchant::Type::crusader);
 
@@ -97,7 +97,7 @@ Character character_setup()
     character.add_buff(buffs.roids);
 
     character.add_weapon_buff(Socket::main_hand, buffs.dense_stone);
-    character.add_weapon_buff(Socket::main_hand, buffs.dense_stone);
+    character.add_weapon_buff(Socket::off_hand, buffs.dense_stone);
 
     armory.compute_total_stats(character);
 
@@ -170,7 +170,7 @@ int main()
     simulators[1].enable_crusader();
     simulators[1].enable_death_wish();
 //    simulators[1].enable_recklessness();
-//    simulators[1].display_combat_debug();
+    simulators[1].display_combat_debug();
 
     print_stat("Strength: ", characters[0].total_attributes.strength, characters[1].total_attributes.strength);
     print_stat("Agility : ", characters[0].total_attributes.agility, characters[1].total_attributes.agility);
@@ -207,18 +207,18 @@ int main()
     std::cout << "Simulations executed in: " << double(clock() - startTime) / (double) CLOCKS_PER_SEC << " seconds."
               << std::endl;
 
-    for (size_t i = 0; i < characters.size(); ++i)
-    {
-        auto stat_weight_vector = simulators[i]
-                .compute_stat_weights(characters[i], armory, sim_time, opponent_level, n_batches, mean_dps[i],
-                                      sample_std_dps[i]);
-        std::cout << "Stat weights: \n";
-        for (const auto &stat_weight : stat_weight_vector)
-        {
-            std::cout << stat_weight;
-        }
-        std::cout << "\n";
-    }
+//    for (size_t i = 0; i < characters.size(); ++i)
+//    {
+//        auto stat_weight_vector = simulators[i]
+//                .compute_stat_weights(characters[i], armory, sim_time, opponent_level, n_batches, mean_dps[i],
+//                                      sample_std_dps[i]);
+//        std::cout << "Stat weights: \n";
+//        for (const auto &stat_weight : stat_weight_vector)
+//        {
+//            std::cout << stat_weight;
+//        }
+//        std::cout << "\n";
+//    }
 
     std::cout << "Code executed in: " << double(clock() - startTime) / (double) CLOCKS_PER_SEC << " seconds."
               << std::endl;
