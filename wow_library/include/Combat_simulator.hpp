@@ -11,14 +11,6 @@
 
 #include "Character.hpp"
 
-struct Extra_skill
-{
-    Extra_skill(Weapon_type type, int amount) : type(type), amount(amount) {}
-
-    Weapon_type type;
-    int amount;
-};
-
 class Weapon_sim
 {
 public:

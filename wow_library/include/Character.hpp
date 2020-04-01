@@ -44,7 +44,7 @@ public:
         weapons.emplace_back(weapon);
     }
 
-    void equip_weapon(Weapon &weapon1, Weapon &weapon2)
+    void equip_weapon(Weapon weapon1, Weapon weapon2)
     {
         weapon1.socket = Socket::main_hand;
         weapon2.socket = Socket::off_hand;

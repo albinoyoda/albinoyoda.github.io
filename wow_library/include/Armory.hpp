@@ -322,7 +322,7 @@ struct Armory
         return set_bonuses;
     }
 
-    Attributes get_enchant_attributes(Socket socket, Enchant::Type type)
+    Attributes get_enchant_attributes(Socket socket, Enchant::Type type) const
     {
         switch (socket)
         {
@@ -411,7 +411,7 @@ struct Armory
         }
     }
 
-    Special_stats get_enchant_special_stats(Socket socket, Enchant::Type type)
+    Special_stats get_enchant_special_stats(Socket socket, Enchant::Type type) const
     {
         switch (socket)
         {
@@ -450,7 +450,7 @@ struct Armory
         }
     }
 
-    Hit_effect enchant_hit_effect(double weapon_speed, Enchant::Type type)
+    Hit_effect enchant_hit_effect(double weapon_speed, Enchant::Type type) const
     {
         if (type == Enchant::Type::crusader)
         {
@@ -459,7 +459,7 @@ struct Armory
         return {Hit_effect::Type::none, {}, {}, 0, 0, 0};
     }
 
-    void compute_total_stats(Character &character)
+    void compute_total_stats(Character &character) const
     {
         check_if_weapons_valid(character.weapons);
         check_if_armor_valid(character.armor);
@@ -566,12 +566,13 @@ struct Armory
         total_special_stats.critical_strike += 3; // crit from berserker stance
 
         total_attributes *= (1.0 + stat_multiplier);
-
         total_special_stats += total_attributes.convert_to_special_stats();
+
+        character.total_attributes = total_attributes;
         character.total_special_stats = total_special_stats;
     }
 
-    bool check_if_armor_valid(const std::vector<Armor> &armor)
+    bool check_if_armor_valid(const std::vector<Armor> &armor) const
     {
         std::vector<Socket> sockets;
         bool one_ring{false};
@@ -612,7 +613,7 @@ struct Armory
         return true;
     }
 
-    bool check_if_weapons_valid(std::vector<Weapon> &weapons)
+    bool check_if_weapons_valid(std::vector<Weapon> &weapons) const
     {
         bool is_valid{true};
         is_valid &= weapons.size() <= 2;
@@ -637,32 +638,30 @@ struct Armory
 //        }
 //    }
 //
-//    void Character::change_armor(const Armor &armor, bool first_misc_slot)
-//    {
-//        auto socket = armor.get_socket();
-//        for (auto &armor_piece : armor_)
-//        {
-//            if (armor_piece.get_socket() == socket)
-//            {
-//                if (socket == Socket::ring || socket == Socket::trinket)
-//                {
-//                    if (first_misc_slot)
-//                    {
-//                        armor_piece = armor;
-//                        return;
-//                    }
-//                    first_misc_slot = true; // Will trigger on the second hit instead
-//                }
-//                else
-//                {
-//                    armor_piece = armor;
-//                    return;
-//                }
-//            }
-//        }
-//    }
-
-
+    void change_armor(std::vector<Armor> &armor_vec, const Armor &armor, bool first_misc_slot = true) const
+    {
+        auto socket = armor.socket;
+        for (auto &armor_piece : armor_vec)
+        {
+            if (armor_piece.socket == socket)
+            {
+                if (socket == Socket::ring || socket == Socket::trinket)
+                {
+                    if (first_misc_slot)
+                    {
+                        armor_piece = armor;
+                        return;
+                    }
+                    first_misc_slot = true; // Will trigger on the second hit instead
+                }
+                else
+                {
+                    armor_piece = armor;
+                    return;
+                }
+            }
+        }
+    }
 };
 
 #endif //WOW_SIMULATOR_ARMORY_HPP
