@@ -138,33 +138,35 @@ int main()
 
     print_character_stat(character1, character2);
 
-    // Combat settings
-    int n_batches = 100000;
-    double sim_time = 60;
-    int opponent_level = 63;
+    // Simulator & Combat settings
+    Combat_simulator_config config{};
+    config.n_batches = 100000;
+    config.sim_time = 60;
+    config.opponent_level = 63;
+    config.enable_rng_melee = false;
+    config.enable_spell_rotation = true;
+    config.use_heroic_spamm = false;
+    config.use_mighty_rage_potion = true;
+    config.enable_anger_management = true;
+    config.enable_bloodrage = true;
+    config.enable_talents = true;
+    config.enable_item_chance_on_hit_effects = true;
+    config.enable_crusader = true;
+    config.enable_death_wish = true;
+    config.enable_recklessness = false;
+    config.display_combat_debug = false;
+    config.use_seed = false;
+    config.seed = 10000;
+    config.fuel_extra_rage = true;
+    config.extra_rage_interval = 3;
+    config.extra_rage_damage_amount = 150;
 
-    Combat_simulator simulator;
+    Combat_simulator simulator(config);
 
-//    simulator.use_fast_but_sloppy_rng(); // Use before set seed!
-//    simulator.set_seed(10000); // Use for predictable random numbers
-//    simulator.enable_rng_melee(); // Uses random swing damage instead of average
-    simulator.enable_spell_rotation();
-//    simulator.use_heroic_spamm();
-    simulator.use_mighty_rage_potion();
-    simulator.enable_anger_management();
-    simulator.enable_bloodrage();
-    simulator.fuel_extra_rage(3.0, 150);
-    simulator.enable_talents();
-    simulator.enable_item_chance_on_hit_effects();
-    simulator.enable_crusader();
-    simulator.enable_death_wish();
-//    simulator.enable_recklessness();
-//    simulator.display_combat_debug();
-
-    std::vector<double> dps_snapshots1 = simulator.simulate(character1, sim_time, opponent_level, n_batches);
+    std::vector<double> dps_snapshots1 = simulator.simulate(character1);
     double mean_dps1 = Combat_simulator::average(dps_snapshots1);
     double std_dps1 = Combat_simulator::standard_deviation(dps_snapshots1, mean_dps1);
-    double sample_std_dps1 = Combat_simulator::sample_deviation(std_dps1, n_batches);
+    double sample_std_dps1 = Combat_simulator::sample_deviation(std_dps1, config.n_batches);
 
     std::cout << std::setprecision(5);
     std::cout << "Simulation results: \n";
@@ -174,10 +176,10 @@ int main()
               << ". (Negative number means capped)\n\n";
     simulator.print_damage_distribution();
 
-    std::vector<double> dps_snapshots2 = simulator.simulate(character2, sim_time, opponent_level, n_batches);
+    std::vector<double> dps_snapshots2 = simulator.simulate(character2);
     double mean_dps2 = Combat_simulator::average(dps_snapshots2);
     double std_dps2 = Combat_simulator::standard_deviation(dps_snapshots2, mean_dps2);
-    double sample_std_dps2 = Combat_simulator::sample_deviation(std_dps2, n_batches);
+    double sample_std_dps2 = Combat_simulator::sample_deviation(std_dps2, config.n_batches);
 
     std::cout << std::setprecision(5);
     std::cout << "Simulation results: \n";

@@ -159,24 +159,42 @@ public:
     int step_index_;
 };
 
+struct Combat_simulator_config
+{
+    // Combat settings
+    int n_batches{};
+    double sim_time{};
+    int opponent_level{};
+
+    // Simulator settings
+    bool enable_rng_melee{false};
+    bool enable_spell_rotation{false};
+    bool use_heroic_spamm{false};
+    bool use_mighty_rage_potion{false};
+    bool enable_anger_management{false};
+    bool enable_bloodrage{false};
+    bool enable_talents{false};
+    bool enable_item_chance_on_hit_effects{false};
+    bool enable_crusader{false};
+    bool enable_death_wish{false};
+    bool enable_recklessness{false};
+    bool display_combat_debug{false};
+    bool use_seed{false};
+    int seed{};
+    bool fuel_extra_rage{false};
+    int extra_rage_interval{};
+    int extra_rage_damage_amount{};
+};
+
 class Combat_simulator
 {
 public:
-    explicit Combat_simulator() {}
-
-    void set_seed(long unsigned int seed)
+    explicit Combat_simulator(Combat_simulator_config config) : config_(config)
     {
-        srand(seed);
-    }
-
-    void use_heroic_spamm()
-    {
-        heroic_strike_spamm_ = true;
-    }
-
-    void use_fast_but_sloppy_rng()
-    {
-        use_fast_rng_ = true;
+        if (config_.use_seed)
+        {
+            srand(config_.seed);
+        }
     }
 
     double get_uniform_random(double r_max)
@@ -309,8 +327,7 @@ public:
         }
     }
 
-    std::vector<double> &
-    simulate(const Character &character, double sim_time, int opponent_level, int n_damage_batches);
+    std::vector<double> &simulate(const Character &character);
 //
 //    template<typename Struct_t, typename Field_t>
 //    Stat_weight permute_stat(const Character &character, const Armory& armory, Struct_t struct_t, Field_t field_t, Stat stat, double amount,
@@ -337,28 +354,6 @@ public:
     generate_hit_mh(double damage, Hit_type hit_type, bool recklessness_active);
 
     void compute_hit_table(int level_difference, int weapon_skill, Special_stats special_stats, Socket weapon_hand);
-
-    void compute_hit_table_oh_(int level_difference, int weapon_skill, Special_stats special_stats);
-
-    void compute_hit_table_mh_(int level_difference, int weapon_skill, Special_stats special_stats);
-
-    void enable_spell_rotation();
-
-    void enable_talents();
-
-    void enable_item_chance_on_hit_effects();
-
-    void enable_crusader();
-
-    void enable_death_wish();
-
-    void enable_recklessness();
-
-    void enable_bloodrage();
-
-    void use_mighty_rage_potion();
-
-    void enable_anger_management();
 
     static double average(const std::vector<double> &vec);
 
@@ -389,23 +384,6 @@ public:
 
     void print_damage_distribution() const;
 
-    void display_combat_debug()
-    {
-        debug_mode_ = true;
-    }
-
-    void enable_rng_melee()
-    {
-        random_melee_hits_ = true;
-    }
-
-    void fuel_extra_rage(double interval, double damage_amount)
-    {
-        fuel_extra_rage_ = true;
-        interval_ = interval;
-        damage_amount_ = damage_amount;
-    }
-
     void print_damage_sources(const std::string &source_name, double source_percent,
                               double source_std, double source_count) const
     {
@@ -417,16 +395,13 @@ public:
     template<typename T>
     void print_statement(T t)
     {
-        if (debug_mode_)
-        {
-            std::cout << std::setprecision(4) << t;
-        }
+        std::cout << std::setprecision(4) << t;
     }
 
     template<typename... Args>
     void simulator_cout(Args &&... args)
     {
-        if (debug_mode_)
+        if (config_.display_combat_debug)
         {
             std::cout << "Time: " << std::setw(8) << std::left << time_keeper_.time_ + time_keeper_.dt_
                       << "s. Loop idx:" << std::setw(4) << time_keeper_.step_index_ << "Event: ";
@@ -446,30 +421,11 @@ private:
     std::vector<double> hit_probabilities_recklessness_two_hand_;
     std::vector<double> batch_damage_{};
     std::vector<Damage_sources> damage_distribution_{};
-    bool spell_rotation_{false};
-    bool heroic_strike_spamm_{false};
-    bool item_chance_on_hit_{false};
-    bool talents_{false};
-    bool crusader_enabled_{false};
-    bool death_wish_enabled_{false};
-    bool recklessness_enabled_{false};
-    bool bloodrage_enabled_{false};
-    bool debug_mode_{false};
-    bool use_fast_rng_{false};
-    bool random_melee_hits_{false};
-    bool use_mighty_rage_potion_{false};
-    bool anger_management_enabled_{false};
-    bool fuel_extra_rage_{false};
-    double interval_;
-    double damage_amount_;
-    double glancing_factor_mh_{0.0};
-    double glancing_factor_oh_{0.0};
+    double glancing_factor_mh_{};
+    double glancing_factor_oh_{};
     double armor_reduction_factor_{};
     Time_keeper time_keeper_{};
-    std::default_random_engine eng_;
-    std::uniform_real_distribution<double> dist100_;
-    std::uniform_real_distribution<double> dist1_;
-
+    Combat_simulator_config config_;
 };
 
 std::ostream &operator<<(std::ostream &os, Combat_simulator::Stat_weight const &stats);
