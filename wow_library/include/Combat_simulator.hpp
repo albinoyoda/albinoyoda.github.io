@@ -162,20 +162,11 @@ public:
 class Combat_simulator
 {
 public:
-    explicit Combat_simulator() : eng_{static_cast<long unsigned int>(time(nullptr))},
-            dist100_{0.0, 100.0}, dist1_(0.0, 1.0) {}
+    explicit Combat_simulator() {}
 
     void set_seed(long unsigned int seed)
     {
-        if (use_fast_rng_)
-        {
-            srand(seed);
-        }
-        else
-        {
-            eng_ = std::default_random_engine{seed};
-        }
-
+        srand(seed);
     }
 
     void use_heroic_spamm()
@@ -188,28 +179,9 @@ public:
         use_fast_rng_ = true;
     }
 
-    double get_random_100()
+    double get_uniform_random(double r_max)
     {
-        if (use_fast_rng_)
-        {
-            return rand() * 100.0 / RAND_MAX;
-        }
-        else
-        {
-            return dist100_(eng_);
-        }
-    }
-
-    double get_random_1()
-    {
-        if (use_fast_rng_)
-        {
-            return rand() * 1.0 / RAND_MAX;
-        }
-        else
-        {
-            return dist1_(eng_);
-        }
+        return rand() * r_max / RAND_MAX;
     }
 
     enum class Hit_result

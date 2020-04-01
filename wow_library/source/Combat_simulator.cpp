@@ -19,16 +19,22 @@ namespace
         return 0.0;
     }
 
-    constexpr double armor_mitigation(double target_armor)
+    constexpr double armor_mitigation(double target_armor, int target_level)
     {
-        return target_armor / (target_armor + 400 + 85 * 60);
+        return target_armor / (target_armor + 400 + 85 * target_level);
+    }
+
+    std::vector<double> create_hit_table(double miss, double dodge, double glancing, double crit)
+    {
+        // Order -> Miss, parry, dodge, block, glancing, crit, hit.
+        return {miss, miss + dodge, miss + dodge + glancing, miss + dodge + glancing + crit};
     }
 }
 
 Combat_simulator::Hit_outcome
 Combat_simulator::generate_hit_mh(double damage, Hit_type hit_type, bool recklessness_active)
 {
-    double random_var = get_random_100();
+    double random_var = get_uniform_random(100);
     if (hit_type == Hit_type::white)
     {
         if (recklessness_active)
@@ -56,30 +62,14 @@ Combat_simulator::generate_hit_mh(double damage, Hit_type hit_type, bool reckles
             int outcome = std::lower_bound(hit_probabilities_recklessness_yellow_.begin(),
                                            hit_probabilities_recklessness_yellow_.end(),
                                            random_var) - hit_probabilities_recklessness_yellow_.begin();
-            if (outcome <= 1)
-            {
-                return {damage * lookup_outcome_mh_yellow(outcome), Hit_result(outcome)};
-            }
-            else
-            {
-                return {damage * lookup_outcome_mh_yellow(outcome),
-                        Hit_result(outcome + 1)}; // +1 because yellow cant glance
-            }
+            return {damage * lookup_outcome_mh_white(outcome), Hit_result(outcome)};
         }
         else
         {
             simulator_cout("Drawing outcome from yellow table");
             int outcome = std::lower_bound(hit_probabilities_yellow_.begin(), hit_probabilities_yellow_.end(),
                                            random_var) - hit_probabilities_yellow_.begin();
-            if (outcome <= 1)
-            {
-                return {damage * lookup_outcome_mh_yellow(outcome), Hit_result(outcome)};
-            }
-            else
-            {
-                return {damage * lookup_outcome_mh_yellow(outcome),
-                        Hit_result(outcome + 1)}; // +1 because yellow cant glance
-            }
+            return {damage * lookup_outcome_mh_white(outcome), Hit_result(outcome)};
         }
     }
 }
@@ -92,7 +82,7 @@ Combat_simulator::generate_hit_oh(double damage, bool heroic_strike_active, bool
         if (heroic_strike_active)
         {
             simulator_cout("Drawing outcome from recklessness twohanded hit table");
-            double random_var = get_random_100();
+            double random_var = get_uniform_random(100);
             int outcome = std::lower_bound(hit_probabilities_recklessness_two_hand_.begin(),
                                            hit_probabilities_recklessness_two_hand_.end(),
                                            random_var) - hit_probabilities_recklessness_two_hand_.begin();
@@ -101,7 +91,7 @@ Combat_simulator::generate_hit_oh(double damage, bool heroic_strike_active, bool
         else
         {
             simulator_cout("Drawing outcome from OH recklessness hit table");
-            double random_var = get_random_100();
+            double random_var = get_uniform_random(100);
             int outcome = std::lower_bound(hit_probabilities_recklessness_oh_.begin(),
                                            hit_probabilities_recklessness_oh_.end(),
                                            random_var) - hit_probabilities_recklessness_oh_.begin();
@@ -113,7 +103,7 @@ Combat_simulator::generate_hit_oh(double damage, bool heroic_strike_active, bool
         if (heroic_strike_active)
         {
             simulator_cout("Drawing outcome from twohanded hit table");
-            double random_var = get_random_100();
+            double random_var = get_uniform_random(100);
             int outcome = std::lower_bound(hit_probabilities_two_hand_.begin(),
                                            hit_probabilities_two_hand_.end(),
                                            random_var) - hit_probabilities_two_hand_.begin();
@@ -122,7 +112,7 @@ Combat_simulator::generate_hit_oh(double damage, bool heroic_strike_active, bool
         else
         {
             simulator_cout("Drawing outcome from OH hit table");
-            double random_var = get_random_100();
+            double random_var = get_uniform_random(100);
             int outcome = std::lower_bound(hit_probabilities_white_oh_.begin(), hit_probabilities_white_oh_.end(),
                                            random_var) -
                           hit_probabilities_white_oh_.begin();
@@ -307,59 +297,27 @@ void Combat_simulator::compute_hit_table(int level_difference,
     {
         glancing_factor_mh_ = (100.0 - glancing_penalty) / 100.0;
 
-        // Order -> Miss, parry, dodge, block, glancing, crit, hit.
-        hit_probabilities_white_mh_.clear();
-        hit_probabilities_white_mh_.push_back(miss_chance);
-        hit_probabilities_white_mh_.push_back(hit_probabilities_white_mh_.back() + dodge_chance);
-        hit_probabilities_white_mh_.push_back(hit_probabilities_white_mh_.back() + glancing_chance);
-        hit_probabilities_white_mh_.push_back(hit_probabilities_white_mh_.back() + crit_chance);
+        hit_probabilities_white_mh_ = create_hit_table(miss_chance, dodge_chance, glancing_chance, crit_chance);
 
-        hit_probabilities_two_hand_.clear();
-        hit_probabilities_two_hand_.push_back(two_hand_miss_chance);
-        hit_probabilities_two_hand_.push_back(hit_probabilities_two_hand_.back() + dodge_chance);
-        hit_probabilities_two_hand_.push_back(hit_probabilities_two_hand_.back() + glancing_chance);
-        hit_probabilities_two_hand_.push_back(hit_probabilities_two_hand_.back() + crit_chance);
+        hit_probabilities_two_hand_ = create_hit_table(two_hand_miss_chance, dodge_chance, glancing_chance,
+                                                       crit_chance);
 
-        hit_probabilities_recklessness_mh_.clear();
-        hit_probabilities_recklessness_mh_.push_back(miss_chance);
-        hit_probabilities_recklessness_mh_.push_back(hit_probabilities_recklessness_mh_.back() + dodge_chance);
-        hit_probabilities_recklessness_mh_.push_back(hit_probabilities_recklessness_mh_.back() + glancing_chance);
-        hit_probabilities_recklessness_mh_.push_back(hit_probabilities_recklessness_mh_.back() + 100);
+        hit_probabilities_recklessness_mh_ = create_hit_table(miss_chance, dodge_chance, glancing_chance, 100);
 
-        hit_probabilities_recklessness_two_hand_.clear();
-        hit_probabilities_recklessness_two_hand_.push_back(two_hand_miss_chance);
-        hit_probabilities_recklessness_two_hand_
-                .push_back(hit_probabilities_recklessness_two_hand_.back() + dodge_chance);
-        hit_probabilities_recklessness_two_hand_
-                .push_back(hit_probabilities_recklessness_two_hand_.back() + glancing_chance);
-        hit_probabilities_recklessness_two_hand_.push_back(hit_probabilities_recklessness_two_hand_.back() + 100);
+        hit_probabilities_recklessness_two_hand_ = create_hit_table(two_hand_miss_chance, dodge_chance, glancing_chance,
+                                                                    100);
 
-        hit_probabilities_yellow_.clear();
-        hit_probabilities_yellow_.push_back(two_hand_miss_chance);
-        hit_probabilities_yellow_.push_back(hit_probabilities_yellow_.back() + dodge_chance);
-        hit_probabilities_yellow_.push_back(hit_probabilities_yellow_.back() + crit_chance);
+        hit_probabilities_yellow_ = create_hit_table(two_hand_miss_chance, dodge_chance, 0, crit_chance);
 
-        hit_probabilities_recklessness_yellow_.clear();
-        hit_probabilities_recklessness_yellow_.push_back(two_hand_miss_chance);
-        hit_probabilities_recklessness_yellow_.push_back(hit_probabilities_recklessness_yellow_.back() + dodge_chance);
-        hit_probabilities_recklessness_yellow_.push_back(hit_probabilities_recklessness_yellow_.back() + 100);
+        hit_probabilities_recklessness_yellow_ = create_hit_table(two_hand_miss_chance, dodge_chance, 0, 100);
     }
     else
     {
         glancing_factor_oh_ = (100.0 - glancing_penalty) / 100.0;
 
-        // Order -> Miss, parry, dodge, block, glancing, crit, hit.
-        hit_probabilities_white_oh_.clear();
-        hit_probabilities_white_oh_.push_back(miss_chance);
-        hit_probabilities_white_oh_.push_back(hit_probabilities_white_oh_.back() + dodge_chance);
-        hit_probabilities_white_oh_.push_back(hit_probabilities_white_oh_.back() + glancing_chance);
-        hit_probabilities_white_oh_.push_back(hit_probabilities_white_oh_.back() + crit_chance);
+        hit_probabilities_white_oh_ = create_hit_table(miss_chance, dodge_chance, glancing_chance, crit_chance);
 
-        hit_probabilities_recklessness_oh_.clear();
-        hit_probabilities_recklessness_oh_.push_back(miss_chance);
-        hit_probabilities_recklessness_oh_.push_back(hit_probabilities_recklessness_oh_.back() + dodge_chance);
-        hit_probabilities_recklessness_oh_.push_back(hit_probabilities_recklessness_oh_.back() + glancing_chance);
-        hit_probabilities_recklessness_oh_.push_back(hit_probabilities_recklessness_oh_.back() + 100);
+        hit_probabilities_recklessness_oh_ = create_hit_table(miss_chance, dodge_chance, glancing_chance, 100);
     }
 }
 
@@ -405,7 +363,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
 
     double armor_reduction_from_spells = 640 + 450 * 5 + 505;
     double boss_armor = 3731 - armor_reduction_from_spells; // Armor for Warrior class monsters
-    double target_mitigation = armor_mitigation(boss_armor);
+    double target_mitigation = armor_mitigation(boss_armor, 63);
     armor_reduction_factor_ = 1 - target_mitigation;
 
     for (int iter = 0; iter < n_damage_batches; iter++)
@@ -507,7 +465,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         {
                             if (chance_for_extra_hit > 0.0)
                             {
-                                double random_variable = get_random_100();
+                                double random_variable = get_uniform_random(100);
                                 if (random_variable < chance_for_extra_hit)
                                 {
                                     simulator_cout("HoJ procc");
@@ -529,7 +487,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         {
                             if (weapon.get_socket() == Socket::main_hand)
                             {
-                                double random_variable = get_random_1();
+                                double random_variable = get_uniform_random(1);
                                 if (random_variable < crusader_proc_chance_mh)
                                 {
                                     simulator_cout("MH crusader procc");
@@ -543,7 +501,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                             }
                             if (weapon.get_socket() == Socket::off_hand)
                             {
-                                double random_variable = get_random_1();
+                                double random_variable = get_uniform_random(1);
                                 if (random_variable < crusader_proc_chance_oh)
                                 {
                                     simulator_cout("OH crusader procc");
@@ -572,7 +530,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                         if (talents_)
                         {
                             // Unbridled wrath
-                            if (get_random_1() < 0.4)
+                            if (get_uniform_random(1) < 0.4)
                             {
                                 rage += 1;
                                 simulator_cout("Unbridled wrath, +1 rage");
@@ -670,7 +628,7 @@ Combat_simulator::simulate(const Character &character, double sim_time, int oppo
                 if (sim_time - time_keeper_.time_ < 30.0 && !used_mighty_rage_potion && rage < 50)
                 {
                     simulator_cout("------------ Mighty Rage Potion! ------------");
-                    rage += 45 + 30 * get_random_1();
+                    rage += 45 + 30 * get_uniform_random(1);
                     rage = std::min(100.0, rage);
                     special_stats.attack_power += 132;
                     used_mighty_rage_potion = true;
