@@ -27,7 +27,7 @@ enum class Talent
 class Character
 {
 public:
-    Character(const Race &race, size_t level);
+    Character(const Race &race, int level);
 
     void equip_armor(const Armor &piece)
     {

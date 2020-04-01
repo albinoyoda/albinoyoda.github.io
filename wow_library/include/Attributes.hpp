@@ -9,8 +9,8 @@ struct Special_stats
     Special_stats() = default;
 
     Special_stats(double critical_strike, double hit, double attack_power, double chance_for_extra_hit = 0.0,
-                  double haste = 0.0, size_t sword_skill = 0, size_t axe_skill = 0, size_t dagger_skill = 0,
-                  size_t mace_skill = 0) :
+                  double haste = 0.0, int sword_skill = 0, int axe_skill = 0, int dagger_skill = 0,
+                  int mace_skill = 0) :
             critical_strike{critical_strike},
             hit{hit},
             attack_power{attack_power},
@@ -59,10 +59,10 @@ struct Special_stats
     double attack_power{};
     double chance_for_extra_hit{};
     double haste{};
-    size_t sword_skill{};
-    size_t axe_skill{};
-    size_t dagger_skill{};
-    size_t mace_skill{};
+    int sword_skill{};
+    int axe_skill{};
+    int dagger_skill{};
+    int mace_skill{};
 };
 
 class Attributes

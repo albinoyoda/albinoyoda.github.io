@@ -11,153 +11,7 @@
 
 #include "Character.hpp"
 #include "damage_sources.hpp"
-
-class Weapon_sim
-{
-public:
-    Weapon_sim(double swing_speed, std::pair<double, double> damage_interval,
-               Socket socket, Weapon_type skill_type);
-
-    double step(double time, double attack_power, bool is_random);
-
-    constexpr double swing(double attack_power)
-    {
-        return average_damage_ + attack_power * swing_speed_ / 14;
-    }
-
-    double random_swing(double attack_power)
-    {
-        double damage = damage_interval_.first + (damage_interval_.second - damage_interval_
-                .first) * static_cast<double>(rand()) / RAND_MAX
-                        + attack_power * swing_speed_ / 14;
-        return damage;
-    }
-
-    double random_normalized_swing(double attack_power)
-    {
-        return damage_interval_.first + (damage_interval_.second - damage_interval_
-                .first) * static_cast<double>(rand()) / RAND_MAX
-               + attack_power * normalized_swing_speed_ / 14;
-    }
-
-    constexpr double normalized_swing(double attack_power)
-    {
-        // TODO random damage?
-        return average_damage_ + attack_power * normalized_swing_speed_ / 14;
-    }
-
-    void reset_timer();
-
-    constexpr void compute_weapon_damage(double bonus_damage)
-    {
-        damage_interval_.first += bonus_damage;
-        damage_interval_.second += bonus_damage;
-        average_damage_ = (damage_interval_.second + damage_interval_.first) / 2;
-    }
-
-    constexpr double get_average_damage()
-    {
-        return average_damage_;
-    }
-
-    constexpr double get_swing_speed()
-    {
-        return swing_speed_;
-    }
-
-    constexpr double get_internal_swing_timer()
-    {
-        return internal_swing_timer_;
-    }
-
-    Socket get_socket() const;
-
-    Weapon_type get_weapon_type() const
-    {
-        return weapon_type_;
-    }
-
-    void set_internal_swing_timer(double internal_swing_timer);
-
-private:
-    double swing_speed_;
-    double normalized_swing_speed_;
-    double internal_swing_timer_;
-    std::pair<double, double> damage_interval_;
-    double average_damage_;
-    Socket socket_;
-    Weapon_type weapon_type_;
-};
-
-class Time_keeper
-{
-public:
-    Time_keeper() = default;
-
-    void increment(double dt)
-    {
-        blood_thirst_cd -= dt;
-        whirlwind_cd -= dt;
-        global_cd -= dt;
-        crusader_mh_buff_timer -= dt;
-        crusader_oh_buff_timer -= dt;
-        time_ += dt;
-        step_index_++;
-    }
-
-    void reset()
-    {
-        blood_thirst_cd = -1e-10;
-        whirlwind_cd = -1e-10;
-        global_cd = -1e-10;
-        crusader_mh_buff_timer = -1e-10;
-        crusader_oh_buff_timer = -1e-10;
-        time_ = 0.0;
-        step_index_ = 1;
-    }
-
-    constexpr double get_dynamic_time_step(double mh_dt,
-                                           double oh_dt,
-                                           double sim_dt)
-    {
-        double dt = 100.0;
-        if (blood_thirst_cd > 0.0)
-        {
-            dt = std::min(blood_thirst_cd, dt);
-        }
-        if (whirlwind_cd > 0.0)
-        {
-            dt = std::min(whirlwind_cd, dt);
-        }
-        if (global_cd > 0.0)
-        {
-            dt = std::min(global_cd, dt);
-        }
-        if (crusader_mh_buff_timer > 0.0)
-        {
-            dt = std::min(crusader_mh_buff_timer, dt);
-        }
-        if (crusader_oh_buff_timer > 0.0)
-        {
-            dt = std::min(crusader_oh_buff_timer, dt);
-        }
-        dt = std::min(mh_dt, dt);
-        dt = std::min(oh_dt, dt);
-        dt = std::min(sim_dt, dt);
-        dt += 1e-5;
-        dt_ = dt;
-        return dt;
-    }
-
-    double blood_thirst_cd;
-    double whirlwind_cd;
-    double global_cd;
-    double crusader_mh_buff_timer;
-    double crusader_oh_buff_timer;
-    double time_;
-    double dt_;
-    int step_index_;
-};
+#include "time_keeper.hpp"
 
 struct Combat_simulator_config
 {
@@ -403,8 +257,8 @@ public:
     {
         if (config_.display_combat_debug)
         {
-            std::cout << "Time: " << std::setw(8) << std::left << time_keeper_.time_ + time_keeper_.dt_
-                      << "s. Loop idx:" << std::setw(4) << time_keeper_.step_index_ << "Event: ";
+            std::cout << "Time: " << std::setw(8) << std::left << time_keeper_.time + time_keeper_.current_dt
+                      << "s. Loop idx:" << std::setw(4) << time_keeper_.step_index << "Event: ";
             __attribute__((unused)) int dummy[] = {0, ((void) print_statement(std::forward<Args>(args)), 0)...};
             std::cout << "\n";
         }

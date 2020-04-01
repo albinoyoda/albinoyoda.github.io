@@ -1,4 +1,5 @@
 #include "../include/Combat_simulator.hpp"
+#include "../include/weapon_sim.hpp"
 
 namespace
 {
@@ -396,13 +397,13 @@ Combat_simulator::simulate(const Character &character)
         weapons[0].set_internal_swing_timer(0.0);
         weapons[1].set_internal_swing_timer(0.0);
 
-        while (time_keeper_.time_ < config_.sim_time)
+        while (time_keeper_.time < config_.sim_time)
         {
             double mh_dt = weapons[0].get_internal_swing_timer() / (character_haste * flurry_dt_factor);
             double oh_dt = weapons[1].get_internal_swing_timer() / (character_haste * flurry_dt_factor);
             double dt = time_keeper_.get_dynamic_time_step(mh_dt, oh_dt, config_.sim_time);
 
-            if (time_keeper_.time_ + dt > config_.sim_time)
+            if (time_keeper_.time + dt > config_.sim_time)
             {
                 break;
             }
@@ -576,7 +577,7 @@ Combat_simulator::simulate(const Character &character)
 
             if (config_.fuel_extra_rage)
             {
-                if (time_keeper_.time_ - config_.extra_rage_interval * fuel_ticks > 0.0)
+                if (time_keeper_.time - config_.extra_rage_interval * fuel_ticks > 0.0)
                 {
                     rage += rage_from_damage(config_.extra_rage_damage_amount);
                     rage = std::min(100.0, rage);
@@ -588,7 +589,7 @@ Combat_simulator::simulate(const Character &character)
 
             if (config_.enable_anger_management)
             {
-                if (time_keeper_.time_ - 3 * anger_management_ticks > 0.0)
+                if (time_keeper_.time - 3 * anger_management_ticks > 0.0)
                 {
                     simulator_cout("Anger management tick, +1 rage");
                     rage += 1;
@@ -605,10 +606,10 @@ Combat_simulator::simulate(const Character &character)
                     bloodrage_active = true;
                     rage += 10;
                     rage = std::min(100.0, rage);
-                    bloodrage_init_time = time_keeper_.time_;
+                    bloodrage_init_time = time_keeper_.time;
                     bloodrage_cooldown = 60.0 + dt;
                 }
-                if (bloodrage_active && time_keeper_.time_ - (bloodrage_init_time + bloodrage_ticks) > 1.0)
+                if (bloodrage_active && time_keeper_.time - (bloodrage_init_time + bloodrage_ticks) > 1.0)
                 {
                     simulator_cout("Bloodrage tick, +1 rage");
                     rage += 1;
@@ -625,16 +626,16 @@ Combat_simulator::simulate(const Character &character)
 
             if (config_.use_mighty_rage_potion)
             {
-                if (config_.sim_time - time_keeper_.time_ < 30.0 && !used_mighty_rage_potion && rage < 50)
+                if (config_.sim_time - time_keeper_.time < 30.0 && !used_mighty_rage_potion && rage < 50)
                 {
                     simulator_cout("------------ Mighty Rage Potion! ------------");
                     rage += 45 + 30 * get_uniform_random(1);
                     rage = std::min(100.0, rage);
                     special_stats.attack_power += 132;
                     used_mighty_rage_potion = true;
-                    mightyrage_init_time = time_keeper_.time_;
+                    mightyrage_init_time = time_keeper_.time;
                 }
-                if (time_keeper_.time_ - mightyrage_init_time > 20.0 && !reset_mighty_rage_potion)
+                if (time_keeper_.time - mightyrage_init_time > 20.0 && !reset_mighty_rage_potion)
                 {
                     special_stats.attack_power -= 132;
                     reset_mighty_rage_potion = true;
@@ -645,7 +646,7 @@ Combat_simulator::simulate(const Character &character)
             {
                 if (config_.enable_death_wish)
                 {
-                    if (config_.sim_time - time_keeper_.time_ < 31.0 && rage >= 10 && !deathwish_active)
+                    if (config_.sim_time - time_keeper_.time < 31.0 && rage >= 10 && !deathwish_active)
                     {
                         deathwish_active = true;
                         rage -= 10;
@@ -655,7 +656,7 @@ Combat_simulator::simulate(const Character &character)
                 }
                 if (config_.enable_recklessness)
                 {
-                    if (config_.sim_time - time_keeper_.time_ < 16.0 && !recklessness_active)
+                    if (config_.sim_time - time_keeper_.time < 16.0 && !recklessness_active)
                     {
                         recklessness_active = true;
                         time_keeper_.global_cd = 1.0 + dt;
@@ -664,7 +665,7 @@ Combat_simulator::simulate(const Character &character)
                 }
 
                 // Execute phase, starts at 80% in with 1 sec activation time
-                if (time_keeper_.time_ + dt > config_.sim_time * 0.85 + 1)
+                if (time_keeper_.time + dt > config_.sim_time * 0.85 + 1)
                 {
                     if (!have_printed_execute_phase)
                     {
@@ -819,7 +820,7 @@ Combat_simulator::simulate(const Character &character)
             }
             time_keeper_.increment(dt);
         }
-        batch_damage_.push_back(damage_sources.sum_damage_sources() / time_keeper_.time_);
+        batch_damage_.push_back(damage_sources.sum_damage_sources() / time_keeper_.time);
         damage_distribution_.emplace_back(damage_sources);
     }
     return batch_damage_;
@@ -1070,63 +1071,3 @@ void Combat_simulator::print_damage_distribution() const
     std::cout << "\n";
 }
 
-/**
-WEAPON
- */
-Weapon_sim::Weapon_sim(double swing_speed, std::pair<double, double> damage_interval,
-                       Socket socket, Weapon_type skill_type) :
-        swing_speed_{swing_speed},
-        internal_swing_timer_{0.0},
-        damage_interval_{std::move(damage_interval)},
-        average_damage_{0.0},
-        socket_{socket},
-        weapon_type_{skill_type}
-{
-    if (weapon_type_ == Weapon_type::dagger)
-    {
-        normalized_swing_speed_ = 1.7;
-    }
-    else
-    {
-        normalized_swing_speed_ = 2.5;
-    }
-}
-
-void Weapon_sim::reset_timer()
-{
-    internal_swing_timer_ = swing_speed_;
-}
-
-double Weapon_sim::step(double dt, double attack_power, bool is_random)
-{
-    internal_swing_timer_ -= dt;
-    if (internal_swing_timer_ < 0.0)
-    {
-        internal_swing_timer_ += swing_speed_;
-        double damage;
-        if (is_random)
-        {
-            damage = random_swing(attack_power);
-        }
-        else
-        {
-            damage = swing(attack_power);
-        }
-        if (get_socket() == Socket::off_hand)
-        {
-            damage *= 0.625;
-        }
-        return damage;
-    }
-    return 0.0;
-}
-
-Socket Weapon_sim::get_socket() const
-{
-    return socket_;
-}
-
-void Weapon_sim::set_internal_swing_timer(double internal_swing_timer)
-{
-    internal_swing_timer_ = internal_swing_timer;
-}

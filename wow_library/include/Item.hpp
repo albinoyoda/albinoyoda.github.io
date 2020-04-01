@@ -114,12 +114,12 @@ struct Enchant
 
 struct Set_bonus
 {
-    Set_bonus(Attributes attributes, Special_stats special_stats, size_t pieces, Set set) :
+    Set_bonus(Attributes attributes, Special_stats special_stats, int pieces, Set set) :
             attributes(attributes), special_stats(special_stats), pieces(pieces), set(set) {};
 
     Attributes attributes;
     Special_stats special_stats;
-    size_t pieces;
+    int pieces;
     Set set;
 };
 
@@ -194,7 +194,7 @@ struct Weapon
 
 std::ostream &operator<<(std::ostream &os, const Socket &socket);
 
-size_t get_weapon_skill(const Special_stats& special_stats, Weapon_type weapon_type);
+int get_weapon_skill(const Special_stats& special_stats, Weapon_type weapon_type);
 
 #endif //WOW_SIMULATOR_ITEM_HPP
 

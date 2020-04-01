@@ -512,9 +512,9 @@ struct Armory
         }
 
         // TODO fix this mess
-        size_t set_pieces_devil = 0;
-        size_t set_pieces_bds = 0;
-        size_t set_pieces_pvp = 0;
+        int set_pieces_devil = 0;
+        int set_pieces_bds = 0;
+        int set_pieces_pvp = 0;
         for (Set &set_name : set_names)
         {
             switch (set_name)

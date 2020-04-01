@@ -1,7 +1,7 @@
 #include <iostream>
 #include "../include/Character.hpp"
 
-Character::Character(const Race &race, size_t level)
+Character::Character(const Race &race, int level)
         :
         base_attributes{},
         total_attributes{},
@@ -10,7 +10,7 @@ Character::Character(const Race &race, size_t level)
         race{race},
         level(level)
 {
-    size_t base_skill = level * 5;
+    int base_skill = level * 5;
     base_special_stats = Special_stats{0, 0, 160, 0, 0, base_skill, base_skill, base_skill, base_skill};
     switch (race)
     {

@@ -81,12 +81,12 @@ struct Damage_sources
     double execute_damage{};
     double heroic_strike_damage{};
     double whirlwind_damage{};
-    size_t white_mh_count{};
-    size_t white_oh_count{};
-    size_t bloodthirst_count{};
-    size_t execute_count{};
-    size_t heroic_strike_count{};
-    size_t whirlwind_count{};
+    long int white_mh_count{};
+    long int white_oh_count{};
+    long int bloodthirst_count{};
+    long int execute_count{};
+    long int heroic_strike_count{};
+    long int whirlwind_count{};
 };
 
 #endif //WOW_SIMULATOR_DAMAGE_SOURCES_HPP

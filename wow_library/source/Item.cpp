@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-size_t get_weapon_skill(const Special_stats &special_stats, Weapon_type weapon_type)
+int get_weapon_skill(const Special_stats &special_stats, Weapon_type weapon_type)
 {
     switch (weapon_type)
     {
