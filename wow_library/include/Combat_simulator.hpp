@@ -12,6 +12,7 @@
 #include "Character.hpp"
 #include "damage_sources.hpp"
 #include "time_keeper.hpp"
+#include "weapon_sim.hpp"
 
 struct Combat_simulator_config
 {
@@ -49,11 +50,6 @@ public:
         {
             srand(config_.seed);
         }
-    }
-
-    double get_uniform_random(double r_max)
-    {
-        return rand() * r_max / RAND_MAX;
     }
 
     enum class Hit_result
@@ -143,24 +139,6 @@ public:
         }
     }
 
-    static constexpr double lookup_outcome_mh_yellow(int case_id)
-    {
-        switch (case_id)
-        {
-            case 0:
-                return 0.0;
-            case 1:
-                return 0.0;
-            case 2:
-                return 2.2;
-            case 3:
-                return 1.0;
-            default:
-                assert(false);
-                return 0.0;
-        }
-    }
-
     constexpr double lookup_outcome_oh(int case_id)
     {
         switch (case_id)
@@ -181,8 +159,20 @@ public:
         }
     }
 
+    void swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_weapon, double dt, Special_stats special_stats,
+                      bool &heroic_strike_,
+                      double &rage, double &heroic_strike_rage_cost, bool &deathwish_active,
+                      bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges,
+                      double &flurry_dt_factor, double &flurry_speed_bonus);
+
     std::vector<double> &simulate(const Character &character);
-//
+
+    double get_uniform_random(double r_max)
+    {
+        return rand() * r_max / RAND_MAX;
+    }
+
+    //
 //    template<typename Struct_t, typename Field_t>
 //    Stat_weight permute_stat(const Character &character, const Armory& armory, Struct_t struct_t, Field_t field_t, Stat stat, double amount,
 //                             double sim_time, int opponent_level, int n_batches, double mean_init,
@@ -232,7 +222,6 @@ public:
         }
         double mean_dps = Combat_simulator::average(damage_vec);
         double std_dps = Combat_simulator::standard_deviation(damage_vec, mean_dps);
-//        double sample_std_dps = Combat_simulator::sample_deviation(std_dps, damage_vec.size());
         return std_dps;
     }
 
@@ -241,9 +230,12 @@ public:
     void print_damage_sources(const std::string &source_name, double source_percent,
                               double source_std, double source_count) const
     {
+        if (source_count > 0)
+        {
         std::cout << source_name << std::setw(5) << std::left << std::setprecision(3)
                   << 100 * source_percent << " +- " << std::setw(4) << 100 * source_std << ", casts: "
                   << source_count << "\n";
+        }
     }
 
     template<typename T>

@@ -242,8 +242,9 @@ struct Armory
 //                                            Special_stats{0.0, 0.0, 0.0}, Socket::one_hand, Skill_type::sword};
         Weapon brutality_blade{"brutality_blade", Attributes{9, 9}, Special_stats{1, 0, 0}, 2.5, 90, 168,
                                Weapon_socket::one_hand, Weapon_type::sword};
-        Weapon thrash_blade{"thrash_blade", Attributes{0, 0}, Special_stats{0, 0, 0, 0.038}, 2.7, 66, 124,
-                            Weapon_socket::one_hand, Weapon_type::sword};
+        Weapon thrash_blade{"thrash_blade", Attributes{0, 0}, Special_stats{0, 0, 0}, 2.7, 66, 124,
+                            Weapon_socket::one_hand, Weapon_type::sword,
+                            {{"thrash_blade", Hit_effect::Type::extra_hit, {}, {}, 0, 0, 0.038}}};
 //        Weapon assassination_blade{"assassination_blade", 2.7, {71, 132}, Attributes{3, 0}, Special_stats{1, 0, 0},
 //                                   Socket::one_hand, Skill_type::sword};
 //        Weapon mirahs_song{"mirahs_song", 1.8, {57, 87}, Attributes{9, 9}, Special_stats{0, 0, 0},
@@ -281,7 +282,7 @@ struct Armory
     {
         Weapon ebon_hand{"ebon_hand", Attributes{0.0, 0.0},
                          Special_stats{0.0, 0.0, 0.0}, 2.3, 83.0, 154.0, Weapon_socket::one_hand,
-                         Weapon_type::mace, {{Hit_effect::Type::damage, {}, {}, 200, 0, 0.08}}};
+                         Weapon_type::mace, {{"ebon_hand", Hit_effect::Type::damage_magic, {}, {}, 200, 0, 0.08}}};
 //        Weapon spineshatter{"spineshatter", 2.5, {99.0, 184.0}, Attributes{9.0, 0.0}, Special_stats{0.0, 0.0, 0.0},
 //                            Socket::main_hand, Skill_type::mace};
 //        Weapon stormstike_hammer{"stormstike_hammer", 2.7, {80, 150}, Attributes{15, 0}, Special_stats{0, 0, 0},
@@ -454,15 +455,31 @@ struct Armory
     {
         if (type == Enchant::Type::crusader)
         {
-            return {Hit_effect::Type::stat_boost, {100, 0}, {0, 0, 0}, 0, 15, weapon_speed / 40};
+            return {"crusader", Hit_effect::Type::stat_boost, {100, 0}, {0, 0, 0}, 0, 15, weapon_speed / 40};
         }
-        return {Hit_effect::Type::none, {}, {}, 0, 0, 0};
+        return {"none", Hit_effect::Type::none, {}, {}, 0, 0, 0};
+    }
+
+    void clean_weapon(Weapon &weapon) const
+    {
+        if (weapon.hit_effects[0].name != weapon.name)
+        {
+            weapon.hit_effects = {};
+        }
+        else
+        {
+            weapon.hit_effects = {weapon.hit_effects[0]};
+        }
     }
 
     void compute_total_stats(Character &character) const
     {
         check_if_weapons_valid(character.weapons);
         check_if_armor_valid(character.armor);
+        character.total_attributes = {};
+        character.total_special_stats = {};
+        clean_weapon(character.weapons[0]);
+        clean_weapon(character.weapons[1]);
         Attributes total_attributes{};
         Special_stats total_special_stats{};
         double stat_multiplier = 0;
@@ -485,7 +502,7 @@ struct Armory
         {
             for (Weapon &weapon : character.weapons)
             {
-                weapon.hit_effects.emplace_back(Hit_effect{Hit_effect::Type::extra_hit, {}, {}, 0, 0,
+                weapon.hit_effects.emplace_back(Hit_effect{"HoJ", Hit_effect::Type::extra_hit, {}, {}, 0, 0,
                                                            total_special_stats.chance_for_extra_hit});
             }
         }
@@ -493,15 +510,7 @@ struct Armory
         for (Weapon &weapon : character.weapons)
         {
             total_attributes += weapon.attributes;
-            auto special_stats = weapon.special_stats;
-
-            if (special_stats.chance_for_extra_hit > 0)
-            {
-                weapon.hit_effects.emplace_back(Hit_effect{Hit_effect::Type::extra_hit, {}, {}, 0, 0,
-                                                           special_stats.chance_for_extra_hit});
-                special_stats.chance_for_extra_hit = 0;
-            }
-            total_special_stats += special_stats;
+            total_special_stats += weapon.special_stats;
 
             total_attributes += get_enchant_attributes(weapon.socket, weapon.enchant.type);
             total_special_stats += get_enchant_special_stats(weapon.socket, weapon.enchant.type);

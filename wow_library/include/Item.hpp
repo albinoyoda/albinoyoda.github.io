@@ -66,13 +66,15 @@ public:
         none,
         extra_hit,
         stat_boost,
-        damage,
+        damage_physical,
+        damage_magic
     };
 
     Hit_effect() = default;
 
-    Hit_effect(Type type, Attributes attribute_boost, Special_stats special_stats_boost, double damage, double duration,
-               double probability) :
+    Hit_effect(std::string name, Type type, Attributes attribute_boost, Special_stats special_stats_boost,
+               double damage, double duration, double probability) :
+            name(std::move(name)),
             type(type),
             attribute_boost(attribute_boost),
             special_stats_boost(special_stats_boost),
@@ -80,6 +82,7 @@ public:
             duration(duration),
             probability(probability) {};
 
+    std::string name;
     Type type;
     Attributes attribute_boost;
     Special_stats special_stats_boost;
@@ -194,7 +197,7 @@ struct Weapon
 
 std::ostream &operator<<(std::ostream &os, const Socket &socket);
 
-int get_weapon_skill(const Special_stats& special_stats, Weapon_type weapon_type);
+int get_weapon_skill(const Special_stats &special_stats, Weapon_type weapon_type);
 
 #endif //WOW_SIMULATOR_ITEM_HPP
 

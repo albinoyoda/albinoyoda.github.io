@@ -140,7 +140,7 @@ int main()
 
     // Simulator & Combat settings
     Combat_simulator_config config{};
-    config.n_batches = 100000;
+    config.n_batches = 1000;
     config.sim_time = 60;
     config.opponent_level = 63;
     config.enable_rng_melee = false;

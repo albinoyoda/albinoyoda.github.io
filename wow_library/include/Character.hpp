@@ -101,7 +101,7 @@ public:
     std::vector<Weapon> weapons;
     std::vector<Buff> buffs;
     Race race;
-    size_t level;
+    int level;
 };
 
 std::ostream &operator<<(std::ostream &os, const Character &character);
