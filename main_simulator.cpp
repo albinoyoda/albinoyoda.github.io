@@ -46,54 +46,54 @@ Character create_character()
             armory.helmet.lionheart_helm,
 
             // Neck
-            armory.neck.mark_of_fordring,
+            armory.neck.onyxia_tooth_pendant,
 
             // Shoulders
-            armory.shoulder.big_bad_pauldrons,
+            armory.shoulder.truestrike_shoulders,
 
             // Back
-            armory.back.shadewood_cloak,
+            armory.back.cape_of_the_black_baron,
 
             // Chest
-            armory.chest.carapace_of_anub,
+            armory.chest.savage_gladiator_chain,
 
             // Wrists
-            armory.wrist.slashclaw_bracers,
+            armory.wrist.wristguards_of_stability,
 
             // Hands
-            armory.hands.devilsaur_gauntlets,
+            armory.hands.flameguard_gauntlets,
 
             // Belt
-            armory.belt.omokks_girth,
+            armory.belt.onslaught_girdle,
 
             // Legs
-            armory.legs.devilsaur_leggings,
+            armory.legs.eldritch_legplates,
 
             // boots
-            armory.boots.battlechasers,
+            armory.boots.chromatic_boots,
 
             // Rings
-            armory.rings.quick_strike_ring,
-            armory.rings.tarnished_elven,
+            armory.rings.magnis_will,
+            armory.rings.don_julios_band,
 
             // Trinket
             armory.trinket.blackhands_breadth,
-            armory.trinket.diamond_flask,
+            armory.trinket.hand_of_justice,
 
             // Bow
-            armory.ranged.satyrs_bow
+            armory.ranged.blastershot
                          );
 
-    character.equip_weapon(armory.swords.quel_serrar,
-                           armory.swords.mirahs_song);
+    character.equip_weapon(armory.swords.maladath,
+                           armory.swords.brutality_blade);
 
     character.add_enchants(
-//            Enchant{Enchant::Socket::head, Enchant::Type::haste},
-//            Enchant{Enchant::Socket::back, Enchant::Type::agility},
-//            Enchant{Enchant::Socket::chest, Enchant::Type::major_stats},
-//            Enchant{Enchant::Socket::wrists, Enchant::Type::strength9},
-//            Enchant{Enchant::Socket::hands, Enchant::Type::haste},
-//            Enchant{Enchant::Socket::legs, Enchant::Type::haste},
+            Enchant{Enchant::Socket::head, Enchant::Type::haste},
+            Enchant{Enchant::Socket::back, Enchant::Type::agility},
+            Enchant{Enchant::Socket::chest, Enchant::Type::major_stats},
+            Enchant{Enchant::Socket::wrists, Enchant::Type::strength9},
+            Enchant{Enchant::Socket::hands, Enchant::Type::haste},
+            Enchant{Enchant::Socket::legs, Enchant::Type::haste},
             Enchant{Enchant::Socket::weapon_mh, Enchant::Type::crusader},
             Enchant{Enchant::Socket::weapon_oh, Enchant::Type::crusader}
                           );
@@ -101,7 +101,7 @@ Character create_character()
     character.add_buffs(
             buffs.rallying_cry,
             buffs.dire_maul,
-//            buffs.songflower,
+            buffs.songflower,
             buffs.blessing_of_kings,
             buffs.blessing_of_might,
             buffs.gift_of_the_wild,
@@ -134,7 +134,7 @@ Character delta_gear(const Character &character)
 //    delta_character.change_armor(armory.chest.knight_captains_plate_hauberk);
 //    delta_character.change_armor(armory.legs.knight_captain_plate_leggings);
 //    delta_character.change_armor(armory.trinket.hand_of_justice, true);
-    delta_character.change_armor(armory.chest.tombstone_breastplate);
+//    delta_character.change_armor(armory.chest.tombstone_breastplate);
 //    delta_character.change_armor(armory.trinket.drake_fang_talisman, false);
 
     delta_character.compute_all_stats(Character::Talent::fury, armory.get_set_bonuses());
