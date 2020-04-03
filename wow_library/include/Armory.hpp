@@ -462,13 +462,16 @@ struct Armory
 
     void clean_weapon(Weapon &weapon) const
     {
-        if (weapon.hit_effects[0].name != weapon.name)
+        if (!weapon.hit_effects.empty())
         {
-            weapon.hit_effects = {};
-        }
-        else
-        {
-            weapon.hit_effects = {weapon.hit_effects[0]};
+            if (weapon.hit_effects[0].name == weapon.name)
+            {
+                weapon.hit_effects = {weapon.hit_effects[0]};
+            }
+            else
+            {
+                weapon.hit_effects = {};
+            }
         }
     }
 

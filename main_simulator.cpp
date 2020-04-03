@@ -60,6 +60,29 @@ void print_character_stat(const Character &char1, const Character &char2)
 
 Character character_setup(const Armory &armory, const Buffs &buffs)
 {
+//    Character character{Race::human, 60};
+//
+//    // Armor
+//    character.equip_armor(armory.helmet.lionheart_helm);
+//    character.equip_armor(armory.neck.onyxia_tooth_pendant);
+//    character.equip_armor(armory.shoulder.truestrike_shoulders);
+//    character.equip_armor(armory.back.cape_of_the_black_baron);
+//    character.equip_armor(armory.chest.savage_gladiator_chain);
+//    character.equip_armor(armory.wrist.wristguards_of_stability);
+//    character.equip_armor(armory.hands.flameguard_gauntlets);
+//    character.equip_armor(armory.belt.onslaught_girdle);
+//    character.equip_armor(armory.legs.eldritch_legplates);
+//    character.equip_armor(armory.boots.chromatic_boots);
+//    character.equip_armor(armory.rings.don_julios_band);
+//    character.equip_armor(armory.rings.magnis_will);
+//    character.equip_armor(armory.trinket.hand_of_justice);
+//    character.equip_armor(armory.trinket.blackhands_breadth);
+//    character.equip_armor(armory.ranged.blastershot);
+//
+//    // Weapons
+//    character.equip_weapon(armory.swords.maladath, armory.swords.brutality_blade);
+    // test set, 1080 DPS before refactor
+
     Character character{Race::gnome, 60};
 
     // Armor
@@ -140,7 +163,7 @@ int main()
 
     // Simulator & Combat settings
     Combat_simulator_config config{};
-    config.n_batches = 1000;
+    config.n_batches = 100000;
     config.sim_time = 60;
     config.opponent_level = 63;
     config.enable_rng_melee = false;
@@ -157,7 +180,7 @@ int main()
     config.display_combat_debug = false;
     config.use_seed = false;
     config.seed = 10000;
-    config.fuel_extra_rage = true;
+    config.fuel_extra_rage = false;
     config.extra_rage_interval = 3;
     config.extra_rage_damage_amount = 150;
 
