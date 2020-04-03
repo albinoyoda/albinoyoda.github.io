@@ -187,9 +187,9 @@ int main()
     Combat_simulator simulator(config);
 
     std::vector<double> dps_snapshots1 = simulator.simulate(character1);
-    double mean_dps1 = Combat_simulator::average(dps_snapshots1);
-    double std_dps1 = Combat_simulator::standard_deviation(dps_snapshots1, mean_dps1);
-    double sample_std_dps1 = Combat_simulator::sample_deviation(std_dps1, config.n_batches);
+    double mean_dps1 = Statistics::average(dps_snapshots1);
+    double std_dps1 = Statistics::standard_deviation(dps_snapshots1, mean_dps1);
+    double sample_std_dps1 = Statistics::sample_deviation(std_dps1, config.n_batches);
 
     std::cout << std::setprecision(5);
     std::cout << "Simulation results: \n";
@@ -200,9 +200,9 @@ int main()
     simulator.print_damage_distribution();
 
     std::vector<double> dps_snapshots2 = simulator.simulate(character2);
-    double mean_dps2 = Combat_simulator::average(dps_snapshots2);
-    double std_dps2 = Combat_simulator::standard_deviation(dps_snapshots2, mean_dps2);
-    double sample_std_dps2 = Combat_simulator::sample_deviation(std_dps2, config.n_batches);
+    double mean_dps2 = Statistics::average(dps_snapshots2);
+    double std_dps2 = Statistics::standard_deviation(dps_snapshots2, mean_dps2);
+    double sample_std_dps2 = Statistics::sample_deviation(std_dps2, config.n_batches);
 
     std::cout << std::setprecision(5);
     std::cout << "Simulation results: \n";

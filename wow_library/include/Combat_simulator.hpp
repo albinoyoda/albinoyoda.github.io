@@ -14,6 +14,7 @@
 #include "time_keeper.hpp"
 #include "weapon_sim.hpp"
 #include "Buff_manager.hpp"
+#include "Statistics.hpp"
 
 struct Combat_simulator_config
 {
@@ -195,20 +196,11 @@ public:
 
     Combat_simulator::Hit_outcome generate_hit_oh(double damage, bool heroic_strike_active, bool recklessness_active);
 
-    Combat_simulator::Hit_outcome
-    generate_hit_mh(double damage, Hit_type hit_type, bool recklessness_active);
+    Combat_simulator::Hit_outcome generate_hit_mh(double damage, Hit_type hit_type, bool recklessness_active);
 
     void compute_hit_table(int level_difference, int weapon_skill, Special_stats special_stats, Socket weapon_hand);
 
-    static double average(const std::vector<double> &vec);
 
-    static double standard_deviation(const std::vector<double> &vec, double ave);
-
-    static double variance(const std::vector<double> &vec, double ave);
-
-    static double sample_deviation(double mean, int n_samples);
-
-    static double add_standard_deviations(double std1, double std2);
 
     const std::vector<double> &get_hit_probabilities_white_mh() const;
 
@@ -221,8 +213,8 @@ public:
         {
             damage_vec.push_back(damage_source.*field_ptr / damage_source.sum_counts());
         }
-        double mean_dps = Combat_simulator::average(damage_vec);
-        double std_dps = Combat_simulator::standard_deviation(damage_vec, mean_dps);
+        double mean_dps = Statistics::average(damage_vec);
+        double std_dps = Statistics::standard_deviation(damage_vec, mean_dps);
         return std_dps;
     }
 
@@ -233,9 +225,9 @@ public:
     {
         if (source_count > 0)
         {
-        std::cout << source_name << std::setw(5) << std::left << std::setprecision(3)
-                  << 100 * source_percent << " +- " << std::setw(4) << 100 * source_std << ", casts: "
-                  << source_count << "\n";
+            std::cout << source_name << std::setw(5) << std::left << std::setprecision(3)
+                      << 100 * source_percent << " +- " << std::setw(4) << 100 * source_std << ", casts: "
+                      << source_count << "\n";
         }
     }
 

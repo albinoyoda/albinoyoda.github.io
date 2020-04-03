@@ -522,8 +522,6 @@ Combat_simulator::simulate(const Character &character)
         double flurry_dt_factor = 1;
 
         bool heroic_strike_ = false;
-//        bool crusader_oh_active = false;
-//        bool crusader_mh_active = false;
         bool deathwish_active = false;
         bool recklessness_active = false;
         bool have_printed_execute_phase = false;
@@ -918,40 +916,6 @@ std::ostream &operator<<(std::ostream &os, Combat_simulator::Stat_weight const &
             assert(false);
     }
     return os;
-}
-
-double Combat_simulator::average(const std::vector<double> &vec)
-{
-    double sum = 0;
-    for (double value : vec)
-        sum += value;
-    return sum / vec.size();
-}
-
-double Combat_simulator::variance(const std::vector<double> &vec, double average)
-{
-    double sum = 0;
-    double inverse = 1.0 / static_cast<double>(vec.size());
-    for (double value : vec)
-    {
-        sum += std::pow(static_cast<double>(value) - average, 2);
-    }
-    return inverse * sum;
-}
-
-double Combat_simulator::standard_deviation(const std::vector<double> &vec, double average)
-{
-    return std::sqrt(variance(vec, average));
-}
-
-double Combat_simulator::sample_deviation(double mean, int n_samples)
-{
-    return mean / std::sqrt(static_cast<double>(n_samples));
-}
-
-double Combat_simulator::add_standard_deviations(double std1, double std2)
-{
-    return std::sqrt(std1 * std1 + std2 * std2);
 }
 
 const std::vector<double> &Combat_simulator::get_hit_probabilities_white_mh() const
