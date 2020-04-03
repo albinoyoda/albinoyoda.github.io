@@ -10,8 +10,8 @@ add_library(wow_lib SHARED
         wow_library/source/Combat_simulator.cpp
         wow_library/source/Item.cpp
         wow_library/source/Character.cpp
-        wow_library/include/Armory.hpp
-        wow_library/include/damage_sources.hpp wow_library/include/time_keeper.hpp wow_library/include/weapon_sim.hpp wow_library/source/weapon_sim.cpp)
+        wow_library/source/weapon_sim.cpp
+        )
 
 ADD_EXECUTABLE(wow_simulator main_simulator.cpp)
 target_link_libraries(wow_simulator wow_lib)

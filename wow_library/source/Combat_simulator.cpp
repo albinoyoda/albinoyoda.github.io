@@ -322,7 +322,7 @@ void Combat_simulator::compute_hit_table(int level_difference,
 }
 
 void
-Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_weapon, double dt, Special_stats special_stats,
+Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_weapon, Special_stats special_stats,
                                bool &heroic_strike_,
                                double &rage, double &heroic_strike_rage_cost, bool &deathwish_active,
                                bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges,
@@ -393,7 +393,7 @@ Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_weapon,
                     {
                         case Hit_effect::Type::extra_hit:
                             simulator_cout("PROC: extra hit from: ", hit_effect.name);
-                            swing_weapon(main_hand_weapon, main_hand_weapon, dt, special_stats,
+                            swing_weapon(main_hand_weapon, main_hand_weapon, special_stats,
                                          heroic_strike_, rage, heroic_strike_rage_cost, deathwish_active,
                                          recklessness_active, damage_sources, flurry_charges,
                                          flurry_dt_factor, flurry_speed_bonus);
@@ -411,7 +411,9 @@ Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_weapon,
                             break;
                         case Hit_effect::Type::stat_boost:
                             simulator_cout("PROC: stats increased: ", hit_effect.name);
-//                            damage_sources.add_damage(Damage_source::item_hit_effects, hit_effect.damage);
+                            buff_manager_.add(weapon.socket_name + "_" + hit_effect.name,
+                                              hit_effect.get_special_stat_equivalent(),
+                                              hit_effect.duration);
                             break;
                         default:
                             std::cout << ":::::::::::FAULTY HIT EFFECT IN SIMULATION!!!:::::::::";
@@ -513,6 +515,7 @@ Combat_simulator::simulate(const Character &character)
         time_keeper_.reset(); // Class variable that keeps track of the time spent, cooldowns, iteration number
         auto special_stats = starting_special_stats;
         Damage_sources damage_sources{};
+        buff_manager_.set_target(special_stats);
         double rage = 0;
         int flurry_charges = 0;
         double flurry_speed_bonus = 1.3;
@@ -541,27 +544,29 @@ Combat_simulator::simulate(const Character &character)
         {
             double mh_dt = weapons[0].internal_swing_timer / (character_haste * flurry_dt_factor);
             double oh_dt = weapons[1].internal_swing_timer / (character_haste * flurry_dt_factor);
-            double dt = time_keeper_.get_dynamic_time_step(mh_dt, oh_dt, config_.sim_time);
+            double buff_dt = buff_manager_.get_dt();
+            double dt = time_keeper_.get_dynamic_time_step(mh_dt, oh_dt, buff_dt, config_.sim_time);
+            buff_manager_.increment(dt);
 
             if (time_keeper_.time + dt > config_.sim_time)
             {
                 break;
             }
 
-            weapons[0].internal_swing_timer -= dt * character_haste * flurry_dt_factor;
-            weapons[1].internal_swing_timer -= dt * character_haste * flurry_dt_factor;
+            bool mh_swing = weapons[0].time_for_swing(dt * character_haste * flurry_dt_factor);
+            bool oh_swing = weapons[1].time_for_swing(dt * character_haste * flurry_dt_factor);
 
-            if (weapons[0].internal_swing_timer < 0.0)
+            if (mh_swing)
             {
-                swing_weapon(weapons[0], weapons[0], dt, special_stats,
+                swing_weapon(weapons[0], weapons[0], special_stats,
                              heroic_strike_, rage, heroic_strike_rage_cost, deathwish_active,
                              recklessness_active, damage_sources, flurry_charges,
                              flurry_dt_factor, flurry_speed_bonus);
             }
 
-            if (weapons[1].internal_swing_timer < 0.0)
+            if (oh_swing)
             {
-                swing_weapon(weapons[1], weapons[0], dt, special_stats,
+                swing_weapon(weapons[1], weapons[0], special_stats,
                              heroic_strike_, rage, heroic_strike_rage_cost, deathwish_active,
                              recklessness_active, damage_sources, flurry_charges,
                              flurry_dt_factor, flurry_speed_bonus);

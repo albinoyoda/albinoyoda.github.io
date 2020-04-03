@@ -48,9 +48,29 @@ struct Special_stats
         };
     }
 
+    Special_stats operator-(const Special_stats &rhs)
+    {
+        return {critical_strike - rhs.critical_strike,
+                hit - rhs.hit,
+                attack_power - rhs.attack_power,
+                chance_for_extra_hit - rhs.chance_for_extra_hit,
+                haste - rhs.haste,
+                sword_skill - rhs.sword_skill,
+                axe_skill - rhs.axe_skill,
+                dagger_skill - rhs.dagger_skill,
+                mace_skill - rhs.mace_skill
+        };
+    }
+
     Special_stats &operator+=(const Special_stats &rhs)
     {
         *this = *this + rhs;
+        return *this;
+    }
+
+    Special_stats &operator-=(const Special_stats &rhs)
+    {
+        *this = *this - rhs;
         return *this;
     }
 

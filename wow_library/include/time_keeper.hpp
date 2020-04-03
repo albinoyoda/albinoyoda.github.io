@@ -32,6 +32,7 @@ public:
 
     constexpr double get_dynamic_time_step(double mh_dt,
                                            double oh_dt,
+                                           double buff_dt,
                                            double sim_dt)
     {
         double dt = 100.0;
@@ -57,6 +58,7 @@ public:
         }
         dt = std::min(mh_dt, dt);
         dt = std::min(oh_dt, dt);
+        dt = std::min(buff_dt, dt);
         dt = std::min(sim_dt, dt);
         dt += 1e-5;
         current_dt = dt;

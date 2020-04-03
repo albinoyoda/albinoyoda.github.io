@@ -13,6 +13,7 @@
 #include "damage_sources.hpp"
 #include "time_keeper.hpp"
 #include "weapon_sim.hpp"
+#include "Buff_manager.hpp"
 
 struct Combat_simulator_config
 {
@@ -159,7 +160,7 @@ public:
         }
     }
 
-    void swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_weapon, double dt, Special_stats special_stats,
+    void swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_weapon, Special_stats special_stats,
                       bool &heroic_strike_,
                       double &rage, double &heroic_strike_rage_cost, bool &deathwish_active,
                       bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges,
@@ -271,6 +272,7 @@ private:
     double glancing_factor_oh_{};
     double armor_reduction_factor_{};
     Time_keeper time_keeper_{};
+    Buff_manager buff_manager_{};
     Combat_simulator_config config_;
 };
 

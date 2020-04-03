@@ -82,6 +82,13 @@ public:
             duration(duration),
             probability(probability) {};
 
+    inline Special_stats get_special_stat_equivalent() const
+    {
+        Attributes attributes = attribute_boost;
+        attributes *= 1.1;
+        return attributes.convert_to_special_stats() + special_stats_boost;
+    }
+
     std::string name;
     Type type;
     Attributes attribute_boost;
