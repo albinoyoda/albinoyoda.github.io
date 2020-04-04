@@ -7,7 +7,7 @@
 struct Combat_buff
 {
     Combat_buff(std::string id, Special_stats special_stats, double duration_left) :
-            id(id),
+            id(std::move(id)),
             special_stats(special_stats),
             duration_left(duration_left) {};
 
@@ -53,7 +53,7 @@ public:
         }
     }
 
-    void add(std::string name, const Special_stats &special_stats, double duration_left)
+    void add(const std::string &name, const Special_stats &special_stats, double duration_left)
     {
         for (auto &gain : stat_gains)
         {

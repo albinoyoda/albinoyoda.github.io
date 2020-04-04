@@ -206,6 +206,9 @@ public:
 
     const std::vector<double> &get_hit_probabilities_white_mh() const;
 
+    void cout_damage_parse(Combat_simulator::Hit_type hit_type, Socket weapon_hand,
+                           Combat_simulator::Hit_outcome hit_outcome);
+
     void print_damage_distribution() const;
 
     template<typename T>

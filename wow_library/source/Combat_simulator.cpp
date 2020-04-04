@@ -31,6 +31,86 @@ namespace
     }
 }
 
+void Combat_simulator::cout_damage_parse(Combat_simulator::Hit_type hit_type, Socket weapon_hand,
+                                         Combat_simulator::Hit_outcome hit_outcome)
+{
+    if (weapon_hand == Socket::main_hand)
+    {
+        if (hit_type == Hit_type::white)
+        {
+            switch (hit_outcome.hit_result)
+            {
+                case Hit_result::glancing:
+                    simulator_cout("Mainhand glancing hit for: ", hit_outcome.damage, " damage.");
+                    break;
+                case Hit_result::hit:
+                    simulator_cout("Mainhand white hit for: ", hit_outcome.damage, " damage.");
+                    break;
+                case Hit_result::crit:
+                    simulator_cout("Mainhand crit for: ", hit_outcome.damage, " damage.");
+                    break;
+                case Hit_result::dodge:
+                    simulator_cout("Mainhand hit dodged");
+                    break;
+                case Hit_result::miss:
+                    simulator_cout("Mainhand hit missed");
+                    break;
+                case Hit_result::TBD:
+                    simulator_cout("BUUUUUUUUUUGGGGGGGGG");
+                    break;
+            }
+        }
+        else
+        {
+            switch (hit_outcome.hit_result)
+            {
+                case Hit_result::glancing:
+                    simulator_cout("BUG: Ability glanced for: ", hit_outcome.damage, " damage.");
+                    break;
+                case Hit_result::hit:
+                    simulator_cout("Ability hit for: ", hit_outcome.damage, " damage.");
+                    break;
+                case Hit_result::crit:
+                    simulator_cout("Ability crit for: ", hit_outcome.damage, " damage.");
+                    break;
+                case Hit_result::dodge:
+                    simulator_cout("Ability dodged");
+                    break;
+                case Hit_result::miss:
+                    simulator_cout("Ability missed");
+                    break;
+                case Hit_result::TBD:
+                    simulator_cout("BUUUUUUUUUUGGGGGGGGG");
+                    break;
+            }
+        }
+    }
+    else
+    {
+        switch (hit_outcome.hit_result)
+        {
+            case Hit_result::glancing:
+                simulator_cout("Offhand glancing hit for: ", hit_outcome.damage, " damage.");
+                break;
+            case Hit_result::hit:
+                simulator_cout("Offhand white hit for: ", hit_outcome.damage, " damage.");
+                break;
+            case Hit_result::crit:
+                simulator_cout("Offhand crit for: ", hit_outcome.damage, " damage.");
+                break;
+            case Hit_result::dodge:
+                simulator_cout("Offhand hit dodged");
+                break;
+            case Hit_result::miss:
+                simulator_cout("Offhand hit missed");
+                break;
+            case Hit_result::TBD:
+                simulator_cout("BUUUUUUUUUUGGGGGGGGG");
+                break;
+        }
+    }
+}
+
 Combat_simulator::Hit_outcome
 Combat_simulator::generate_hit_mh(double damage, Hit_type hit_type, bool recklessness_active)
 {
@@ -135,54 +215,7 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(double damage, Comb
             // TODO talent here
             hit_outcome.damage *= 1.2;
         }
-        if (hit_type == Hit_type::white)
-        {
-            switch (hit_outcome.hit_result)
-            {
-                case Hit_result::glancing:
-                    simulator_cout("Mainhand glancing hit for: ", hit_outcome.damage, " damage.");
-                    break;
-                case Hit_result::hit:
-                    simulator_cout("Mainhand white hit for: ", hit_outcome.damage, " damage.");
-                    break;
-                case Hit_result::crit:
-                    simulator_cout("Mainhand crit for: ", hit_outcome.damage, " damage.");
-                    break;
-                case Hit_result::dodge:
-                    simulator_cout("Mainhand hit dodged");
-                    break;
-                case Hit_result::miss:
-                    simulator_cout("Mainhand hit missed");
-                    break;
-                case Hit_result::TBD:
-                    simulator_cout("BUUUUUUUUUUGGGGGGGGG");
-                    break;
-            }
-        }
-        else
-        {
-            switch (hit_outcome.hit_result)
-            {
-                case Hit_result::glancing:
-                    simulator_cout("BUG: Ability glanced for: ", hit_outcome.damage, " damage.");
-                    break;
-                case Hit_result::hit:
-                    simulator_cout("Ability hit for: ", hit_outcome.damage, " damage.");
-                    break;
-                case Hit_result::crit:
-                    simulator_cout("Ability crit for: ", hit_outcome.damage, " damage.");
-                    break;
-                case Hit_result::dodge:
-                    simulator_cout("Ability dodged");
-                    break;
-                case Hit_result::miss:
-                    simulator_cout("Ability missed");
-                    break;
-                case Hit_result::TBD:
-                    simulator_cout("BUUUUUUUUUUGGGGGGGGG");
-                    break;
-            }
-        }
+        cout_damage_parse(hit_type, weapon_hand, hit_outcome);
         return hit_outcome;
     }
     else
@@ -193,28 +226,7 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(double damage, Comb
         {
             hit_outcome.damage *= 1.2;
         }
-
-        switch (hit_outcome.hit_result)
-        {
-            case Hit_result::glancing:
-                simulator_cout("Offhand glancing hit for: ", hit_outcome.damage, " damage.");
-                break;
-            case Hit_result::hit:
-                simulator_cout("Offhand white hit for: ", hit_outcome.damage, " damage.");
-                break;
-            case Hit_result::crit:
-                simulator_cout("Offhand crit for: ", hit_outcome.damage, " damage.");
-                break;
-            case Hit_result::dodge:
-                simulator_cout("Offhand hit dodged");
-                break;
-            case Hit_result::miss:
-                simulator_cout("Offhand hit missed");
-                break;
-            case Hit_result::TBD:
-                simulator_cout("BUUUUUUUUUUGGGGGGGGG");
-                break;
-        }
+        cout_damage_parse(hit_type, weapon_hand, hit_outcome);
         return hit_outcome;
     }
 }
@@ -455,8 +467,7 @@ Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_weapon,
     }
 }
 
-std::vector<double> &
-Combat_simulator::simulate(const Character &character)
+std::vector<double> &Combat_simulator::simulate(const Character &character)
 {
     int n_damage_batches = config_.n_batches;
     if (config_.display_combat_debug)
@@ -469,14 +480,12 @@ Combat_simulator::simulate(const Character &character)
     damage_distribution_.reserve(n_damage_batches);
     const auto starting_special_stats = character.total_special_stats;
     std::vector<Weapon_sim> weapons;
-    Weapon_sim a{character.weapons[0].swing_speed,
-                 {character.weapons[0].min_damage, character.weapons[0].max_damage},
-                 Socket::main_hand, character.weapons[0].type, character.weapons[0].hit_effects};
-    Weapon_sim b{character.weapons[1].swing_speed,
-                 {character.weapons[1].min_damage, character.weapons[1].max_damage},
-                 Socket::off_hand, character.weapons[1].type, character.weapons[1].hit_effects};
-    weapons.emplace_back(a);
-    weapons.emplace_back(b);
+    weapons.push_back({character.weapons[0].swing_speed,
+                       {character.weapons[0].min_damage, character.weapons[0].max_damage},
+                       Socket::main_hand, character.weapons[0].type, character.weapons[0].hit_effects});
+    weapons.push_back({character.weapons[1].swing_speed,
+                       {character.weapons[1].min_damage, character.weapons[1].max_damage},
+                       Socket::off_hand, character.weapons[1].type, character.weapons[1].hit_effects});
 
     weapons[0].compute_weapon_damage(character.weapons[0].buff.bonus_damage);
     weapons[1].compute_weapon_damage(character.weapons[1].buff.bonus_damage);
@@ -502,8 +511,8 @@ Combat_simulator::simulate(const Character &character)
         // TODO better haste fix?
         special_stats.haste += 1;
         Damage_sources damage_sources{};
-        buff_manager_.set_target(special_stats);
         double rage = 0;
+        buff_manager_.set_target(special_stats);
         int flurry_charges = 0;
 
         bool heroic_strike_active = false;
@@ -910,4 +919,3 @@ void Combat_simulator::print_damage_distribution() const
 {
     print_damage_source_vector(damage_distribution_);
 }
-

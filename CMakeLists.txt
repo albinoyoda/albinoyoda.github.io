@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.15)
 project(wow_simulator)
 
 set(CMAKE_CXX_STANDARD 14)
-#set(CMAKE_CXX_FLAGS "-Werror -Wall -Wextra")
-set(CMAKE_CXX_FLAGS "-O2")
+set(CMAKE_CXX_FLAGS "-Werror -Wall -Wextra")
+#set(CMAKE_CXX_FLAGS "-O2")
 #set(CMAKE_CXX_FLAGS_DEBUG "-g")
 
 add_library(wow_lib SHARED
