@@ -4,7 +4,6 @@
 
 #include "wow_library/include/Combat_simulator.hpp"
 #include "wow_library/include/Character.hpp"
-#include "wow_library/include/Enchant.hpp"
 #include "wow_library/include/Item.hpp"
 #include "wow_library/include/Armory.hpp"
 
@@ -41,7 +40,7 @@ class Item_optimizer
 public:
     struct Sim_result_t
     {
-        Sim_result_t() : character{Character(Race::human)}
+        Sim_result_t() : character{Character(Race::human, 60)}
         {
             mean_dps = 0;
             sample_std_dps = 0;
@@ -81,16 +80,18 @@ std::vector<std::vector<Weapon>> Item_optimizer::get_weapon_combinations(const s
     std::vector<std::vector<Weapon>> weapon_combinations;
     for (const auto &wep : weapons)
     {
-        switch (wep.get_socket())
+        switch (wep.weapon_socket)
         {
-            case Weapon::Socket::main_hand:
+            case Weapon_socket::main_hand:
                 main_hands.emplace_back(wep);
                 break;
-            case Weapon::Socket::one_hand:
+            case Weapon_socket::one_hand:
                 one_hands.emplace_back(wep);
                 break;
-            case Weapon::Socket::off_hand:
+            case Weapon_socket::off_hand:
                 off_hands.emplace_back(wep);
+                break;
+            default:
                 break;
         }
     }
@@ -162,7 +163,8 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
 //            armory.shoulder.aq_chitinous_shoulderguards,
             armory.shoulder.spaulders_of_valor,
             armory.shoulder.truestrike_shoulders,
-//            armory.shoulder.black_dragonscale_shoulders
+            armory.shoulder.black_dragonscale_shoulders
+//            armory.shoulder.aq_conquerors_spaulders
     };
 
     std::vector<Armor> backs;
@@ -174,8 +176,8 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
     std::vector<Armor> chests;
     chests = {
             armory.chest.savage_gladiator_chain,
-//            armory.chest.breastplate_of_bloodthirts,
-//            armory.chest.black_dragonscale_chest,
+            armory.chest.cadaverous_armor,
+            armory.chest.black_dragonscale_chest,
 //            armory.chest.knight_captains_plate_hauberk,
 //            armory.chest.tombstone_breastplate
 //            armory.chest.aq_conquerors_breastplate,
@@ -184,24 +186,22 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
 
     std::vector<Armor> wrists;
     wrists = {
-//            armory.wrist.slashclaw_bracers,
-//            armory.wrist.battleborn_armbraces,
-//            armory.wrist.vambraces_of_the_sadist,
-            armory.wrist.wristguards_of_stability,
+            armory.wrist.vambraces_of_the_sadist,
             armory.wrist.battleborn_armbraces,
 //            armory.wrist.aq_quiraji_execution_bracers
     };
 
     std::vector<Armor> hands;
     hands = {
-            armory.hands.flameguard_gauntlets,
-//            armory.hands.devilsaur_gauntlets,
+//            armory.hands.flameguard_gauntlets,
+            armory.hands.devilsaur_gauntlets,
+            armory.hands.edgemasters_handguards,
     };
 
     std::vector<Armor> belts;
     belts = {
-            armory.belt.onslaught_girdle,
-//            armory.belt.mugglers_belt
+            armory.belt.omokks_girth,
+            armory.belt.mugglers_belt
     };
 
     std::vector<Armor> legs;
@@ -209,27 +209,27 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
 //            armory.legs.aq_conquerors_legguards,
             armory.legs.devilsaur_leggings,
             armory.legs.eldritch_legplates,
+            armory.legs.black_dragonscale_leggings,
 //            armory.legs.titanic_leggings
     };
 
     std::vector<Armor> boots;
     boots = {
-            armory.boots.chromatic_boots,
-//            armory.boots.bloodmail_boots,
-//            armory.boots.black_dragonscale_boots,
+            armory.boots.battlechasers,
+            armory.boots.bloodmail_boots,
+            armory.boots.black_dragonscale_boots,
+            armory.boots.windreaver_greaves
     };
 
     std::vector<Armor> ranged;
     ranged = {
-//            armory.ranged.riphook,
             armory.ranged.satyrs_bow,
-            armory.ranged.blastershot,
-//            armory.ranged.precisely_calibrated_boomstick
+            armory.ranged.precisely_calibrated_boomstick,
     };
 
     std::vector<Armor> rings;
     rings = {
-            armory.rings.don_julios_band,
+//            armory.rings.don_julios_band,
             armory.rings.magnis_will,
             armory.rings.blackstone_ring,
             armory.rings.tarnished_elven
@@ -237,18 +237,23 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
 
     std::vector<Armor> trinkets;
     trinkets = {
-            armory.trinket.diamond_flask,
-            armory.trinket.hand_of_justice,
+//            armory.trinket.diamond_flask,
 //            armory.trinket.drake_fang_talisman,
             armory.trinket.blackhands_breadth,
+            armory.trinket.hand_of_justice,
     };
 
     std::vector<Weapon> weapons;
     weapons = {
-            armory.swords.maladath,
-//            armory.daggers.core_hound_tooth,
-//            armory.maces.stormstike_hammer,
-            armory.swords.brutality_blade,
+            armory.swords.dal_rends_sacred_charge,
+            armory.swords.dal_rends_tribal_guardian,
+            armory.swords.quel_serrar,
+            armory.swords.thrash_blade,
+            armory.swords.mirahs_song,
+            armory.swords.assassination_blade,
+            armory.maces.ebon_hand,
+//            armory.maces.ebon_hand,
+//            armory.swords.mirahs_song,
     };
 
     size_t n_helmet = helmets.size();
@@ -302,33 +307,31 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
                                                     {
                                                         for (size_t i_wep = 0; i_wep < n_weapons; ++i_wep)
                                                         {
-                                                            Character character{Race::human};
+                                                            Character character{Race::gnome, 60};
 
-                                                            character.equip_armor(
-                                                                    helmets[i_helm],
-                                                                    necks[i_neck],
-                                                                    shoulders[i_shoulder],
-                                                                    backs[i_back],
-                                                                    chests[i_chest],
-                                                                    wrists[i_wrist],
-                                                                    hands[i_hands],
-                                                                    belts[i_belt],
-                                                                    legs[i_legs],
-                                                                    boots[i_boots],
-                                                                    ranged[i_ranged],
-                                                                    ring_combinations[i_ring][0],
-                                                                    ring_combinations[i_ring][1],
-                                                                    trinket_combinations[i_trink][0],
-                                                                    trinket_combinations[i_trink][1]
-                                                                                 );
+                                                            character.equip_armor(helmets[i_helm]);
+                                                            character.equip_armor(necks[i_neck]);
+                                                            character.equip_armor(shoulders[i_shoulder]);
+                                                            character.equip_armor(backs[i_back]);
+                                                            character.equip_armor(chests[i_chest]);
+                                                            character.equip_armor(wrists[i_wrist]);
+                                                            character.equip_armor(hands[i_hands]);
+                                                            character.equip_armor(belts[i_belt]);
+                                                            character.equip_armor(legs[i_legs]);
+                                                            character.equip_armor(boots[i_boots]);
+                                                            character.equip_armor(ranged[i_ranged]);
+                                                            character.equip_armor(ring_combinations[i_ring][0]);
+                                                            character.equip_armor(ring_combinations[i_ring][1]);
+                                                            character.equip_armor(trinket_combinations[i_trink][0]);
+                                                            character.equip_armor(trinket_combinations[i_trink][1]);
 
-                                                            character.equip_weapon(
-                                                                    weapon_combinations[i_wep][0],
-                                                                    weapon_combinations[i_wep][1]
+
+                                                            character.equip_weapon(weapon_combinations[i_wep][0],
+                                                                                   weapon_combinations[i_wep][1]
                                                                                   );
 
-                                                            character.check_if_armor_valid();
-                                                            character.check_if_weapons_valid();
+                                                            armory.check_if_armor_valid(character.armor);
+                                                            armory.check_if_weapons_valid(character.weapons);
 
                                                             characters.emplace_back(character, 0, 0);
                                                         }
@@ -351,74 +354,78 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
 
 void Item_optimizer::add_enchants(Character &character)
 {
-    character.add_enchants(Enchant{Enchant::Socket::head, Enchant::Type::haste},
-                           Enchant{Enchant::Socket::back, Enchant::Type::agility},
-                           Enchant{Enchant::Socket::chest, Enchant::Type::major_stats},
-                           Enchant{Enchant::Socket::wrists, Enchant::Type::strength9},
-                           Enchant{Enchant::Socket::hands, Enchant::Type::haste},
-                           Enchant{Enchant::Socket::legs, Enchant::Type::haste},
-                           Enchant{Enchant::Socket::weapon_mh, Enchant::Type::crusader},
-                           Enchant{Enchant::Socket::weapon_oh, Enchant::Type::crusader}
-                          );
+    // Enchants
+    character.add_enchant(Socket::head, Enchant::Type::haste);
+    character.add_enchant(Socket::back, Enchant::Type::agility);
+    character.add_enchant(Socket::chest, Enchant::Type::major_stats);
+    character.add_enchant(Socket::wrists, Enchant::Type::strength9);
+    character.add_enchant(Socket::hands, Enchant::Type::haste);
+    character.add_enchant(Socket::legs, Enchant::Type::haste);
+    character.add_enchant(Socket::boots, Enchant::Type::agility);
+    character.add_enchant(Socket::main_hand, Enchant::Type::crusader);
+    character.add_enchant(Socket::off_hand, Enchant::Type::crusader);
 }
 
 void Item_optimizer::add_buffs(Character &character, const Buffs &buffs)
 {
-    character.add_buffs(
-            buffs.rallying_cry,
-            buffs.dire_maul,
-//            buffs.songflower,
-            buffs.blessing_of_kings,
-            buffs.blessing_of_might,
-            buffs.gift_of_the_wild,
-            buffs.trueshot_aura,
-            buffs.elixir_mongoose,
-            buffs.dense_stone_mh,
-            buffs.dense_stone_oh,
-//            buffs.elemental_stone_mh,
-//            buffs.elemental_stone_oh,
-            buffs.blessed_sunfruit,
-            buffs.juju_power,
-            buffs.juju_might,
-            buffs.roids
-                       );
+    character.add_buff(buffs.rallying_cry);
+    character.add_buff(buffs.dire_maul);
+//    character.add_buff(buffs.songflower);
+    character.add_buff(buffs.blessing_of_kings);
+    character.add_buff(buffs.blessing_of_might);
+    character.add_buff(buffs.gift_of_the_wild);
+    character.add_buff(buffs.trueshot_aura);
+//    character.add_buff(buffs.elixir_mongoose);
+    character.add_buff(buffs.blessed_sunfruit);
+    character.add_buff(buffs.juju_power);
+//    character.add_buff(buffs.juju_might);
+//    character.add_buff(buffs.roids);
+
+    character.add_weapon_buff(Socket::main_hand, buffs.dense_stone);
+    character.add_weapon_buff(Socket::off_hand, buffs.dense_stone);
 }
 
 int main()
 {
-    Buffs buffs;
-    Armory armory;
+    Buffs buffs{};
+    Armory armory{};
     Item_optimizer item_optimizer;
 
     auto characters = item_optimizer.item_setup();
 
     // Combat settings
     std::vector<int> batches_per_iteration = {20, 100, 1000, 10000};
-    double sim_time = 60;
-    int opponent_level = 63;
 
-    Combat_simulator simulator = Combat_simulator();
+    // Simulator & Combat settings
+    Combat_simulator_config config{};
+    config.n_batches = 100000;
+    config.sim_time = 60;
+    config.opponent_level = 63;
+    config.enable_rng_melee = false;
+    config.enable_spell_rotation = true;
+    config.use_heroic_spamm = false;
+    config.use_mighty_rage_potion = true;
+    config.enable_anger_management = true;
+    config.enable_bloodrage = true;
+    config.enable_talents = true;
+    config.enable_item_chance_on_hit_effects = true;
+    config.enable_crusader = true;
+    config.enable_death_wish = true;
+    config.enable_recklessness = false;
+    config.display_combat_debug = false;
+    config.use_seed = true;
+    config.seed = 110000;
+    config.fuel_extra_rage = false;
+    config.extra_rage_interval = 3;
+    config.extra_rage_damage_amount = 150;
 
-    simulator.use_fast_but_sloppy_rng(); // Use before set seed!
-//    simulator.set_seed(100); // Use for predictable random numbers
-//    simulator.enable_rng_melee(); // Uses random swing damage instead of average
-    simulator.enable_spell_rotation();
-//    simulator.use_heroic_spamm();
-    simulator.use_mighty_rage_potion();
-    simulator.enable_anger_management();
-    simulator.enable_bloodrage();
-//    simulator.fuel_extra_rage(2.0, 500);
-    simulator.enable_talents();
-    simulator.enable_item_chance_on_hit_effects();
-    simulator.enable_crusader();
-    simulator.enable_death_wish();
-//    simulator.enable_recklessness();
-//    simulator.display_combat_debug();
+    Combat_simulator simulator(config);
+
     for (auto &sim_character : characters)
     {
         item_optimizer.add_enchants(sim_character.character);
         item_optimizer.add_buffs(sim_character.character, buffs);
-        sim_character.character.compute_all_stats(Character::Talent::fury, armory.get_set_bonuses());
+        armory.compute_total_stats(sim_character.character);
     }
 
     size_t n = characters.size();
@@ -438,11 +445,10 @@ int main()
         size_t iter = 0;
         for (auto &idx : keepers)
         {
-            auto dps_vector = simulator
-                    .simulate(characters[idx].character, sim_time, opponent_level, batches_per_iteration[i]);
-            characters[idx].mean_dps = Combat_simulator::average(dps_vector);
-            auto std_dps = Combat_simulator::standard_deviation(dps_vector, characters[idx].mean_dps);
-            characters[idx].sample_std_dps = Combat_simulator::sample_deviation(std_dps, batches_per_iteration[i]);
+            auto dps_vector = simulator.simulate(characters[idx].character, batches_per_iteration[i]);
+            characters[idx].mean_dps = Statistics::average(dps_vector);
+            auto std_dps = Statistics::standard_deviation(dps_vector, characters[idx].mean_dps);
+            characters[idx].sample_std_dps = Statistics::sample_deviation(std_dps, batches_per_iteration[i]);
             if (characters[idx].mean_dps > best_dps)
             {
                 best_dps = characters[idx].mean_dps;
@@ -464,7 +470,7 @@ int main()
                 {
                     double time_spent = double(clock() - startTime) / (double) CLOCKS_PER_SEC;
                     double n_samples = keepers.size() / double(iter);
-                    std::cout << "Batch done in: " << time_spent * n_samples << " seconds.";
+                    std::cout << "Batch done in: " << time_spent * n_samples << " seconds.\n";
                 }
             }
         }

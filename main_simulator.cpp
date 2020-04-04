@@ -1,10 +1,7 @@
 #include <iostream>
 #include <ctime>
 
-//#include "wow_library/include/Stats.hpp"
 #include "wow_library/include/Combat_simulator.hpp"
-#include "wow_library/include/Character.hpp"
-#include "wow_library/include/Enchant.hpp"
 #include "wow_library/include/Armory.hpp"
 
 // TODO move weapon mechanics to the simulator instead of weapon class
@@ -31,225 +28,218 @@
 void print_stat(const std::string &stat_name, double amount_1, double amount_2)
 {
     std::cout << stat_name << std::setw(6) << std::left << std::setprecision(6)
-              << amount_1 << ", " << std::setw(5) << amount_2 << "\n";
+              << amount_1 << " --> " << std::setw(6) << amount_2 << "\n";
 }
 
-Character create_character()
+void print_character_stat(const Character &char1, const Character &char2)
 {
-    Armory armory;
-    Buffs buffs;
+    std::cout << "Character1        -->" << " Character2" << "\n";
+    print_stat("Strength : ", char1.total_attributes.strength, char2.total_attributes.strength);
+    print_stat("Agility  : ", char1.total_attributes.agility, char2.total_attributes.agility);
+    print_stat("Hit:     : ", char1.total_special_stats.hit, char2.total_special_stats.hit);
+    print_stat("Crit:    : ", char1.total_special_stats.critical_strike, char2.total_special_stats.critical_strike);
+    print_stat("Htk Pwr  : ", char1.total_special_stats.attack_power, char2.total_special_stats.attack_power);
+    print_stat("Haste    : ", char1.total_special_stats.haste, char2.total_special_stats.haste);
+    std::cout << "\n";
 
-    Character character{Race::human};
+    std::cout << "Armor:" << "\n";
+    for (size_t i = 0; i < char1.armor.size(); i++)
+    {
+        if (char1.armor[i].name != char2.armor[i].name)
+        {
+            std::cout << char1.armor[i].name << " --> " << char2.armor[i].name << "\n";
+        }
+    }
 
-    character.equip_armor(
-            //Helmet
-            armory.helmet.lionheart_helm,
+    std::cout << "\n" << "Weapons:" << "\n";
+    for (size_t i = 0; i < char1.weapons.size(); i++)
+    {
+        if (char1.weapons[i].name != char2.weapons[i].name)
+        {
+            if (i == 0)
+            {
+                std::cout << "Mainhand: ";
+            }
+            else
+            {
+                std::cout << "Offhand: ";
+            }
+            std::cout << char1.weapons[i].name << " --> " << char2.weapons[i].name << "\n";
+        }
+    }
 
-            // Neck
-            armory.neck.onyxia_tooth_pendant,
+    std::cout << "\n";
+}
 
-            // Shoulders
-            armory.shoulder.truestrike_shoulders,
+Character character_setup(const Armory &armory, const Buffs &buffs)
+{
+//    Character character{Race::human, 60};
+//
+//    // Armor
+//    character.equip_armor(armory.helmet.lionheart_helm);
+//    character.equip_armor(armory.neck.onyxia_tooth_pendant);
+//    character.equip_armor(armory.shoulder.truestrike_shoulders);
+//    character.equip_armor(armory.back.cape_of_the_black_baron);
+//    character.equip_armor(armory.chest.savage_gladiator_chain);
+//    character.equip_armor(armory.wrist.wristguards_of_stability);
+//    character.equip_armor(armory.hands.flameguard_gauntlets);
+//    character.equip_armor(armory.belt.onslaught_girdle);
+//    character.equip_armor(armory.legs.eldritch_legplates);
+//    character.equip_armor(armory.boots.chromatic_boots);
+//    character.equip_armor(armory.rings.don_julios_band);
+//    character.equip_armor(armory.rings.magnis_will);
+//    character.equip_armor(armory.trinket.hand_of_justice);
+//    character.equip_armor(armory.trinket.blackhands_breadth);
+//    character.equip_armor(armory.ranged.blastershot);
+//
+//    // Weapons
+//    character.equip_weapon(armory.swords.maladath, armory.swords.brutality_blade);
+    // test set, 1080 DPS before refactor
 
-            // Back
-            armory.back.cape_of_the_black_baron,
+    Character character{Race::gnome, 60};
 
-            // Chest
-            armory.chest.savage_gladiator_chain,
+    // Armor
+    character.equip_armor(armory.helmet.crown_of_destruction);
+    character.equip_armor(armory.neck.onyxia_tooth_pendant);
+    character.equip_armor(armory.shoulder.leutenant_shoulders);
+    character.equip_armor(armory.back.cape_of_the_black_baron);
+    character.equip_armor(armory.chest.cadaverous_armor);
+    character.equip_armor(armory.wrist.vambraces_of_the_sadist);
+    character.equip_armor(armory.hands.edgemasters_handguards);
+    character.equip_armor(armory.belt.omokks_girth);
+    character.equip_armor(armory.legs.knight_captain_plate_leggings);
+    character.equip_armor(armory.boots.battlechasers);
+    character.equip_armor(armory.rings.don_julios_band);
+    character.equip_armor(armory.rings.magnis_will);
+    character.equip_armor(armory.trinket.hand_of_justice);
+    character.equip_armor(armory.trinket.diamond_flask);
+    character.equip_armor(armory.ranged.satyrs_bow);
 
-            // Wrists
-            armory.wrist.wristguards_of_stability,
+    // Weapons
+    character.equip_weapon(armory.swords.thrash_blade, armory.maces.ebon_hand);
 
-            // Hands
-            armory.hands.flameguard_gauntlets,
+    // Enchants
+    character.add_enchant(Socket::head, Enchant::Type::haste);
+    character.add_enchant(Socket::back, Enchant::Type::agility);
+    character.add_enchant(Socket::chest, Enchant::Type::major_stats);
+    character.add_enchant(Socket::wrists, Enchant::Type::strength9);
+    character.add_enchant(Socket::hands, Enchant::Type::haste);
+    character.add_enchant(Socket::legs, Enchant::Type::haste);
+    character.add_enchant(Socket::boots, Enchant::Type::agility);
+    character.add_enchant(Socket::main_hand, Enchant::Type::crusader);
+    character.add_enchant(Socket::off_hand, Enchant::Type::crusader);
 
-            // Belt
-            armory.belt.onslaught_girdle,
+    character.add_buff(buffs.rallying_cry);
+    character.add_buff(buffs.dire_maul);
+    character.add_buff(buffs.songflower);
+    character.add_buff(buffs.blessing_of_kings);
+    character.add_buff(buffs.blessing_of_might);
+    character.add_buff(buffs.gift_of_the_wild);
+    character.add_buff(buffs.trueshot_aura);
+    character.add_buff(buffs.elixir_mongoose);
+    character.add_buff(buffs.blessed_sunfruit);
+    character.add_buff(buffs.juju_power);
+    character.add_buff(buffs.juju_might);
+    character.add_buff(buffs.roids);
 
-            // Legs
-            armory.legs.eldritch_legplates,
+    character.add_weapon_buff(Socket::main_hand, buffs.dense_stone);
+    character.add_weapon_buff(Socket::off_hand, buffs.dense_stone);
 
-            // boots
-            armory.boots.chromatic_boots,
+    armory.compute_total_stats(character);
 
-            // Rings
-            armory.rings.magnis_will,
-            armory.rings.don_julios_band,
-
-            // Trinket
-            armory.trinket.blackhands_breadth,
-            armory.trinket.hand_of_justice,
-
-            // Bow
-            armory.ranged.blastershot
-                         );
-
-    character.equip_weapon(armory.swords.maladath,
-                           armory.swords.brutality_blade);
-
-    character.add_enchants(
-            Enchant{Enchant::Socket::head, Enchant::Type::haste},
-            Enchant{Enchant::Socket::back, Enchant::Type::agility},
-            Enchant{Enchant::Socket::chest, Enchant::Type::major_stats},
-            Enchant{Enchant::Socket::wrists, Enchant::Type::strength9},
-            Enchant{Enchant::Socket::hands, Enchant::Type::haste},
-            Enchant{Enchant::Socket::legs, Enchant::Type::haste},
-            Enchant{Enchant::Socket::weapon_mh, Enchant::Type::crusader},
-            Enchant{Enchant::Socket::weapon_oh, Enchant::Type::crusader}
-                          );
-
-    character.add_buffs(
-            buffs.rallying_cry,
-            buffs.dire_maul,
-            buffs.songflower,
-            buffs.blessing_of_kings,
-            buffs.blessing_of_might,
-            buffs.gift_of_the_wild,
-            buffs.trueshot_aura,
-            buffs.elixir_mongoose,
-            buffs.dense_stone_mh,
-            buffs.dense_stone_oh,
-//            buffs.elemental_stone_mh,
-//            buffs.elemental_stone_oh,
-            buffs.blessed_sunfruit,
-            buffs.juju_power,
-            buffs.juju_might,
-            buffs.roids
-                       );
-
-    character.compute_all_stats(Character::Talent::fury, armory.get_set_bonuses());
     return character;
 }
 
-Character delta_gear(const Character &character)
+Character delta_gear(const Character &character, const Armory &armory, const Buffs &)
 {
-    Armory armory;
-    Buffs buffs;
-
     Character delta_character = character;
 
-//    delta_character.change_weapon(armory.axes.crul_shorukh_edge_of_chaos, Hand::main_hand);
-//    delta_character.change_weapon(armory.axes.deathbringer, Hand::off_hand);
+    armory.change_weapon(delta_character.weapons, armory.axes.crul_shorukh_edge_of_chaos, Socket::main_hand);
 
-//    delta_character.change_armor(armory.chest.knight_captains_plate_hauberk);
-//    delta_character.change_armor(armory.legs.knight_captain_plate_leggings);
-//    delta_character.change_armor(armory.trinket.hand_of_justice, true);
-//    delta_character.change_armor(armory.chest.tombstone_breastplate);
-//    delta_character.change_armor(armory.trinket.drake_fang_talisman, false);
+//    armory.change_armor(delta_character.armor, armory.chest.knight_captains_plate_hauberk);
 
-    delta_character.compute_all_stats(Character::Talent::fury, armory.get_set_bonuses());
+    armory.compute_total_stats(delta_character);
+
     return delta_character;
 }
 
 int main()
 {
     clock_t startTime = clock();
-    std::vector<Character> characters;
-    Armory armory;
+    Armory armory{};
+    Buffs buffs{};
 
-    characters.emplace_back(create_character());
-    characters.emplace_back(delta_gear(characters[0]));
+    Character character1 = character_setup(armory, buffs);
+    Character character2 = delta_gear(character1, armory, buffs);
 
-    // Combat settings
-    int n_batches = 100000;
-    double sim_time = 60;
-    int opponent_level = 63;
+    print_character_stat(character1, character2);
 
-    std::vector<Combat_simulator> simulators;
-    simulators.emplace_back(Combat_simulator());
-    simulators.emplace_back(Combat_simulator());
+    // Simulator & Combat settings
+    Combat_simulator_config config{};
+    config.n_batches = 100000;
+    config.sim_time = 60;
+    config.opponent_level = 63;
+    config.enable_rng_melee = false;
+    config.enable_spell_rotation = true;
+    config.use_heroic_spamm = false;
+    config.use_mighty_rage_potion = true;
+    config.enable_anger_management = true;
+    config.enable_bloodrage = true;
+    config.enable_talents = true;
+    config.enable_item_chance_on_hit_effects = true;
+    config.enable_crusader = true;
+    config.enable_death_wish = true;
+    config.enable_recklessness = false;
+    config.display_combat_debug = false;
+    config.use_seed = true;
+    config.seed = 110000;
+    config.fuel_extra_rage = false;
+    config.extra_rage_interval = 3;
+    config.extra_rage_damage_amount = 150;
 
-//    simulators[0].use_fast_but_sloppy_rng(); // Use before set seed!
-//    simulators[0].set_seed(10000); // Use for predictable random numbers
-//    simulators[0].enable_rng_melee(); // Uses random swing damage instead of average
-    simulators[0].enable_spell_rotation();
-//    simulators[0].use_heroic_spamm();
-    simulators[0].use_mighty_rage_potion();
-    simulators[0].enable_anger_management();
-    simulators[0].enable_bloodrage();
-//    simulators[0].fuel_extra_rage(3.0, 150);
-    simulators[0].enable_talents();
-    simulators[0].enable_item_chance_on_hit_effects();
-    simulators[0].enable_crusader();
-    simulators[0].enable_death_wish();
-//    simulators[0].enable_recklessness();
-//    simulators[0].display_combat_debug();
+    Combat_simulator simulator(config);
 
-//    simulators[1].use_fast_but_sloppy_rng(); // Use before set seed!
-//    simulators[1].set_seed(100); // Use for predictable random numbers
-//    simulators[1].enable_rng_melee(); // Uses random swing damage instead of average
-    simulators[1].enable_spell_rotation();
-//    simulators[1].use_heroic_spamm();
-    simulators[1].use_mighty_rage_potion();
-    simulators[1].enable_anger_management();
-    simulators[1].enable_bloodrage();
-//    simulators[1].fuel_extra_rage(3.0, 150);
-    simulators[1].enable_talents();
-    simulators[1].enable_item_chance_on_hit_effects();
-    simulators[1].enable_crusader();
-    simulators[1].enable_death_wish();
-//    simulators[1].enable_recklessness();
-//    simulators[1].display_combat_debug();
+    std::vector<double> dps_snapshots1 = simulator.simulate(character1);
+    double mean_dps1 = Statistics::average(dps_snapshots1);
+    double std_dps1 = Statistics::standard_deviation(dps_snapshots1, mean_dps1);
+    double sample_std_dps1 = Statistics::sample_deviation(std_dps1, config.n_batches);
 
-    for (size_t i = 0; i < characters.size(); ++i)
-    {
-        if (!characters[i].check_if_armor_valid())
-        {
-            std::cout << "Char " << i + 1 << " has incorrect armor setup!\n";
-            return -1;
-        }
-        if (!characters[i].check_if_weapons_valid())
-        {
-            std::cout << "Char " << i + 1 << " has incorrect weapon setup!\n";
-            return -1;
-        }
-    }
-    print_stat("Strength: ", characters[0].get_stats().strength, characters[1].get_stats().strength);
-    print_stat("Agility : ", characters[0].get_stats().agility, characters[1].get_stats().agility);
-    print_stat("Hit:    : ", characters[0].get_total_special_stats().hit, characters[1].get_total_special_stats().hit);
-    print_stat("Crit    : ", characters[0].get_total_special_stats().critical_strike,
-               characters[1].get_total_special_stats().critical_strike);
-    print_stat("Atk Pwr : ", characters[0].get_total_special_stats().attack_power,
-               characters[1].get_total_special_stats().attack_power);
-    print_stat("Haste   : ", characters[0].get_haste(), characters[1].get_haste());
-    print_stat("Extr Hit: ", characters[0].get_chance_for_extra_hit(), characters[1].get_chance_for_extra_hit());
-    std::cout << "\n";
+    std::cout << std::setprecision(5);
+    std::cout << "Simulation results: \n";
+    std::cout << mean_dps1 << " +- " << 1.96 * sample_std_dps1 << " (95% confidence interval)\n";
+    std::cout << "DPS standard deviation in simulations: " << std_dps1 << "\n";
+    std::cout << "Crit % left to crit cap: " << 100 - simulator.get_hit_probabilities_white_mh().back()
+              << ". (Negative number means capped)\n\n";
+    simulator.print_damage_distribution();
 
-    std::vector<std::vector<double>> dps_snapshots;
-    std::vector<double> mean_dps;
-    std::vector<double> std_dps;
-    std::vector<double> sample_std_dps;
-    for (size_t i = 0; i < characters.size(); ++i)
-    {
-        dps_snapshots.emplace_back(simulators[i].simulate(characters[i], sim_time, opponent_level, n_batches));
-        mean_dps.emplace_back(Combat_simulator::average(dps_snapshots[i]));
-        std_dps.emplace_back(Combat_simulator::standard_deviation(dps_snapshots[i], mean_dps[i]));
-        sample_std_dps.emplace_back(Combat_simulator::sample_deviation(std_dps[i], n_batches));
-        std::cout << std::setprecision(5);
-        std::cout << "DPS from simulation: \n" << mean_dps[i] << " +- " << 1.96 * sample_std_dps[i]
-                  << " (95% confidence interval)\n";
-        std::cout << "DPS standard deviation in simulations: " << std_dps[i] << "\n";
-        std::cout << "Crit % left to crit cap: " << 100 - simulators[i].get_hit_probabilities_white_mh().back()
-                  << ". (Negative number means capped)\n\n";
-        simulators[i].print_damage_distribution();
+    std::vector<double> dps_snapshots2 = simulator.simulate(character2);
+    double mean_dps2 = Statistics::average(dps_snapshots2);
+    double std_dps2 = Statistics::standard_deviation(dps_snapshots2, mean_dps2);
+    double sample_std_dps2 = Statistics::sample_deviation(std_dps2, config.n_batches);
 
-    }
+    std::cout << std::setprecision(5);
+    std::cout << "Simulation results: \n";
+    std::cout << mean_dps2 << " +- " << 1.96 * sample_std_dps2 << " (95% confidence interval)\n";
+    std::cout << "DPS standard deviation in simulations: " << std_dps2 << "\n";
+    std::cout << "Crit % left to crit cap: " << 100 - simulator.get_hit_probabilities_white_mh().back()
+              << ". (Negative number means capped)\n\n";
+    simulator.print_damage_distribution();
 
     std::cout << "Simulations executed in: " << double(clock() - startTime) / (double) CLOCKS_PER_SEC << " seconds."
               << std::endl;
 
-    for (size_t i = 0; i < characters.size(); ++i)
-    {
-        auto stat_weight_vector = simulators[i]
-                .compute_stat_weights(characters[i], armory, sim_time, opponent_level, n_batches, mean_dps[i],
-                                      sample_std_dps[i]);
-        std::cout << "Stat weights: \n";
-        for (const auto &stat_weight : stat_weight_vector)
-        {
-            std::cout << stat_weight;
-        }
-        std::cout << "\n";
-    }
+//    for (size_t i = 0; i < characters.size(); ++i)
+//    {
+//        auto stat_weight_vector = simulators[i]
+//                .compute_stat_weights(characters[i], armory, sim_time, opponent_level, n_batches, mean_dps[i],
+//                                      sample_std_dps[i]);
+//        std::cout << "Stat weights: \n";
+//        for (const auto &stat_weight : stat_weight_vector)
+//        {
+//            std::cout << stat_weight;
+//        }
+//        std::cout << "\n";
+//    }
 
     std::cout << "Code executed in: " << double(clock() - startTime) / (double) CLOCKS_PER_SEC << " seconds."
               << std::endl;

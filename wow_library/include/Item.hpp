@@ -2,341 +2,210 @@
 #define WOW_SIMULATOR_ITEM_HPP
 
 #include <utility>
+#include <cassert>
 
-#include "Stats.hpp"
+#include "Attributes.hpp"
 
-enum class Hand
+enum class Socket
 {
+    none,
+    head,
+    neck,
+    shoulder,
+    back,
+    chest,
+    wrists,
+    hands,
+    belt,
+    legs,
+    boots,
+    ring,
+    trinket,
     main_hand,
-    off_hand
+    off_hand,
+    ranged,
 };
 
-enum class Skill_type
+enum class Weapon_socket
+{
+    main_hand,
+    one_hand,
+    off_hand,
+    two_hand
+};
+
+enum class Weapon_type
 {
     sword,
     axe,
-    mace,
     dagger,
-    all,
-    none
+    mace,
+    unarmed
 };
 
-struct Extra_skill
+enum class Consumable_socket
 {
-    Extra_skill(Skill_type type, int amount) : type(type), amount(amount) {}
+    agility,
+    strength,
 
-    Skill_type type;
-    int amount;
 };
 
-class Item
-{
-public:
-    Item() = delete;
-
-    Item(std::string name, Stats stats, Special_stats special_stats);
-
-    const Stats &get_stats() const;
-
-    const Special_stats &get_special_stats() const;
-
-    void set_chance_for_extra_hit(int chance_for_extra_hit_input);
-
-    double get_chance_for_extra_hit() const;
-
-    const Extra_skill &get_bonus_skill() const;
-
-    void set_bonus_skill(Extra_skill bonus_skill);
-
-    const std::string &get_name() const;
-
-private:
-    std::string name_;
-    Stats stats_;
-    Special_stats special_stats_;
-    double chance_for_extra_hit;
-    Extra_skill bonus_skill_;
-};
-
-class Weapon : public Item
-{
-public:
-    enum class Socket
-    {
-        main_hand,
-        one_hand,
-        off_hand,
-    };
-
-    Weapon(std::string name, double swing_speed, std::pair<double, double> damage_interval, Stats stats,
-           Special_stats special_stats,
-           Socket socket, Skill_type skill_type);
-
-    double step(double time, double attack_power, bool is_random);
-
-    constexpr double swing(double attack_power)
-    {
-        return average_damage_ + attack_power * swing_speed_ / 14;
-    }
-
-    double random_swing(double attack_power)
-    {
-        double damage = damage_interval_.first + (damage_interval_.second - damage_interval_
-                .first) * static_cast<double>(rand()) / RAND_MAX
-                        + attack_power * swing_speed_ / 14;
-        return damage;
-    }
-
-    double random_normalized_swing(double attack_power)
-    {
-        return damage_interval_.first + (damage_interval_.second - damage_interval_
-                .first) * static_cast<double>(rand()) / RAND_MAX
-               + attack_power * normalized_swing_speed_ / 14;
-    }
-
-    constexpr double normalized_swing(double attack_power)
-    {
-        // TODO random damage?
-        return average_damage_ + attack_power * normalized_swing_speed_ / 14;
-    }
-
-    void reset_timer();
-
-    constexpr void compute_weapon_damage(double bonus_damage)
-    {
-        damage_interval_.first += bonus_damage;
-        damage_interval_.second += bonus_damage;
-        average_damage_ = (damage_interval_.second + damage_interval_.first) / 2;
-    }
-
-    constexpr double get_average_damage()
-    {
-        return average_damage_;
-    }
-
-    constexpr double get_swing_speed()
-    {
-        return swing_speed_;
-    }
-
-    constexpr double get_internal_swing_timer()
-    {
-        return internal_swing_timer_;
-    }
-
-    Socket get_socket() const;
-
-    void set_weapon_type(Skill_type weapon_type);
-
-    Skill_type get_weapon_type() const;
-
-    constexpr Hand get_hand() const
-    {
-        return hand_;
-    }
-
-    void set_hand(Hand hand);
-
-    void set_internal_swing_timer(double internal_swing_timer);
-
-private:
-    double swing_speed_;
-    double normalized_swing_speed_;
-    double internal_swing_timer_;
-    std::pair<double, double> damage_interval_;
-    double average_damage_;
-    Socket socket_;
-    Skill_type weapon_type_;
-    Hand hand_;
-};
-
-enum class Set_name
+enum class Set
 {
     none,
     devilsaur,
     black_dragonscale,
     rare_pvp_set,
+    dal_rends,
 };
 
-int rank(Set_name value);
-
-bool operator<(Set_name left, Set_name right);
-
-class Armor : public Item
+class Hit_effect
 {
 public:
-    enum class Socket
+    enum class Type
     {
-        head,
-        neck,
-        shoulder,
-        back,
-        chest,
-        wrists,
-        hands,
-        belt,
-        legs,
-        boots,
-        ring,
-        trinket,
-        ranged
+        none,
+        extra_hit,
+        stat_boost,
+        damage_physical,
+        damage_magic
     };
 
-    Armor() = delete;
+    Hit_effect() = default;
 
-    Armor(std::string name, Stats stats, Special_stats special_stats, Socket socket,
-          Set_name set_name = Set_name::none);
+    Hit_effect(std::string name, Type type, Attributes attribute_boost, Special_stats special_stats_boost,
+               double damage, double duration, double probability) :
+            name(std::move(name)),
+            type(type),
+            attribute_boost(attribute_boost),
+            special_stats_boost(special_stats_boost),
+            damage(damage),
+            duration(duration),
+            probability(probability) {};
 
-    Socket get_socket() const;
+    inline Special_stats get_special_stat_equivalent() const
+    {
+        Attributes attributes = attribute_boost;
+        attributes *= 1.1;
+        return attributes.convert_to_special_stats() + special_stats_boost;
+    }
 
-    Set_name get_set() const { return set_; }
-
-private:
-    Socket socket_;
-    Set_name set_;
+    std::string name;
+    Type type;
+    Attributes attribute_boost;
+    Special_stats special_stats_boost;
+    double damage;
+    double duration;
+    double probability;
 };
 
-std::ostream &operator<<(std::ostream &os, const Armor& armor);
-
-class Set_bonus : public Item
+struct Enchant
 {
-public:
-    Set_bonus() = delete;
-
-    Set_bonus(std::string name, Stats stats, Special_stats special_stats, size_t pieces, Set_name set_name) : Item(name,
-                                                                                                                   stats,
-                                                                                                                   special_stats),
-            pieces_(pieces)
+    enum class Type
     {
-        set_name_ = set_name;
+        none,
+        strength,
+        strength7,
+        strength9,
+        agility,
+        haste,
+        crusader,
+        minor_stats,
+        major_stats
     };
 
-    Set_name get_set_name()
-    {
-        return set_name_;
-    }
+    Enchant() = default;
 
-    size_t get_pieces()
-    {
-        return pieces_;
-    }
+    explicit Enchant(Type type) : type(type) {};
 
-private:
-    Set_name set_name_;
-    size_t pieces_;
+    Type type{};
+    Attributes attributes{};
+    Special_stats special_stats{};
 };
 
-std::ostream &operator<<(std::ostream &os, Armor::Socket const &socket);
-
-class Buff : public Item
+struct Set_bonus
 {
-public:
-    Buff() = delete;
+    Set_bonus(Attributes attributes, Special_stats special_stats, int pieces, Set set) :
+            attributes(attributes), special_stats(special_stats), pieces(pieces), set(set) {};
 
-    Buff(std::string name, Stats stats, Special_stats special_stats) : Item(name, stats, special_stats),
-            stat_multiplier_{1.0},
-            oh_bonus_damage_{0.0},
-            mh_bonus_damage_{0.0} {};
-
-    void set_stat_multiplier(double stat_multiplier)
-    {
-        stat_multiplier_ = stat_multiplier;
-    }
-
-    void set_oh_bonus_damage(double oh_bonus_damage)
-    {
-        oh_bonus_damage_ = oh_bonus_damage;
-    }
-
-    void set_mh_bonus_damage(double mh_bonus_damage)
-    {
-        mh_bonus_damage_ = mh_bonus_damage;
-    }
-
-    double get_stat_multiplier() const
-    {
-        return stat_multiplier_;
-    }
-
-    double get_oh_bonus_damage() const
-    {
-        return oh_bonus_damage_;
-    }
-
-    double get_mh_bonus_damage() const
-    {
-        return mh_bonus_damage_;
-    }
-
-private:
-    double stat_multiplier_;
-    double oh_bonus_damage_;
-    double mh_bonus_damage_;
+    Attributes attributes;
+    Special_stats special_stats;
+    int pieces;
+    Set set;
 };
 
-class World_buff : public Buff
+struct Buff
 {
-public:
-    enum class Id
-    {
-        rallying_cry,
-        dire_maul,
-        songflower,
-    };
+    Buff(std::string name, Attributes attributes, Special_stats special_stats, double stat_multiplier = 0,
+         double bonus_damage = 0) :
+            name(std::move(name)), attributes(attributes), special_stats(special_stats),
+            stat_multiplier(stat_multiplier), bonus_damage(bonus_damage) {};
 
-    World_buff() = delete;
-
-    World_buff(std::string name, Stats stats, Special_stats special_stats) : Buff(name, stats, special_stats)
-    {
-    };
+    std::string name;
+    Attributes attributes;
+    Special_stats special_stats;
+    double stat_multiplier;
+    double bonus_damage;
 };
 
-class Player_buff : public Buff
+struct Weapon_buff
 {
-public:
+    Weapon_buff() = default;
 
-    enum class Id
-    {
-        blessing_of_kings,
-        blessing_of_might,
-        mark_of_the_wild,
-        trueshot_aura,
-    };
+    Weapon_buff(std::string name, Attributes attributes, Special_stats special_stats, double stat_multiplier = 0,
+                double bonus_damage = 0) :
+            name(std::move(name)), attributes(attributes), special_stats(special_stats),
+            stat_multiplier(stat_multiplier), bonus_damage(bonus_damage) {};
 
-    Player_buff() = delete;
-
-    Player_buff(std::string name, Stats stats, Special_stats special_stats) : Buff(name, stats, special_stats)
-    {
-    };
-
-private:
-    Id name_;
+    std::string name{};
+    Attributes attributes{};
+    Special_stats special_stats{};
+    double stat_multiplier{};
+    double bonus_damage{};
 };
 
-class Consumable : public Buff
+struct Armor
 {
-public:
-    enum class Id
-    {
-        elixir_mongoose,
-        dense_stone_mh,
-        dense_stone_oh,
-        elemental_stone_mh,
-        elemental_stone_oh,
-        blessed_sunfruit,
-        juju_power,
-        juju_might,
-        roids,
-    };
-
-
-    Consumable() = delete;
-
-    Consumable(std::string name, Stats stats, Special_stats special_stats) : Buff(name, stats, special_stats) {};
-
-private:
-    Id name_;
+    Armor(std::string name, Attributes attributes, Special_stats special_stats, Socket socket, Set set_name = Set::none)
+            :
+            name(std::move(name)), attributes(attributes), special_stats(special_stats),
+            socket(socket),
+            set_name(set_name) {};
+    std::string name;
+    Attributes attributes;
+    Special_stats special_stats;
+    Socket socket;
+    Set set_name;
+    Enchant enchant{};
 };
+
+struct Weapon
+{
+    Weapon(std::string name, Attributes attributes, Special_stats special_stats, double swing_speed, double min_damage,
+           double max_damage, Weapon_socket weapon_socket, Weapon_type weapon_type,
+           std::vector<Hit_effect> hit_effects = std::vector<Hit_effect>(), Set set_name = Set::none) :
+            name(std::move(name)), attributes(attributes), special_stats(special_stats), swing_speed(swing_speed),
+            min_damage(min_damage), max_damage(max_damage), weapon_socket(weapon_socket), type(weapon_type),
+            hit_effects(std::move(hit_effects)), set_name(set_name) {};
+
+    std::string name;
+    Attributes attributes;
+    Special_stats special_stats;
+    double swing_speed;
+    double min_damage;
+    double max_damage;
+    Weapon_socket weapon_socket;
+    Weapon_type type;
+    std::vector<Hit_effect> hit_effects;
+    Set set_name;
+    Socket socket;
+    Enchant enchant;
+    Weapon_buff buff;
+};
+
+std::ostream &operator<<(std::ostream &os, const Socket &socket);
+
+int get_weapon_skill(const Special_stats &special_stats, Weapon_type weapon_type);
 
 #endif //WOW_SIMULATOR_ITEM_HPP
 
