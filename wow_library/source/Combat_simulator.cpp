@@ -660,8 +660,8 @@ Combat_simulator::simulate(const Character &character)
                     }
                 }
 
-                // Execute phase, starts at 80% in with 1 sec activation time
-                if (time_keeper_.time + dt > config_.sim_time * 0.85 + 1)
+                // Execute phase, starts at 80% in with 0.5 sec activation time
+                if (time_keeper_.time + dt > config_.sim_time * 0.80 + .5)
                 {
                     if (!have_printed_execute_phase)
                     {
@@ -682,11 +682,16 @@ Combat_simulator::simulate(const Character &character)
                         time_keeper_.global_cd = 1.0 + dt;
                         if (hit_outcome.hit_result == Hit_result::dodge)
                         {
-                            rage -= 10;
+                            rage *= 0.85;
                         }
                         else
                         {
                             rage = 0;
+                        }
+                        if (hit_outcome.hit_result == Hit_result::crit)
+                        {
+                            flurry_charges = 3;
+                            flurry_dt_factor = flurry_speed_bonus;
                         }
                         damage_sources.add_damage(Damage_source::execute, hit_outcome.damage);
                         simulator_cout(rage, " rage");
@@ -706,7 +711,11 @@ Combat_simulator::simulate(const Character &character)
                             flurry_charges = 3;
                             flurry_dt_factor = flurry_speed_bonus;
                         }
-                        if (hit_outcome.hit_result != Hit_result::dodge)
+                        if (hit_outcome.hit_result == Hit_result::dodge)
+                        {
+                            rage -= 6;
+                        }
+                        else
                         {
                             rage -= 30;
                         }
