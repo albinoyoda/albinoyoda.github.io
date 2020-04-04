@@ -32,7 +32,7 @@ struct Armory
     struct helmet_t
     {
         Armor lionheart_helm{"lionheart_helm", Attributes{18, 0}, Special_stats{2, 2, 0}, Socket::head};
-        Armor expert_goldminers_head{"expert_goldminers_head", Attributes{0, 5}, Special_stats{0, 0, 0},
+        Armor expert_goldminers_head{"expert_goldminers_head", Attributes{0, 5}, Special_stats{0, 0, 0, 0, 0, 0, 7},
                                      Socket::head};
         Armor mask_of_the_unforgiven{"mask_of_the_unforgiven", Attributes{0, 0}, Special_stats{1, 2, 0},
                                      Socket::head};
@@ -104,6 +104,8 @@ struct Armory
                                          Socket::chest};
         Armor aq_conquerors_breastplate{"aq_conquerors_breastplate", Attributes{34, 24}, Special_stats{0, 0, 0},
                                         Socket::chest};
+        Armor black_dragonscale_chest{"black_dragonscale_chest", Attributes{0, 0}, Special_stats{0, 0, 50},
+                                      Socket::chest, Set::black_dragonscale};
     } chest;
 
     struct wrists_t
@@ -136,7 +138,8 @@ struct Armory
                                    Socket::hands};
         Armor aq_gloves_of_enforcement{"aq_gloves_of_enforcement", Attributes{28, 20}, Special_stats{0, 1, 0},
                                        Socket::hands};
-        Armor aged_core_leather_gloves{"aged_core_leather_gloves", Attributes{15, 0}, Special_stats{1, 0, 0},
+        Armor aged_core_leather_gloves{"aged_core_leather_gloves", Attributes{15, 0},
+                                       Special_stats{1, 0, 0, 0, 0, 0, 0, 5},
                                        Socket::hands};
         Armor aq_gauntlets_of_annihilation{"aq_gauntlets_of_annihilation", Attributes{35, 0}, Special_stats{1, 1, 0},
                                            Socket::hands};
@@ -145,7 +148,7 @@ struct Armory
     struct belt_t
     {
         Armor onslaught_girdle{"onslaught_girdle", Attributes{31, 0}, Special_stats{1, 1, 0}, Socket::belt};
-        Armor mugglers_belt{"mugglers_belt", Attributes{0, 0}, Special_stats{1, 0, 0}, Socket::belt};
+        Armor mugglers_belt{"mugglers_belt", Attributes{0, 0}, Special_stats{1, 0, 0, 0, 0, 0, 0, 5}, Socket::belt};
         Armor omokks_girth{"omokks_girth", Attributes{15, 0}, Special_stats{1, 0, 0}, Socket::belt};
         Armor girdle_of_the_fallen_crusader{"girdle_of_the_fallen_crusader", Attributes{20, 10}, Special_stats{0, 0, 0},
                                             Socket::belt};
@@ -155,7 +158,7 @@ struct Armory
     {
         Armor devilsaur_leggings{"devilsaur_leggings", Attributes{0, 0}, Special_stats{1, 0, 46}, Socket::legs,
                                  Set::devilsaur};
-        Armor black_dragonscale_leggings{"black_dragonscale_leggings", Attributes{0, 0}, Special_stats{2, 1, 54},
+        Armor black_dragonscale_leggings{"black_dragonscale_leggings", Attributes{0, 0}, Special_stats{0, 0, 54},
                                          Socket::legs, Set::black_dragonscale};
         Armor eldritch_legplates{"eldritch_legplates", Attributes{15, 9}, Special_stats{1, 0, 0}, Socket::legs};
         Armor ubrs_legs{"ubrs_legs", Attributes{29, 0}, Special_stats{0, 0, 0}, Socket::legs};
@@ -238,69 +241,72 @@ struct Armory
         Weapon maladath{"maladath", Attributes{0.0, 0.0},
                         Special_stats{0.0, 0.0, 0.0, 0, 0, 4}, 2.2, 86.0, 162.0,
                         Weapon_socket::one_hand, Weapon_type::sword};
-//        Weapon chromatically_tempered_sword{"chromatically_tempered_sword", 2.6, {106.0, 198.0}, Attributes{14.0, 14.0},
-//                                            Special_stats{0.0, 0.0, 0.0}, Socket::one_hand, Skill_type::sword};
+        Weapon chromatically_tempered_sword{"chromatically_tempered_sword", Attributes{14.0, 14.0},
+                                            Special_stats{0.0, 0.0, 0.0}, 2.6, 106.0, 198.0, Weapon_socket::one_hand,
+                                            Weapon_type::sword};
         Weapon brutality_blade{"brutality_blade", Attributes{9, 9}, Special_stats{1, 0, 0}, 2.5, 90, 168,
                                Weapon_socket::one_hand, Weapon_type::sword};
         Weapon thrash_blade{"thrash_blade", Attributes{0, 0}, Special_stats{0, 0, 0}, 2.7, 66, 124,
                             Weapon_socket::one_hand, Weapon_type::sword,
                             {{"thrash_blade", Hit_effect::Type::extra_hit, {}, {}, 0, 0, 0.038}}};
-//        Weapon assassination_blade{"assassination_blade", 2.7, {71, 132}, Attributes{3, 0}, Special_stats{1, 0, 0},
-//                                   Socket::one_hand, Skill_type::sword};
-//        Weapon mirahs_song{"mirahs_song", 1.8, {57, 87}, Attributes{9, 9}, Special_stats{0, 0, 0},
-//                           Socket::one_hand,
-//                           Skill_type::sword};
-//        Weapon viskag{"viskag", 2.6, {100, 187}, Attributes{0, 0}, Special_stats{0, 0, 0}, Socket::one_hand,
-//                      Skill_type::sword};
-//        Weapon quel_serrar{"quel_serrar", 2.0, {84, 126}, Attributes{0, 0}, Special_stats{0, 0, 0},
-//                           Socket::one_hand,
-//                           Skill_type::sword};
-//        Weapon aq_ancient_quiraj_ripper{"aq_ancient_quiraj_ripper", 2.8, {114, 213}, Attributes{0, 0},
-//                                        Special_stats{1, 0, 20}, Socket::one_hand, Skill_type::sword};
+        Weapon assassination_blade{"assassination_blade", Attributes{3, 0}, Special_stats{1, 0, 0}, 2.7, 71, 132,
+                                   Weapon_socket::one_hand, Weapon_type::sword};
+        Weapon mirahs_song{"mirahs_song", Attributes{9, 9}, Special_stats{0, 0, 0}, 1.8, 57, 87,
+                           Weapon_socket::one_hand, Weapon_type::sword};
+        Weapon viskag{"viskag", Attributes{0, 0}, Special_stats{0, 0, 0}, 2.6, 100, 187, Weapon_socket::one_hand,
+                      Weapon_type::sword, {{"viskag", Hit_effect::Type::damage_physical, {}, {}, 240, 0, 0.06}}};
+        Weapon quel_serrar{"quel_serrar", Attributes{0, 0}, Special_stats{0, 0, 0}, 2.0, 84, 126,
+                           Weapon_socket::one_hand, Weapon_type::sword};
+        Weapon aq_ancient_quiraj_ripper{"aq_ancient_quiraj_ripper", Attributes{0, 0}, Special_stats{1, 0, 20}, 2.8, 114,
+                                        213, Weapon_socket::one_hand, Weapon_type::sword};
+        Weapon dal_rends_sacred_charge{"dal_rends_sacred_charge", Attributes{4, 0}, Special_stats{1, 0, 0}, 2.8, 81,
+                                       151, Weapon_socket::main_hand, Weapon_type::sword, std::vector<Hit_effect>(),
+                                       Set::dal_rends};
+        Weapon dal_rends_tribal_guardian{"dal_rends_tribal_guardian", Attributes{4, 0}, Special_stats{0, 0, 0}, 1.8, 52,
+                                         97, Weapon_socket::off_hand, Weapon_type::sword, std::vector<Hit_effect>(),
+                                         Set::dal_rends};
     } swords;
 
     struct axes_t
     {
-//        Weapon deathbringer{"deathbringer", 2.9, {114, 213}, Attributes{0, 0}, Special_stats{0, 0, 0},
-//                            Socket::one_hand, Skill_type::axe};
+        Weapon deathbringer{"deathbringer", Attributes{0, 0}, Special_stats{0, 0, 0}, 2.9, 114, 213,
+                            Weapon_socket::one_hand, Weapon_type::axe};
         Weapon crul_shorukh_edge_of_chaos{"crul_shorukh_edge_of_chaos", Attributes{0.0, 0.0},
                                           Special_stats{0.0, 0.0, 36.0}, 2.3, 101.0, 188.0, Weapon_socket::one_hand,
                                           Weapon_type::axe};
-//        Weapon dooms_edge{"dooms_edge", 2.3, {83.0, 154.0}, Attributes{9.0, 16.0}, Special_stats{0.0, 0.0, 0.0},
-//                          Socket::one_hand, Skill_type::axe};
+        Weapon dooms_edge{"dooms_edge", Attributes{9.0, 16.0}, Special_stats{0.0, 0.0, 0.0}, 2.3, 83.0, 154.0,
+                          Weapon_socket::one_hand, Weapon_type::axe};
     } axes;
 
-//    struct daggers_t
-//    {
-//        Weapon core_hound_tooth{"core_hound_tooth", 1.6, {57, 107}, Attributes{0, 0}, Special_stats{1, 0, 20},
-//                                Socket::one_hand, Skill_type::dagger};
-//        Weapon aq_deaths_sting{"aq_deaths_sting", 1.8, {95, 144}, Attributes{0, 0}, Special_stats{0, 0, 38},
-//                               Socket::one_hand, Skill_type::dagger};
-//    } daggers;
-//
+    struct daggers_t
+    {
+        Weapon core_hound_tooth{"core_hound_tooth", Attributes{0, 0}, Special_stats{1, 0, 20}, 1.6, 57, 107,
+                                Weapon_socket::one_hand, Weapon_type::dagger};
+        Weapon aq_deaths_sting{"aq_deaths_sting", Attributes{0, 0}, Special_stats{0, 0, 38, 0, 0, 0, 0, 3}, 1.8, 95,
+                               144, Weapon_socket::one_hand, Weapon_type::dagger};
+    } daggers;
+
     struct maces_t
     {
         Weapon ebon_hand{"ebon_hand", Attributes{0.0, 0.0},
                          Special_stats{0.0, 0.0, 0.0}, 2.3, 83.0, 154.0, Weapon_socket::one_hand,
                          Weapon_type::mace, {{"ebon_hand", Hit_effect::Type::damage_magic, {}, {}, 200, 0, 0.08}}};
-//        Weapon spineshatter{"spineshatter", 2.5, {99.0, 184.0}, Attributes{9.0, 0.0}, Special_stats{0.0, 0.0, 0.0},
-//                            Socket::main_hand, Skill_type::mace};
-//        Weapon stormstike_hammer{"stormstike_hammer", 2.7, {80, 150}, Attributes{15, 0}, Special_stats{0, 0, 0},
-//                                 Socket::one_hand, Skill_type::mace};
-//        Weapon aq_sand_polished_hammer{"aq_sand_polished_hammer", 2.6, {97, 181}, Attributes{0, 0},
-//                                       Special_stats{1, 0, 20},
-//                                       Socket::one_hand, Skill_type::mace};
-//        Weapon aq_anubisath_warhammer{"aq_anubisath_warhammer", 1.8, {66, 123}, Attributes{0, 0},
-//                                      Special_stats{0, 0, 32},
-//                                      Socket::one_hand, Skill_type::mace};
+        Weapon spineshatter{"spineshatter", Attributes{9.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, 2.5, 99.0, 184.0,
+                            Weapon_socket::main_hand, Weapon_type::mace};
+        Weapon stormstike_hammer{"stormstike_hammer", Attributes{15, 0}, Special_stats{0, 0, 0}, 2.7, 80, 150,
+                                 Weapon_socket::one_hand, Weapon_type::mace};
+        Weapon aq_sand_polished_hammer{"aq_sand_polished_hammer", Attributes{0, 0}, Special_stats{1, 0, 20}, 2.6, 97,
+                                       181, Weapon_socket::one_hand, Weapon_type::mace};
+        Weapon aq_anubisath_warhammer{"aq_anubisath_warhammer", Attributes{0, 0},
+                                      Special_stats{0, 0, 32, 0, 0, 0, 0, 0, 4}, 1.8, 66, 123,
+                                      Weapon_socket::one_hand, Weapon_type::mace};
     } maces;
-//
-//    struct fists_t
-//    {
-//        Weapon claw_of_the_black_drake{"claw_of_the_black_drake", 2.6, {102, 191}, Attributes{13, 0},
-//                                       Special_stats{1, 0, 0},
-//                                       Socket::main_hand, Skill_type::none};
-//    } fists;
+
+    struct fists_t
+    {
+        Weapon claw_of_the_black_drake{"claw_of_the_black_drake", Attributes{13, 0}, Special_stats{1, 0, 0}, 2.6, 102,
+                                       191, Weapon_socket::main_hand, Weapon_type::unarmed};
+    } fists;
 
     struct set_bonuses_t
     {
@@ -308,15 +314,8 @@ struct Armory
         Set_bonus black_dragonscale_bonus2{Attributes{0, 0}, Special_stats{0, 1, 0}, 2, Set::black_dragonscale};
         Set_bonus black_dragonscale_bonus3{Attributes{0, 0}, Special_stats{2, 0, 0}, 3, Set::black_dragonscale};
         Set_bonus rare_pvp_set_bonus_1{Attributes{0, 0}, Special_stats{0, 0, 40}, 2, Set::rare_pvp_set};
+        Set_bonus dal_rends{Attributes{0, 0}, Special_stats{0, 0, 50}, 2, Set::dal_rends};
     } set_bonuses;
-
-
-    //TODO add these
-//        helmet.expert_goldminers_head.set_bonus_skill(Bonus_skill{Skill_type::axe, 7});
-//        belt.mugglers_belt.set_bonus_skill(Bonus_skill{Skill_type::dagger, 5});
-//        daggers.aq_deaths_sting.set_bonus_skill(Bonus_skill{Skill_type::dagger, 3});
-//        maces.aq_anubisath_warhammer.set_bonus_skill(Bonus_skill{Skill_type::mace, 4});
-//        hands.aged_core_leather_gloves.set_bonus_skill(Bonus_skill{Skill_type::dagger, 5});
 
     auto get_set_bonuses() const
     {
@@ -531,6 +530,7 @@ struct Armory
         int set_pieces_devil = 0;
         int set_pieces_bds = 0;
         int set_pieces_pvp = 0;
+        int set_pieces_dal_rend = 0;
         for (Set &set_name : set_names)
         {
             switch (set_name)
@@ -543,6 +543,9 @@ struct Armory
                     break;
                 case Set::rare_pvp_set:
                     set_pieces_pvp++;
+                    break;
+                case Set::dal_rends:
+                    set_pieces_dal_rend++;
                     break;
                 default:
                     break;
@@ -567,6 +570,11 @@ struct Armory
         {
             total_attributes += set_bonuses.rare_pvp_set_bonus_1.attributes;
             total_special_stats += set_bonuses.rare_pvp_set_bonus_1.special_stats;
+        }
+        if (set_pieces_dal_rend >= set_bonuses.dal_rends.pieces)
+        {
+            total_attributes += set_bonuses.dal_rends.attributes;
+            total_special_stats += set_bonuses.dal_rends.special_stats;
         }
 
         for (const auto &buff : character.buffs)

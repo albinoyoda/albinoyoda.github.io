@@ -56,6 +56,7 @@ enum class Set
     devilsaur,
     black_dragonscale,
     rare_pvp_set,
+    dal_rends,
 };
 
 class Hit_effect

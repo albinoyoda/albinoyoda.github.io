@@ -162,7 +162,8 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
 //            armory.shoulder.drake_talon_pauldrons,
 //            armory.shoulder.aq_chitinous_shoulderguards,
             armory.shoulder.spaulders_of_valor,
-            armory.shoulder.truestrike_shoulders
+            armory.shoulder.truestrike_shoulders,
+            armory.shoulder.black_dragonscale_shoulders
 //            armory.shoulder.aq_conquerors_spaulders
     };
 
@@ -174,10 +175,11 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
 
     std::vector<Armor> chests;
     chests = {
-//            armory.chest.savage_gladiator_chain,
+            armory.chest.savage_gladiator_chain,
             armory.chest.cadaverous_armor,
-            armory.chest.knight_captains_plate_hauberk,
-            armory.chest.tombstone_breastplate
+            armory.chest.black_dragonscale_chest,
+//            armory.chest.knight_captains_plate_hauberk,
+//            armory.chest.tombstone_breastplate
 //            armory.chest.aq_conquerors_breastplate,
 //            armory.chest.aq_vest_of_swift_execution
     };
@@ -191,8 +193,9 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
 
     std::vector<Armor> hands;
     hands = {
-            armory.hands.flameguard_gauntlets,
+//            armory.hands.flameguard_gauntlets,
             armory.hands.devilsaur_gauntlets,
+            armory.hands.edgemasters_handguards,
     };
 
     std::vector<Armor> belts;
@@ -205,25 +208,28 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
     legs = {
 //            armory.legs.aq_conquerors_legguards,
             armory.legs.devilsaur_leggings,
-            armory.legs.knight_captain_plate_leggings,
+            armory.legs.eldritch_legplates,
+            armory.legs.black_dragonscale_leggings,
 //            armory.legs.titanic_leggings
     };
 
     std::vector<Armor> boots;
     boots = {
             armory.boots.battlechasers,
-            armory.boots.bloodmail_boots
+            armory.boots.bloodmail_boots,
+            armory.boots.black_dragonscale_boots,
+            armory.boots.windreaver_greaves
     };
 
     std::vector<Armor> ranged;
     ranged = {
             armory.ranged.satyrs_bow,
-            armory.ranged.precisely_calibrated_boomstick
+            armory.ranged.precisely_calibrated_boomstick,
     };
 
     std::vector<Armor> rings;
     rings = {
-            armory.rings.don_julios_band,
+//            armory.rings.don_julios_band,
             armory.rings.magnis_will,
             armory.rings.blackstone_ring,
             armory.rings.tarnished_elven
@@ -232,17 +238,22 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
     std::vector<Armor> trinkets;
     trinkets = {
 //            armory.trinket.diamond_flask,
-            armory.trinket.drake_fang_talisman,
+//            armory.trinket.drake_fang_talisman,
             armory.trinket.blackhands_breadth,
+            armory.trinket.hand_of_justice,
     };
 
     std::vector<Weapon> weapons;
     weapons = {
-            armory.swords.brutality_blade,
-            armory.swords.maladath,
+            armory.swords.dal_rends_sacred_charge,
+            armory.swords.dal_rends_tribal_guardian,
+            armory.swords.quel_serrar,
+            armory.swords.thrash_blade,
+            armory.swords.mirahs_song,
+            armory.swords.assassination_blade,
             armory.maces.ebon_hand,
+//            armory.maces.ebon_hand,
 //            armory.swords.mirahs_song,
-
     };
 
     size_t n_helmet = helmets.size();
@@ -296,7 +307,7 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
                                                     {
                                                         for (size_t i_wep = 0; i_wep < n_weapons; ++i_wep)
                                                         {
-                                                            Character character{Race::human, 60};
+                                                            Character character{Race::gnome, 60};
 
                                                             character.equip_armor(helmets[i_helm]);
                                                             character.equip_armor(necks[i_neck]);
@@ -359,16 +370,16 @@ void Item_optimizer::add_buffs(Character &character, const Buffs &buffs)
 {
     character.add_buff(buffs.rallying_cry);
     character.add_buff(buffs.dire_maul);
-    character.add_buff(buffs.songflower);
+//    character.add_buff(buffs.songflower);
     character.add_buff(buffs.blessing_of_kings);
     character.add_buff(buffs.blessing_of_might);
     character.add_buff(buffs.gift_of_the_wild);
     character.add_buff(buffs.trueshot_aura);
-    character.add_buff(buffs.elixir_mongoose);
+//    character.add_buff(buffs.elixir_mongoose);
     character.add_buff(buffs.blessed_sunfruit);
     character.add_buff(buffs.juju_power);
-    character.add_buff(buffs.juju_might);
-    character.add_buff(buffs.roids);
+//    character.add_buff(buffs.juju_might);
+//    character.add_buff(buffs.roids);
 
     character.add_weapon_buff(Socket::main_hand, buffs.dense_stone);
     character.add_weapon_buff(Socket::off_hand, buffs.dense_stone);
