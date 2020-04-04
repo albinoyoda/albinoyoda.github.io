@@ -161,11 +161,13 @@ public:
         }
     }
 
-    void swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_weapon, Special_stats special_stats,
+    void
+    manage_flurry(Hit_result hit_result, Special_stats &special_stats, int &flurry_charges, bool is_ability = false);
+
+    void swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_weapon, Special_stats &special_stats,
                       bool &heroic_strike_,
                       double &rage, double &heroic_strike_rage_cost, bool &deathwish_active,
-                      bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges,
-                      double &flurry_dt_factor, double &flurry_speed_bonus);
+                      bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges);
 
     std::vector<double> &simulate(const Character &character);
 
