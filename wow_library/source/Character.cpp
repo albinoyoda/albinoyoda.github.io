@@ -45,10 +45,16 @@ Character::Character(const Race &race, int level)
     }
 }
 
-
-
-
-
-
-
-
+std::ostream &operator<<(std::ostream &os, const Character &character)
+{
+    os << "Character items:" << "\n";
+    for (const auto &item : character.armor)
+    {
+        os << item.name << "\n";
+    }
+    os << "Main hand:" << "\n";
+    os << character.weapons[0].name << "\n";
+    os << "Off hand:" << "\n";
+    os << character.weapons[1].name << "\n";
+    return os;
+}

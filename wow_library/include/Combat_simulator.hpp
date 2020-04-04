@@ -169,6 +169,8 @@ public:
                       double &rage, double &heroic_strike_rage_cost, bool &deathwish_active,
                       bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges);
 
+    std::vector<double> &simulate(const Character &character, int n_batches);
+
     std::vector<double> &simulate(const Character &character);
 
     double get_uniform_random(double r_max)

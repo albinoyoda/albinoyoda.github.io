@@ -656,7 +656,8 @@ Combat_simulator::simulate(const Character &character)
                     {
                         simulator_cout("Execute!");
                         double damage = 600 + (rage - 10) * 15;
-                        auto hit_outcome = generate_hit(damage, Hit_type::yellow, Socket::main_hand, heroic_strike_active,
+                        auto hit_outcome = generate_hit(damage, Hit_type::yellow, Socket::main_hand,
+                                                        heroic_strike_active,
                                                         deathwish_active, recklessness_active);
                         time_keeper_.global_cd = 1.0 + dt;
                         if (hit_outcome.hit_result == Hit_result::dodge || hit_outcome.hit_result == Hit_result::miss)
@@ -734,6 +735,12 @@ Combat_simulator::simulate(const Character &character)
         damage_distribution_.emplace_back(damage_sources);
     }
     return batch_damage_;
+}
+
+std::vector<double> &Combat_simulator::simulate(const Character &character, int n_batches)
+{
+    config_.n_batches = n_batches;
+    return simulate(character);
 }
 
 //std::vector<Combat_simulator::Stat_weight>
