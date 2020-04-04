@@ -925,59 +925,6 @@ const std::vector<double> &Combat_simulator::get_hit_probabilities_white_mh() co
 
 void Combat_simulator::print_damage_distribution() const
 {
-    Damage_sources total_sources{};
-    double total_damage{0.0};
-    size_t total_counts{0};
-
-    for (const auto &damage_source : damage_distribution_)
-    {
-        total_sources = total_sources + damage_source;
-        total_damage += damage_source.sum_damage_sources();
-        total_counts += damage_source.sum_counts();
-    }
-
-    double bloodthirst_count = double(total_sources.bloodthirst_count) / damage_distribution_.size();
-    double white_mh_count = double(total_sources.white_mh_count) / damage_distribution_.size();
-    double white_oh_count = double(total_sources.white_oh_count) / damage_distribution_.size();
-    double execute_count = double(total_sources.execute_count) / damage_distribution_.size();
-    double heroic_strike_count = double(total_sources.heroic_strike_count) / damage_distribution_.size();
-    double whirlwind_count = double(total_sources.whirlwind_count) / damage_distribution_.size();
-    double item_count = double(total_sources.item_hit_effects_count) / damage_distribution_.size();
-
-    double white_mh_std = damage_source_std(&Damage_sources::white_mh_count);
-    double white_oh_std = damage_source_std(&Damage_sources::white_oh_count);
-    double bloodthirst_std = damage_source_std(&Damage_sources::bloodthirst_count);
-    double execute_std = damage_source_std(&Damage_sources::execute_count);
-    double heroic_strike_std = damage_source_std(&Damage_sources::heroic_strike_count);
-    double whirlwind_std = damage_source_std(&Damage_sources::whirlwind_count);
-    double item_std = damage_source_std(&Damage_sources::item_hit_effects_count);
-
-    std::cout << "Damage_sources (%):\n";
-    print_damage_sources("White hits   : ",
-                         (total_sources.white_mh_damage + total_sources.white_mh_damage) / total_damage,
-                         sqrt(white_oh_std * white_oh_std + white_mh_std * white_mh_std),
-                         white_mh_count + white_oh_count);
-    print_damage_sources("White MH     : ",
-                         total_sources.white_mh_damage / total_damage,
-                         white_mh_std, white_mh_count);
-    print_damage_sources("White OH     : ",
-                         total_sources.white_oh_damage / total_damage,
-                         white_oh_std, white_oh_count);
-    print_damage_sources("Bloodthirst  : ",
-                         total_sources.bloodthirst_damage / total_damage,
-                         bloodthirst_std, bloodthirst_count);
-    print_damage_sources("Execute      : ",
-                         total_sources.execute_damage / total_damage,
-                         execute_std, execute_count);
-    print_damage_sources("Heroic strike: ",
-                         total_sources.heroic_strike_damage / total_damage,
-                         heroic_strike_std, heroic_strike_count);
-    print_damage_sources("Whirlwind    : ",
-                         total_sources.whirlwind_damage / total_damage,
-                         whirlwind_std, whirlwind_count);
-    print_damage_sources("Item proc    : ",
-                         total_sources.item_hit_effects_damage / total_damage,
-                         item_std, item_count);
-    std::cout << "\n";
+    print_damage_source_vector(damage_distribution_);
 }
 

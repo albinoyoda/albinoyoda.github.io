@@ -200,36 +200,9 @@ public:
 
     void compute_hit_table(int level_difference, int weapon_skill, Special_stats special_stats, Socket weapon_hand);
 
-
-
     const std::vector<double> &get_hit_probabilities_white_mh() const;
 
-    template<typename T>
-    double damage_source_std(T field_ptr) const
-    {
-        std::vector<double> damage_vec;
-        damage_vec.reserve(damage_distribution_.size());
-        for (const auto &damage_source : damage_distribution_)
-        {
-            damage_vec.push_back(damage_source.*field_ptr / damage_source.sum_counts());
-        }
-        double mean_dps = Statistics::average(damage_vec);
-        double std_dps = Statistics::standard_deviation(damage_vec, mean_dps);
-        return std_dps;
-    }
-
     void print_damage_distribution() const;
-
-    void print_damage_sources(const std::string &source_name, double source_percent,
-                              double source_std, double source_count) const
-    {
-        if (source_count > 0)
-        {
-            std::cout << source_name << std::setw(5) << std::left << std::setprecision(3)
-                      << 100 * source_percent << " +- " << std::setw(4) << 100 * source_std << ", casts: "
-                      << source_count << "\n";
-        }
-    }
 
     template<typename T>
     void print_statement(T t)
