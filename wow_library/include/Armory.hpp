@@ -267,7 +267,7 @@ struct Armory
         Weapon dal_rends_sacred_charge{"dal_rends_sacred_charge", Attributes{4, 0}, Special_stats{1, 0, 0}, 2.8, 81,
                                        151, Weapon_socket::main_hand, Weapon_type::sword, std::vector<Hit_effect>(),
                                        Set::dal_rends};
-        Weapon dal_rends_tribal_guardian{"dal_rends_tribal_guardian", Attributes{4, 0}, Special_stats{0, 0, 0}, 1.8, 52,
+        Weapon dal_rends_tribal_guardian{"dal_rends_tribal_guardian", Attributes{0, 0}, Special_stats{0, 0, 0}, 1.8, 52,
                                          97, Weapon_socket::off_hand, Weapon_type::sword, std::vector<Hit_effect>(),
                                          Set::dal_rends};
     } swords;
@@ -682,7 +682,10 @@ struct Armory
                 }
                 else
                 {
+                    // Reuse the same enchant
+                    auto enchant = armor_piece.enchant;
                     armor_piece = armor;
+                    armor_piece.enchant = enchant;
                     return;
                 }
             }

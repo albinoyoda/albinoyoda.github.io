@@ -99,24 +99,24 @@ Character character_setup(const Armory &armory, const Buffs &buffs)
     Character character{Race::gnome, 60};
 
     // Armor
-    character.equip_armor(armory.helmet.crown_of_destruction);
+    character.equip_armor(armory.helmet.lionheart_helm);
     character.equip_armor(armory.neck.onyxia_tooth_pendant);
-    character.equip_armor(armory.shoulder.leutenant_shoulders);
+    character.equip_armor(armory.shoulder.black_dragonscale_shoulders);
     character.equip_armor(armory.back.cape_of_the_black_baron);
-    character.equip_armor(armory.chest.cadaverous_armor);
-    character.equip_armor(armory.wrist.vambraces_of_the_sadist);
+    character.equip_armor(armory.chest.savage_gladiator_chain);
+    character.equip_armor(armory.wrist.battleborn_armbraces);
     character.equip_armor(armory.hands.edgemasters_handguards);
     character.equip_armor(armory.belt.omokks_girth);
-    character.equip_armor(armory.legs.knight_captain_plate_leggings);
-    character.equip_armor(armory.boots.battlechasers);
-    character.equip_armor(armory.rings.don_julios_band);
+    character.equip_armor(armory.legs.black_dragonscale_leggings);
+    character.equip_armor(armory.boots.black_dragonscale_boots);
     character.equip_armor(armory.rings.magnis_will);
+    character.equip_armor(armory.rings.tarnished_elven);
     character.equip_armor(armory.trinket.hand_of_justice);
-    character.equip_armor(armory.trinket.diamond_flask);
-    character.equip_armor(armory.ranged.satyrs_bow);
+    character.equip_armor(armory.trinket.blackhands_breadth);
+    character.equip_armor(armory.ranged.bloodseeker);
 
     // Weapons
-    character.equip_weapon(armory.swords.thrash_blade, armory.maces.ebon_hand);
+    character.equip_weapon(armory.swords.quel_serrar, armory.swords.mirahs_song);
 
     // Enchants
     character.add_enchant(Socket::head, Enchant::Type::haste);
@@ -131,16 +131,16 @@ Character character_setup(const Armory &armory, const Buffs &buffs)
 
     character.add_buff(buffs.rallying_cry);
     character.add_buff(buffs.dire_maul);
-    character.add_buff(buffs.songflower);
+//    character.add_buff(buffs.songflower);
     character.add_buff(buffs.blessing_of_kings);
     character.add_buff(buffs.blessing_of_might);
     character.add_buff(buffs.gift_of_the_wild);
     character.add_buff(buffs.trueshot_aura);
-    character.add_buff(buffs.elixir_mongoose);
+//    character.add_buff(buffs.elixir_mongoose);
     character.add_buff(buffs.blessed_sunfruit);
     character.add_buff(buffs.juju_power);
-    character.add_buff(buffs.juju_might);
-    character.add_buff(buffs.roids);
+//    character.add_buff(buffs.juju_might);
+//    character.add_buff(buffs.roids);
 
     character.add_weapon_buff(Socket::main_hand, buffs.dense_stone);
     character.add_weapon_buff(Socket::off_hand, buffs.dense_stone);
@@ -154,9 +154,9 @@ Character delta_gear(const Character &character, const Armory &armory, const Buf
 {
     Character delta_character = character;
 
-    armory.change_weapon(delta_character.weapons, armory.axes.crul_shorukh_edge_of_chaos, Socket::main_hand);
-
-//    armory.change_armor(delta_character.armor, armory.chest.knight_captains_plate_hauberk);
+//    armory.change_weapon(delta_character.weapons, armory.swords.dal_rends_sacred_charge, Socket::main_hand);
+//    armory.change_weapon(delta_character.weapons, armory.swords.dal_rends_tribal_guardian, Socket::off_hand);
+//    armory.change_armor(delta_character.armor, armory.chest.black_dragonscale_chest);
 
     armory.compute_total_stats(delta_character);
 

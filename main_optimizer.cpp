@@ -201,7 +201,7 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
     std::vector<Armor> belts;
     belts = {
             armory.belt.omokks_girth,
-            armory.belt.mugglers_belt
+//            armory.belt.mugglers_belt
     };
 
     std::vector<Armor> legs;
@@ -218,13 +218,14 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
             armory.boots.battlechasers,
             armory.boots.bloodmail_boots,
             armory.boots.black_dragonscale_boots,
-            armory.boots.windreaver_greaves
     };
 
     std::vector<Armor> ranged;
     ranged = {
             armory.ranged.satyrs_bow,
-            armory.ranged.precisely_calibrated_boomstick,
+//            armory.ranged.precisely_calibrated_boomstick,
+            armory.ranged.bloodseeker,
+//            armory.ranged.riphook
     };
 
     std::vector<Armor> rings;
@@ -250,10 +251,9 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
             armory.swords.quel_serrar,
             armory.swords.thrash_blade,
             armory.swords.mirahs_song,
-            armory.swords.assassination_blade,
-            armory.maces.ebon_hand,
 //            armory.maces.ebon_hand,
-//            armory.swords.mirahs_song,
+//            armory.maces.ebon_hand,
+            armory.swords.mirahs_song,
     };
 
     size_t n_helmet = helmets.size();
@@ -370,16 +370,16 @@ void Item_optimizer::add_buffs(Character &character, const Buffs &buffs)
 {
     character.add_buff(buffs.rallying_cry);
     character.add_buff(buffs.dire_maul);
-//    character.add_buff(buffs.songflower);
+    character.add_buff(buffs.songflower);
     character.add_buff(buffs.blessing_of_kings);
     character.add_buff(buffs.blessing_of_might);
     character.add_buff(buffs.gift_of_the_wild);
     character.add_buff(buffs.trueshot_aura);
-//    character.add_buff(buffs.elixir_mongoose);
+    character.add_buff(buffs.elixir_mongoose);
     character.add_buff(buffs.blessed_sunfruit);
     character.add_buff(buffs.juju_power);
-//    character.add_buff(buffs.juju_might);
-//    character.add_buff(buffs.roids);
+    character.add_buff(buffs.juju_might);
+    character.add_buff(buffs.roids);
 
     character.add_weapon_buff(Socket::main_hand, buffs.dense_stone);
     character.add_weapon_buff(Socket::off_hand, buffs.dense_stone);
@@ -394,7 +394,7 @@ int main()
     auto characters = item_optimizer.item_setup();
 
     // Combat settings
-    std::vector<int> batches_per_iteration = {20, 100, 1000, 10000};
+    std::vector<int> batches_per_iteration = {30, 100, 1000, 10000};
 
     // Simulator & Combat settings
     Combat_simulator_config config{};
@@ -475,7 +475,7 @@ int main()
             }
         }
 
-        double quantile = find_cdf_quantile(1 - 1 / static_cast<double>(n), 0.01);
+        double quantile = find_cdf_quantile(1 - 1 / static_cast<double>(2*n), 0.01);
         double filter_value = best_dps - quantile * best_dps_std;
         std::cout << "Best combination DPS: " << best_dps << ", deleting sets below: "
                   << best_dps - quantile * best_dps_std << "\n";
@@ -511,6 +511,7 @@ int main()
         std::cout << "Character #" << i << "\n";
         std::cout << "DPS: " << best_characters[i].mean_dps << "\n";
         std::cout << "std: " << best_characters[i].sample_std_dps << "\n";
+        std::cout << best_characters[i].character.total_special_stats;
         std::cout << best_characters[i].character << "\n\n";
     }
 }
