@@ -121,7 +121,7 @@ public:
         Stat stat;
     };
 
-    constexpr double lookup_outcome_mh_white(int case_id)
+    constexpr double lookup_outcome_mh(int case_id)
     {
         switch (case_id)
         {

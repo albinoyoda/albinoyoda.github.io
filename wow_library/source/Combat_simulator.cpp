@@ -43,14 +43,14 @@ Combat_simulator::generate_hit_mh(double damage, Hit_type hit_type, bool reckles
             int outcome = std::lower_bound(hit_probabilities_recklessness_mh_.begin(),
                                            hit_probabilities_recklessness_mh_.end(),
                                            random_var) - hit_probabilities_recklessness_mh_.begin();
-            return {damage * lookup_outcome_mh_white(outcome), Hit_result(outcome)};
+            return {damage * lookup_outcome_mh(outcome), Hit_result(outcome)};
         }
         else
         {
             simulator_cout("Drawing outcome from MH hit table");
             int outcome = std::lower_bound(hit_probabilities_white_mh_.begin(), hit_probabilities_white_mh_.end(),
                                            random_var) - hit_probabilities_white_mh_.begin();
-            return {damage * lookup_outcome_mh_white(outcome), Hit_result(outcome)};
+            return {damage * lookup_outcome_mh(outcome), Hit_result(outcome)};
         }
     }
     else
@@ -62,14 +62,14 @@ Combat_simulator::generate_hit_mh(double damage, Hit_type hit_type, bool reckles
             int outcome = std::lower_bound(hit_probabilities_recklessness_yellow_.begin(),
                                            hit_probabilities_recklessness_yellow_.end(),
                                            random_var) - hit_probabilities_recklessness_yellow_.begin();
-            return {damage * lookup_outcome_mh_white(outcome), Hit_result(outcome)};
+            return {damage * lookup_outcome_mh(outcome), Hit_result(outcome)};
         }
         else
         {
             simulator_cout("Drawing outcome from yellow table");
             int outcome = std::lower_bound(hit_probabilities_yellow_.begin(), hit_probabilities_yellow_.end(),
                                            random_var) - hit_probabilities_yellow_.begin();
-            return {damage * lookup_outcome_mh_white(outcome), Hit_result(outcome)};
+            return {damage * lookup_outcome_mh(outcome), Hit_result(outcome)};
         }
     }
 }
@@ -86,7 +86,7 @@ Combat_simulator::generate_hit_oh(double damage, bool heroic_strike_active, bool
             int outcome = std::lower_bound(hit_probabilities_recklessness_two_hand_.begin(),
                                            hit_probabilities_recklessness_two_hand_.end(),
                                            random_var) - hit_probabilities_recklessness_two_hand_.begin();
-            return {damage * lookup_outcome_mh_white(outcome), Hit_result(outcome)};
+            return {damage * lookup_outcome_oh(outcome), Hit_result(outcome)};
         }
         else
         {
@@ -95,7 +95,7 @@ Combat_simulator::generate_hit_oh(double damage, bool heroic_strike_active, bool
             int outcome = std::lower_bound(hit_probabilities_recklessness_oh_.begin(),
                                            hit_probabilities_recklessness_oh_.end(),
                                            random_var) - hit_probabilities_recklessness_oh_.begin();
-            return {damage * lookup_outcome_mh_white(outcome), Hit_result(outcome)};
+            return {damage * lookup_outcome_oh(outcome), Hit_result(outcome)};
         }
     }
     else
@@ -107,7 +107,7 @@ Combat_simulator::generate_hit_oh(double damage, bool heroic_strike_active, bool
             int outcome = std::lower_bound(hit_probabilities_two_hand_.begin(),
                                            hit_probabilities_two_hand_.end(),
                                            random_var) - hit_probabilities_two_hand_.begin();
-            return {damage * lookup_outcome_mh_white(outcome), Hit_result(outcome)};
+            return {damage * lookup_outcome_oh(outcome), Hit_result(outcome)};
         }
         else
         {
@@ -193,29 +193,27 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(double damage, Comb
         {
             hit_outcome.damage *= 1.2;
         }
-        if (hit_type == Hit_type::white)
+
+        switch (hit_outcome.hit_result)
         {
-            switch (hit_outcome.hit_result)
-            {
-                case Hit_result::glancing:
-                    simulator_cout("Offhand glancing hit for: ", hit_outcome.damage, " damage.");
-                    break;
-                case Hit_result::hit:
-                    simulator_cout("Offhand white hit for: ", hit_outcome.damage, " damage.");
-                    break;
-                case Hit_result::crit:
-                    simulator_cout("Offhand crit for: ", hit_outcome.damage, " damage.");
-                    break;
-                case Hit_result::dodge:
-                    simulator_cout("Offhand hit dodged");
-                    break;
-                case Hit_result::miss:
-                    simulator_cout("Offhand hit missed");
-                    break;
-                case Hit_result::TBD:
-                    simulator_cout("BUUUUUUUUUUGGGGGGGGG");
-                    break;
-            }
+            case Hit_result::glancing:
+                simulator_cout("Offhand glancing hit for: ", hit_outcome.damage, " damage.");
+                break;
+            case Hit_result::hit:
+                simulator_cout("Offhand white hit for: ", hit_outcome.damage, " damage.");
+                break;
+            case Hit_result::crit:
+                simulator_cout("Offhand crit for: ", hit_outcome.damage, " damage.");
+                break;
+            case Hit_result::dodge:
+                simulator_cout("Offhand hit dodged");
+                break;
+            case Hit_result::miss:
+                simulator_cout("Offhand hit missed");
+                break;
+            case Hit_result::TBD:
+                simulator_cout("BUUUUUUUUUUGGGGGGGGG");
+                break;
         }
         return hit_outcome;
     }
@@ -633,6 +631,7 @@ Combat_simulator::simulate(const Character &character)
                 }
                 if (time_keeper_.time - mightyrage_init_time > 20.0 && !reset_mighty_rage_potion)
                 {
+                    simulator_cout("------------ Mighty Rage Potion wears off! ------------");
                     special_stats.attack_power -= 132;
                     reset_mighty_rage_potion = true;
                 }
@@ -680,7 +679,7 @@ Combat_simulator::simulate(const Character &character)
                             flurry_dt_factor = flurry_speed_bonus;
                         }
                         time_keeper_.global_cd = 1.0 + dt;
-                        if (hit_outcome.hit_result == Hit_result::dodge)
+                        if (hit_outcome.hit_result == Hit_result::dodge || hit_outcome.hit_result == Hit_result::miss)
                         {
                             rage *= 0.85;
                         }
@@ -711,7 +710,7 @@ Combat_simulator::simulate(const Character &character)
                             flurry_charges = 3;
                             flurry_dt_factor = flurry_speed_bonus;
                         }
-                        if (hit_outcome.hit_result == Hit_result::dodge)
+                        if (hit_outcome.hit_result == Hit_result::dodge || hit_outcome.hit_result == Hit_result::miss)
                         {
                             rage -= 6;
                         }

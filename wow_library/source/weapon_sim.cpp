@@ -10,7 +10,7 @@ Weapon_sim::Weapon_sim(double swing_speed, std::pair<double, double> damage_inte
         weapon_type{skill_type},
         hit_effects(std::move(hit_effects))
 {
-    socket_name = (socket == Socket ::main_hand) ? "main_hand" : "off_hand";
+    socket_name = (socket == Socket::main_hand) ? "main_hand" : "off_hand";
     if (weapon_type == Weapon_type::dagger)
     {
         normalized_swing_speed = 1.7;

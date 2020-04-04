@@ -41,17 +41,30 @@ void print_character_stat(const Character &char1, const Character &char2)
     print_stat("Htk Pwr  : ", char1.total_special_stats.attack_power, char2.total_special_stats.attack_power);
     print_stat("Haste    : ", char1.total_special_stats.haste, char2.total_special_stats.haste);
     std::cout << "\n";
-    for (const auto &armor_1 : char1.armor)
+
+    std::cout << "Armor:" << "\n";
+    for (size_t i = 0; i < char1.armor.size(); i++)
     {
-        for (const auto &armor_2 : char2.armor)
+        if (char1.armor[i].name != char2.armor[i].name)
         {
-            if (armor_1.socket == armor_2.socket)
+            std::cout << char1.armor[i].name << " --> " << char2.armor[i].name << "\n";
+        }
+    }
+
+    std::cout << "\n" << "Weapons:" << "\n";
+    for (size_t i = 0; i < char1.weapons.size(); i++)
+    {
+        if (char1.weapons[i].name != char2.weapons[i].name)
+        {
+            if (i == 0)
             {
-                if (armor_1.name != armor_2.name)
-                {
-                    std::cout << armor_1.name << " --> " << armor_2.name << "\n";
-                }
+                std::cout << "Mainhand: ";
             }
+            else
+            {
+                std::cout << "Offhand: ";
+            }
+            std::cout << char1.weapons[i].name << " --> " << char2.weapons[i].name << "\n";
         }
     }
 
@@ -141,9 +154,9 @@ Character delta_gear(const Character &character, const Armory &armory, const Buf
 {
     Character delta_character = character;
 
-//    delta_character.change_weapon(armory.axes.crul_shorukh_edge_of_chaos, Hand::main_hand);
+    armory.change_weapon(delta_character.weapons, armory.axes.crul_shorukh_edge_of_chaos, Socket::main_hand);
 
-    armory.change_armor(delta_character.armor, armory.chest.knight_captains_plate_hauberk);
+//    armory.change_armor(delta_character.armor, armory.chest.knight_captains_plate_hauberk);
 
     armory.compute_total_stats(delta_character);
 
@@ -163,7 +176,7 @@ int main()
 
     // Simulator & Combat settings
     Combat_simulator_config config{};
-    config.n_batches = 1000;
+    config.n_batches = 100000;
     config.sim_time = 60;
     config.opponent_level = 63;
     config.enable_rng_melee = false;
@@ -178,8 +191,8 @@ int main()
     config.enable_death_wish = true;
     config.enable_recklessness = false;
     config.display_combat_debug = false;
-    config.use_seed = false;
-    config.seed = 10000;
+    config.use_seed = true;
+    config.seed = 110000;
     config.fuel_extra_rage = false;
     config.extra_rage_interval = 3;
     config.extra_rage_damage_amount = 150;

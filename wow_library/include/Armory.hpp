@@ -518,7 +518,11 @@ struct Armory
             total_attributes += get_enchant_attributes(weapon.socket, weapon.enchant.type);
             total_special_stats += get_enchant_special_stats(weapon.socket, weapon.enchant.type);
 
-            weapon.hit_effects.emplace_back(enchant_hit_effect(weapon.swing_speed, weapon.enchant.type));
+            auto hit_effect = enchant_hit_effect(weapon.swing_speed, weapon.enchant.type);
+            if (hit_effect.type != Hit_effect::Type::none)
+            {
+                weapon.hit_effects.emplace_back(enchant_hit_effect(weapon.swing_speed, weapon.enchant.type));
+            }
 
             set_names.emplace_back(weapon.set_name);
         }
@@ -637,19 +641,16 @@ struct Armory
         return is_valid;
     }
 
-//    void Character::change_weapon(const Weapon &weapon, const Hand &hand)
-//    {
-//        switch (hand)
-//        {
-//            case Hand::main_hand:
-//                weapons_[0] = weapon;
-//                break;
-//            case Hand::off_hand:
-//                weapons_[1] = weapon;
-//                break;
-//        }
-//    }
-//
+    void change_weapon(std::vector<Weapon> &weapons, const Weapon &weapon, const Socket &socket) const
+    {
+        assert(socket == Socket::main_hand || socket == Socket::off_hand);
+        Weapon &current_wep = (socket == Socket::main_hand) ? weapons[0] : weapons[1];
+        Weapon weapon_copy = weapon;
+        weapon_copy.buff = current_wep.buff;
+        weapon_copy.enchant = current_wep.enchant;
+        current_wep = weapon_copy;
+    }
+
     void change_armor(std::vector<Armor> &armor_vec, const Armor &armor, bool first_misc_slot = true) const
     {
         auto socket = armor.socket;
@@ -674,6 +675,7 @@ struct Armory
             }
         }
     }
+
 };
 
 #endif //WOW_SIMULATOR_ARMORY_HPP
