@@ -6,7 +6,8 @@
 class Weapon_sim
 {
 public:
-    Weapon_sim(double swing_speed, std::pair<double, double> damage_interval, Socket socket, Weapon_type skill_type, std::vector<Hit_effect> hit_effects);
+    Weapon_sim(double swing_speed, double min_damage, double max_damage, Socket socket, Weapon_type skill_type,
+               std::vector<Hit_effect> hit_effects);
 
     constexpr bool time_for_swing(double dt)
     {
@@ -26,9 +27,9 @@ public:
 
     constexpr void compute_weapon_damage(double bonus_damage)
     {
-        damage_interval.first += bonus_damage;
-        damage_interval.second += bonus_damage;
-        average_damage = (damage_interval.second + damage_interval.first) / 2;
+        min_damage += bonus_damage;
+        max_damage += bonus_damage;
+        average_damage = (min_damage + max_damage) / 2;
     }
 
     double random_swing(double attack_power);
@@ -38,7 +39,8 @@ public:
     double swing_speed;
     double normalized_swing_speed;
     double internal_swing_timer;
-    std::pair<double, double> damage_interval;
+    double min_damage;
+    double max_damage;
     double average_damage;
     Socket socket;
     Weapon_type weapon_type;

@@ -480,12 +480,12 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
     damage_distribution_.reserve(n_damage_batches);
     const auto starting_special_stats = character.total_special_stats;
     std::vector<Weapon_sim> weapons;
-    weapons.push_back({character.weapons[0].swing_speed,
-                       {character.weapons[0].min_damage, character.weapons[0].max_damage},
-                       Socket::main_hand, character.weapons[0].type, character.weapons[0].hit_effects});
-    weapons.push_back({character.weapons[1].swing_speed,
-                       {character.weapons[1].min_damage, character.weapons[1].max_damage},
-                       Socket::off_hand, character.weapons[1].type, character.weapons[1].hit_effects});
+    weapons.emplace_back(character.weapons[0].swing_speed, character.weapons[0].min_damage,
+                         character.weapons[0].max_damage, Socket::main_hand, character.weapons[0].type,
+                         character.weapons[0].hit_effects);
+    weapons.emplace_back(character.weapons[1].swing_speed, character.weapons[1].min_damage,
+                         character.weapons[1].max_damage, Socket::off_hand, character.weapons[1].type,
+                         character.weapons[1].hit_effects);
 
     weapons[0].compute_weapon_damage(character.weapons[0].buff.bonus_damage);
     weapons[1].compute_weapon_damage(character.weapons[1].buff.bonus_damage);

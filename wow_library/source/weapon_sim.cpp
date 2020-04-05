@@ -1,10 +1,11 @@
 #include "../include/weapon_sim.hpp"
 
-Weapon_sim::Weapon_sim(double swing_speed, std::pair<double, double> damage_interval,
-                       Socket socket, Weapon_type skill_type, std::vector<Hit_effect> hit_effects) :
+Weapon_sim::Weapon_sim(double swing_speed, double min_damage, double max_damage, Socket socket, Weapon_type skill_type,
+                       std::vector<Hit_effect> hit_effects) :
         swing_speed{swing_speed},
         internal_swing_timer{0.0},
-        damage_interval{std::move(damage_interval)},
+        min_damage(min_damage),
+        max_damage(max_damage),
         average_damage{0.0},
         socket{socket},
         weapon_type{skill_type},
@@ -23,15 +24,13 @@ Weapon_sim::Weapon_sim(double swing_speed, std::pair<double, double> damage_inte
 
 double Weapon_sim::random_swing(double attack_power)
 {
-    double damage = damage_interval.first + (damage_interval.second - damage_interval
-            .first) * static_cast<double>(rand()) / RAND_MAX
+    double damage = min_damage + (max_damage - min_damage) * static_cast<double>(rand()) / RAND_MAX
                     + attack_power * swing_speed / 14;
     return damage;
 }
 
 double Weapon_sim::random_normalized_swing(double attack_power)
 {
-    return damage_interval.first + (damage_interval.second - damage_interval
-            .first) * static_cast<double>(rand()) / RAND_MAX
+    return min_damage + (max_damage - min_damage) * static_cast<double>(rand()) / RAND_MAX
            + attack_power * normalized_swing_speed / 14;
 }
