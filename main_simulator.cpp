@@ -116,7 +116,8 @@ Character character_setup(const Armory &armory, const Buffs &buffs)
     character.equip_armor(armory.ranged.bloodseeker);
 
     // Weapons
-    character.equip_weapon(armory.swords.quel_serrar, armory.swords.mirahs_song);
+//    character.equip_weapon(armory.swords.quel_serrar, armory.swords.mirahs_song);
+    character.equip_weapon(armory.axes.crul_shorukh_edge_of_chaos, armory.axes.dooms_edge);
 
     // Enchants
     character.add_enchant(Socket::head, Enchant::Type::haste);
@@ -155,6 +156,9 @@ Character delta_gear(const Character &character, const Armory &armory, const Buf
     Character delta_character = character;
 
 //    armory.change_weapon(delta_character.weapons, armory.swords.dal_rends_sacred_charge, Socket::main_hand);
+//    armory.change_weapon(delta_character.weapons, armory.swords.dal_rends_tribal_guardian, Socket::off_hand);
+    armory.change_weapon(delta_character.weapons, armory.axes.deathbringer, Socket::main_hand);
+//    armory.change_weapon(delta_character.weapons, armory.axes.crul_shorukh_edge_of_chaos, Socket::off_hand);
 //    armory.change_weapon(delta_character.weapons, armory.swords.dal_rends_tribal_guardian, Socket::off_hand);
 //    armory.change_armor(delta_character.armor, armory.chest.black_dragonscale_chest);
 

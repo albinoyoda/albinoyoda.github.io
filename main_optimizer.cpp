@@ -170,6 +170,7 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
     std::vector<Armor> backs;
     backs = {
 //            armory.back.cloak_of_draconic_might,
+            armory.back.blackveil_cloak,
             armory.back.cape_of_the_black_baron
     };
 
@@ -187,6 +188,7 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
     std::vector<Armor> wrists;
     wrists = {
             armory.wrist.vambraces_of_the_sadist,
+//            armory.wrist.wristguards_of_stability,
             armory.wrist.battleborn_armbraces,
 //            armory.wrist.aq_quiraji_execution_bracers
     };
@@ -200,6 +202,7 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
 
     std::vector<Armor> belts;
     belts = {
+            armory.belt.brigam_girdle,
             armory.belt.omokks_girth,
 //            armory.belt.mugglers_belt
     };
@@ -225,12 +228,14 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
             armory.ranged.satyrs_bow,
 //            armory.ranged.precisely_calibrated_boomstick,
             armory.ranged.bloodseeker,
+            armory.ranged.blastershot,
 //            armory.ranged.riphook
     };
 
     std::vector<Armor> rings;
     rings = {
 //            armory.rings.don_julios_band,
+//            armory.rings.master_dragonslayers_ring,
             armory.rings.magnis_will,
             armory.rings.blackstone_ring,
             armory.rings.tarnished_elven
@@ -246,14 +251,16 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
 
     std::vector<Weapon> weapons;
     weapons = {
-            armory.swords.dal_rends_sacred_charge,
-            armory.swords.dal_rends_tribal_guardian,
+//            armory.swords.dal_rends_sacred_charge,
+//            armory.swords.dal_rends_tribal_guardian,
             armory.swords.quel_serrar,
-            armory.swords.thrash_blade,
+//            armory.swords.thrash_blade,
             armory.swords.mirahs_song,
 //            armory.maces.ebon_hand,
-//            armory.maces.ebon_hand,
-            armory.swords.mirahs_song,
+//            armory.swords.mirahs_song,
+//            armory.axes.deathbringer,
+//            armory.axes.dooms_edge,
+//            armory.axes.crul_shorukh_edge_of_chaos,
     };
 
     size_t n_helmet = helmets.size();
@@ -370,7 +377,7 @@ void Item_optimizer::add_buffs(Character &character, const Buffs &buffs)
 {
     character.add_buff(buffs.rallying_cry);
     character.add_buff(buffs.dire_maul);
-    character.add_buff(buffs.songflower);
+//    character.add_buff(buffs.songflower);
     character.add_buff(buffs.blessing_of_kings);
     character.add_buff(buffs.blessing_of_might);
     character.add_buff(buffs.gift_of_the_wild);
@@ -378,7 +385,7 @@ void Item_optimizer::add_buffs(Character &character, const Buffs &buffs)
     character.add_buff(buffs.elixir_mongoose);
     character.add_buff(buffs.blessed_sunfruit);
     character.add_buff(buffs.juju_power);
-    character.add_buff(buffs.juju_might);
+//    character.add_buff(buffs.juju_might);
     character.add_buff(buffs.roids);
 
     character.add_weapon_buff(Socket::main_hand, buffs.dense_stone);

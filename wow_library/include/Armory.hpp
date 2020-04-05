@@ -87,6 +87,7 @@ struct Armory
                                       Socket::back};
         Armor aq_cloak_of_concentrated_hate{"aq_cloak_of_concentrated_hate", Attributes{11, 16}, Special_stats{0, 1, 0},
                                             Socket::back};
+        Armor blackveil_cloak{"blackveil_cloak", Attributes{6, 14}, Special_stats{0, 0, 0}, Socket::back};
     } back;
 
     struct chest_t
@@ -154,6 +155,7 @@ struct Armory
         Armor onslaught_girdle{"onslaught_girdle", Attributes{31, 0}, Special_stats{1, 1, 0}, Socket::belt};
         Armor mugglers_belt{"mugglers_belt", Attributes{0, 0}, Special_stats{1, 0, 0, 0, 0, 0, 0, 5}, Socket::belt};
         Armor omokks_girth{"omokks_girth", Attributes{15, 0}, Special_stats{1, 0, 0}, Socket::belt};
+        Armor brigam_girdle{"brigam_girdle", Attributes{15, 0}, Special_stats{0, 1, 0}, Socket::belt};
         Armor girdle_of_the_fallen_crusader{"girdle_of_the_fallen_crusader", Attributes{20, 10}, Special_stats{0, 0, 0},
                                             Socket::belt};
     } belt;
@@ -275,7 +277,7 @@ struct Armory
     struct axes_t
     {
         Weapon deathbringer{"deathbringer", Attributes{0, 0}, Special_stats{0, 0, 0}, 2.9, 114, 213,
-                            Weapon_socket::one_hand, Weapon_type::axe};
+                            Weapon_socket::one_hand, Weapon_type::axe, {{"deathbringer", Hit_effect::Type::damage_magic, {}, {}, 125, 0, 0.08}}};
         Weapon crul_shorukh_edge_of_chaos{"crul_shorukh_edge_of_chaos", Attributes{0.0, 0.0},
                                           Special_stats{0.0, 0.0, 36.0}, 2.3, 101.0, 188.0, Weapon_socket::one_hand,
                                           Weapon_type::axe};
@@ -327,142 +329,11 @@ struct Armory
         return set_bonuses;
     }
 
-    Attributes get_enchant_attributes(Socket socket, Enchant::Type type) const
-    {
-        switch (socket)
-        {
-            case Socket::head:
-            {
-                switch (type)
-                {
-                    case Enchant::Type::agility:
-                        return {0, 8};
-                    case Enchant::Type::strength:
-                        return {8, 0};
-                    default:
-                        return {0, 0};
-                }
-            }
-            case Socket::back:
-            {
-                switch (type)
-                {
-                    case Enchant::Type::agility:
-                        return {0, 3};
-                    default:
-                        return {0, 0};
-                }
-            }
-            case Socket::chest:
-            {
-                switch (type)
-                {
-                    case Enchant::Type::minor_stats:
-                        return {3, 3};
-                    case Enchant::Type::major_stats:
-                        return {4, 4};
-                    default:
-                        return {0, 0};
-                }
-            }
-            case Socket::wrists :
-            {
-                switch (type)
-                {
-                    case Enchant::Type::strength7:
-                        return {7, 0};
-                    case Enchant::Type::strength9:
-                        return {9, 0};
-                    default:
-                        return {0, 0};
-                }
-            }
-            case Socket::hands :
-            {
-                switch (type)
-                {
-                    case Enchant::Type::agility:
-                        return {0, 7};
-                    case Enchant::Type::strength:
-                        return {7, 0};
-                    default:
-                        return {0, 0};
-                }
-            }
-            case Socket::legs :
-            {
-                switch (type)
-                {
-                    case Enchant::Type::agility:
-                        return {0, 8};
-                    case Enchant::Type::strength:
-                        return {8, 0};
-                    default:
-                        return {0, 0};
-                }
-            }
-            case Socket::boots :
-            {
-                switch (type)
-                {
-                    case Enchant::Type::agility:
-                        return {0, 7};
-                    default:
-                        return {0, 0};
-                }
-            }
-            default:
-                return {0, 0};
-        }
-    }
+    Attributes get_enchant_attributes(Socket socket, Enchant::Type type) const;
 
-    Special_stats get_enchant_special_stats(Socket socket, Enchant::Type type) const
-    {
-        switch (socket)
-        {
-            case Socket::head:
-            {
-                switch (type)
-                {
-                    case Enchant::Type::haste:
-                        return {0, 0, 0, 0, .01};
-                    default:
-                        return {0, 0, 0};
-                }
-            }
-            case Socket::hands :
-            {
-                switch (type)
-                {
-                    case Enchant::Type::haste:
-                        return {0, 0, 0, 0, .01};
-                    default:
-                        return {0, 0, 0};
-                }
-            }
-            case Socket::legs:
-            {
-                switch (type)
-                {
-                    case Enchant::Type::haste:
-                        return {0, 0, 0, 0, .01};
-                    default:
-                        return {0, 0, 0};
-                }
-            }
-            default:
-                return {0, 0, 0};
-        }
-    }
+    Special_stats get_enchant_special_stats(Socket socket, Enchant::Type type) const;
 
-    Hit_effect enchant_hit_effect(double weapon_speed, Enchant::Type type) const
-    {
-        if (type == Enchant::Type::crusader)
-        {
-            return {"crusader", Hit_effect::Type::stat_boost, {100, 0}, {0, 0, 0}, 0, 15, weapon_speed / 40};
-        }
-        return {"none", Hit_effect::Type::none, {}, {}, 0, 0, 0};
-    }
+    Hit_effect enchant_hit_effect(double weapon_speed, Enchant::Type type) const;
 
     void clean_weapon(Weapon &weapon) const
     {

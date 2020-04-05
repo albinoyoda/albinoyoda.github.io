@@ -3,6 +3,8 @@
 
 #include <cassert>
 #include <vector>
+#include <iostream>
+
 #include "Item.hpp"
 
 enum class Race
