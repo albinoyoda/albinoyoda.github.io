@@ -11,12 +11,7 @@ public:
     constexpr bool time_for_swing(double dt)
     {
         internal_swing_timer -= dt;
-        if (internal_swing_timer < 0.0)
-        {
-            internal_swing_timer += dt;
-            return true;
-        }
-        return false;
+        return internal_swing_timer < 0.0;
     }
 
     constexpr double swing(double attack_power)

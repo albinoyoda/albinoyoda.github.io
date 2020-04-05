@@ -183,6 +183,7 @@ int main()
     config.n_batches = 100000;
     config.sim_time = 60;
     config.opponent_level = 63;
+    config.use_sim_time_ramp = true;
     config.enable_rng_melee = false;
     config.enable_spell_rotation = true;
     config.use_heroic_spamm = false;
@@ -194,7 +195,7 @@ int main()
     config.enable_crusader = true;
     config.enable_death_wish = true;
     config.enable_recklessness = false;
-    config.display_combat_debug = false;
+//    config.display_combat_debug = true;
     config.use_seed = true;
     config.seed = 110000;
     config.fuel_extra_rage = false;

@@ -24,6 +24,7 @@ struct Combat_simulator_config
     int opponent_level{};
 
     // Simulator settings
+    bool use_sim_time_ramp = false;
     bool enable_rng_melee{false};
     bool enable_spell_rotation{false};
     bool use_heroic_spamm{false};
@@ -222,7 +223,7 @@ public:
     {
         if (config_.display_combat_debug)
         {
-            std::cout << "Time: " << std::setw(8) << std::left << time_keeper_.time + time_keeper_.current_dt
+            std::cout << "Time: " << std::setw(8) << std::left << time_keeper_.time
                       << "s. Loop idx:" << std::setw(4) << time_keeper_.step_index << "Event: ";
             __attribute__((unused)) int dummy[] = {0, ((void) print_statement(std::forward<Args>(args)), 0)...};
             std::cout << "\n";

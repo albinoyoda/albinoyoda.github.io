@@ -368,7 +368,7 @@ Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_weapon,
     {
         swing_damage *= 0.625;
     }
-    weapon.internal_swing_timer = weapon.swing_speed / special_stats.haste;
+    weapon.internal_swing_timer += weapon.swing_speed / special_stats.haste;
 
     // Check if heroic strike should be performed
     if (swing_damage > 0.0)
@@ -504,6 +504,13 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
     double target_mitigation = armor_mitigation(boss_armor, 63);
     armor_reduction_factor_ = 1 - target_mitigation;
 
+    double sim_time = config_.sim_time;
+    double sim_time_increment = config_.sim_time / 5.0 / n_damage_batches;
+    if (config_.use_sim_time_ramp)
+    {
+        sim_time -= config_.sim_time / 10.0;
+    }
+
     for (int iter = 0; iter < n_damage_batches; iter++)
     {
         time_keeper_.reset(); // Class variable that keeps track of the time spent, cooldowns, iteration number
@@ -532,34 +539,33 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
         weapons[0].internal_swing_timer = 0.0;
         weapons[1].internal_swing_timer = 0.0;
 
-        while (time_keeper_.time < config_.sim_time)
+        if (config_.use_sim_time_ramp)
+        {
+            sim_time += sim_time_increment;
+        }
+
+        while (time_keeper_.time < sim_time)
         {
             double mh_dt = weapons[0].internal_swing_timer;
             double oh_dt = weapons[1].internal_swing_timer;
             double buff_dt = buff_manager_.get_dt();
-            double dt = time_keeper_.get_dynamic_time_step(mh_dt, oh_dt, buff_dt, config_.sim_time);
+            double dt = time_keeper_.get_dynamic_time_step(mh_dt, oh_dt, buff_dt, sim_time);
+            time_keeper_.increment(dt);
             buff_manager_.increment(dt);
-
-            if (time_keeper_.time + dt > config_.sim_time)
-            {
-                break;
-            }
 
             bool mh_swing = weapons[0].time_for_swing(dt);
             bool oh_swing = weapons[1].time_for_swing(dt);
 
             if (mh_swing)
             {
-                swing_weapon(weapons[0], weapons[0], special_stats,
-                             heroic_strike_active, rage, heroic_strike_rage_cost, deathwish_active,
-                             recklessness_active, damage_sources, flurry_charges);
+                swing_weapon(weapons[0], weapons[0], special_stats, heroic_strike_active, rage, heroic_strike_rage_cost,
+                             deathwish_active, recklessness_active, damage_sources, flurry_charges);
             }
 
             if (oh_swing)
             {
-                swing_weapon(weapons[1], weapons[0], special_stats,
-                             heroic_strike_active, rage, heroic_strike_rage_cost, deathwish_active,
-                             recklessness_active, damage_sources, flurry_charges);
+                swing_weapon(weapons[1], weapons[0], special_stats, heroic_strike_active, rage, heroic_strike_rage_cost,
+                             deathwish_active, recklessness_active, damage_sources, flurry_charges);
             }
 
             if (config_.fuel_extra_rage)
@@ -587,7 +593,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
 
             if (config_.enable_bloodrage)
             {
-                if (!bloodrage_active && bloodrage_cooldown - dt < 0.0)
+                if (!bloodrage_active && bloodrage_cooldown < 0.0)
                 {
                     simulator_cout("Bloodrage activated!");
                     bloodrage_active = true;
@@ -614,7 +620,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
 
             if (config_.use_mighty_rage_potion)
             {
-                if (config_.sim_time - time_keeper_.time < 30.0 && !used_mighty_rage_potion && rage < 50)
+                if (sim_time - time_keeper_.time < 30.0 && !used_mighty_rage_potion)
                 {
                     simulator_cout("------------ Mighty Rage Potion! ------------");
                     rage += 45 + 30 * get_uniform_random(1);
@@ -635,40 +641,40 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
             {
                 if (config_.enable_death_wish)
                 {
-                    if (config_.sim_time - time_keeper_.time < 31.0 && rage >= 10 && !deathwish_active)
+                    if (sim_time - time_keeper_.time < 31.0 && rage >= 10 && !deathwish_active)
                     {
                         deathwish_active = true;
                         rage -= 10;
-                        time_keeper_.global_cd = 1.0 + dt;
+                        time_keeper_.global_cd = 1.0;
                         simulator_cout("------------ Deathwish activated! ------------");
                     }
                 }
                 if (config_.enable_recklessness)
                 {
-                    if (config_.sim_time - time_keeper_.time < 16.0 && !recklessness_active)
+                    if (sim_time - time_keeper_.time < 16.0 && !recklessness_active)
                     {
                         recklessness_active = true;
-                        time_keeper_.global_cd = 1.0 + dt;
+                        time_keeper_.global_cd = 1.0;
                         simulator_cout("------------ Recklessness activated! ------------");
                     }
                 }
 
-                // Execute phase, starts at 80% in with 0.5 sec activation time
-                if (time_keeper_.time + dt > config_.sim_time * 0.85)
+                // Execute phase, starts at 85% in
+                if (time_keeper_.time > sim_time * 0.85)
                 {
                     if (!have_printed_execute_phase)
                     {
                         simulator_cout("------------ Execute phase! ------------");
                         have_printed_execute_phase = true;
                     }
-                    if (time_keeper_.global_cd - dt < 0 && rage > 10)
+                    if (time_keeper_.global_cd < 0 && rage > 10)
                     {
                         simulator_cout("Execute!");
                         double damage = 600 + (rage - 10) * 15;
                         auto hit_outcome = generate_hit(damage, Hit_type::yellow, Socket::main_hand,
                                                         heroic_strike_active,
                                                         deathwish_active, recklessness_active);
-                        time_keeper_.global_cd = 1.0 + dt;
+                        time_keeper_.global_cd = 1.0;
                         if (hit_outcome.hit_result == Hit_result::dodge || hit_outcome.hit_result == Hit_result::miss)
                         {
                             rage *= 0.85;
@@ -684,7 +690,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                 }
                 else
                 {
-                    if (time_keeper_.blood_thirst_cd - dt < 0.0 && time_keeper_.global_cd - dt < 0 && rage > 30)
+                    if (time_keeper_.blood_thirst_cd < 0.0 && time_keeper_.global_cd < 0 && rage > 30)
                     {
                         simulator_cout("Bloodthirst!");
                         double damage = special_stats.attack_power * 0.45;
@@ -699,17 +705,17 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                         {
                             rage -= 30;
                         }
-                        time_keeper_.blood_thirst_cd = 6.0 + dt;
-                        time_keeper_.global_cd = 1.0 + dt;
+                        time_keeper_.blood_thirst_cd = 6.0;
+                        time_keeper_.global_cd = 1.0;
                         manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges, true);
                         damage_sources.add_damage(Damage_source::bloodthirst, hit_outcome.damage);
                         simulator_cout(rage, " rage");
                     }
 
-                    if (time_keeper_.whirlwind_cd - dt < 0.0 &&
+                    if (time_keeper_.whirlwind_cd < 0.0 &&
                         rage > 25 &&
-                        time_keeper_.global_cd - dt < 0 &&
-                        time_keeper_.blood_thirst_cd - dt > 1.0)
+                        time_keeper_.global_cd < 0 &&
+                        time_keeper_.blood_thirst_cd > 1.0)
                     {
                         simulator_cout("Whirlwind!");
                         double damage;
@@ -725,8 +731,8 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                                                         heroic_strike_active,
                                                         deathwish_active, recklessness_active);
                         rage -= 25;
-                        time_keeper_.whirlwind_cd = 10 + dt;
-                        time_keeper_.global_cd = 1.0 + dt;
+                        time_keeper_.whirlwind_cd = 10;
+                        time_keeper_.global_cd = 1.0;
                         manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges, true);
                         damage_sources.add_damage(Damage_source::whirlwind, hit_outcome.damage);
                         simulator_cout(rage, " rage");
@@ -738,7 +744,6 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                     }
                 }
             }
-            time_keeper_.increment(dt);
         }
         batch_damage_.push_back(damage_sources.sum_damage_sources() / time_keeper_.time);
         damage_distribution_.emplace_back(damage_sources);

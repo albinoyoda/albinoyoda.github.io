@@ -408,6 +408,7 @@ int main()
     config.n_batches = 100000;
     config.sim_time = 60;
     config.opponent_level = 63;
+    config.use_sim_time_ramp = true;
     config.enable_rng_melee = false;
     config.enable_spell_rotation = true;
     config.use_heroic_spamm = false;
