@@ -2,21 +2,16 @@
 
 namespace
 {
-    constexpr double rage_factor = 15.0 / 4.0 / 230.6;
+    constexpr double rage_factor = 15.0 / 230.6 / 2.0;
 
-    constexpr double rage_from_damage(double damage)
+    constexpr double rage_from_damage_taken(double damage)
     {
         return damage * 5 / 2 / 230.6;
     }
 
-    constexpr double rage_generation(double damage, double weapon_speed, bool crit, bool is_main_hand)
+    constexpr double rage_generation(double damage)
     {
-        if (damage > 0.0)
-        {
-            double hit_factor = 1.75 * (crit + 1) * (is_main_hand + 1);
-            return damage * rage_factor + hit_factor * weapon_speed / 2;
-        }
-        return 0.0;
+        return damage * rage_factor;
     }
 
     constexpr double armor_mitigation(double target_armor, int target_level)
@@ -372,98 +367,98 @@ void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_we
     weapon.internal_swing_timer += weapon.swing_speed / special_stats.haste;
 
     // Check if heroic strike should be performed
-    if (swing_damage > 0.0)
+    if (config_.enable_spell_rotation &&
+        heroic_strike_active &&
+        weapon.socket == Socket::main_hand &&
+        rage >= heroic_strike_rage_cost)
     {
-        if (config_.enable_spell_rotation &&
-            heroic_strike_active &&
-            weapon.socket == Socket::main_hand &&
-            rage >= heroic_strike_rage_cost)
+        simulator_cout("Performing heroic strike");// Unbridled wrath
+        swing_damage += 138;
+        hit_outcome = generate_hit(swing_damage, Hit_type::yellow, weapon.socket, heroic_strike_active,
+                                   deathwish_active, recklessness_active);
+        heroic_strike_active = false;
+        rage -= heroic_strike_rage_cost;
+        damage_sources.add_damage(Damage_source::heroic_strike, hit_outcome.damage);
+        simulator_cout(rage, " rage");
+    }
+    else
+    {
+        if (weapon.socket == Socket::main_hand && heroic_strike_active)
         {
-            simulator_cout("Performing heroic strike");// Unbridled wrath
-            swing_damage += 138;
-            hit_outcome = generate_hit(swing_damage, Hit_type::yellow, weapon.socket, heroic_strike_active,
-                                       deathwish_active, recklessness_active);
+            // Failed to pay rage for heroic strike
+            simulator_cout("Failed to pay heroic strike rage");
             heroic_strike_active = false;
-            rage -= heroic_strike_rage_cost;
-            damage_sources.add_damage(Damage_source::heroic_strike, hit_outcome.damage);
-            simulator_cout(rage, " rage");
+        }
+
+        // Otherwise do white hit
+        hit_outcome = generate_hit(swing_damage, Hit_type::white, weapon.socket, heroic_strike_active,
+                                   deathwish_active, recklessness_active);
+
+        rage += rage_generation(hit_outcome.damage);
+        if (hit_outcome.hit_result == Hit_result::dodge)
+        {
+            simulator_cout("Rage gained from enemy dodging");
+            rage += rage_generation(swing_damage * armor_reduction_factor_);
+        }
+        rage = std::min(100.0, rage);
+        if (weapon.socket == Socket::main_hand)
+        {
+            damage_sources.add_damage(Damage_source::white_mh, hit_outcome.damage);
         }
         else
         {
-            if (weapon.socket == Socket::main_hand && heroic_strike_active)
-            {
-                // Failed to pay rage for heroic strike
-                simulator_cout("Failed to pay heroic strike rage");
-                heroic_strike_active = false;
-            }
-
-            // Otherwise do white hit
-            hit_outcome = generate_hit(swing_damage, Hit_type::white, weapon.socket, heroic_strike_active,
-                                       deathwish_active, recklessness_active);
-            rage += rage_generation(hit_outcome.damage,
-                                    weapon.swing_speed,
-                                    hit_outcome.hit_result == Hit_result::crit,
-                                    weapon.socket == Socket::main_hand);
-            rage = std::min(100.0, rage);
-            if (weapon.socket == Socket::main_hand)
-            {
-                damage_sources.add_damage(Damage_source::white_mh, hit_outcome.damage);
-            }
-            else
-            {
-                damage_sources.add_damage(Damage_source::white_oh, hit_outcome.damage);
-            }
-            simulator_cout(rage, " rage");
+            damage_sources.add_damage(Damage_source::white_oh, hit_outcome.damage);
         }
+        simulator_cout(rage, " rage");
+    }
 
-        if (hit_outcome.hit_result != Hit_result::miss &&
-            hit_outcome.hit_result != Hit_result::dodge)
+    if (hit_outcome.hit_result != Hit_result::miss &&
+        hit_outcome.hit_result != Hit_result::dodge)
+    {
+        for (const auto &hit_effect : weapon.hit_effects)
         {
-            for (const auto &hit_effect : weapon.hit_effects)
+            double r = get_uniform_random(1);
+            if (r < hit_effect.probability)
             {
-                double r = get_uniform_random(1);
-                if (r < hit_effect.probability)
+                switch (hit_effect.type)
                 {
-                    switch (hit_effect.type)
-                    {
-                        case Hit_effect::Type::extra_hit:
-                            simulator_cout("PROC: extra hit from: ", hit_effect.name);
-                            swing_weapon(main_hand_weapon, main_hand_weapon, special_stats,
-                                         heroic_strike_active, rage, heroic_strike_rage_cost, deathwish_active,
-                                         recklessness_active, damage_sources, flurry_charges);
-                            break;
-                        case Hit_effect::Type::damage_magic:
-                            simulator_cout("PROC: damage from: ", hit_effect.name);
-                            damage_sources.add_damage(Damage_source::item_hit_effects, hit_effect.damage * 0.85);
-                            break;
-                        case Hit_effect::Type::damage_physical:
-                            simulator_cout("PROC: damage from: ", hit_effect.name);
-                            damage_sources.add_damage(Damage_source::item_hit_effects,
-                                                      generate_hit(hit_effect.damage, Hit_type::yellow,
-                                                                   Socket::main_hand, heroic_strike_active,
-                                                                   deathwish_active, recklessness_active).damage);
-                            break;
-                        case Hit_effect::Type::stat_boost:
-                            simulator_cout("PROC: stats increased: ", hit_effect.name);
-                            buff_manager_.add(weapon.socket_name + "_" + hit_effect.name,
-                                              hit_effect.get_special_stat_equivalent(),
-                                              hit_effect.duration);
-                            break;
-                        default:
-                            std::cout << ":::::::::::FAULTY HIT EFFECT IN SIMULATION!!!:::::::::";
-                            break;
-                    }
+                    case Hit_effect::Type::extra_hit:
+                        simulator_cout("PROC: extra hit from: ", hit_effect.name);
+                        swing_weapon(main_hand_weapon, main_hand_weapon, special_stats,
+                                     heroic_strike_active, rage, heroic_strike_rage_cost, deathwish_active,
+                                     recklessness_active, damage_sources, flurry_charges);
+                        break;
+                    case Hit_effect::Type::damage_magic:
+                        simulator_cout("PROC: damage from: ", hit_effect.name);
+                        damage_sources.add_damage(Damage_source::item_hit_effects, hit_effect.damage * 0.85);
+                        break;
+                    case Hit_effect::Type::damage_physical:
+                        simulator_cout("PROC: damage from: ", hit_effect.name);
+                        damage_sources.add_damage(Damage_source::item_hit_effects,
+                                                  generate_hit(hit_effect.damage, Hit_type::yellow,
+                                                               Socket::main_hand, heroic_strike_active,
+                                                               deathwish_active, recklessness_active).damage);
+                        break;
+                    case Hit_effect::Type::stat_boost:
+                        simulator_cout("PROC: stats increased: ", hit_effect.name);
+                        buff_manager_.add(weapon.socket_name + "_" + hit_effect.name,
+                                          hit_effect.get_special_stat_equivalent(),
+                                          hit_effect.duration);
+                        break;
+                    default:
+                        std::cout << ":::::::::::FAULTY HIT EFFECT IN SIMULATION!!!:::::::::";
+                        break;
                 }
             }
-
-            // Unbridled wrath
-            if (get_uniform_random(1) < config_.talents.unbridled_wrath * 0.08)
-            {
-                rage += 1;
-                simulator_cout("Unbridled wrath, +1 rage");
-            }
-            manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges);
         }
+
+        // Unbridled wrath
+        if (get_uniform_random(1) < config_.talents.unbridled_wrath * 0.08)
+        {
+            rage += 1;
+            simulator_cout("Unbridled wrath, +1 rage");
+        }
+        manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges);
     }
 }
 
@@ -571,11 +566,11 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
             {
                 if (time_keeper_.time - config_.extra_rage_interval * fuel_ticks > 0.0)
                 {
-                    rage += rage_from_damage(config_.extra_rage_damage_amount);
+                    rage += rage_from_damage_taken(config_.extra_rage_damage_amount);
                     rage = std::min(100.0, rage);
                     fuel_ticks++;
                     simulator_cout("Rage from damage: ", config_.extra_rage_damage_amount, " damage, yielding: ",
-                                   rage_from_damage(config_.extra_rage_damage_amount), " rage");
+                                   rage_from_damage_taken(config_.extra_rage_damage_amount), " rage");
                 }
             }
 
