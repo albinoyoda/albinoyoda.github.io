@@ -23,18 +23,21 @@ struct Combat_simulator_config
     double sim_time{};
     int opponent_level{};
 
+    bool curse_of_recklessness_active{false};
+    bool sunder_armor_active{false};
+    bool faerie_fire_feral_active{false};
+    int n_sunder_armor_stacks = 0;
+
     // Simulator settings
     bool use_sim_time_ramp = false;
     bool enable_rng_melee{false};
     bool enable_spell_rotation{false};
     bool use_heroic_spamm{false};
     bool use_mighty_rage_potion{false};
-    bool enable_anger_management{false};
     bool enable_bloodrage{false};
     bool enable_talents{false};
     bool enable_item_chance_on_hit_effects{false};
     bool enable_crusader{false};
-    bool enable_death_wish{false};
     bool enable_recklessness{false};
     bool display_combat_debug{false};
     bool use_seed{false};
@@ -42,6 +45,18 @@ struct Combat_simulator_config
     bool fuel_extra_rage{false};
     int extra_rage_interval{};
     int extra_rage_damage_amount{};
+
+    struct talents_t
+    {
+        int improved_heroic_strike = 0;
+        int flurry = 0;
+        bool death_wish{false};
+        bool anger_management{false};
+        int unbridled_wrath = 0;
+        int impale = 0;
+        int improved_execute = 0;
+        int dual_wield_specialization = 0;
+    } talents;
 };
 
 class Combat_simulator
@@ -133,7 +148,7 @@ public:
             case 2:
                 return glancing_factor_mh_;
             case 3:
-                return 2.2;
+                return 2.0 + 0.1 * config_.talents.impale;
             case 4:
                 return 1.0;
             default:
@@ -153,7 +168,7 @@ public:
             case 2:
                 return glancing_factor_oh_;
             case 3:
-                return 2.2;
+                return 2.0 + 0.1 * config_.talents.impale;
             case 4:
                 return 1.0;
             default:
@@ -166,7 +181,7 @@ public:
     manage_flurry(Hit_result hit_result, Special_stats &special_stats, int &flurry_charges, bool is_ability = false);
 
     void swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_weapon, Special_stats &special_stats,
-                      bool &heroic_strike_,
+                      bool &heroic_strike_active,
                       double &rage, double &heroic_strike_rage_cost, bool &deathwish_active,
                       bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges);
 
