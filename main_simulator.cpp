@@ -40,6 +40,10 @@ void print_character_stat(const Character &char1, const Character &char2)
     print_stat("Crit:    : ", char1.total_special_stats.critical_strike, char2.total_special_stats.critical_strike);
     print_stat("Htk Pwr  : ", char1.total_special_stats.attack_power, char2.total_special_stats.attack_power);
     print_stat("Haste    : ", char1.total_special_stats.haste, char2.total_special_stats.haste);
+    print_stat("Swrd skil: ", char1.total_special_stats.sword_skill, char2.total_special_stats.sword_skill);
+    print_stat("Axe  skil: ", char1.total_special_stats.axe_skill, char2.total_special_stats.axe_skill);
+    print_stat("Dagr skil: ", char1.total_special_stats.dagger_skill, char2.total_special_stats.dagger_skill);
+    print_stat("Mace skil: ", char1.total_special_stats.mace_skill, char2.total_special_stats.mace_skill);
     std::cout << "\n";
 
     std::cout << "Armor:" << "\n";
@@ -155,12 +159,17 @@ Character delta_gear(const Character &character, const Armory &armory, const Buf
 {
     Character delta_character = character;
 
-//    armory.change_weapon(delta_character.weapons, armory.swords.dal_rends_sacred_charge, Socket::main_hand);
+//    character.equip_weapon();
+//    armory.change_weapon(delta_character.weapons, armory.swords.viskag, Socket::main_hand);
+//    armory.change_weapon(delta_character.weapons, armory.swords.brutality_blade, Socket::off_hand);
+//    armory.change_weapon(delta_character.weapons, armory.swords.maladath, Socket::off_hand);
 //    armory.change_weapon(delta_character.weapons, armory.swords.dal_rends_tribal_guardian, Socket::off_hand);
     armory.change_weapon(delta_character.weapons, armory.axes.deathbringer, Socket::main_hand);
 //    armory.change_weapon(delta_character.weapons, armory.axes.crul_shorukh_edge_of_chaos, Socket::off_hand);
 //    armory.change_weapon(delta_character.weapons, armory.swords.dal_rends_tribal_guardian, Socket::off_hand);
-//    armory.change_armor(delta_character.armor, armory.chest.black_dragonscale_chest);
+
+//    armory.change_armor(delta_character.armor, armory.hands.edgemasters_handguards);
+//    armory.change_armor(delta_character.armor, armory.shoulder.leutenant_shoulders);
 
     armory.compute_total_stats(delta_character);
 

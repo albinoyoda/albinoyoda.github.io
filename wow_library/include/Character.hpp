@@ -48,6 +48,11 @@ public:
 
     void equip_weapon(Weapon weapon1, Weapon weapon2)
     {
+        if (weapon1.weapon_socket == Weapon_socket::two_hand || weapon2.weapon_socket == Weapon_socket::two_hand)
+        {
+            std::cout << "Cant dual wield with a two-hand.";
+            assert(false);
+        }
         weapon1.socket = Socket::main_hand;
         weapon2.socket = Socket::off_hand;
         weapons.emplace_back(weapon1);
@@ -89,7 +94,7 @@ public:
             if (weapons.size() <= 1)
             {
                 std::cout << "cant buff offhand with only 1 weapon equipped \n";
-                assert(true);
+                assert(false);
             }
             weapons[1].buff = buff;
         }

@@ -272,12 +272,25 @@ struct Armory
         Weapon dal_rends_tribal_guardian{"dal_rends_tribal_guardian", Attributes{0, 0}, Special_stats{0, 0, 0}, 1.8, 52,
                                          97, Weapon_socket::off_hand, Weapon_type::sword, std::vector<Hit_effect>(),
                                          Set::dal_rends};
+        Weapon warblade_hakkari_mh{"warblade_hakkari_mh", Attributes{0, 0}, Special_stats{1, 0, 28}, 1.7, 59,
+                                   110, Weapon_socket::main_hand, Weapon_type::sword, std::vector<Hit_effect>(),
+                                   Set::warblade_of_the_hakkari};
+        Weapon warblade_hakkari_oh{"warblade_hakkari_oh", Attributes{0, 0}, Special_stats{0, 0, 40}, 1.7, 57,
+                                   106, Weapon_socket::off_hand, Weapon_type::sword, std::vector<Hit_effect>(),
+                                   Set::warblade_of_the_hakkari};
     } swords;
+
+    struct two_handed_swords_t
+    {
+        Weapon ashkandi{"ashkandi", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 86.0}, 3.5, 229.0, 344.0,
+                        Weapon_socket::two_hand, Weapon_type::sword};
+    } two_handed_swords;
 
     struct axes_t
     {
         Weapon deathbringer{"deathbringer", Attributes{0, 0}, Special_stats{0, 0, 0}, 2.9, 114, 213,
-                            Weapon_socket::one_hand, Weapon_type::axe, {{"deathbringer", Hit_effect::Type::damage_magic, {}, {}, 125, 0, 0.08}}};
+                            Weapon_socket::one_hand, Weapon_type::axe,
+                            {{"deathbringer", Hit_effect::Type::damage_magic, {}, {}, 125, 0, 0.08}}};
         Weapon crul_shorukh_edge_of_chaos{"crul_shorukh_edge_of_chaos", Attributes{0.0, 0.0},
                                           Special_stats{0.0, 0.0, 36.0}, 2.3, 101.0, 188.0, Weapon_socket::one_hand,
                                           Weapon_type::axe};
@@ -322,6 +335,7 @@ struct Armory
         Set_bonus black_dragonscale_bonus3{Attributes{0, 0}, Special_stats{2, 0, 0}, 3, Set::black_dragonscale};
         Set_bonus rare_pvp_set_bonus_1{Attributes{0, 0}, Special_stats{0, 0, 40}, 2, Set::rare_pvp_set};
         Set_bonus dal_rends{Attributes{0, 0}, Special_stats{0, 0, 50}, 2, Set::dal_rends};
+        Set_bonus hakkari_warblades{Attributes{0, 0}, Special_stats{0, 0, 0, 0, 0, 6}, 2, Set::warblade_of_the_hakkari};
     } set_bonuses;
 
     auto get_set_bonuses() const
@@ -352,8 +366,16 @@ struct Armory
 
     void compute_total_stats(Character &character) const
     {
-        check_if_weapons_valid(character.weapons);
-        check_if_armor_valid(character.armor);
+        if (!check_if_weapons_valid(character.weapons))
+        {
+            std::cout << "invalid weapon setup";
+            assert(false);
+        }
+        if (!check_if_armor_valid(character.armor))
+        {
+            std::cout << "invalid armor setup";
+            assert(false);
+        }
         character.total_attributes = {};
         character.total_special_stats = {};
         clean_weapon(character.weapons[0]);
@@ -407,6 +429,7 @@ struct Armory
         int set_pieces_bds = 0;
         int set_pieces_pvp = 0;
         int set_pieces_dal_rend = 0;
+        int set_pieces_hakkari = 0;
         for (Set &set_name : set_names)
         {
             switch (set_name)
@@ -422,6 +445,9 @@ struct Armory
                     break;
                 case Set::dal_rends:
                     set_pieces_dal_rend++;
+                    break;
+                case Set::warblade_of_the_hakkari:
+                    set_pieces_hakkari++;
                     break;
                 default:
                     break;
@@ -451,6 +477,11 @@ struct Armory
         {
             total_attributes += set_bonuses.dal_rends.attributes;
             total_special_stats += set_bonuses.dal_rends.special_stats;
+        }
+        if (set_pieces_hakkari >= set_bonuses.hakkari_warblades.pieces)
+        {
+            total_attributes += set_bonuses.hakkari_warblades.attributes;
+            total_special_stats += set_bonuses.hakkari_warblades.special_stats;
         }
 
         for (const auto &buff : character.buffs)
@@ -522,17 +553,36 @@ struct Armory
         {
             is_valid &= (weapons[1].socket != Socket::main_hand);
         }
+        if (weapons.size() == 1)
+        {
+            is_valid &= (weapons[0].weapon_socket == Weapon_socket::two_hand);
+        }
         return is_valid;
     }
 
-    void change_weapon(std::vector<Weapon> &weapons, const Weapon &weapon, const Socket &socket) const
+    void change_weapon(std::vector<Weapon> &current_weapons, const Weapon &equip_weapon, const Socket &socket) const
     {
+        // TODO fix twohanded -> dual wield item swap!
         assert(socket == Socket::main_hand || socket == Socket::off_hand);
-        Weapon &current_wep = (socket == Socket::main_hand) ? weapons[0] : weapons[1];
-        Weapon weapon_copy = weapon;
-        weapon_copy.buff = current_wep.buff;
-        weapon_copy.enchant = current_wep.enchant;
-        current_wep = weapon_copy;
+        if (equip_weapon.weapon_socket == Weapon_socket::two_hand)
+        {
+            Weapon &current_wep = current_weapons[0];
+            current_weapons.erase(current_weapons.begin() + 1);
+            Weapon weapon_copy = equip_weapon;
+            weapon_copy.buff = current_wep.buff;
+            weapon_copy.enchant = current_wep.enchant;
+            weapon_copy.socket = socket;
+            current_wep = weapon_copy;
+        }
+        else
+        {
+            Weapon &current_wep = (socket == Socket::main_hand) ? current_weapons[0] : current_weapons[1];
+            Weapon weapon_copy = equip_weapon;
+            weapon_copy.buff = current_wep.buff;
+            weapon_copy.enchant = current_wep.enchant;
+            weapon_copy.socket = socket;
+            current_wep = weapon_copy;
+        }
     }
 
     void change_armor(std::vector<Armor> &armor_vec, const Armor &armor, bool first_misc_slot = true) const

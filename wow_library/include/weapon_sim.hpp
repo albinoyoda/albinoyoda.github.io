@@ -7,7 +7,7 @@ class Weapon_sim
 {
 public:
     Weapon_sim(double swing_speed, double min_damage, double max_damage, Socket socket, Weapon_type skill_type,
-               std::vector<Hit_effect> hit_effects);
+               Weapon_socket weapon_socket, std::vector<Hit_effect> hit_effects);
 
     constexpr bool time_for_swing(double dt)
     {

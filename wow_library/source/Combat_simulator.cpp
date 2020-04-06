@@ -480,22 +480,15 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
     damage_distribution_.reserve(n_damage_batches);
     const auto starting_special_stats = character.total_special_stats;
     std::vector<Weapon_sim> weapons;
-    weapons.emplace_back(character.weapons[0].swing_speed, character.weapons[0].min_damage,
-                         character.weapons[0].max_damage, Socket::main_hand, character.weapons[0].type,
-                         character.weapons[0].hit_effects);
-    weapons.emplace_back(character.weapons[1].swing_speed, character.weapons[1].min_damage,
-                         character.weapons[1].max_damage, Socket::off_hand, character.weapons[1].type,
-                         character.weapons[1].hit_effects);
-
-    weapons[0].compute_weapon_damage(character.weapons[0].buff.bonus_damage);
-    weapons[1].compute_weapon_damage(character.weapons[1].buff.bonus_damage);
-
-    compute_hit_table(config_.opponent_level - character.level,
-                      get_weapon_skill(character.total_special_stats, weapons[0].weapon_type),
-                      starting_special_stats, Socket::main_hand);
-    compute_hit_table(config_.opponent_level - character.level,
-                      get_weapon_skill(character.total_special_stats, weapons[1].weapon_type),
-                      starting_special_stats, Socket::off_hand);
+    for (const auto &wep : character.weapons)
+    {
+        weapons.emplace_back(wep.swing_speed, wep.min_damage, wep.max_damage, wep.socket, wep.type,
+                             wep.weapon_socket, wep.hit_effects);
+        weapons.back().compute_weapon_damage(wep.buff.bonus_damage);
+        compute_hit_table(config_.opponent_level - character.level,
+                          get_weapon_skill(character.total_special_stats, wep.type),
+                          starting_special_stats, wep.socket);
+    }
 
     double heroic_strike_rage_cost = 13.0;
 
@@ -536,8 +529,10 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
         double bloodrage_init_time = 0.0;
         double bloodrage_cooldown = -1e-5;
 
-        weapons[0].internal_swing_timer = 0.0;
-        weapons[1].internal_swing_timer = 0.0;
+        for (auto &wep : weapons)
+        {
+            wep.internal_swing_timer = 0.0;
+        }
 
         if (config_.use_sim_time_ramp)
         {
@@ -547,14 +542,14 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
         while (time_keeper_.time < sim_time)
         {
             double mh_dt = weapons[0].internal_swing_timer;
-            double oh_dt = weapons[1].internal_swing_timer;
+            double oh_dt = (weapons.size() == 2) ? weapons[1].internal_swing_timer : 100.0;
             double buff_dt = buff_manager_.get_dt();
             double dt = time_keeper_.get_dynamic_time_step(mh_dt, oh_dt, buff_dt, sim_time);
             time_keeper_.increment(dt);
             buff_manager_.increment(dt);
 
             bool mh_swing = weapons[0].time_for_swing(dt);
-            bool oh_swing = weapons[1].time_for_swing(dt);
+            bool oh_swing = (weapons.size() == 2) ? weapons[1].time_for_swing(dt) : false;
 
             if (mh_swing)
             {

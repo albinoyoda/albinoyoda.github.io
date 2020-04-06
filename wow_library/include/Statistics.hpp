@@ -32,9 +32,9 @@ namespace Statistics
         return std::sqrt(variance(vec, average));
     }
 
-    double sample_deviation(double mean, int n_samples)
+    double sample_deviation(double standard_dev, int n_samples)
     {
-        return mean / std::sqrt(static_cast<double>(n_samples));
+        return standard_dev / std::sqrt(static_cast<double>(n_samples));
     }
 
     double add_standard_deviations(double std1, double std2)

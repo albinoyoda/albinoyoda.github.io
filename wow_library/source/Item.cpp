@@ -18,7 +18,7 @@ int get_weapon_skill(const Special_stats &special_stats, Weapon_type weapon_type
             //TODO
             return 300;
         default:
-            assert(true);
+            assert(false);
             return 0;
     }
 }

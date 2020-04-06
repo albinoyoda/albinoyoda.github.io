@@ -57,6 +57,7 @@ enum class Set
     black_dragonscale,
     rare_pvp_set,
     dal_rends,
+    warblade_of_the_hakkari
 };
 
 class Hit_effect
