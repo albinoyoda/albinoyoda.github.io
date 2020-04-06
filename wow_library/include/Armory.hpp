@@ -63,6 +63,7 @@ struct Armory
                                           Socket::shoulder, Set::black_dragonscale};
         Armor truestrike_shoulders{"truestrike_shoulders", Attributes{0, 0}, Special_stats{0, 2, 24},
                                    Socket::shoulder};
+        Armor wyrmhide_spaulders{"wyrmhide_spaulders", Attributes{0, 0}, Special_stats{0, 2, 0}, Socket::shoulder};
         Armor drake_talon_pauldrons{"drake_talon_pauldrons", Attributes{20, 20}, Special_stats{0, 0, 0},
                                     Socket::shoulder};
         Armor leutenant_shoulders{"leutenant_shoulders", Attributes{17, 0}, Special_stats{1, 0, 0},
@@ -98,7 +99,7 @@ struct Armory
                                      Socket::chest};
         Armor knight_captains_plate_hauberk{"knight_captains_plate_hauberk", Attributes{21, 0}, Special_stats{1, 0, 0},
                                             Socket::chest, Set::rare_pvp_set};
-        Armor tombstone_breastplate{"tombstone_breastplate", Attributes{10, 10}, Special_stats{2, 0, 0},
+        Armor tombstone_breastplate{"tombstone_breastplate", Attributes{10, 0}, Special_stats{2, 0, 0},
                                     Socket::chest};
         Armor cadaverous_armor{"cadaverous_armor", Attributes{8, 8}, Special_stats{0, 0, 60}, Socket::chest};
         Armor aq_breatplate_of_annihilation{"aq_breatplate_of_annihilation", Attributes{37, 0}, Special_stats{1, 1, 0},
@@ -123,6 +124,7 @@ struct Armory
                                          Socket::wrists};
         Armor battleborn_armbraces{"battleborn_armbraces", Attributes{0, 0}, Special_stats{1, 1, 0},
                                    Socket::wrists};
+        Armor blinkstrike{"blinkstrike", Attributes{3, 0}, Special_stats{1, 0, 0}, Socket::wrists};
         Armor aq_bracers_of_brutality{"aq_bracers_of_brutality", Attributes{21, 12}, Special_stats{0, 0, 0},
                                       Socket::wrists};
         Armor aq_hive_defiler_wristguards{"aq_hive_defiler_wristguards", Attributes{23, 18}, Special_stats{0, 0, 0},
@@ -296,6 +298,8 @@ struct Armory
                                           Weapon_type::axe};
         Weapon dooms_edge{"dooms_edge", Attributes{9.0, 16.0}, Special_stats{0.0, 0.0, 0.0}, 2.3, 83.0, 154.0,
                           Weapon_socket::one_hand, Weapon_type::axe};
+        Weapon axe_of_the_deep_woods{"axe_of_the_deep_woods", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, 2.7, 78.0, 146.0,
+                          Weapon_socket::one_hand, Weapon_type::axe, {{"axe_of_the_deep_woods", Hit_effect::Type::damage_magic, {}, {}, 108, 0, 0.036}}};
     } axes;
 
     struct daggers_t
