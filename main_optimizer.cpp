@@ -250,7 +250,7 @@ std::vector<Item_optimizer::Sim_result_t> Item_optimizer::item_setup()
     std::vector<Armor> trinkets;
     trinkets = {
 //            armory.trinket.diamond_flask,
-//            armory.trinket.drake_fang_talisman,
+            armory.trinket.drake_fang_talisman,
             armory.trinket.blackhands_breadth,
             armory.trinket.hand_of_justice,
     };
@@ -417,24 +417,37 @@ int main()
     config.n_batches = 100000;
     config.sim_time = 60;
     config.opponent_level = 63;
+
+    config.curse_of_recklessness_active = true;
+    config.faerie_fire_feral_active = true;
+    config.sunder_armor_active = true;
+    config.n_sunder_armor_stacks = 5;
+
+    config.talents.improved_heroic_strike = 2;
+    config.talents.unbridled_wrath = 5;
+    config.talents.flurry = 5;
+    config.talents.anger_management = true;
+    config.talents.death_wish = true;
+    config.talents.impale = 2;
+    config.talents.improved_execute = 2;
+    config.talents.dual_wield_specialization = 5;
+
     config.use_sim_time_ramp = true;
     config.enable_rng_melee = false;
     config.enable_spell_rotation = true;
     config.use_heroic_spamm = false;
     config.use_mighty_rage_potion = true;
-    config.enable_anger_management = true;
     config.enable_bloodrage = true;
     config.enable_talents = true;
     config.enable_item_chance_on_hit_effects = true;
     config.enable_crusader = true;
-    config.enable_death_wish = true;
     config.enable_recklessness = false;
-    config.display_combat_debug = false;
+//    config.display_combat_debug = true;
     config.use_seed = true;
     config.seed = 110000;
-    config.fuel_extra_rage = true;
+    config.fuel_extra_rage = false;
     config.extra_rage_interval = 3;
-    config.extra_rage_damage_amount = 1000;
+    config.extra_rage_damage_amount = 150;
 
     Combat_simulator simulator(config);
 

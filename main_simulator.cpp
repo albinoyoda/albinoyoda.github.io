@@ -77,51 +77,51 @@ void print_character_stat(const Character &char1, const Character &char2)
 
 Character character_setup(const Armory &armory, const Buffs &buffs)
 {
-//    Character character{Race::human, 60};
+    Character character{Race::human, 60};
 //
 //    // Armor
-//    character.equip_armor(armory.helmet.lionheart_helm);
-//    character.equip_armor(armory.neck.onyxia_tooth_pendant);
-//    character.equip_armor(armory.shoulder.truestrike_shoulders);
-//    character.equip_armor(armory.back.cape_of_the_black_baron);
-//    character.equip_armor(armory.chest.savage_gladiator_chain);
-//    character.equip_armor(armory.wrist.wristguards_of_stability);
-//    character.equip_armor(armory.hands.flameguard_gauntlets);
-//    character.equip_armor(armory.belt.onslaught_girdle);
-//    character.equip_armor(armory.legs.eldritch_legplates);
-//    character.equip_armor(armory.boots.chromatic_boots);
-//    character.equip_armor(armory.rings.don_julios_band);
-//    character.equip_armor(armory.rings.magnis_will);
-//    character.equip_armor(armory.trinket.hand_of_justice);
-//    character.equip_armor(armory.trinket.blackhands_breadth);
-//    character.equip_armor(armory.ranged.blastershot);
-//
-//    // Weapons
-//    character.equip_weapon(armory.swords.maladath, armory.swords.brutality_blade);
-    // test set, 1080 DPS before refactor
-
-    Character character{Race::gnome, 60};
-
-    // Armor
     character.equip_armor(armory.helmet.lionheart_helm);
     character.equip_armor(armory.neck.onyxia_tooth_pendant);
-    character.equip_armor(armory.shoulder.wyrmhide_spaulders);
-    character.equip_armor(armory.back.blackveil_cloak);
-    character.equip_armor(armory.chest.tombstone_breastplate);
-    character.equip_armor(armory.wrist.blinkstrike);
-    character.equip_armor(armory.hands.edgemasters_handguards);
-    character.equip_armor(armory.belt.omokks_girth);
-    character.equip_armor(armory.legs.ubrs_legs);
-    character.equip_armor(armory.boots.bloodmail_boots);
+    character.equip_armor(armory.shoulder.truestrike_shoulders);
+    character.equip_armor(armory.back.cape_of_the_black_baron);
+    character.equip_armor(armory.chest.savage_gladiator_chain);
+    character.equip_armor(armory.wrist.wristguards_of_stability);
+    character.equip_armor(armory.hands.flameguard_gauntlets);
+    character.equip_armor(armory.belt.onslaught_girdle);
+    character.equip_armor(armory.legs.eldritch_legplates);
+    character.equip_armor(armory.boots.chromatic_boots);
+    character.equip_armor(armory.rings.don_julios_band);
     character.equip_armor(armory.rings.magnis_will);
-    character.equip_armor(armory.rings.blackstone_ring);
     character.equip_armor(armory.trinket.hand_of_justice);
     character.equip_armor(armory.trinket.blackhands_breadth);
-    character.equip_armor(armory.ranged.bloodseeker);
+    character.equip_armor(armory.ranged.blastershot);
 
     // Weapons
-//    character.equip_weapon(armory.swords.quel_serrar, armory.swords.mirahs_song);
-    character.equip_weapon(armory.swords.dal_rends_sacred_charge, armory.swords.mirahs_song);
+    character.equip_weapon(armory.swords.maladath, armory.swords.brutality_blade);
+    // test set, 1080 DPS before refactor
+
+//    Character character{Race::gnome, 60};
+
+    // Armor
+//    character.equip_armor(armory.helmet.lionheart_helm);
+//    character.equip_armor(armory.neck.onyxia_tooth_pendant);
+//    character.equip_armor(armory.shoulder.wyrmhide_spaulders);
+//    character.equip_armor(armory.back.blackveil_cloak);
+//    character.equip_armor(armory.chest.tombstone_breastplate);
+//    character.equip_armor(armory.wrist.blinkstrike);
+//    character.equip_armor(armory.hands.edgemasters_handguards);
+//    character.equip_armor(armory.belt.omokks_girth);
+//    character.equip_armor(armory.legs.ubrs_legs);
+//    character.equip_armor(armory.boots.bloodmail_boots);
+//    character.equip_armor(armory.rings.magnis_will);
+//    character.equip_armor(armory.rings.blackstone_ring);
+//    character.equip_armor(armory.trinket.hand_of_justice);
+//    character.equip_armor(armory.trinket.blackhands_breadth);
+//    character.equip_armor(armory.ranged.bloodseeker);
+//
+//    // Weapons
+////    character.equip_weapon(armory.swords.quel_serrar, armory.swords.mirahs_song);
+//    character.equip_weapon(armory.swords.dal_rends_sacred_charge, armory.swords.mirahs_song);
 
     // Enchants
     character.add_enchant(Socket::head, Enchant::Type::haste);
@@ -136,7 +136,7 @@ Character character_setup(const Armory &armory, const Buffs &buffs)
 
     character.add_buff(buffs.rallying_cry);
     character.add_buff(buffs.dire_maul);
-//    character.add_buff(buffs.songflower);
+    character.add_buff(buffs.songflower);
     character.add_buff(buffs.blessing_of_kings);
     character.add_buff(buffs.blessing_of_might);
     character.add_buff(buffs.gift_of_the_wild);
@@ -161,7 +161,8 @@ Character delta_gear(const Character &character, const Armory &armory, const Buf
 
 //    character.equip_weapon();
 //    armory.change_weapon(delta_character.weapons, armory.swords.viskag, Socket::main_hand);
-//    armory.change_weapon(delta_character.weapons, armory.swords.brutality_blade, Socket::off_hand);
+    armory.change_weapon(delta_character.weapons, armory.swords.brutality_blade, Socket::main_hand);
+    armory.change_weapon(delta_character.weapons, armory.swords.maladath, Socket::off_hand);
 //    armory.change_weapon(delta_character.weapons, armory.swords.maladath, Socket::off_hand);
 //    armory.change_weapon(delta_character.weapons, armory.swords.dal_rends_tribal_guardian, Socket::off_hand);
 //    armory.change_weapon(delta_character.weapons, armory.swords.warblade_hakkari_mh, Socket::main_hand);
@@ -171,7 +172,7 @@ Character delta_gear(const Character &character, const Armory &armory, const Buf
 //    armory.change_armor(delta_character.armor, armory.shoulder.black_dragonscale_shoulders);
 //    armory.change_armor(delta_character.armor, armory.legs.black_dragonscale_leggings);
 //    armory.change_armor(delta_character.armor, armory.boots.black_dragonscale_boots);
-    armory.change_armor(delta_character.armor, armory.hands.flameguard_gauntlets);
+//    armory.change_armor(delta_character.armor, armory.hands.flameguard_gauntlets);
 //    armory.change_weapon(delta_character.weapons, armory.swords.quel_serrar, Socket::main_hand);
 
 //    delta_character.add_enchant(Socket::head, Enchant::Type::haste);
