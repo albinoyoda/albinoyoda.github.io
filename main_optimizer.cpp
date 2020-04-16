@@ -435,12 +435,8 @@ int main()
     config.use_sim_time_ramp = true;
     config.enable_rng_melee = false;
     config.enable_spell_rotation = true;
-    config.use_heroic_spamm = false;
     config.use_mighty_rage_potion = true;
     config.enable_bloodrage = true;
-    config.enable_talents = true;
-    config.enable_item_chance_on_hit_effects = true;
-    config.enable_crusader = true;
     config.enable_recklessness = false;
 //    config.display_combat_debug = true;
     config.use_seed = true;

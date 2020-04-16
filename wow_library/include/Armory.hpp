@@ -9,6 +9,8 @@ struct Buffs
     Buff rallying_cry{"rallying_cry", Attributes{0.0, 0.0}, Special_stats{5.0, 0.0, 140}};
     Buff dire_maul{"dire_maul", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 200}};
     Buff songflower{"songflower", Attributes{15, 15}, Special_stats{5, 0, 0}};
+    Buff warchiefs_blessing{"warchiefs_blessing", Attributes{0, 0}, Special_stats{0, 0, 0, 0, .15}};
+    Buff spirit_of_zandalar{"spirit_of_zandalar", Attributes{0, 0}, Special_stats{0, 0, 0}, .15};
 
     // Player_buffs
     Buff blessing_of_kings{"blessing_of_kings", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, .10};
@@ -34,27 +36,22 @@ struct Armory
         Armor lionheart_helm{"lionheart_helm", Attributes{18, 0}, Special_stats{2, 2, 0}, Socket::head};
         Armor expert_goldminers_head{"expert_goldminers_head", Attributes{0, 5}, Special_stats{0, 0, 0, 0, 0, 0, 7},
                                      Socket::head};
-        Armor mask_of_the_unforgiven{"mask_of_the_unforgiven", Attributes{0, 0}, Special_stats{1, 2, 0},
-                                     Socket::head};
-        Armor crown_of_destruction{"crown_of_destruction", Attributes{0, 0}, Special_stats{2, 0, 44},
-                                   Socket::head};
-        Armor helm_of_endless_rage{"helm_of_endless_rage", Attributes{26, 26}, Special_stats{0, 0, 0},
-                                   Socket::head};
+        Armor mask_of_the_unforgiven{"mask_of_the_unforgiven", Attributes{0, 0}, Special_stats{1, 2, 0}, Socket::head};
+        Armor crown_of_destruction{"crown_of_destruction", Attributes{0, 0}, Special_stats{2, 0, 44}, Socket::head};
+        Armor helm_of_endless_rage{"helm_of_endless_rage", Attributes{26, 26}, Special_stats{0, 0, 0}, Socket::head};
 
 
     } helmet;
 
     struct neck_t
     {
-        Armor onyxia_tooth_pendant{"onyxia_tooth_pendant", Attributes{0, 13}, Special_stats{1, 1, 0},
-                                   Socket::neck};
+        Armor onyxia_tooth_pendant{"onyxia_tooth_pendant", Attributes{0, 13}, Special_stats{1, 1, 0}, Socket::neck};
         Armor prestors_talisman_of_connivery{"prestors_talisman_of_connivery", Attributes{0, 30},
                                              Special_stats{0, 1, 0},
                                              Socket::neck};
-        Armor aq_barbed_choker{"aq_barbed_choker", Attributes{0, 0}, Special_stats{1, 0, 44},
-                               Socket::neck};
-        Armor mark_of_fordring{"mark_of_fordring", Attributes{0, 0}, Special_stats{1, 0, 26},
-                               Socket::neck};
+        Armor aq_barbed_choker{"aq_barbed_choker", Attributes{0, 0}, Special_stats{1, 0, 44}, Socket::neck};
+        Armor the_eye_of_hakkar{"the_eye_of_hakkar", Attributes{0, 0}, Special_stats{1, 0, 40}, Socket::neck};
+        Armor mark_of_fordring{"mark_of_fordring", Attributes{0, 0}, Special_stats{1, 0, 26}, Socket::neck};
     } neck;
 
     struct shoulder_t
@@ -150,6 +147,7 @@ struct Armory
                                        Socket::hands};
         Armor aq_gauntlets_of_annihilation{"aq_gauntlets_of_annihilation", Attributes{35, 0}, Special_stats{1, 1, 0},
                                            Socket::hands};
+        Armor bloodmail_gauntlets{"bloodmail_gauntlets", Attributes{9, 0}, Special_stats{1, 0, 0}, Socket::hands};
     } hands;
 
     struct belt_t
@@ -158,6 +156,7 @@ struct Armory
         Armor mugglers_belt{"mugglers_belt", Attributes{0, 0}, Special_stats{1, 0, 0, 0, 0, 0, 0, 5}, Socket::belt};
         Armor omokks_girth{"omokks_girth", Attributes{15, 0}, Special_stats{1, 0, 0}, Socket::belt};
         Armor brigam_girdle{"brigam_girdle", Attributes{15, 0}, Special_stats{0, 1, 0}, Socket::belt};
+        Armor thurazane_link{"thurazane_link", Attributes{0, 0}, Special_stats{1, 0, 44}, Socket::belt};
         Armor girdle_of_the_fallen_crusader{"girdle_of_the_fallen_crusader", Attributes{20, 10}, Special_stats{0, 0, 0},
                                             Socket::belt};
     } belt;
@@ -184,6 +183,8 @@ struct Armory
                                       Socket::legs};
         Armor titanic_leggings{"titanic_leggings", Attributes{30, 0}, Special_stats{1, 2, 0},
                                Socket::legs};
+        Armor bloodsoaked_legplates{"bloodsoaked_legplates", Attributes{36, 0}, Special_stats{0, 0, 0},
+                                    Socket::legs};
     } legs;
 
     struct boots_t
@@ -298,8 +299,11 @@ struct Armory
                                           Weapon_type::axe};
         Weapon dooms_edge{"dooms_edge", Attributes{9.0, 16.0}, Special_stats{0.0, 0.0, 0.0}, 2.3, 83.0, 154.0,
                           Weapon_socket::one_hand, Weapon_type::axe};
-        Weapon axe_of_the_deep_woods{"axe_of_the_deep_woods", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, 2.7, 78.0, 146.0,
-                          Weapon_socket::one_hand, Weapon_type::axe, {{"axe_of_the_deep_woods", Hit_effect::Type::damage_magic, {}, {}, 108, 0, 0.036}}};
+        Weapon axe_of_the_deep_woods{"axe_of_the_deep_woods", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, 2.7,
+                                     78.0, 146.0,
+                                     Weapon_socket::one_hand, Weapon_type::axe,
+                                     {{"axe_of_the_deep_woods", Hit_effect::Type::damage_magic, {}, {}, 108, 0,
+                                       0.036}}};
     } axes;
 
     struct daggers_t
@@ -321,6 +325,10 @@ struct Armory
                                  Weapon_socket::one_hand, Weapon_type::mace};
         Weapon aq_sand_polished_hammer{"aq_sand_polished_hammer", Attributes{0, 0}, Special_stats{1, 0, 20}, 2.6, 97,
                                        181, Weapon_socket::one_hand, Weapon_type::mace};
+        Weapon empyrean_demolisher{"empyrean_demolisher", Attributes{0, 0}, Special_stats{0, 0, 0}, 2.8, 94,
+                                   175, Weapon_socket::one_hand, Weapon_type::mace,
+                                   {{"empyrean_demolisher", Hit_effect::Type::stat_boost, {0, 0},
+                                     Special_stats{0, 0, 0, 0, .2}, 0, 10, 2.8 / 60}}};
         Weapon aq_anubisath_warhammer{"aq_anubisath_warhammer", Attributes{0, 0},
                                       Special_stats{0, 0, 32, 0, 0, 0, 0, 0, 4}, 1.8, 66, 123,
                                       Weapon_socket::one_hand, Weapon_type::mace};

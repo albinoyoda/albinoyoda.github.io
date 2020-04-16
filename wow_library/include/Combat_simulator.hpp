@@ -32,12 +32,8 @@ struct Combat_simulator_config
     bool use_sim_time_ramp = false;
     bool enable_rng_melee{false};
     bool enable_spell_rotation{false};
-    bool use_heroic_spamm{false};
     bool use_mighty_rage_potion{false};
     bool enable_bloodrage{false};
-    bool enable_talents{false};
-    bool enable_item_chance_on_hit_effects{false};
-    bool enable_crusader{false};
     bool enable_recklessness{false};
     bool display_combat_debug{false};
     bool use_seed{false};
@@ -48,10 +44,10 @@ struct Combat_simulator_config
 
     struct talents_t
     {
-        int improved_heroic_strike = 0;
-        int flurry = 0;
         bool death_wish{false};
         bool anger_management{false};
+        int improved_heroic_strike = 0;
+        int flurry = 0;
         int unbridled_wrath = 0;
         int impale = 0;
         int improved_execute = 0;
@@ -80,23 +76,6 @@ public:
         TBD
     };
 
-    enum class Stat
-    {
-        agility,
-        strength,
-        crit,
-        hit,
-        chance_extra_hit,
-        haste,
-        skill_sword,
-        skill_axe,
-        skill_mace,
-        skill_dagger,
-        weapon_damage,
-        NONE
-        // TODO add more
-    };
-
     enum class Hit_type
     {
         white,
@@ -109,32 +88,6 @@ public:
 
         double damage;
         Hit_result hit_result;
-    };
-
-    struct Stat_weight
-    {
-        Stat_weight(Stat stat) : stat(stat)
-        {
-            d_dps_plus = 0.0;
-            std_d_dps_plus = 0.0;
-            d_dps_minus = 0.0;
-            std_d_dps_minus = 0.0;
-            amount = 0.0;
-        };
-
-        Stat_weight(double d_dps_plus, double std_d_dps_plus, double d_dps_minus, double std_d_dps_minus, double amount,
-                    Stat stat) : d_dps_plus{d_dps_plus},
-                std_d_dps_plus{std_d_dps_plus},
-                d_dps_minus{d_dps_minus},
-                std_d_dps_minus{std_d_dps_minus},
-                amount{amount},
-                stat{stat} {};
-        double d_dps_plus;
-        double std_d_dps_plus;
-        double d_dps_minus;
-        double std_d_dps_minus;
-        double amount;
-        Stat stat;
     };
 
     constexpr double lookup_outcome_mh(int case_id)
@@ -189,26 +142,10 @@ public:
 
     std::vector<double> &simulate(const Character &character);
 
-    double get_uniform_random(double r_max)
+    static double get_uniform_random(double r_max)
     {
         return rand() * r_max / RAND_MAX;
     }
-
-    //
-//    template<typename Struct_t, typename Field_t>
-//    Stat_weight permute_stat(const Character &character, const Armory& armory, Struct_t struct_t, Field_t field_t, Stat stat, double amount,
-//                             double sim_time, int opponent_level, int n_batches, double mean_init,
-//                             double sample_std_init);
-//
-//    template<typename Function_ptr>
-//    Combat_simulator::Stat_weight
-//    permute_stat(const Character &character,  const Armory& armory, Function_ptr function_ptr,
-//                 Combat_simulator::Stat stat, double amount, double sim_time, int opponent_level,
-//                 int n_batches, double mean_init, double sample_std_init);
-
-//    std::vector<Combat_simulator::Stat_weight>
-//    compute_stat_weights(const Character &character, const Armory &armory,double sim_time, int opponent_level, int n_batches,
-//                         double mean_init, double sample_std_init);
 
     Combat_simulator::Hit_outcome
     generate_hit(double damage, Hit_type hit_type, Socket weapon_hand, bool heroic_strike_active, bool death_wish,
@@ -263,8 +200,6 @@ private:
     Buff_manager buff_manager_{};
     Combat_simulator_config config_;
 };
-
-std::ostream &operator<<(std::ostream &os, Combat_simulator::Stat_weight const &stats);
 
 #include "Combat_simulator.tcc"
 

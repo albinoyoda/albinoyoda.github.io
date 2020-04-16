@@ -10,7 +10,7 @@ struct Special_stats
 
     Special_stats(double critical_strike, double hit, double attack_power, double chance_for_extra_hit = 0.0,
                   double haste = 0.0, int sword_skill = 0, int axe_skill = 0, int dagger_skill = 0,
-                  int mace_skill = 0) :
+                  int mace_skill = 0, int fist_skill = 0) :
             critical_strike{critical_strike},
             hit{hit},
             attack_power{attack_power},
@@ -19,7 +19,8 @@ struct Special_stats
             sword_skill(sword_skill),
             axe_skill(axe_skill),
             dagger_skill(dagger_skill),
-            mace_skill(mace_skill) {}
+            mace_skill(mace_skill),
+            fist_skill(fist_skill) {}
 
     void clear()
     {
@@ -44,7 +45,8 @@ struct Special_stats
                 sword_skill + rhs.sword_skill,
                 axe_skill + rhs.axe_skill,
                 dagger_skill + rhs.dagger_skill,
-                mace_skill + rhs.mace_skill
+                mace_skill + rhs.mace_skill,
+                fist_skill + rhs.fist_skill
         };
     }
 
@@ -58,7 +60,8 @@ struct Special_stats
                 sword_skill - rhs.sword_skill,
                 axe_skill - rhs.axe_skill,
                 dagger_skill - rhs.dagger_skill,
-                mace_skill - rhs.mace_skill
+                mace_skill - rhs.mace_skill,
+                fist_skill - rhs.fist_skill
         };
     }
 
@@ -83,6 +86,7 @@ struct Special_stats
     int axe_skill{};
     int dagger_skill{};
     int mace_skill{};
+    int fist_skill{};
 };
 
 class Attributes

@@ -21,5 +21,7 @@ target_link_libraries(wow_simulator wow_lib)
 ADD_EXECUTABLE(wow_optimizer main_optimizer.cpp)
 target_link_libraries(wow_optimizer wow_lib)
 
+ADD_EXECUTABLE(wow_stat_weights main_stat_weights.cpp)
+target_link_libraries(wow_stat_weights wow_lib)
 
 #target_compile_options(${PROJECT_NAME} PRIVATE -O2)

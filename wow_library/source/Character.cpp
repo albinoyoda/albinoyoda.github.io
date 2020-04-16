@@ -11,7 +11,7 @@ Character::Character(const Race &race, int level)
         level(level)
 {
     int base_skill = level * 5;
-    base_special_stats = Special_stats{0, 0, 160, 0, 0, base_skill, base_skill, base_skill, base_skill};
+    base_special_stats = Special_stats{0, 0, 160, 0, 0, base_skill, base_skill, base_skill, base_skill, base_skill};
     switch (race)
     {
         case Race::human:

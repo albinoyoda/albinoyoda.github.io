@@ -341,15 +341,15 @@ void Combat_simulator::manage_flurry(Hit_result hit_result, Special_stats &speci
             flurry_charges = 3;
             if (!flurry_active)
             {
-                special_stats.haste *= (1.05 + 0.05 * config_.talents.flurry);
+                special_stats.haste += 0.05 + 0.05 * config_.talents.flurry;
             }
         }
         else if (flurry_active && flurry_charges == 0)
         {
-            special_stats.haste /= (1.05 + 0.05 * config_.talents.flurry);
+            special_stats.haste -= 0.05 + 0.05 * config_.talents.flurry;
         }
         simulator_cout(flurry_charges, " flurry charges");
-        assert(special_stats.haste > 0.999 && special_stats.haste < 1.7);
+        assert(special_stats.haste > 0.9 && special_stats.haste < 1.7);
     }
 }
 
@@ -364,7 +364,7 @@ void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_we
     {
         swing_damage *= (0.5 + 0.025 * config_.talents.dual_wield_specialization);
     }
-    weapon.internal_swing_timer += weapon.swing_speed / special_stats.haste;
+    weapon.internal_swing_timer = weapon.swing_speed / special_stats.haste;
 
     // Check if heroic strike should be performed
     if (config_.enable_spell_rotation &&
@@ -749,164 +749,6 @@ std::vector<double> &Combat_simulator::simulate(const Character &character, int 
 {
     config_.n_batches = n_batches;
     return simulate(character);
-}
-
-//std::vector<Combat_simulator::Stat_weight>
-//Combat_simulator::compute_stat_weights(const Character &character, const Armory &armory, double sim_time, int opponent_level,
-//                                       int n_batches, double mean_init, double sample_std_init)
-//{
-//    if (!debug_mode_)
-//    {
-//        double stat_permutation_amount = 20;
-//        double special_stat_permutation_amount = 1;
-//        double skill_permutation_amount = 5;
-//        double damage_permutation_amount = 8;
-//
-//        auto stat_weight_agi = permute_stat(character, armory, &Character::permutated_stats_, &Stats::agility, Stat::agility,
-//                                            stat_permutation_amount,
-//                                            sim_time, opponent_level, n_batches, mean_init, sample_std_init);
-//        auto stat_weight_str = permute_stat(character, armory, &Character::permutated_stats_, &Stats::strength, Stat::strength,
-//                                            stat_permutation_amount,
-//                                            sim_time, opponent_level, n_batches, mean_init, sample_std_init);
-//        auto stat_weight_crit = permute_stat(character, armory, &Character::permutated_special_stats_,
-//                                             &Special_stats::critical_strike, Stat::crit,
-//                                             special_stat_permutation_amount,
-//                                             sim_time, opponent_level, n_batches, mean_init, sample_std_init);
-//        auto stat_weight_hit = permute_stat(character, armory, &Character::permutated_special_stats_,
-//                                            &Special_stats::hit, Stat::hit,
-//                                            special_stat_permutation_amount,
-//                                            sim_time, opponent_level, n_batches, mean_init, sample_std_init);
-//        auto stat_weight_haste = permute_stat(character, armory, &Character::set_extra_haste, Stat::haste,
-//                                              special_stat_permutation_amount,
-//                                              sim_time, opponent_level, n_batches, mean_init, sample_std_init);
-//        auto stat_weight_extra_hit = permute_stat(character, armory, &Character::increase_chance_for_extra_hit,
-//                                                  Stat::chance_extra_hit,
-//                                                  special_stat_permutation_amount,
-//                                                  sim_time, opponent_level, n_batches, mean_init, sample_std_init);
-//        auto stat_weight_dense_stone = permute_stat(character, armory, &Character::increase_weapon_damage,
-//                                                    Stat::weapon_damage, damage_permutation_amount,
-//                                                    sim_time, opponent_level, n_batches, mean_init, sample_std_init);
-//
-//        Combat_simulator::Stat_weight stat_weight_extra_skill_sword{Stat::NONE};
-//        Combat_simulator::Stat_weight stat_weight_extra_skill_axe{Stat::NONE};
-//        Combat_simulator::Stat_weight stat_weight_extra_skill_mace{Stat::NONE};
-//        Combat_simulator::Stat_weight stat_weight_extra_skill_dagger{Stat::NONE};
-//
-//        if (character.get_weapons()[0].get_weapon_type() == Skill_type::sword ||
-//            character.get_weapons()[1].get_weapon_type() == Skill_type::sword)
-//        {
-//            stat_weight_extra_skill_sword = permute_stat(character, armory, &Character::set_extra_weapon_skill_sword,
-//                                                         Stat::skill_sword, skill_permutation_amount,
-//                                                         sim_time, opponent_level, n_batches, mean_init,
-//                                                         sample_std_init);
-//        }
-//        if (character.get_weapons()[0].get_weapon_type() == Skill_type::axe ||
-//            character.get_weapons()[1].get_weapon_type() == Skill_type::axe)
-//        {
-//            stat_weight_extra_skill_axe = permute_stat(character, armory, &Character::set_extra_weapon_skill_axe,
-//                                                       Stat::skill_axe, skill_permutation_amount,
-//                                                       sim_time, opponent_level, n_batches, mean_init,
-//                                                       sample_std_init);
-//        }
-//        if (character.get_weapons()[0].get_weapon_type() == Skill_type::mace ||
-//            character.get_weapons()[1].get_weapon_type() == Skill_type::mace)
-//        {
-//            stat_weight_extra_skill_mace = permute_stat(character, armory, &Character::set_extra_weapon_skill_mace,
-//                                                        Stat::skill_mace, skill_permutation_amount,
-//                                                        sim_time, opponent_level, n_batches, mean_init,
-//                                                        sample_std_init);
-//        }
-//        if (character.get_weapons()[0].get_weapon_type() == Skill_type::dagger ||
-//            character.get_weapons()[1].get_weapon_type() == Skill_type::dagger)
-//        {
-//            stat_weight_extra_skill_dagger = permute_stat(character, armory, &Character::set_extra_weapon_skill_dagger,
-//                                                          Stat::skill_dagger, skill_permutation_amount,
-//                                                          sim_time, opponent_level, n_batches, mean_init,
-//                                                          sample_std_init);
-//
-//        }
-//        return {stat_weight_agi, stat_weight_str, stat_weight_crit, stat_weight_hit, stat_weight_haste,
-//                stat_weight_extra_hit, stat_weight_dense_stone, stat_weight_extra_skill_sword,
-//                stat_weight_extra_skill_axe, stat_weight_extra_skill_mace, stat_weight_extra_skill_dagger};
-//    }
-//    return {};
-//}
-
-std::ostream &operator<<(std::ostream &os, Combat_simulator::Stat_weight const &stats)
-{
-    switch (stats.stat)
-    {
-        case Combat_simulator::Stat::agility:
-            os << "Agility stat weights : (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", "
-               <<
-               stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
-               << stats.amount << "\n";
-            break;
-        case Combat_simulator::Stat::strength:
-            os << "Strength stat weights: (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", "
-               <<
-               stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
-               << stats.amount << "\n";
-            break;
-        case Combat_simulator::Stat::crit:
-            os << "Crit stat weights    : (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", "
-               <<
-               stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
-               << stats.amount << "\n";
-            break;
-        case Combat_simulator::Stat::hit:
-            os << "Hit stat weights     : (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", "
-               <<
-               stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
-               << stats.amount << "\n";
-            break;
-        case Combat_simulator::Stat::haste:
-            os << "Haste stat weights   : (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus << ", "
-               <<
-               stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
-               << stats.amount << "%\n";
-            break;
-        case Combat_simulator::Stat::chance_extra_hit:
-            os << "Extra swing weights  : (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
-               << ", " <<
-               stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
-               << stats.amount << "%\n";
-            break;
-        case Combat_simulator::Stat::weapon_damage:
-            os << "Weapon damage weight : (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
-               << ", " << stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus
-               << "). Incremented/decremented by: " << stats.amount << "\n";
-            break;
-        case Combat_simulator::Stat::skill_sword:
-            os << "Sword skill weights  : (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
-               << ", " << stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus
-               << "). Incremented/decremented by: "
-               << stats.amount << "\n";
-            break;
-        case Combat_simulator::Stat::skill_axe:
-            os << "Axe skill weights    : (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
-               << ", " <<
-               stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
-               << stats.amount << "\n";
-            break;
-        case Combat_simulator::Stat::skill_mace:
-            os << "Mace skill weights   : (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
-               << ", " <<
-               stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
-               << stats.amount << "\n";
-            break;
-        case Combat_simulator::Stat::skill_dagger:
-            os << "Dagger skill weights : (" << stats.d_dps_plus << " +- " << 1.96 * stats.std_d_dps_minus
-               << ", " <<
-               stats.d_dps_minus << " +- " << 1.96 * stats.std_d_dps_minus << "). Incremented/decremented by: "
-               << stats.amount << "\n";
-            break;
-        case Combat_simulator::Stat::NONE:
-            break;
-        default:
-            assert(false);
-    }
-    return os;
 }
 
 const std::vector<double> &Combat_simulator::get_hit_probabilities_white_mh() const

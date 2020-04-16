@@ -15,8 +15,7 @@ int get_weapon_skill(const Special_stats &special_stats, Weapon_type weapon_type
         case Weapon_type::mace:
             return special_stats.mace_skill;
         case Weapon_type::unarmed:
-            //TODO
-            return 300;
+            return special_stats.fist_skill;
         default:
             assert(false);
             return 0;
