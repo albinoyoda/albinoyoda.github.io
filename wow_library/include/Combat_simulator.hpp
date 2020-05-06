@@ -30,7 +30,6 @@ struct Combat_simulator_config
 
     // Simulator settings
     bool use_sim_time_ramp = false;
-    bool enable_rng_melee{false};
     bool enable_spell_rotation{false};
     bool use_mighty_rage_potion{false};
     bool enable_bloodrage{false};
@@ -134,8 +133,7 @@ public:
     manage_flurry(Hit_result hit_result, Special_stats &special_stats, int &flurry_charges, bool is_ability = false);
 
     void swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_weapon, Special_stats &special_stats,
-                      bool &heroic_strike_active,
-                      double &rage, double &heroic_strike_rage_cost, bool &deathwish_active,
+                      bool &heroic_strike_active, double &rage, double &heroic_strike_rage_cost,
                       bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges);
 
     std::vector<double> &simulate(const Character &character, int n_batches);
@@ -148,8 +146,8 @@ public:
     }
 
     Combat_simulator::Hit_outcome
-    generate_hit(double damage, Hit_type hit_type, Socket weapon_hand, bool heroic_strike_active, bool death_wish,
-                 bool recklessness_active);
+    generate_hit(double damage, Hit_type hit_type, Socket weapon_hand, bool heroic_strike_active,
+                 const Special_stats &special_stats, bool recklessness_active);
 
     Combat_simulator::Hit_outcome generate_hit_oh(double damage, bool heroic_strike_active, bool recklessness_active);
 

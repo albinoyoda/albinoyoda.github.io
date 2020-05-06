@@ -198,28 +198,20 @@ Combat_simulator::generate_hit_oh(double damage, bool heroic_strike_active, bool
 
 Combat_simulator::Hit_outcome Combat_simulator::generate_hit(double damage, Combat_simulator::Hit_type hit_type,
                                                              Socket weapon_hand, bool heroic_strike_active,
-                                                             bool death_wish_active,
+                                                             const Special_stats &special_stats,
                                                              bool recklessness_active)
 {
     if (weapon_hand == Socket::main_hand)
     {
         auto hit_outcome = generate_hit_mh(damage, hit_type, recklessness_active);
-        hit_outcome.damage *= armor_reduction_factor_;
-        if (death_wish_active)
-        {
-            hit_outcome.damage *= 1.2;
-        }
+        hit_outcome.damage *= armor_reduction_factor_ * (1 + special_stats.damage_multiplier);
         cout_damage_parse(hit_type, weapon_hand, hit_outcome);
         return hit_outcome;
     }
     else
     {
         auto hit_outcome = generate_hit_oh(damage, heroic_strike_active, recklessness_active);
-        hit_outcome.damage *= armor_reduction_factor_;
-        if (death_wish_active)
-        {
-            hit_outcome.damage *= 1.2;
-        }
+        hit_outcome.damage *= armor_reduction_factor_ * (1 + special_stats.damage_multiplier);
         cout_damage_parse(hit_type, weapon_hand, hit_outcome);
         return hit_outcome;
     }
@@ -341,22 +333,22 @@ void Combat_simulator::manage_flurry(Hit_result hit_result, Special_stats &speci
             flurry_charges = 3;
             if (!flurry_active)
             {
-                special_stats.haste += 0.05 + 0.05 * config.talents.flurry;
+                special_stats += {0, 0, 0, 0, 0.05 + 0.05 * config.talents.flurry};
             }
         }
         else if (flurry_active && flurry_charges == 0)
         {
-            special_stats.haste -= 0.05 + 0.05 * config.talents.flurry;
+            special_stats -= {0, 0, 0, 0, 0.05 + 0.05 * config.talents.flurry};
         }
         simulator_cout(flurry_charges, " flurry charges");
-        assert(special_stats.haste > 0.9 && special_stats.haste < 1.7);
+        assert(special_stats.haste > -.1);
+        assert(special_stats.haste < .7);
     }
 }
 
 void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_weapon, Special_stats &special_stats,
                                     bool &heroic_strike_active, double &rage, double &heroic_strike_rage_cost,
-                                    bool &deathwish_active, bool &recklessness_active, Damage_sources &damage_sources,
-                                    int &flurry_charges)
+                                    bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges)
 {
     Combat_simulator::Hit_outcome hit_outcome{0.0, Hit_result::TBD};
     double swing_damage = weapon.swing(special_stats.attack_power);
@@ -364,7 +356,7 @@ void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_we
     {
         swing_damage *= (0.5 + 0.025 * config.talents.dual_wield_specialization);
     }
-    weapon.internal_swing_timer = weapon.swing_speed / special_stats.haste;
+    weapon.internal_swing_timer = weapon.swing_speed / (1 + special_stats.haste);
 
     // Check if heroic strike should be performed
     if (config.enable_spell_rotation &&
@@ -375,7 +367,7 @@ void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_we
         simulator_cout("Performing heroic strike");// Unbridled wrath
         swing_damage += 138;
         hit_outcome = generate_hit(swing_damage, Hit_type::yellow, weapon.socket, heroic_strike_active,
-                                   deathwish_active, recklessness_active);
+                                   special_stats, recklessness_active);
         heroic_strike_active = false;
         rage -= heroic_strike_rage_cost;
         damage_sources.add_damage(Damage_source::heroic_strike, hit_outcome.damage);
@@ -392,7 +384,7 @@ void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_we
 
         // Otherwise do white hit
         hit_outcome = generate_hit(swing_damage, Hit_type::white, weapon.socket, heroic_strike_active,
-                                   deathwish_active, recklessness_active);
+                                   special_stats, recklessness_active);
 
         rage += rage_generation(hit_outcome.damage);
         if (hit_outcome.hit_result == Hit_result::dodge)
@@ -425,7 +417,7 @@ void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_we
                     case Hit_effect::Type::extra_hit:
                         simulator_cout("PROC: extra hit from: ", hit_effect.name);
                         swing_weapon(main_hand_weapon, main_hand_weapon, special_stats,
-                                     heroic_strike_active, rage, heroic_strike_rage_cost, deathwish_active,
+                                     heroic_strike_active, rage, heroic_strike_rage_cost,
                                      recklessness_active, damage_sources, flurry_charges);
                         break;
                     case Hit_effect::Type::damage_magic:
@@ -437,7 +429,7 @@ void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_we
                         damage_sources.add_damage(Damage_source::item_hit_effects,
                                                   generate_hit(hit_effect.damage, Hit_type::yellow,
                                                                Socket::main_hand, heroic_strike_active,
-                                                               deathwish_active, recklessness_active).damage);
+                                                               special_stats, recklessness_active).damage);
                         break;
                     case Hit_effect::Type::stat_boost:
                         simulator_cout("PROC: stats increased: ", hit_effect.name);
@@ -508,14 +500,13 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
         time_keeper_.reset(); // Class variable that keeps track of the time spent, cooldowns, iteration number
         auto special_stats = starting_special_stats;
         // TODO better haste fix?
-        special_stats.haste += 1;
         Damage_sources damage_sources{};
         double rage = 0;
         buff_manager_.set_target(special_stats);
         int flurry_charges = 0;
 
+        bool deathwish_used{false};
         bool heroic_strike_active = false;
-        bool deathwish_active = false;
         bool recklessness_active = false;
         bool have_printed_execute_phase = false;
         bool bloodrage_active = false;
@@ -553,13 +544,13 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
             if (mh_swing)
             {
                 swing_weapon(weapons[0], weapons[0], special_stats, heroic_strike_active, rage, heroic_strike_rage_cost,
-                             deathwish_active, recklessness_active, damage_sources, flurry_charges);
+                             recklessness_active, damage_sources, flurry_charges);
             }
 
             if (oh_swing)
             {
                 swing_weapon(weapons[1], weapons[0], special_stats, heroic_strike_active, rage, heroic_strike_rage_cost,
-                             deathwish_active, recklessness_active, damage_sources, flurry_charges);
+                             recklessness_active, damage_sources, flurry_charges);
             }
 
             if (config.fuel_extra_rage)
@@ -635,12 +626,13 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
             {
                 if (config.talents.death_wish)
                 {
-                    if (sim_time - time_keeper_.time < 31.0 && rage >= 10 && !deathwish_active)
+                    if (sim_time - time_keeper_.time < 31.0 && rage >= 10 && !deathwish_used)
                     {
-                        deathwish_active = true;
+                        deathwish_used = true;
+                        simulator_cout("------------ Deathwish activated! ------------");
+                        buff_manager_.add("Deathwish", Special_stats{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .2}, 30);
                         rage -= 10;
                         time_keeper_.global_cd = 1.0;
-                        simulator_cout("------------ Deathwish activated! ------------");
                     }
                 }
                 if (config.enable_recklessness)
@@ -671,8 +663,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                         simulator_cout("Execute!");
                         double damage = 600 + (rage - execute_rage_cost) * 15;
                         auto hit_outcome = generate_hit(damage, Hit_type::yellow, Socket::main_hand,
-                                                        heroic_strike_active,
-                                                        deathwish_active, recklessness_active);
+                                                        heroic_strike_active, special_stats, recklessness_active);
                         time_keeper_.global_cd = 1.0;
                         if (hit_outcome.hit_result == Hit_result::dodge || hit_outcome.hit_result == Hit_result::miss)
                         {
@@ -694,8 +685,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                         simulator_cout("Bloodthirst!");
                         double damage = special_stats.attack_power * 0.45;
                         auto hit_outcome = generate_hit(damage, Hit_type::yellow, Socket::main_hand,
-                                                        heroic_strike_active,
-                                                        deathwish_active, recklessness_active);
+                                                        heroic_strike_active, special_stats, recklessness_active);
                         if (hit_outcome.hit_result == Hit_result::dodge || hit_outcome.hit_result == Hit_result::miss)
                         {
                             rage -= 6;
@@ -717,18 +707,9 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                         time_keeper_.blood_thirst_cd > 1.0)
                     {
                         simulator_cout("Whirlwind!");
-                        double damage;
-                        if (config.enable_rng_melee)
-                        {
-                            damage = weapons[0].random_normalized_swing(special_stats.attack_power);
-                        }
-                        else
-                        {
-                            damage = weapons[0].normalized_swing(special_stats.attack_power);
-                        }
+                        double damage = weapons[0].normalized_swing(special_stats.attack_power);
                         auto hit_outcome = generate_hit(damage, Hit_type::yellow, Socket::main_hand,
-                                                        heroic_strike_active,
-                                                        deathwish_active, recklessness_active);
+                                                        heroic_strike_active, special_stats, recklessness_active);
                         rage -= 25;
                         time_keeper_.whirlwind_cd = 10;
                         time_keeper_.global_cd = 1.0;

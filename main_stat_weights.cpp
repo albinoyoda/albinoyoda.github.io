@@ -200,7 +200,6 @@ int main()
     config.talents.dual_wield_specialization = 5;
 
     config.use_sim_time_ramp = true;
-    config.enable_rng_melee = false;
     config.enable_spell_rotation = true;
     config.use_mighty_rage_potion = true;
     config.enable_bloodrage = true;
@@ -244,8 +243,8 @@ int main()
     char_plus.total_special_stats = character.total_special_stats;
     char_minus.total_special_stats = character.total_special_stats;
 
-    char_plus.total_special_stats.haste += .01;
-    char_minus.total_special_stats.haste -= .01;
+    char_plus.total_special_stats.haste *= 1.01;
+    char_minus.total_special_stats.haste /= 1.01;
     stat_weight_vector.emplace_back(compute_stat_weight(simulator, char_plus, char_minus, "Haste", 1,
                                                         mean_init, sample_std_init));
     char_plus.total_special_stats = character.total_special_stats;

@@ -433,7 +433,6 @@ int main()
     config.talents.dual_wield_specialization = 5;
 
     config.use_sim_time_ramp = true;
-    config.enable_rng_melee = false;
     config.enable_spell_rotation = true;
     config.use_mighty_rage_potion = true;
     config.enable_bloodrage = true;

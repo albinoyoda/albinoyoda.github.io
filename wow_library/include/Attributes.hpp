@@ -4,13 +4,17 @@
 #include <ostream>
 #include <vector>
 
+double multiplicative_addition(double val1, double val2);
+
+double multiplicative_subtraction(double val1, double val2);
+
 struct Special_stats
 {
     Special_stats() = default;
 
     Special_stats(double critical_strike, double hit, double attack_power, double chance_for_extra_hit = 0.0,
                   double haste = 0.0, int sword_skill = 0, int axe_skill = 0, int dagger_skill = 0,
-                  int mace_skill = 0, int fist_skill = 0) :
+                  int mace_skill = 0, int fist_skill = 0, double damage_multiplier = 0) :
             critical_strike{critical_strike},
             hit{hit},
             attack_power{attack_power},
@@ -20,7 +24,8 @@ struct Special_stats
             axe_skill(axe_skill),
             dagger_skill(dagger_skill),
             mace_skill(mace_skill),
-            fist_skill(fist_skill) {}
+            fist_skill(fist_skill),
+            damage_multiplier(damage_multiplier) {}
 
     void clear()
     {
@@ -33,6 +38,7 @@ struct Special_stats
         axe_skill = 0;
         dagger_skill = 0;
         mace_skill = 0;
+        damage_multiplier = 0;
     }
 
     Special_stats operator+(const Special_stats &rhs)
@@ -41,12 +47,13 @@ struct Special_stats
                 hit + rhs.hit,
                 attack_power + rhs.attack_power,
                 chance_for_extra_hit + rhs.chance_for_extra_hit,
-                haste + rhs.haste,
+                multiplicative_addition(haste, rhs.haste),
                 sword_skill + rhs.sword_skill,
                 axe_skill + rhs.axe_skill,
                 dagger_skill + rhs.dagger_skill,
                 mace_skill + rhs.mace_skill,
-                fist_skill + rhs.fist_skill
+                fist_skill + rhs.fist_skill,
+                multiplicative_addition(damage_multiplier, rhs.damage_multiplier)
         };
     }
 
@@ -56,12 +63,13 @@ struct Special_stats
                 hit - rhs.hit,
                 attack_power - rhs.attack_power,
                 chance_for_extra_hit - rhs.chance_for_extra_hit,
-                haste - rhs.haste,
+                multiplicative_subtraction(haste, rhs.haste),
                 sword_skill - rhs.sword_skill,
                 axe_skill - rhs.axe_skill,
                 dagger_skill - rhs.dagger_skill,
                 mace_skill - rhs.mace_skill,
-                fist_skill - rhs.fist_skill
+                fist_skill - rhs.fist_skill,
+                multiplicative_subtraction(damage_multiplier, rhs.damage_multiplier)
         };
     }
 
@@ -87,6 +95,7 @@ struct Special_stats
     int dagger_skill{};
     int mace_skill{};
     int fist_skill{};
+    double damage_multiplier{};
 };
 
 class Attributes

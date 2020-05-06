@@ -109,10 +109,12 @@ Character character_setup(const Armory &armory, const Buffs &buffs)
     character.add_enchant(Socket::main_hand, Enchant::Type::crusader);
     character.add_enchant(Socket::off_hand, Enchant::Type::crusader);
 
-    character.add_buff(buffs.rallying_cry);
-    character.add_buff(buffs.dire_maul);
-    character.add_buff(buffs.songflower);
-    character.add_buff(buffs.spirit_of_zandalar);
+//    character.add_buff(buffs.rallying_cry);
+//    character.add_buff(buffs.dire_maul);
+//    character.add_buff(buffs.songflower);
+//    character.add_buff(buffs.spirit_of_zandalar);
+//    character.add_buff(buffs.sayges_fortune);
+//    character.add_buff(buffs.warchiefs_blessing);
     character.add_buff(buffs.blessing_of_kings);
     character.add_buff(buffs.blessing_of_might);
     character.add_buff(buffs.gift_of_the_wild);
@@ -131,13 +133,19 @@ Character character_setup(const Armory &armory, const Buffs &buffs)
     return character;
 }
 
-Character delta_gear(const Character &character, const Armory &armory, const Buffs)
+Character delta_gear(const Character &character, const Armory &armory, const Buffs &buffs)
 {
+    auto __attribute__((unused)) placeholder = buffs.songflower;
     Character delta_character = character;
-//    buffs.songflower;
-//    character.equip_weapon();
-    armory.change_weapon(delta_character.weapons, armory.swords.maladath, Socket::off_hand);
-    armory.change_weapon(delta_character.weapons, armory.swords.chromatically_tempered_sword, Socket::main_hand);
+//    delta_character.add_buff(buffs.sayges_fortune); // 11.8
+//    delta_character.add_buff(buffs.warchiefs_blessing); // 11.4
+//    delta_character.add_buff(buffs.rallying_cry); // 12.5
+//    delta_character.add_buff(buffs.dire_maul); // 7.5
+//    delta_character.add_buff(buffs.spirit_of_zandalar); // 7.8
+//    delta_character.add_buff(buffs.songflower); // 9.3
+
+//    armory.change_weapon(delta_character.weapons, armory.swords.maladath, Socket::off_hand);
+//    armory.change_weapon(delta_character.weapons, armory.swords.chromatically_tempered_sword, Socket::main_hand);
 //    armory.change_weapon(delta_character.weapons, armory.maces.aq_anubisath_warhammer, Socket::off_hand);
 //    armory.change_weapon(delta_character.weapons, armory.trinket.hand_of_justice);
 //    armory.change_weapon(delta_character.weapons, armory.swords.maladath, Socket::off_hand);
@@ -182,7 +190,7 @@ int main()
 
     // Simulator & Combat settings
     Combat_simulator_config config{};
-    config.n_batches = 300000;
+    config.n_batches = 100000;
     config.sim_time = 60;
     config.opponent_level = 63;
 
@@ -201,7 +209,6 @@ int main()
     config.talents.dual_wield_specialization = 5;
 
     config.use_sim_time_ramp = true;
-    config.enable_rng_melee = false;
     config.enable_spell_rotation = true;
     config.use_mighty_rage_potion = true;
     config.enable_bloodrage = true;

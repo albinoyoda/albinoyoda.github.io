@@ -11,7 +11,7 @@ struct Buffs
     Buff songflower{"songflower", Attributes{15, 15}, Special_stats{5, 0, 0}};
     Buff warchiefs_blessing{"warchiefs_blessing", Attributes{0, 0}, Special_stats{0, 0, 0, 0, .15}};
     Buff spirit_of_zandalar{"spirit_of_zandalar", Attributes{0, 0}, Special_stats{0, 0, 0}, .15};
-    Buff sayges_fortune{"sayges_fortune", Attributes{0, 0}, Special_stats{0, 0, 0},};
+    Buff sayges_fortune{"sayges_fortune", Attributes{0, 0}, Special_stats{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .1}};
 
     // Player_buffs
     Buff blessing_of_kings{"blessing_of_kings", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, .10};
@@ -307,11 +307,12 @@ struct Armory
                                      Weapon_socket::one_hand, Weapon_type::axe,
                                      {{"axe_of_the_deep_woods", Hit_effect::Type::damage_magic, {}, {}, 108, 0,
                                        0.036}}};
-        Weapon ancient_hakkari_manslayer{"ancient_hakkari_manslayer", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, 2.0,
-                                     69.0, 130.0,
-                                     Weapon_socket::one_hand, Weapon_type::axe,
-                                     {{"axe_of_the_deep_woods", Hit_effect::Type::damage_magic, {}, {}, 51, 0,
-                                       0.036}}};
+        Weapon ancient_hakkari_manslayer{"ancient_hakkari_manslayer", Attributes{0.0, 0.0},
+                                         Special_stats{0.0, 0.0, 0.0}, 2.0,
+                                         69.0, 130.0,
+                                         Weapon_socket::one_hand, Weapon_type::axe,
+                                         {{"axe_of_the_deep_woods", Hit_effect::Type::damage_magic, {}, {}, 51, 0,
+                                           0.036}}};
     } axes;
 
     struct daggers_t
