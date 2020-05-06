@@ -59,26 +59,12 @@ struct Stat_weight
     std::string stat;
 };
 
-//Stat_weight
-//compute_stat_weight(Combat_simulator &combat_simulator, Character &character, Combat_simulator_config &config_minus,
-//                    const std::string &permuted_talent, double permute_amount, double mean_init,
-//                    double sample_std_init)
-//{
-//    combat_simulator
-//    auto dmg_minus = combat_simulator.simulate(char_minus);
-//    double mean_minus = Statistics::average(dmg_minus);
-//    double std_minus = Statistics::standard_deviation(dmg_minus, mean_minus);
-//    double sample_std_minus = Statistics::sample_deviation(std_minus, dmg_minus.size());
-//
-//    return {0.0, 0.0, mean_minus - mean_init, Statistics::add_standard_deviations(sample_std_init, sample_std_minus),
-//            permute_amount, permuted_stat};
-//}
-
-Stat_weight compute_stat_weight(Combat_simulator &combat_simulator, Character &char_minus,
-                                const std::string &permuted_stat, double permute_amount, double mean_init,
-                                double sample_std_init)
+Stat_weight compute_stat_weight_single(Combat_simulator combat_simulator, Combat_simulator_config &config,
+                                       Character &character, const std::string &permuted_stat, double permute_amount,
+                                       double mean_init, double sample_std_init)
 {
-    auto dmg_minus = combat_simulator.simulate(char_minus);
+    combat_simulator.config = config;
+    auto dmg_minus = combat_simulator.simulate(character);
     double mean_minus = Statistics::average(dmg_minus);
     double std_minus = Statistics::standard_deviation(dmg_minus, mean_minus);
     double sample_std_minus = Statistics::sample_deviation(std_minus, dmg_minus.size());
@@ -126,12 +112,12 @@ Character character_setup(const Armory &armory, const Buffs &buffs)
     character.equip_armor(armory.wrist.wristguards_of_stability);
     character.equip_armor(armory.hands.flameguard_gauntlets);
     character.equip_armor(armory.belt.onslaught_girdle);
-    character.equip_armor(armory.legs.eldritch_legplates);
+    character.equip_armor(armory.legs.legguards_of_the_fallen_crusader);
     character.equip_armor(armory.boots.chromatic_boots);
     character.equip_armor(armory.rings.don_julios_band);
     character.equip_armor(armory.rings.magnis_will);
     character.equip_armor(armory.trinket.hand_of_justice);
-    character.equip_armor(armory.trinket.blackhands_breadth);
+    character.equip_armor(armory.trinket.diamond_flask);
     character.equip_armor(armory.ranged.blastershot);
 
 //    character.equip_armor(armory.helmet.lionheart_helm);
@@ -156,7 +142,7 @@ Character character_setup(const Armory &armory, const Buffs &buffs)
     character.add_enchant(Socket::back, Enchant::Type::agility);
     character.add_enchant(Socket::chest, Enchant::Type::major_stats);
     character.add_enchant(Socket::wrists, Enchant::Type::strength9);
-    character.add_enchant(Socket::hands, Enchant::Type::strength);
+    character.add_enchant(Socket::hands, Enchant::Type::haste);
     character.add_enchant(Socket::legs, Enchant::Type::haste);
     character.add_enchant(Socket::boots, Enchant::Type::agility);
     character.add_enchant(Socket::main_hand, Enchant::Type::crusader);
@@ -195,7 +181,7 @@ int main()
 
     // Simulator & Combat settings
     Combat_simulator_config config{};
-    config.n_batches = 200000;
+    config.n_batches = 100000;
     config.sim_time = 60;
     config.opponent_level = 63;
 
@@ -317,6 +303,38 @@ int main()
     stat_weight_vector.emplace_back(compute_stat_weight(simulator, char_plus, char_minus, "Weapon damage", 8,
                                                         mean_init, sample_std_init));
     char_plus = character;
+
+    Combat_simulator_config config_minus = config;
+    config_minus.talents.impale--;
+    stat_weight_vector.emplace_back(compute_stat_weight_single(simulator, config_minus, char_plus, "talent_impale", 1,
+                                                               mean_init, sample_std_init));
+    config_minus.talents.impale++;
+//
+//    config_minus.talents.improved_heroic_strike--;
+//    stat_weight_vector
+//            .emplace_back(compute_stat_weight_single(simulator, config_minus, char_plus, "talent_heroic", 1,
+//                                                     mean_init, sample_std_init));
+//    config_minus.talents.improved_heroic_strike++;
+//
+//    config_minus.talents.unbridled_wrath--;
+//    stat_weight_vector.emplace_back(compute_stat_weight_single(simulator, config_minus, char_plus, "talent_unbridled", 1,
+//                                                               mean_init, sample_std_init));
+//    config_minus.talents.unbridled_wrath++;
+//
+//    config_minus.talents.flurry--;
+//    stat_weight_vector.emplace_back(compute_stat_weight_single(simulator, config_minus, char_plus, "talent_flurry", 1,
+//                                                               mean_init, sample_std_init));
+//    config_minus.talents.flurry++;
+//
+//    config_minus.talents.dual_wield_specialization--;
+//    stat_weight_vector.emplace_back(compute_stat_weight_single(simulator, config_minus, char_plus, "talent_dw_spec", 1,
+//                                                               mean_init, sample_std_init));
+//    config_minus.talents.dual_wield_specialization++;
+//
+//    config_minus.talents.improved_execute--;
+//    stat_weight_vector.emplace_back(compute_stat_weight_single(simulator, config_minus, char_plus, "talent_execute", 1,
+//                                                               mean_init, sample_std_init));
+//    config_minus.talents.improved_execute++;
 
     std::cout << "Stat weights:" << "\n";
     for (const auto &stat_weight : stat_weight_vector)

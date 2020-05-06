@@ -92,37 +92,17 @@ Character character_setup(const Armory &armory, const Buffs &buffs)
     character.equip_armor(armory.boots.chromatic_boots);
     character.equip_armor(armory.rings.don_julios_band);
     character.equip_armor(armory.rings.magnis_will);
+    character.equip_armor(armory.trinket.hand_of_justice);
     character.equip_armor(armory.trinket.diamond_flask);
-    character.equip_armor(armory.trinket.blackhands_breadth);
     character.equip_armor(armory.ranged.blastershot);
 
-    character.equip_weapon(armory.swords.maladath, armory.swords.brutality_blade);
-
-//    Character character{Race::human, 60};
-//
-//    character.equip_armor(armory.helmet.lionheart_helm);
-//    character.equip_armor(armory.neck.onyxia_tooth_pendant);
-//    character.equip_armor(armory.shoulder.black_dragonscale_shoulders);
-//    character.equip_armor(armory.back.cloak_of_firemaw);
-//    character.equip_armor(armory.chest.tombstone_breastplate);
-//    character.equip_armor(armory.wrist.blinkstrike);
-//    character.equip_armor(armory.hands.flameguard_gauntlets);
-//    character.equip_armor(armory.belt.thurazane_link);
-//    character.equip_armor(armory.legs.black_dragonscale_leggings);
-//    character.equip_armor(armory.boots.black_dragonscale_boots);
-//    character.equip_armor(armory.rings.magnis_will);
-//    character.equip_armor(armory.rings.blackstone_ring);
-//    character.equip_armor(armory.trinket.diamond_flask);
-//    character.equip_armor(armory.trinket.hand_of_justice);
-//    character.equip_armor(armory.ranged.satyrs_bow);
-
-//    character.equip_weapon(armory.maces.empyrean_demolisher, armory.swords.mirahs_song);
+    character.equip_weapon(armory.swords.brutality_blade, armory.swords.maladath);
 
     // Enchants
     character.add_enchant(Socket::head, Enchant::Type::haste);
     character.add_enchant(Socket::back, Enchant::Type::agility);
-    character.add_enchant(Socket::chest, Enchant::Type::major_stats);
-    character.add_enchant(Socket::wrists, Enchant::Type::strength9);
+    character.add_enchant(Socket::chest, Enchant::Type::minor_stats);
+    character.add_enchant(Socket::wrists, Enchant::Type::strength7);
     character.add_enchant(Socket::hands, Enchant::Type::haste);
     character.add_enchant(Socket::legs, Enchant::Type::haste);
     character.add_enchant(Socket::boots, Enchant::Type::agility);
@@ -132,6 +112,7 @@ Character character_setup(const Armory &armory, const Buffs &buffs)
     character.add_buff(buffs.rallying_cry);
     character.add_buff(buffs.dire_maul);
     character.add_buff(buffs.songflower);
+    character.add_buff(buffs.spirit_of_zandalar);
     character.add_buff(buffs.blessing_of_kings);
     character.add_buff(buffs.blessing_of_might);
     character.add_buff(buffs.gift_of_the_wild);
@@ -155,8 +136,9 @@ Character delta_gear(const Character &character, const Armory &armory, const Buf
     Character delta_character = character;
 //    buffs.songflower;
 //    character.equip_weapon();
-//    armory.change_weapon(delta_character.weapons, armory.swords.quel_serrar, Socket::main_hand);
-//    armory.change_weapon(delta_character.weapons, armory.swords.warblade_hakkari_oh, Socket::off_hand);
+    armory.change_weapon(delta_character.weapons, armory.swords.maladath, Socket::off_hand);
+    armory.change_weapon(delta_character.weapons, armory.swords.chromatically_tempered_sword, Socket::main_hand);
+//    armory.change_weapon(delta_character.weapons, armory.maces.aq_anubisath_warhammer, Socket::off_hand);
 //    armory.change_weapon(delta_character.weapons, armory.trinket.hand_of_justice);
 //    armory.change_weapon(delta_character.weapons, armory.swords.maladath, Socket::off_hand);
 //    armory.change_weapon(delta_character.weapons, armory.swords.dal_rends_tribal_guardian, Socket::off_hand);
@@ -164,10 +146,10 @@ Character delta_gear(const Character &character, const Armory &armory, const Buf
 //    armory.change_weapon(delta_character.weapons, armory.swords.warblade_hakkari_oh, Socket::off_hand);
 //    armory.change_weapon(delta_character.weapons, armory.axes.crul_shorukh_edge_of_chaos, Socket::off_hand);
 
-//    armory.change_armor(delta_character.armor, armory.legs.knight_captain_plate_leggings);
+//    armory.change_armor(delta_character.armor, armory.ranged.satyrs_bow);
+//    armory.change_armor(delta_character.armor, armory.ranged.strikers_mark);
 //    armory.change_armor(delta_character.armor, armory.wrist.battleborn_armbraces);
-//    armory.change_armor(delta_character.armor, armory.boots.black_dragonscale_boots);
-//    armory.change_armor(delta_character.armor, armory.hands.flameguard_gauntlets);
+//    armory.change_armor(delta_character.armor, armory.rings.master_dragonslayers_ring, false);
 //    armory.change_weapon(delta_character.weapons, armory.swords.quel_serrar, Socket::main_hand);
 
 //    delta_character.add_buff(buffs.);
@@ -200,7 +182,7 @@ int main()
 
     // Simulator & Combat settings
     Combat_simulator_config config{};
-    config.n_batches = 100000;
+    config.n_batches = 300000;
     config.sim_time = 60;
     config.opponent_level = 63;
 
@@ -233,6 +215,11 @@ int main()
 
     Combat_simulator simulator(config);
 
+    std::cout << "Simulation settings: \n";
+    std::cout << "Opponent level: " << config.opponent_level << "\n";
+    std::cout << "Simulation time: " << config.sim_time << " seconds.\n\n";
+//    std::cout << "Opponent level: " << config.opponent_level << "\n";
+
     std::vector<double> dps_snapshots1 = simulator.simulate(character1);
     double mean_dps1 = Statistics::average(dps_snapshots1);
     double std_dps1 = Statistics::standard_deviation(dps_snapshots1, mean_dps1);
@@ -261,19 +248,6 @@ int main()
 
     std::cout << "Simulations executed in: " << double(clock() - startTime) / (double) CLOCKS_PER_SEC << " seconds."
               << std::endl;
-
-//    for (size_t i = 0; i < characters.size(); ++i)
-//    {
-//        auto stat_weight_vector = simulators[i]
-//                .compute_stat_weights(characters[i], armory, sim_time, opponent_level, n_batches, mean_dps[i],
-//                                      sample_std_dps[i]);
-//        std::cout << "Stat weights: \n";
-//        for (const auto &stat_weight : stat_weight_vector)
-//        {
-//            std::cout << stat_weight;
-//        }
-//        std::cout << "\n";
-//    }
 
     std::cout << "Code executed in: " << double(clock() - startTime) / (double) CLOCKS_PER_SEC << " seconds."
               << std::endl;

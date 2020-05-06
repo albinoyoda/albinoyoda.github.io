@@ -11,6 +11,7 @@ struct Buffs
     Buff songflower{"songflower", Attributes{15, 15}, Special_stats{5, 0, 0}};
     Buff warchiefs_blessing{"warchiefs_blessing", Attributes{0, 0}, Special_stats{0, 0, 0, 0, .15}};
     Buff spirit_of_zandalar{"spirit_of_zandalar", Attributes{0, 0}, Special_stats{0, 0, 0}, .15};
+    Buff sayges_fortune{"sayges_fortune", Attributes{0, 0}, Special_stats{0, 0, 0},};
 
     // Player_buffs
     Buff blessing_of_kings{"blessing_of_kings", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, .10};
@@ -109,6 +110,8 @@ struct Armory
                                       Socket::chest, Set::black_dragonscale};
         Armor breastplate_of_bloodthirst{"breastplate_of_bloodthirst", Attributes{10, 0}, Special_stats{2, 0, 0},
                                          Socket::chest};
+        Armor runed_bloodstaind_hauberk{"runed_bloodstaind_hauberk", Attributes{0, 0}, Special_stats{1, 0, 58},
+                                        Socket::chest};
     } chest;
 
     struct wrists_t
@@ -148,6 +151,7 @@ struct Armory
         Armor aq_gauntlets_of_annihilation{"aq_gauntlets_of_annihilation", Attributes{35, 0}, Special_stats{1, 1, 0},
                                            Socket::hands};
         Armor bloodmail_gauntlets{"bloodmail_gauntlets", Attributes{9, 0}, Special_stats{1, 0, 0}, Socket::hands};
+        Armor sacrificial_gauntlets{"sacrificial_gauntlets", Attributes{19, 0}, Special_stats{1, 1, 0}, Socket::hands};
     } hands;
 
     struct belt_t
@@ -245,7 +249,6 @@ struct Armory
         Armor riphook{"riphook", Attributes{0, 0}, Special_stats{0, 0, 22}, Socket::ranged};
     } ranged;
 
-    // ---------------- Weapons ------------------
     struct swords_t
     {
         Weapon maladath{"maladath", Attributes{0.0, 0.0},
@@ -304,6 +307,11 @@ struct Armory
                                      Weapon_socket::one_hand, Weapon_type::axe,
                                      {{"axe_of_the_deep_woods", Hit_effect::Type::damage_magic, {}, {}, 108, 0,
                                        0.036}}};
+        Weapon ancient_hakkari_manslayer{"ancient_hakkari_manslayer", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, 2.0,
+                                     69.0, 130.0,
+                                     Weapon_socket::one_hand, Weapon_type::axe,
+                                     {{"axe_of_the_deep_woods", Hit_effect::Type::damage_magic, {}, {}, 51, 0,
+                                       0.036}}};
     } axes;
 
     struct daggers_t
@@ -340,15 +348,14 @@ struct Armory
                                        191, Weapon_socket::main_hand, Weapon_type::unarmed};
     } fists;
 
-    struct set_bonuses_t
-    {
-        Set_bonus devilsaur_set_bonus{Attributes{0, 0}, Special_stats{0, 2, 0}, 2, Set::devilsaur};
-        Set_bonus black_dragonscale_bonus2{Attributes{0, 0}, Special_stats{0, 1, 0}, 2, Set::black_dragonscale};
-        Set_bonus black_dragonscale_bonus3{Attributes{0, 0}, Special_stats{2, 0, 0}, 3, Set::black_dragonscale};
-        Set_bonus rare_pvp_set_bonus_1{Attributes{0, 0}, Special_stats{0, 0, 40}, 2, Set::rare_pvp_set};
-        Set_bonus dal_rends{Attributes{0, 0}, Special_stats{0, 0, 50}, 2, Set::dal_rends};
-        Set_bonus hakkari_warblades{Attributes{0, 0}, Special_stats{0, 0, 0, 0, 0, 6}, 2, Set::warblade_of_the_hakkari};
-    } set_bonuses;
+    std::vector<Set_bonus> set_bonuses{
+            {Attributes{0, 0}, Special_stats{0, 2, 0},          2, Set::devilsaur},
+            {Attributes{0, 0}, Special_stats{0, 1, 0},          2, Set::black_dragonscale},
+            {Attributes{0, 0}, Special_stats{2, 0, 0},          3, Set::black_dragonscale},
+            {Attributes{0, 0}, Special_stats{0, 0, 40},         2, Set::rare_pvp_set},
+            {Attributes{0, 0}, Special_stats{0, 0, 50},         2, Set::dal_rends},
+            {Attributes{0, 0}, Special_stats{0, 0, 0, 0, 0, 6}, 2, Set::warblade_of_the_hakkari},
+    };
 
     auto get_set_bonuses() const
     {
@@ -436,64 +443,44 @@ struct Armory
             set_names.emplace_back(weapon.set_name);
         }
 
-        // TODO fix this mess
-        int set_pieces_devil = 0;
-        int set_pieces_bds = 0;
-        int set_pieces_pvp = 0;
-        int set_pieces_dal_rend = 0;
-        int set_pieces_hakkari = 0;
-        for (Set &set_name : set_names)
+        std::vector<Set> unique_set_names{};
+        for (const Set &set_name : set_names)
         {
-            switch (set_name)
+            if (set_name != Set::none)
             {
-                case Set::devilsaur:
-                    set_pieces_devil++;
-                    break;
-                case Set::black_dragonscale:
-                    set_pieces_bds++;
-                    break;
-                case Set::rare_pvp_set:
-                    set_pieces_pvp++;
-                    break;
-                case Set::dal_rends:
-                    set_pieces_dal_rend++;
-                    break;
-                case Set::warblade_of_the_hakkari:
-                    set_pieces_hakkari++;
-                    break;
-                default:
-                    break;
+                bool unique = true;
+                for (const Set &set_name_unique : unique_set_names)
+                {
+                    if (set_name == set_name_unique)
+                    {
+                        unique = false;
+                    }
+                }
+                if (unique)
+                {
+                    unique_set_names.emplace_back(set_name);
+                }
             }
         }
-        if (set_pieces_devil >= set_bonuses.devilsaur_set_bonus.pieces)
+
+        for (const Set &unique_set_name : unique_set_names)
         {
-            total_attributes += set_bonuses.devilsaur_set_bonus.attributes;
-            total_special_stats += set_bonuses.devilsaur_set_bonus.special_stats;
-        }
-        if (set_pieces_bds >= set_bonuses.black_dragonscale_bonus2.pieces)
-        {
-            total_attributes += set_bonuses.black_dragonscale_bonus2.attributes;
-            total_special_stats += set_bonuses.black_dragonscale_bonus2.special_stats;
-        }
-        if (set_pieces_bds >= set_bonuses.black_dragonscale_bonus3.pieces)
-        {
-            total_attributes += set_bonuses.black_dragonscale_bonus3.attributes;
-            total_special_stats += set_bonuses.black_dragonscale_bonus3.special_stats;
-        }
-        if (set_pieces_pvp >= set_bonuses.rare_pvp_set_bonus_1.pieces)
-        {
-            total_attributes += set_bonuses.rare_pvp_set_bonus_1.attributes;
-            total_special_stats += set_bonuses.rare_pvp_set_bonus_1.special_stats;
-        }
-        if (set_pieces_dal_rend >= set_bonuses.dal_rends.pieces)
-        {
-            total_attributes += set_bonuses.dal_rends.attributes;
-            total_special_stats += set_bonuses.dal_rends.special_stats;
-        }
-        if (set_pieces_hakkari >= set_bonuses.hakkari_warblades.pieces)
-        {
-            total_attributes += set_bonuses.hakkari_warblades.attributes;
-            total_special_stats += set_bonuses.hakkari_warblades.special_stats;
+            int count = 0;
+            for (const Set &set_name : set_names)
+            {
+                if (set_name == unique_set_name)
+                {
+                    count++;
+                }
+            }
+            for (const Set_bonus &set_bonus: set_bonuses)
+            {
+                if (set_bonus.set == unique_set_name && count >= set_bonus.pieces)
+                {
+                    total_attributes += set_bonus.attributes;
+                    total_special_stats += set_bonus.special_stats;
+                }
+            }
         }
 
         for (const auto &buff : character.buffs)

@@ -230,7 +230,7 @@ void Combat_simulator::compute_hit_table(int level_difference,
                                          Special_stats special_stats,
                                          Socket weapon_hand)
 {
-    int target_defence_level = config_.opponent_level * 5;
+    int target_defence_level = config.opponent_level * 5;
     int skill_diff = target_defence_level - weapon_skill;
     int base_skill_diff = level_difference * 5;
 
@@ -328,7 +328,7 @@ void Combat_simulator::compute_hit_table(int level_difference,
 void Combat_simulator::manage_flurry(Hit_result hit_result, Special_stats &special_stats, int &flurry_charges,
                                      bool is_ability)
 {
-    if (config_.talents.flurry)
+    if (config.talents.flurry)
     {
         bool flurry_active = (flurry_charges > 0);
         if (!is_ability)
@@ -341,12 +341,12 @@ void Combat_simulator::manage_flurry(Hit_result hit_result, Special_stats &speci
             flurry_charges = 3;
             if (!flurry_active)
             {
-                special_stats.haste += 0.05 + 0.05 * config_.talents.flurry;
+                special_stats.haste += 0.05 + 0.05 * config.talents.flurry;
             }
         }
         else if (flurry_active && flurry_charges == 0)
         {
-            special_stats.haste -= 0.05 + 0.05 * config_.talents.flurry;
+            special_stats.haste -= 0.05 + 0.05 * config.talents.flurry;
         }
         simulator_cout(flurry_charges, " flurry charges");
         assert(special_stats.haste > 0.9 && special_stats.haste < 1.7);
@@ -362,12 +362,12 @@ void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_we
     double swing_damage = weapon.swing(special_stats.attack_power);
     if (weapon.socket == Socket::off_hand)
     {
-        swing_damage *= (0.5 + 0.025 * config_.talents.dual_wield_specialization);
+        swing_damage *= (0.5 + 0.025 * config.talents.dual_wield_specialization);
     }
     weapon.internal_swing_timer = weapon.swing_speed / special_stats.haste;
 
     // Check if heroic strike should be performed
-    if (config_.enable_spell_rotation &&
+    if (config.enable_spell_rotation &&
         heroic_strike_active &&
         weapon.socket == Socket::main_hand &&
         rage >= heroic_strike_rage_cost)
@@ -453,7 +453,7 @@ void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_we
         }
 
         // Unbridled wrath
-        if (get_uniform_random(1) < config_.talents.unbridled_wrath * 0.08)
+        if (get_uniform_random(1) < config.talents.unbridled_wrath * 0.08)
         {
             rage += 1;
             simulator_cout("Unbridled wrath, +1 rage");
@@ -464,8 +464,8 @@ void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_we
 
 std::vector<double> &Combat_simulator::simulate(const Character &character)
 {
-    int n_damage_batches = config_.n_batches;
-    if (config_.display_combat_debug)
+    int n_damage_batches = config.n_batches;
+    if (config.display_combat_debug)
     {
         n_damage_batches = 1;
     }
@@ -480,27 +480,27 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
         weapons.emplace_back(wep.swing_speed, wep.min_damage, wep.max_damage, wep.socket, wep.type,
                              wep.weapon_socket, wep.hit_effects);
         weapons.back().compute_weapon_damage(wep.buff.bonus_damage);
-        compute_hit_table(config_.opponent_level - character.level,
+        compute_hit_table(config.opponent_level - character.level,
                           get_weapon_skill(character.total_special_stats, wep.type),
                           starting_special_stats, wep.socket);
     }
 
-    double heroic_strike_rage_cost = 15.0 - config_.talents.improved_heroic_strike;
-    double execute_rage_cost = 15 - static_cast<int>(2.5 * config_.talents.improved_execute);
+    double heroic_strike_rage_cost = 15.0 - config.talents.improved_heroic_strike;
+    double execute_rage_cost = 15 - static_cast<int>(2.5 * config.talents.improved_execute);
     double armor_reduction_from_spells = 0.0;
-    armor_reduction_from_spells += 640 * config_.curse_of_recklessness_active;
-    armor_reduction_from_spells += config_.sunder_armor_active * 450 * config_.n_sunder_armor_stacks;
-    armor_reduction_from_spells += config_.faerie_fire_feral_active * 505;
+    armor_reduction_from_spells += 640 * config.curse_of_recklessness_active;
+    armor_reduction_from_spells += config.sunder_armor_active * 450 * config.n_sunder_armor_stacks;
+    armor_reduction_from_spells += config.faerie_fire_feral_active * 505;
 
     double boss_armor = 3731 - armor_reduction_from_spells; // Armor for Warrior class monsters
     double target_mitigation = armor_mitigation(boss_armor, 63);
     armor_reduction_factor_ = 1 - target_mitigation;
 
-    double sim_time = config_.sim_time;
-    double sim_time_increment = config_.sim_time / 5.0 / n_damage_batches;
-    if (config_.use_sim_time_ramp)
+    double sim_time = config.sim_time;
+    double sim_time_increment = config.sim_time / 5.0 / n_damage_batches;
+    if (config.use_sim_time_ramp)
     {
-        sim_time -= config_.sim_time / 10.0;
+        sim_time -= config.sim_time / 10.0;
     }
 
     for (int iter = 0; iter < n_damage_batches; iter++)
@@ -533,7 +533,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
             wep.internal_swing_timer = 0.0;
         }
 
-        if (config_.use_sim_time_ramp)
+        if (config.use_sim_time_ramp)
         {
             sim_time += sim_time_increment;
         }
@@ -562,19 +562,19 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                              deathwish_active, recklessness_active, damage_sources, flurry_charges);
             }
 
-            if (config_.fuel_extra_rage)
+            if (config.fuel_extra_rage)
             {
-                if (time_keeper_.time - config_.extra_rage_interval * fuel_ticks > 0.0)
+                if (time_keeper_.time - config.extra_rage_interval * fuel_ticks > 0.0)
                 {
-                    rage += rage_from_damage_taken(config_.extra_rage_damage_amount);
+                    rage += rage_from_damage_taken(config.extra_rage_damage_amount);
                     rage = std::min(100.0, rage);
                     fuel_ticks++;
-                    simulator_cout("Rage from damage: ", config_.extra_rage_damage_amount, " damage, yielding: ",
-                                   rage_from_damage_taken(config_.extra_rage_damage_amount), " rage");
+                    simulator_cout("Rage from damage: ", config.extra_rage_damage_amount, " damage, yielding: ",
+                                   rage_from_damage_taken(config.extra_rage_damage_amount), " rage");
                 }
             }
 
-            if (config_.talents.anger_management)
+            if (config.talents.anger_management)
             {
                 if (time_keeper_.time - 3 * anger_management_ticks > 0.0)
                 {
@@ -585,7 +585,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                 }
             }
 
-            if (config_.enable_bloodrage)
+            if (config.enable_bloodrage)
             {
                 if (!bloodrage_active && bloodrage_cooldown < 0.0)
                 {
@@ -612,7 +612,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                 bloodrage_cooldown -= dt;
             }
 
-            if (config_.use_mighty_rage_potion)
+            if (config.use_mighty_rage_potion)
             {
                 if (sim_time - time_keeper_.time < 30.0 && !used_mighty_rage_potion)
                 {
@@ -631,9 +631,9 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                 }
             }
 
-            if (config_.enable_spell_rotation)
+            if (config.enable_spell_rotation)
             {
-                if (config_.talents.death_wish)
+                if (config.talents.death_wish)
                 {
                     if (sim_time - time_keeper_.time < 31.0 && rage >= 10 && !deathwish_active)
                     {
@@ -643,7 +643,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                         simulator_cout("------------ Deathwish activated! ------------");
                     }
                 }
-                if (config_.enable_recklessness)
+                if (config.enable_recklessness)
                 {
                     if (sim_time - time_keeper_.time < 16.0 && !recklessness_active)
                     {
@@ -660,6 +660,11 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                     {
                         simulator_cout("------------ Execute phase! ------------");
                         have_printed_execute_phase = true;
+                    }
+                    if (rage > heroic_strike_rage_cost && !heroic_strike_active)
+                    {
+                        heroic_strike_active = true;
+                        simulator_cout("Heroic strike activated");
                     }
                     if (time_keeper_.global_cd < 0 && rage > execute_rage_cost)
                     {
@@ -713,7 +718,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                     {
                         simulator_cout("Whirlwind!");
                         double damage;
-                        if (config_.enable_rng_melee)
+                        if (config.enable_rng_melee)
                         {
                             damage = weapons[0].random_normalized_swing(special_stats.attack_power);
                         }
@@ -747,7 +752,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
 
 std::vector<double> &Combat_simulator::simulate(const Character &character, int n_batches)
 {
-    config_.n_batches = n_batches;
+    config.n_batches = n_batches;
     return simulate(character);
 }
 

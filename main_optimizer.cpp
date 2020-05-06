@@ -501,7 +501,7 @@ int main()
             }
         }
 
-        double quantile = find_cdf_quantile(1 - 1 / static_cast<double>(10*n), 0.01);
+        double quantile = find_cdf_quantile(1 - 1 / static_cast<double>(10 * n), 0.01);
         double filter_value = best_dps - quantile * best_dps_std;
         std::cout << "Best combination DPS: " << best_dps << ", deleting sets below: "
                   << best_dps - quantile * best_dps_std << "\n";

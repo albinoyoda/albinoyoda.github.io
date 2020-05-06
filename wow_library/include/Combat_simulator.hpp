@@ -58,11 +58,11 @@ struct Combat_simulator_config
 class Combat_simulator
 {
 public:
-    explicit Combat_simulator(Combat_simulator_config config) : config_(config)
+    explicit Combat_simulator(Combat_simulator_config config) : config(config)
     {
-        if (config_.use_seed)
+        if (config.use_seed)
         {
-            srand(config_.seed);
+            srand(config.seed);
         }
     }
 
@@ -101,7 +101,7 @@ public:
             case 2:
                 return glancing_factor_mh_;
             case 3:
-                return 2.0 + 0.1 * config_.talents.impale;
+                return 2.0 + 0.1 * config.talents.impale;
             case 4:
                 return 1.0;
             default:
@@ -121,7 +121,7 @@ public:
             case 2:
                 return glancing_factor_oh_;
             case 3:
-                return 2.0 + 0.1 * config_.talents.impale;
+                return 2.0 + 0.1 * config.talents.impale;
             case 4:
                 return 1.0;
             default:
@@ -173,7 +173,7 @@ public:
     template<typename... Args>
     void simulator_cout(Args &&... args)
     {
-        if (config_.display_combat_debug)
+        if (config.display_combat_debug)
         {
             std::cout << "Time: " << std::setw(8) << std::left << time_keeper_.time
                       << "s. Loop idx:" << std::setw(4) << time_keeper_.step_index << "Event: ";
@@ -181,6 +181,8 @@ public:
             std::cout << "\n";
         }
     }
+
+    Combat_simulator_config config;
 
 private:
     std::vector<double> hit_probabilities_white_mh_;
@@ -198,7 +200,6 @@ private:
     double armor_reduction_factor_{};
     Time_keeper time_keeper_{};
     Buff_manager buff_manager_{};
-    Combat_simulator_config config_;
 };
 
 #include "Combat_simulator.tcc"
