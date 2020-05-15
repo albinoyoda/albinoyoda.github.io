@@ -91,12 +91,12 @@ Character character_setup(const Armory &armory, const Buffs &buffs)
     character.equip_armor(armory.legs.legguards_of_the_fallen_crusader);
     character.equip_armor(armory.boots.chromatic_boots);
     character.equip_armor(armory.rings.don_julios_band);
-    character.equip_armor(armory.rings.magnis_will);
+    character.equip_armor(armory.rings.master_dragonslayers_ring);
     character.equip_armor(armory.trinket.hand_of_justice);
     character.equip_armor(armory.trinket.diamond_flask);
     character.equip_armor(armory.ranged.blastershot);
 
-    character.equip_weapon(armory.swords.brutality_blade, armory.swords.maladath);
+    character.equip_weapon(armory.swords.maladath, armory.swords.brutality_blade);
 
     // Enchants
     character.add_enchant(Socket::head, Enchant::Type::haste);
@@ -109,11 +109,11 @@ Character character_setup(const Armory &armory, const Buffs &buffs)
     character.add_enchant(Socket::main_hand, Enchant::Type::crusader);
     character.add_enchant(Socket::off_hand, Enchant::Type::crusader);
 
-//    character.add_buff(buffs.rallying_cry);
-//    character.add_buff(buffs.dire_maul);
+    character.add_buff(buffs.rallying_cry);
+    character.add_buff(buffs.dire_maul);
 //    character.add_buff(buffs.songflower);
-//    character.add_buff(buffs.spirit_of_zandalar);
-//    character.add_buff(buffs.sayges_fortune);
+    character.add_buff(buffs.spirit_of_zandalar);
+    character.add_buff(buffs.sayges_fortune);
 //    character.add_buff(buffs.warchiefs_blessing);
     character.add_buff(buffs.blessing_of_kings);
     character.add_buff(buffs.blessing_of_might);
@@ -145,7 +145,8 @@ Character delta_gear(const Character &character, const Armory &armory, const Buf
 //    delta_character.add_buff(buffs.songflower); // 9.3
 
 //    armory.change_weapon(delta_character.weapons, armory.swords.maladath, Socket::off_hand);
-//    armory.change_weapon(delta_character.weapons, armory.swords.chromatically_tempered_sword, Socket::main_hand);
+//    armory.change_weapon(delta_character.weapons, armory.swords.aq_ancient_quiraj_ripper, Socket::main_hand);
+//    armory.change_weapon(delta_character.weapons, armory.maces.empyrean_demolisher, Socket::off_hand);
 //    armory.change_weapon(delta_character.weapons, armory.maces.aq_anubisath_warhammer, Socket::off_hand);
 //    armory.change_weapon(delta_character.weapons, armory.trinket.hand_of_justice);
 //    armory.change_weapon(delta_character.weapons, armory.swords.maladath, Socket::off_hand);
@@ -154,8 +155,8 @@ Character delta_gear(const Character &character, const Armory &armory, const Buf
 //    armory.change_weapon(delta_character.weapons, armory.swords.warblade_hakkari_oh, Socket::off_hand);
 //    armory.change_weapon(delta_character.weapons, armory.axes.crul_shorukh_edge_of_chaos, Socket::off_hand);
 
-//    armory.change_armor(delta_character.armor, armory.ranged.satyrs_bow);
-//    armory.change_armor(delta_character.armor, armory.ranged.strikers_mark);
+    armory.change_armor(delta_character.armor, armory.ranged.strikers_mark);
+//    armory.change_armor(delta_character.armor, armory.legs.knight_captain_plate_leggings);
 //    armory.change_armor(delta_character.armor, armory.wrist.battleborn_armbraces);
 //    armory.change_armor(delta_character.armor, armory.rings.master_dragonslayers_ring, false);
 //    armory.change_weapon(delta_character.weapons, armory.swords.quel_serrar, Socket::main_hand);
@@ -212,7 +213,7 @@ int main()
     config.enable_spell_rotation = true;
     config.use_mighty_rage_potion = true;
     config.enable_bloodrage = true;
-    config.enable_recklessness = false;
+    config.enable_recklessness = true;
 //    config.display_combat_debug = true;
     config.use_seed = true;
     config.seed = 110000;

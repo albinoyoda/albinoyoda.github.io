@@ -40,8 +40,6 @@ struct Armory
         Armor mask_of_the_unforgiven{"mask_of_the_unforgiven", Attributes{0, 0}, Special_stats{1, 2, 0}, Socket::head};
         Armor crown_of_destruction{"crown_of_destruction", Attributes{0, 0}, Special_stats{2, 0, 44}, Socket::head};
         Armor helm_of_endless_rage{"helm_of_endless_rage", Attributes{26, 26}, Special_stats{0, 0, 0}, Socket::head};
-
-
     } helmet;
 
     struct neck_t
@@ -123,6 +121,8 @@ struct Armory
         Armor wristhuards_of_true_flight{"wristhuards_of_true_flight", Attributes{0, 19}, Special_stats{0, 1, 0},
                                          Socket::wrists};
         Armor battleborn_armbraces{"battleborn_armbraces", Attributes{0, 0}, Special_stats{1, 1, 0},
+                                   Socket::wrists};
+        Armor zandalar_armguards{"zandalar_armguards", Attributes{13, 13}, Special_stats{0, 0, 0},
                                    Socket::wrists};
         Armor blinkstrike{"blinkstrike", Attributes{3, 0}, Special_stats{1, 0, 0}, Socket::wrists};
         Armor aq_bracers_of_brutality{"aq_bracers_of_brutality", Attributes{21, 12}, Special_stats{0, 0, 0},

@@ -1,2 +1,5 @@
 .idea
+
 cmake-build-debug
+
+interface/emscripten/
