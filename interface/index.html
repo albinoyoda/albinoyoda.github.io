@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<p id="id_for_this_paragraph"> Select armor </p>
+
+<select id="helmet_dd" onchange="read_drop_down()">
+    <option value="none" selected disabled>Helmet</option>
+    <option value="lionheart_helm">lionheart_helm</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+</select>
+
+<select id="weapon_dd" onchange="read_drop_down()">
+    <option value="none" selected disabled>Weapon</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+</select>
+
+<p id="another_id"> Select enchants </p>
+
+<select id="helmet_ench_dd" onchange="read_drop_down()">
+    <option value="Helmet" selected disabled>Helmet</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+</select>
+
+<select id="weapon_ench_dd" onchange="read_drop_down()">
+    <option value="Weapon" selected disabled>Weapon</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+</select>
+
+<p id="another_isd"></p>
+<button onclick="myFunction()">Run simulator</button>
+
+<canvas id="line-chart" width="800" height="450"></canvas>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+
+<p id="demo">Average DPS: </p>
+
+<script>
+    var helmet_string;
+    var weapon_string;
+    var helmet;
+    var weapon;
+
+    function read_drop_down() {
+        helmet = document.getElementById("helmet_dd");
+        weapon = document.getElementById("weapon_dd");
+        helmet_string = helmet.options[helmet.selectedIndex].value;
+        weapon_string = weapon.options[weapon.selectedIndex].value;
+    }
+
+    function myFunction() {
+        read_drop_down();
+
+        var wow_input = {
+            target_level: 60,
+            fight_time: 60,
+            n_simulations: 10
+        };
+
+        var obj = new Module['Sim_interface']();
+
+        var result = obj.simulate(wow_input);
+
+        for (let i = 0; i < result['dmg_batches'].size(); i++) {
+            console.log(result['dmg_batches'].get(i));
+        }
+
+        var numbers = [];
+        var dps = [];
+        for (var i = 1; i <= result['dmg_batches'].size(); i++) {
+            dps.push(result['dmg_batches'].get(i));
+            numbers.push(i);
+        }
+
+        document.getElementById("demo").innerHTML = 'Average DPS: ' + result['mean_dps'];
+
+        new Chart(document.getElementById("line-chart"), {
+            type: 'line',
+            data: {
+                labels: numbers,
+                datasets: [{
+                    data: dps,
+                    label: "BiS DPS brah",
+                    borderColor: "#3e95cd",
+                    fill: false
+                }]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'Damage histogram'
+                }
+            }
+        });
+    }
+</script>
+
+<script src="emscripten/wow_interface.js"></script>
+</body>
+</html>
