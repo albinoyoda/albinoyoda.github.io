@@ -80,29 +80,29 @@ Character character_setup(const Armory &armory, const Buffs &buffs)
 {
     Character character{Race::human, 60};
 
-    character.equip_armor(armory.helmet.lionheart_helm);
-    character.equip_armor(armory.neck.onyxia_tooth_pendant);
-    character.equip_armor(armory.shoulder.drake_talon_pauldrons);
-    character.equip_armor(armory.back.cape_of_the_black_baron);
-    character.equip_armor(armory.chest.savage_gladiator_chain);
-    character.equip_armor(armory.wrist.wristguards_of_stability);
-    character.equip_armor(armory.hands.flameguard_gauntlets);
-    character.equip_armor(armory.belt.onslaught_girdle);
-    character.equip_armor(armory.legs.legguards_of_the_fallen_crusader);
-    character.equip_armor(armory.boots.chromatic_boots);
-    character.equip_armor(armory.rings.don_julios_band);
-    character.equip_armor(armory.rings.master_dragonslayers_ring);
-    character.equip_armor(armory.trinket.hand_of_justice);
-    character.equip_armor(armory.trinket.diamond_flask);
-    character.equip_armor(armory.ranged.blastershot);
+//    character.equip_armor(armory.find_armor(Socket::head, "lionheart_helm"));
+//    character.equip_armor(armory.find_armor(Socket::neck, "onyxia_tooth_pendant"));
+//    character.equip_armor(armory.find_armor(Socket::shoulder, "drake_talon_pauldrons"));
+//    character.equip_armor(armory.find_armor(Socket::back, "cape_of_the_black_baron"));
+//    character.equip_armor(armory.find_armor(Socket::chest, "savage_gladiator_chain"));
+//    character.equip_armor(armory.find_armor(Socket::wrist, "wristguards_of_stability"));
+//    character.equip_armor(armory.find_armor(Socket::hands, "flameguard_gauntlets"));
+//    character.equip_armor(armory.find_armor(Socket::belt, "onslaught_girdle"));
+//    character.equip_armor(armory.find_armor(Socket::legs, "legguards_of_the_fallen_crusader"));
+//    character.equip_armor(armory.find_armor(Socket::boots, "chromatic_boots"));
+//    character.equip_armor(armory.find_armor(Socket::ring, "don_julios_band"));
+//    character.equip_armor(armory.find_armor(Socket::ring, "master_dragonslayers_ring"));
+//    character.equip_armor(armory.find_armor(Socket::trinket, "hand_of_justice"));
+//    character.equip_armor(armory.find_armor(Socket::trinket, "diamond_flask"));
+//    character.equip_armor(armory.find_armor(Socket::ranged, "blastershot"));
 
-    character.equip_weapon(armory.swords.maladath, armory.swords.brutality_blade);
+    character.equip_weapon(armory.find_weapon("maladath"), armory.find_weapon("brutality_blade"));
 
     // Enchants
     character.add_enchant(Socket::head, Enchant::Type::haste);
     character.add_enchant(Socket::back, Enchant::Type::agility);
     character.add_enchant(Socket::chest, Enchant::Type::minor_stats);
-    character.add_enchant(Socket::wrists, Enchant::Type::strength7);
+    character.add_enchant(Socket::wrist, Enchant::Type::strength7);
     character.add_enchant(Socket::hands, Enchant::Type::haste);
     character.add_enchant(Socket::legs, Enchant::Type::haste);
     character.add_enchant(Socket::boots, Enchant::Type::agility);
@@ -145,33 +145,10 @@ Character delta_gear(const Character &character, const Armory &armory, const Buf
 //    delta_character.add_buff(buffs.songflower); // 9.3
 
 //    armory.change_weapon(delta_character.weapons, armory.swords.maladath, Socket::off_hand);
-//    armory.change_weapon(delta_character.weapons, armory.swords.aq_ancient_quiraj_ripper, Socket::main_hand);
-//    armory.change_weapon(delta_character.weapons, armory.maces.empyrean_demolisher, Socket::off_hand);
-//    armory.change_weapon(delta_character.weapons, armory.maces.aq_anubisath_warhammer, Socket::off_hand);
-//    armory.change_weapon(delta_character.weapons, armory.trinket.hand_of_justice);
-//    armory.change_weapon(delta_character.weapons, armory.swords.maladath, Socket::off_hand);
-//    armory.change_weapon(delta_character.weapons, armory.swords.dal_rends_tribal_guardian, Socket::off_hand);
-//    armory.change_weapon(delta_character.weapons, armory.swords.warblade_hakkari_mh, Socket::main_hand);
-//    armory.change_weapon(delta_character.weapons, armory.swords.warblade_hakkari_oh, Socket::off_hand);
-//    armory.change_weapon(delta_character.weapons, armory.axes.crul_shorukh_edge_of_chaos, Socket::off_hand);
 
-    armory.change_armor(delta_character.armor, armory.ranged.strikers_mark);
-//    armory.change_armor(delta_character.armor, armory.legs.knight_captain_plate_leggings);
-//    armory.change_armor(delta_character.armor, armory.wrist.battleborn_armbraces);
-//    armory.change_armor(delta_character.armor, armory.rings.master_dragonslayers_ring, false);
-//    armory.change_weapon(delta_character.weapons, armory.swords.quel_serrar, Socket::main_hand);
-
-//    delta_character.add_buff(buffs.);
+//    armory.change_armor(delta_character.armor, armory.ranged.strikers_mark);
 
 //    delta_character.add_enchant(Socket::head, Enchant::Type::haste);
-//    delta_character.add_enchant(Socket::back, Enchant::Type::agility);
-//    delta_character.add_enchant(Socket::chest, Enchant::Type::major_stats);
-//    delta_character.add_enchant(Socket::wrists, Enchant::Type::strength9);
-//    delta_character.add_enchant(Socket::hands, Enchant::Type::haste);
-//    delta_character.add_enchant(Socket::legs, Enchant::Type::haste);
-//    delta_character.add_enchant(Socket::boots, Enchant::Type::agility);
-//    delta_character.add_enchant(Socket::main_hand, Enchant::Type::crusader);
-//    delta_character.add_enchant(Socket::off_hand, Enchant::Type::crusader);
 
     armory.compute_total_stats(delta_character);
 

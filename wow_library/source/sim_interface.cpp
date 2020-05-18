@@ -4,32 +4,74 @@
 
 #include "sim_interface.hpp"
 
-Character character_setup(const Armory &armory, const Buffs &buffs)
+#include <sstream>
+
+std::string print_stat(const std::string &stat_name, double amount)
+{
+    std::ostringstream stream;
+    stream << stat_name << std::setw(6) << std::left << std::setprecision(6) << amount << "<br />";
+    return stream.str();
+}
+
+std::string get_character_stat(const Character &character)
+{
+    std::string out_string = "Character stats <br />";
+    out_string += print_stat("Strength : ", character.total_attributes.strength);
+    out_string += print_stat("Agility  : ", character.total_attributes.agility);
+    out_string += print_stat("Hit:     : ", character.total_special_stats.hit);
+    out_string += print_stat("Crit:    : ", character.total_special_stats.critical_strike);
+    out_string += print_stat("Atk Pwr  : ", character.total_special_stats.attack_power);
+    out_string += print_stat("Haste    : ", character.total_special_stats.haste);
+    out_string += print_stat("Swrd skil: ", character.total_special_stats.sword_skill);
+    out_string += print_stat("Axe  skil: ", character.total_special_stats.axe_skill);
+    out_string += print_stat("Dagr skil: ", character.total_special_stats.dagger_skill);
+    out_string += print_stat("Mace skil: ", character.total_special_stats.mace_skill);
+    out_string += print_stat("Unrm skil: ", character.total_special_stats.fist_skill);
+    out_string += "<br />";
+
+    out_string += "Armor:<br />";
+    for (auto const &armor_piece : character.armor)
+    {
+        out_string += armor_piece.name + "<br />";
+    }
+
+    out_string += "<br />Weapons:<br />";
+    for (auto const &wep : character.weapons)
+    {
+        out_string += wep.name + "<br />";
+    }
+
+    out_string += "<br />";
+    return out_string;
+}
+
+Character character_setup(const Armory &armory, const Buffs &buffs, const std::vector<std::string> &armor_vec,
+                          const std::vector<std::string> &weapons_vec)
 {
     Character character{Race::human, 60};
 
-    character.equip_armor(armory.helmet.lionheart_helm);
-    character.equip_armor(armory.neck.onyxia_tooth_pendant);
-    character.equip_armor(armory.shoulder.drake_talon_pauldrons);
-    character.equip_armor(armory.back.cape_of_the_black_baron);
-    character.equip_armor(armory.chest.savage_gladiator_chain);
-    character.equip_armor(armory.wrist.wristguards_of_stability);
-    character.equip_armor(armory.hands.flameguard_gauntlets);
-    character.equip_armor(armory.belt.onslaught_girdle);
-    character.equip_armor(armory.legs.legguards_of_the_fallen_crusader);
-    character.equip_armor(armory.boots.chromatic_boots);
-    character.equip_armor(armory.rings.don_julios_band);
-    character.equip_armor(armory.rings.magnis_will);
-    character.equip_armor(armory.trinket.hand_of_justice);
-    character.equip_armor(armory.trinket.diamond_flask);
-    character.equip_armor(armory.ranged.blastershot);
+    character.equip_armor(armory.find_armor(Socket::head, armor_vec[0]));
+    character.equip_armor(armory.find_armor(Socket::neck, armor_vec[1]));
+    character.equip_armor(armory.find_armor(Socket::shoulder, armor_vec[2]));
+    character.equip_armor(armory.find_armor(Socket::back, armor_vec[3]));
+    character.equip_armor(armory.find_armor(Socket::chest, armor_vec[4]));
+    character.equip_armor(armory.find_armor(Socket::wrist, armor_vec[5]));
+    character.equip_armor(armory.find_armor(Socket::hands, armor_vec[6]));
+    character.equip_armor(armory.find_armor(Socket::belt, armor_vec[7]));
+    character.equip_armor(armory.find_armor(Socket::legs, armor_vec[8]));
+    character.equip_armor(armory.find_armor(Socket::boots, armor_vec[9]));
+    character.equip_armor(armory.find_armor(Socket::ring, armor_vec[10]));
+    character.equip_armor(armory.find_armor(Socket::ring, armor_vec[11]));
+    character.equip_armor(armory.find_armor(Socket::trinket, armor_vec[12]));
+    character.equip_armor(armory.find_armor(Socket::trinket, armor_vec[13]));
+    character.equip_armor(armory.find_armor(Socket::ranged, armor_vec[14]));
 
-    character.equip_weapon(armory.swords.maladath, armory.swords.brutality_blade);
+    character.equip_weapon(armory.find_weapon(weapons_vec[0]), armory.find_weapon(weapons_vec[1]));
 
     character.add_enchant(Socket::head, Enchant::Type::haste);
     character.add_enchant(Socket::back, Enchant::Type::agility);
     character.add_enchant(Socket::chest, Enchant::Type::major_stats);
-    character.add_enchant(Socket::wrists, Enchant::Type::strength9);
+    character.add_enchant(Socket::wrist, Enchant::Type::strength9);
     character.add_enchant(Socket::hands, Enchant::Type::haste);
     character.add_enchant(Socket::legs, Enchant::Type::haste);
     character.add_enchant(Socket::boots, Enchant::Type::agility);
@@ -62,7 +104,7 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     Armory armory{};
     Buffs buffs{};
 
-    Character character = character_setup(armory, buffs);
+    Character character = character_setup(armory, buffs, input.armor, input.weapons);
 
     // Simulator & Combat settings
     Combat_simulator_config config{};
@@ -103,9 +145,6 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     double std_init = Statistics::standard_deviation(dps_vec, mean_init);
     double sample_std_init = Statistics::sample_deviation(std_init, config.n_batches);
 
-
-
-
-    return {dps_vec, mean_init, sample_std_init};
+    return {dps_vec, mean_init, sample_std_init, {get_character_stat(character)}};
 }
 

@@ -104,44 +104,28 @@ Character character_setup(const Armory &armory, const Buffs &buffs)
 {
     Character character{Race::human, 60};
 
-    character.equip_armor(armory.helmet.lionheart_helm);
-    character.equip_armor(armory.neck.onyxia_tooth_pendant);
-    character.equip_armor(armory.shoulder.drake_talon_pauldrons);
-    character.equip_armor(armory.back.cape_of_the_black_baron);
-    character.equip_armor(armory.chest.savage_gladiator_chain);
-    character.equip_armor(armory.wrist.wristguards_of_stability);
-    character.equip_armor(armory.hands.flameguard_gauntlets);
-    character.equip_armor(armory.belt.onslaught_girdle);
-    character.equip_armor(armory.legs.legguards_of_the_fallen_crusader);
-    character.equip_armor(armory.boots.chromatic_boots);
-    character.equip_armor(armory.rings.don_julios_band);
-    character.equip_armor(armory.rings.magnis_will);
-    character.equip_armor(armory.trinket.hand_of_justice);
-    character.equip_armor(armory.trinket.diamond_flask);
-    character.equip_armor(armory.ranged.blastershot);
+    character.equip_armor(armory.find_armor(Socket::head, "lionheart_helm"));
+    character.equip_armor(armory.find_armor(Socket::neck, "onyxia_tooth_pendant"));
+    character.equip_armor(armory.find_armor(Socket::shoulder, "drake_talon_pauldrons"));
+    character.equip_armor(armory.find_armor(Socket::back, "cape_of_the_black_baron"));
+    character.equip_armor(armory.find_armor(Socket::chest, "savage_gladiator_chain"));
+    character.equip_armor(armory.find_armor(Socket::wrist, "wristguards_of_stability"));
+    character.equip_armor(armory.find_armor(Socket::hands, "flameguard_gauntlets"));
+    character.equip_armor(armory.find_armor(Socket::belt, "onslaught_girdle"));
+    character.equip_armor(armory.find_armor(Socket::legs, "legguards_of_the_fallen_crusader"));
+    character.equip_armor(armory.find_armor(Socket::boots, "chromatic_boots"));
+    character.equip_armor(armory.find_armor(Socket::ring, "don_julios_band"));
+    character.equip_armor(armory.find_armor(Socket::ring, "master_dragonslayers_ring"));
+    character.equip_armor(armory.find_armor(Socket::trinket, "hand_of_justice"));
+    character.equip_armor(armory.find_armor(Socket::trinket, "diamond_flask"));
+    character.equip_armor(armory.find_armor(Socket::ranged, "blastershot"));
 
-//    character.equip_armor(armory.helmet.lionheart_helm);
-//    character.equip_armor(armory.neck.onyxia_tooth_pendant);
-//    character.equip_armor(armory.shoulder.black_dragonscale_shoulders);
-//    character.equip_armor(armory.back.blackveil_cloak);
-//    character.equip_armor(armory.chest.tombstone_breastplate);
-//    character.equip_armor(armory.wrist.battleborn_armbraces);
-//    character.equip_armor(armory.hands.bloodmail_gauntlets);
-//    character.equip_armor(armory.belt.brigam_girdle);
-//    character.equip_armor(armory.legs.black_dragonscale_leggings);
-//    character.equip_armor(armory.boots.black_dragonscale_boots);
-//    character.equip_armor(armory.rings.magnis_will);
-//    character.equip_armor(armory.rings.magnis_will);
-//    character.equip_armor(armory.trinket.diamond_flask);
-//    character.equip_armor(armory.trinket.hand_of_justice);
-//    character.equip_armor(armory.ranged.precisely_calibrated_boomstick);
-
-    character.equip_weapon(armory.swords.maladath, armory.swords.brutality_blade);
+    character.equip_weapon(armory.find_weapon("maladath"), armory.find_weapon("brutality_blade"));
 
     character.add_enchant(Socket::head, Enchant::Type::haste);
     character.add_enchant(Socket::back, Enchant::Type::agility);
     character.add_enchant(Socket::chest, Enchant::Type::major_stats);
-    character.add_enchant(Socket::wrists, Enchant::Type::strength9);
+    character.add_enchant(Socket::wrist, Enchant::Type::strength9);
     character.add_enchant(Socket::hands, Enchant::Type::haste);
     character.add_enchant(Socket::legs, Enchant::Type::haste);
     character.add_enchant(Socket::boots, Enchant::Type::agility);
@@ -243,8 +227,8 @@ int main()
     char_plus.total_special_stats = character.total_special_stats;
     char_minus.total_special_stats = character.total_special_stats;
 
-    char_plus.total_special_stats.haste *= 1.01;
-    char_minus.total_special_stats.haste /= 1.01;
+    char_plus.total_special_stats.haste = (char_plus.total_special_stats.haste + 1) * 1.01 - 1;
+    char_minus.total_special_stats.haste = (char_minus.total_special_stats.haste + 1) / 1.01 - 1;
     stat_weight_vector.emplace_back(compute_stat_weight(simulator, char_plus, char_minus, "Haste", 1,
                                                         mean_init, sample_std_init));
     char_plus.total_special_stats = character.total_special_stats;

@@ -42,8 +42,8 @@ std::ostream &operator<<(std::ostream &os, const Socket &socket)
         case Socket::chest:
             os << "chest." << "\n";
             break;
-        case Socket::wrists:
-            os << "wrists." << "\n";
+        case Socket::wrist:
+            os << "wrist." << "\n";
             break;
         case Socket::hands:
             os << "hands." << "\n";

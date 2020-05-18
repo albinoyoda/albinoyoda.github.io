@@ -374,7 +374,7 @@ void Item_optimizer::add_enchants(Character &character)
     character.add_enchant(Socket::head, Enchant::Type::haste);
     character.add_enchant(Socket::back, Enchant::Type::agility);
     character.add_enchant(Socket::chest, Enchant::Type::major_stats);
-    character.add_enchant(Socket::wrists, Enchant::Type::strength9);
+    character.add_enchant(Socket::wrist, Enchant::Type::strength9);
     character.add_enchant(Socket::hands, Enchant::Type::haste);
     character.add_enchant(Socket::legs, Enchant::Type::haste);
     character.add_enchant(Socket::boots, Enchant::Type::agility);

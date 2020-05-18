@@ -14,7 +14,7 @@ enum class Socket
     shoulder,
     back,
     chest,
-    wrists,
+    wrist,
     hands,
     belt,
     legs,
