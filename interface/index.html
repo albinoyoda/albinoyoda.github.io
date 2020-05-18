@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<body style="background-color:#ffcc66;">
+<body style="background-color:#AED6F1;">
 
 <p> Select armor: </p>
 
@@ -128,7 +128,7 @@
 </select>
 
 <select id="ring_dd1" onchange="read_drop_down()">
-    <option value="none" selected disabled>rings1</option>
+    <option value="none" selected disabled>ring1</option>
     <option value="don_julios_band">don_julios_band</option>
     <option value="magnis_will">magnis_will</option>
     <option value="quick_strike_ring">quick_strike_ring</option>
@@ -139,7 +139,7 @@
 </select>
 
 <select id="ring_dd2" onchange="read_drop_down()">
-    <option value="none" selected disabled>rings2</option>
+    <option value="none" selected disabled>ring2</option>
     <option value="don_julios_band">don_julios_band</option>
     <option value="magnis_will">magnis_will</option>
     <option value="quick_strike_ring">quick_strike_ring</option>
@@ -271,61 +271,73 @@
 <label for="dire_maul"> dire_maul</label><br>
 
 <input type="checkbox" id="songflower" onchange="read_checkboxes()">
-<label for="songflower"> rallying_cry</label><br>
+<label for="songflower"> songflower</label><br>
 
 <input type="checkbox" id="warchiefs_blessing" onchange="read_checkboxes()">
-<label for="warchiefs_blessing"> rallying_cry</label><br>
+<label for="warchiefs_blessing"> warchiefs_blessing</label><br>
 
 <input type="checkbox" id="spirit_of_zandalar" onchange="read_checkboxes()">
-<label for="spirit_of_zandalar"> rallying_cry</label><br>
+<label for="spirit_of_zandalar"> spirit_of_zandalar</label><br>
 
 <input type="checkbox" id="sayges_fortune" onchange="read_checkboxes()">
-<label for="sayges_fortune"> rallying_cry</label><br>
+<label for="sayges_fortune"> sayges_fortune</label><br>
 
 <p> Player buffs: </p>
 <input type="checkbox" id="blessing_of_kings" onchange="read_checkboxes()">
-<label for="blessing_of_kings"> rallying_cry</label><br>
+<label for="blessing_of_kings"> blessing_of_kings</label><br>
 
 <input type="checkbox" id="blessing_of_might" onchange="read_checkboxes()">
-<label for="blessing_of_might"> rallying_cry</label><br>
+<label for="blessing_of_might"> blessing_of_might</label><br>
 
 <input type="checkbox" id="gift_of_the_wild" onchange="read_checkboxes()">
-<label for="gift_of_the_wild"> rallying_cry</label><br>
+<label for="gift_of_the_wild"> gift_of_the_wild</label><br>
 
 <input type="checkbox" id="trueshot_aura" onchange="read_checkboxes()">
-<label for="trueshot_aura"> rallying_cry</label><br>
+<label for="trueshot_aura"> trueshot_aura</label><br>
 
 <p> Consumables: </p>
 <input type="checkbox" id="elixir_mongoose" onchange="read_checkboxes()">
-<label for="elixir_mongoose"> rallying_cry</label><br>
+<label for="elixir_mongoose"> elixir_mongoose</label><br>
 
 <input type="checkbox" id="blessed_sunfruit" onchange="read_checkboxes()">
-<label for="blessed_sunfruit"> rallying_cry</label><br>
+<label for="blessed_sunfruit"> blessed_sunfruit</label><br>
 
 <input type="checkbox" id="juju_power" onchange="read_checkboxes()">
-<label for="juju_power"> rallying_cry</label><br>
+<label for="juju_power"> juju_power</label><br>
 
 <input type="checkbox" id="juju_might" onchange="read_checkboxes()">
-<label for="juju_might"> rallying_cry</label><br>
+<label for="juju_might"> juju_might</label><br>
 
 <input type="checkbox" id="roids" onchange="read_checkboxes()">
-<label for="roids"> rallying_cry</label><br>
+<label for="roids"> roids</label><br>
 
 <form>
-    <p>Grinding stone main-hand:</p>
-    <input type="radio" id="stone_main_hand" name="gender">
-    <label for="stone_main_hand">dense_stone</label><br>
-    <input type="radio" id="elemental_main_hand" name="gender">
-    <label for="elemental_main_hand">elemental</label><br>
+    <p>Stone main-hand:</p>
+    <input type="radio" id="dense_stone_main_hand" name="gender">
+    <label for="dense_stone_main_hand">dense_stone</label><br>
+    <input type="radio" id="elemental_stone_main_hand" name="gender">
+    <label for="elemental_stone_main_hand">elemental_stone</label><br>
 </form>
 
 <form>
-    <p>Grinding stone off-hand:</p>
-    <input type="radio" id="stone_off_hand" name="gender">
-    <label for="stone_main_hand">dense_stone</label><br>
-    <input type="radio" id="elemental_off_hand" name="gender">
-    <label for="elemental_off_hand">elemental</label><br>
+    <p>Stone off-hand:</p>
+    <input type="radio" id="dense_stone_off_hand" name="gender">
+    <label for="dense_stone_off_hand">dense_stone</label><br>
+    <input type="radio" id="elemental_stone_off_hand" name="gender">
+    <label for="elemental_stone_off_hand">elemental_stone</label><br>
 </form>
+
+<h3>Simulation settings:</h3>
+<label for="n_simulations">Number of simulations: (between 10 and 10000):</label>
+<input type="number" id="n_simulations" name="quantity" min="10" max="100000">
+
+<p></p>
+<label for="opponent_level">Opponent level: (60-63):</label>
+<input type="number" id="opponent_level" name="quantity" min="60" max="63">
+
+<p></p>
+<label for="fight_time">Fight time: (second. 10-300s):</label>
+<input type="number" id="fight_time" name="quantity" min="10" max="300">
 
 <p id="button_id"></p>
 <button onclick="myFunction()">Run simulator</button>
@@ -339,10 +351,55 @@
 <script>
     var rallying_cry;
     var rallying_cry_enabled;
+    var dire_maul;
+    var dire_maul_enabled;
+    var songflower;
+    var songflower_enabled;
+    var warchiefs_blessing;
+    var warchiefs_blessing_enabled;
+    var spirit_of_zandalar;
+    var spirit_of_zandalar_enabled;
+    var sayges_fortune;
+    var sayges_fortune_enabled;
+    var blessing_of_kings;
+    var blessing_of_kings_enabled;
+    var blessing_of_might;
+    var blessing_of_might_enabled;
+    var gift_of_the_wild;
+    var gift_of_the_wild_enabled;
+    var trueshot_aura;
+    var trueshot_aura_enabled;
 
     function read_checkboxes() {
         rallying_cry = document.getElementById("rallying_cry");
-        rallying_cry_enabled = rallying_cry.checked;
+        rallying_cry_enabled = (rallying_cry.checked) ? "rallying_cry" : "";
+
+        dire_maul = document.getElementById("dire_maul");
+        dire_maul_enabled = (dire_maul.checked) ? "dire_maul" : "";
+
+        songflower = document.getElementById("songflower");
+        songflower_enabled = (songflower.checked) ? "songflower" : "";
+
+        warchiefs_blessing = document.getElementById("warchiefs_blessing");
+        warchiefs_blessing_enabled = (warchiefs_blessing.checked) ? "warchiefs_blessing" : "";
+
+        spirit_of_zandalar = document.getElementById("spirit_of_zandalar");
+        spirit_of_zandalar_enabled = (spirit_of_zandalar.checked) ? "spirit_of_zandalar" : "";
+
+        sayges_fortune = document.getElementById("sayges_fortune");
+        sayges_fortune_enabled = (sayges_fortune.checked) ? "sayges_fortune" : "";
+
+        blessing_of_kings = document.getElementById("blessing_of_kings");
+        blessing_of_kings_enabled = (blessing_of_kings.checked) ? "blessing_of_kings" : "";
+
+        blessing_of_might = document.getElementById("blessing_of_might");
+        blessing_of_might_enabled = (blessing_of_might.checked) ? "blessing_of_might" : "";
+
+        gift_of_the_wild = document.getElementById("gift_of_the_wild");
+        gift_of_the_wild_enabled = (gift_of_the_wild.checked) ? "gift_of_the_wild" : "";
+
+        trueshot_aura = document.getElementById("trueshot_aura");
+        trueshot_aura_enabled = (trueshot_aura.checked) ? "trueshot_aura" : "";
     }
 
     var helmet;
@@ -434,8 +491,10 @@
     }
 
     function myFunction() {
+
         read_drop_down();
         read_checkboxes();
+
         const armor_vec = new Module.StringList();
         armor_vec.push_back(helmet_string);
         armor_vec.push_back(neck_string);
@@ -458,15 +517,41 @@
         weapons_vec.push_back(main_hand_string);
         weapons_vec.push_back(off_hand_string);
 
+        const buff_vec = new Module.StringList();
+        buff_vec.push_back(rallying_cry_enabled);
+        buff_vec.push_back(dire_maul_enabled);
+        buff_vec.push_back(songflower_enabled);
+        buff_vec.push_back(warchiefs_blessing_enabled);
+        buff_vec.push_back(spirit_of_zandalar_enabled);
+        buff_vec.push_back(sayges_fortune_enabled);
+        buff_vec.push_back(blessing_of_kings_enabled);
+        buff_vec.push_back(blessing_of_might_enabled);
+        buff_vec.push_back(gift_of_the_wild_enabled);
+        buff_vec.push_back(trueshot_aura_enabled);
+
+        var n_simulations = parseFloat(document.getElementById("n_simulations").value);
+        if (n_simulations != n_simulations) { // Check for NaN
+            n_simulations = 10;
+        }
+
+        var opponent_level = parseFloat(document.getElementById("opponent_level").value);
+        if (opponent_level != opponent_level) { // Check for NaN
+            opponent_level = 63;
+        }
+
+        var fight_time = parseFloat(document.getElementById("fight_time").value);
+        if (fight_time != fight_time) { // Check for NaN
+            fight_time = 60;
+        }
+
         var wow_input = {
             armor: armor_vec,
             weapons: weapons_vec,
-            target_level: 60,
-            fight_time: 60,
-            n_simulations: 20
+            buffs: buff_vec,
+            target_level: opponent_level,
+            fight_time: fight_time,
+            n_simulations: n_simulations
         };
-
-        console.log(rallying_cry_enabled);
 
         var obj = new Module['Sim_interface']();
 

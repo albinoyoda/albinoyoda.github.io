@@ -6,6 +6,18 @@
 
 #include <sstream>
 
+bool find_string(const std::vector<std::string> &string_vec, const std::string &match_string)
+{
+    for (const auto &string : string_vec)
+    {
+        if (string == match_string)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 std::string print_stat(const std::string &stat_name, double amount)
 {
     std::ostringstream stream;
@@ -46,7 +58,7 @@ std::string get_character_stat(const Character &character)
 }
 
 Character character_setup(const Armory &armory, const Buffs &buffs, const std::vector<std::string> &armor_vec,
-                          const std::vector<std::string> &weapons_vec)
+                          const std::vector<std::string> &weapons_vec, const std::vector<std::string> &buffs_vec)
 {
     Character character{Race::human, 60};
 
@@ -78,13 +90,50 @@ Character character_setup(const Armory &armory, const Buffs &buffs, const std::v
     character.add_enchant(Socket::main_hand, Enchant::Type::crusader);
     character.add_enchant(Socket::off_hand, Enchant::Type::crusader);
 
-    character.add_buff(buffs.rallying_cry);
-    character.add_buff(buffs.dire_maul);
-    character.add_buff(buffs.songflower);
-    character.add_buff(buffs.blessing_of_kings);
-    character.add_buff(buffs.blessing_of_might);
-    character.add_buff(buffs.gift_of_the_wild);
-    character.add_buff(buffs.trueshot_aura);
+    // rayying cry
+    if (find_string(buffs_vec, "rallying_cry"))
+    {
+        character.add_buff(buffs.rallying_cry);
+    }
+    if (find_string(buffs_vec, "dire_maul"))
+    {
+        character.add_buff(buffs.dire_maul);
+    }
+    if (find_string(buffs_vec, "songflower"))
+    {
+        character.add_buff(buffs.songflower);
+    }
+    if (find_string(buffs_vec, "warchiefs_blessing"))
+    {
+        character.add_buff(buffs.warchiefs_blessing);
+    }
+    if (find_string(buffs_vec, "spirit_of_zandalar"))
+    {
+        character.add_buff(buffs.spirit_of_zandalar);
+    }
+    if (find_string(buffs_vec, "sayges_fortune"))
+    {
+        character.add_buff(buffs.sayges_fortune);
+    }
+
+    // Player buffs
+    if (find_string(buffs_vec, "blessing_of_kings"))
+    {
+        character.add_buff(buffs.blessing_of_kings);
+    }
+    if (find_string(buffs_vec, "blessing_of_might"))
+    {
+        character.add_buff(buffs.blessing_of_might);
+    }
+    if (find_string(buffs_vec, "gift_of_the_wild"))
+    {
+        character.add_buff(buffs.gift_of_the_wild);
+    }
+    if (find_string(buffs_vec, "trueshot_aura"))
+    {
+        character.add_buff(buffs.trueshot_aura);
+    }
+
     character.add_buff(buffs.elixir_mongoose);
     character.add_buff(buffs.blessed_sunfruit);
     character.add_buff(buffs.juju_power);
@@ -104,7 +153,7 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     Armory armory{};
     Buffs buffs{};
 
-    Character character = character_setup(armory, buffs, input.armor, input.weapons);
+    Character character = character_setup(armory, buffs, input.armor, input.weapons, input.buffs);
 
     // Simulator & Combat settings
     Combat_simulator_config config{};

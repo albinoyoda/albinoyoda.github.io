@@ -524,6 +524,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
             wep.internal_swing_timer = 0.0;
         }
 
+        // To avoid local max/min results from running a specific run time
         if (config.use_sim_time_ramp)
         {
             sim_time += sim_time_increment;

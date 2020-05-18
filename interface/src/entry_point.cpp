@@ -17,6 +17,7 @@ EMSCRIPTEN_BINDINGS(module)
     value_object<Sim_input>("Sim_input")
         .field("armor", &Sim_input::armor)
         .field("weapons", &Sim_input::weapons)
+        .field("buffs", &Sim_input::buffs)
         .field("target_level", &Sim_input::target_level)
         .field("fight_time", &Sim_input::fight_time)
         .field("n_simulations", &Sim_input::n_simulations);
