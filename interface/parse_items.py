@@ -75,14 +75,6 @@ for wep_type in weapons:
     for item in wep_type.items:
         all_weapons.append(item)
 
-# write to yaml
-# file1 = open("items.yml", "w")
-# for armor_type in armor_types:
-#     file1.write(armor_type.category + ":\n")
-#     for item in armor_type.items:
-#         file1.write("    - " + item + "\n")
-# file1.close()
-
 with open("index.html", "r") as f:
     lines = f.readlines()
 
@@ -107,7 +99,7 @@ for index, line in enumerate(lines):
 dropdowns_in_a_row = 0
 if found_start and found_stop:
     first_part = washed_lines[0:armor_index + 1]
-    second_part = washed_lines[armor_index + 1:-1]
+    second_part = washed_lines[armor_index + 1:]
 
     # Armor selection
     generated_1 = []
@@ -147,7 +139,7 @@ if found_start and found_stop:
         generated_2.append('</select>\n')
         generated_2.append('\n')
 
-    file1 = open("generated.html", "w")
+    file1 = open("index.html", "w")
     for line in first_part:
         file1.write(line)
     for line in generated_1:

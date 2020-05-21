@@ -197,6 +197,8 @@
     <option value="dal_rends_tribal_guardian">dal_rends_tribal_guardian</option>
     <option value="warblade_hakkari_mh">warblade_hakkari_mh</option>
     <option value="warblade_hakkari_oh">warblade_hakkari_oh</option>
+    <option value="grand_marshals_swiftblade">grand_marshals_swiftblade</option>
+    <option value="grand_marshals_longsword">grand_marshals_longsword</option>
     <option value="deathbringer">deathbringer</option>
     <option value="crul_shorukh_edge_of_chaos">crul_shorukh_edge_of_chaos</option>
     <option value="dooms_edge">dooms_edge</option>
@@ -228,6 +230,8 @@
     <option value="dal_rends_tribal_guardian">dal_rends_tribal_guardian</option>
     <option value="warblade_hakkari_mh">warblade_hakkari_mh</option>
     <option value="warblade_hakkari_oh">warblade_hakkari_oh</option>
+    <option value="grand_marshals_swiftblade">grand_marshals_swiftblade</option>
+    <option value="grand_marshals_longsword">grand_marshals_longsword</option>
     <option value="deathbringer">deathbringer</option>
     <option value="crul_shorukh_edge_of_chaos">crul_shorukh_edge_of_chaos</option>
     <option value="dooms_edge">dooms_edge</option>
@@ -317,6 +321,9 @@
     <label for="dense_stone_main_hand">dense_stone</label><br>
     <input type="radio" id="elemental_stone_main_hand" name="gender">
     <label for="elemental_stone_main_hand">elemental_stone</label><br>
+    <input type=button value="Uncheck" onclick=
+            "document.getElementById('dense_stone_main_hand').checked = false;
+            document.getElementById('elemental_stone_main_hand').checked = false;">
 </form>
 
 <form>
@@ -325,10 +332,13 @@
     <label for="dense_stone_off_hand">dense_stone</label><br>
     <input type="radio" id="elemental_stone_off_hand" name="gender">
     <label for="elemental_stone_off_hand">elemental_stone</label><br>
+    <input type=button value="Uncheck" onclick=
+            "document.getElementById('dense_stone_off_hand').checked = false;
+            document.getElementById('elemental_stone_off_hand').checked = false;">
 </form>
 
 <h3>Simulation settings:</h3>
-<label for="n_simulations">Number of simulations: (between 10 and 10000):</label>
+<label for="n_simulations">Number of simulations: (between 10 and 100000):</label>
 <input type="number" id="n_simulations" name="quantity" min="10" max="100000">
 
 <p></p>
@@ -365,6 +375,7 @@
     var spirit_of_zandalar_enabled;
     var sayges_fortune;
     var sayges_fortune_enabled;
+
     var blessing_of_kings;
     var blessing_of_kings_enabled;
     var blessing_of_might;
@@ -373,6 +384,26 @@
     var gift_of_the_wild_enabled;
     var trueshot_aura;
     var trueshot_aura_enabled;
+
+    var elixir_mongoose;
+    var elixir_mongoose_enabled;
+    var blessed_sunfruit;
+    var blessed_sunfruit_enabled;
+    var juju_power;
+    var juju_power_enabled;
+    var juju_might;
+    var juju_might_enabled;
+    var roids;
+    var roids_enabled;
+
+    var dense_stone_main_hand;
+    var dense_stone_main_hand_enabled;
+    var elemental_stone_main_hand;
+    var elemental_stone_main_hand_enabled;
+    var dense_stone_off_hand;
+    var dense_stone_off_hand_enabled;
+    var elemental_stone_off_hand;
+    var elemental_stone_off_hand_enabled;
 
     function read_checkboxes() {
         rallying_cry = document.getElementById("rallying_cry");
@@ -404,6 +435,33 @@
 
         trueshot_aura = document.getElementById("trueshot_aura");
         trueshot_aura_enabled = (trueshot_aura.checked) ? "trueshot_aura" : "";
+
+        elixir_mongoose = document.getElementById("elixir_mongoose");
+        elixir_mongoose_enabled = (elixir_mongoose.checked) ? "elixir_mongoose" : "";
+
+        blessed_sunfruit = document.getElementById("blessed_sunfruit");
+        blessed_sunfruit_enabled = (blessed_sunfruit.checked) ? "blessed_sunfruit" : "";
+
+        juju_power = document.getElementById("juju_power");
+        juju_power_enabled = (juju_power.checked) ? "juju_power" : "";
+
+        juju_might = document.getElementById("juju_might");
+        juju_might_enabled = (juju_might.checked) ? "juju_might" : "";
+
+        roids = document.getElementById("roids");
+        roids_enabled = (roids.checked) ? "roids" : "";
+
+        dense_stone_main_hand = document.getElementById("dense_stone_main_hand");
+        dense_stone_main_hand_enabled = (dense_stone_main_hand.checked) ? "dense_stone_main_hand" : "";
+
+        elemental_stone_main_hand = document.getElementById("elemental_stone_main_hand");
+        elemental_stone_main_hand_enabled = (elemental_stone_main_hand.checked) ? "elemental_stone_main_hand" : "";
+
+        dense_stone_off_hand = document.getElementById("dense_stone_off_hand");
+        dense_stone_off_hand_enabled = (dense_stone_off_hand.checked) ? "dense_stone_off_hand" : "";
+
+        elemental_stone_off_hand = document.getElementById("elemental_stone_off_hand");
+        elemental_stone_off_hand_enabled = (elemental_stone_off_hand.checked) ? "elemental_stone_off_hand" : "";
     }
 
     var helmet;
@@ -531,10 +589,19 @@
         buff_vec.push_back(blessing_of_might_enabled);
         buff_vec.push_back(gift_of_the_wild_enabled);
         buff_vec.push_back(trueshot_aura_enabled);
+        buff_vec.push_back(elixir_mongoose_enabled);
+        buff_vec.push_back(blessed_sunfruit_enabled);
+        buff_vec.push_back(juju_power_enabled);
+        buff_vec.push_back(juju_might_enabled);
+        buff_vec.push_back(roids_enabled);
+        buff_vec.push_back(dense_stone_main_hand_enabled);
+        buff_vec.push_back(elemental_stone_main_hand_enabled);
+        buff_vec.push_back(dense_stone_off_hand_enabled);
+        buff_vec.push_back(elemental_stone_off_hand_enabled);
 
         var n_simulations = parseFloat(document.getElementById("n_simulations").value);
         if (n_simulations != n_simulations) { // Check for NaN
-            n_simulations = 10;
+            n_simulations = 5000;
         }
 
         var opponent_level = parseFloat(document.getElementById("opponent_level").value);
@@ -546,6 +613,14 @@
         if (fight_time != fight_time) { // Check for NaN
             fight_time = 60;
         }
+
+        // config.curse_of_recklessness_active = true;
+        // config.faerie_fire_feral_active = true;
+        // config.n_sunder_armor_stacks = 5;
+        // config.use_mighty_rage_potion = true;
+        // config.enable_bloodrage = true;
+        // config.enable_recklessness = false;
+        // config.fuel_extra_rage = false; // Vaelastrasz
 
         var wow_input = {
             armor: armor_vec,
@@ -560,20 +635,37 @@
 
         var result = obj.simulate(wow_input);
 
-        // for (let i = 0; i < result['messages'].size(); i++) {
-        //     console.log(result['messages'].get(i));
-        // }
-
         var dps = [];
-        var sources = [];
-        var sources_names = ["MH", "OH", "HS", "BT", "WW", "EXEC", "Items"];
-        var numbers = [];
-        for (let i = 0; i <= result['dmg_batches'].size(); i++) {
+        for (let i = 0; i < result['dmg_batches'].size(); i++) {
             dps.push(result['dmg_batches'].get(i));
-            numbers.push(i+1);
+        }
+        dps.sort(function (a, b) {
+            return a - b
+        });
+
+        let n_bins = Math.max(10, Math.min(n_simulations / 100, 100));
+        var hist_x = [];
+        var hist_x_labels = [];
+        var hist_y = [];
+        let dps_per_bin = (dps[dps.length - 1] - dps[0]) / n_bins;
+        let start_dps = dps[0];
+        for (let i = start_dps; i <= dps[dps.length - 1] + .01; i += dps_per_bin) {
+            hist_x.push(i);
+            hist_x_labels.push(i.toFixed(0));
+            hist_y.push(0);
         }
 
-        for (let i = 0; i <= result['dmg_sources'].size(); i++) {
+        let bin_idx = 0;
+        for (let i = 0; i < dps.length; i++) {
+            while (dps[i] > hist_x[bin_idx] + dps_per_bin/2) {
+                bin_idx++;
+            }
+            hist_y[bin_idx]++;
+        }
+
+        var sources = [];
+        var sources_names = ["MH", "OH", "HS", "BT", "WW", "EXEC", "Items"];
+        for (let i = 0; i < result['dmg_sources'].size(); i++) {
             sources.push(result['dmg_sources'].get(i));
         }
 
@@ -585,10 +677,10 @@
         new Chart(document.getElementById("line-chart"), {
             type: 'line',
             data: {
-                labels: numbers,
+                labels: hist_x_labels,
                 datasets: [{
-                    data: dps,
-                    label: "BiS DPS brah",
+                    data: hist_y,
+                    label: "Sim results",
                     borderColor: "#3e95cd",
                     fill: false
                 }]
@@ -614,13 +706,13 @@
                 datasets: [
                     {
                         label: "Population (millions)",
-                        backgroundColor: ["#3e95cd", "#8e5ea2","#FFFF00","#c45850","#e8c3b9", "#145A32"],
+                        backgroundColor: ["#3e95cd", "#8e5ea2", "#FFFF00", "#c45850", "#e8c3b9", "#145A32"],
                         data: sources
                     }
                 ]
             },
             options: {
-                legend: { display: false },
+                legend: {display: false},
                 title: {
                     display: true,
                     text: 'DPS (%) from different sources'

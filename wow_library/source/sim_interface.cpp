@@ -44,7 +44,7 @@ std::string print_stat(const std::string &stat_name, double amount)
 
 std::string get_character_stat(const Character &character)
 {
-    std::string out_string = "Character stats <br />";
+    std::string out_string = "Character stats: <br />";
     out_string += print_stat("Strength : ", character.total_attributes.strength);
     out_string += print_stat("Agility  : ", character.total_attributes.agility);
     out_string += print_stat("Hit:     : ", character.total_special_stats.hit);
@@ -58,19 +58,19 @@ std::string get_character_stat(const Character &character)
     out_string += print_stat("Unrm skil: ", character.total_special_stats.fist_skill);
     out_string += "<br />";
 
-    out_string += "Armor:<br />";
-    for (auto const &armor_piece : character.armor)
-    {
-        out_string += armor_piece.name + "<br />";
-    }
+//    out_string += "Armor:<br />";
+//    for (auto const &armor_piece : character.armor)
+//    {
+//        out_string += armor_piece.name + "<br />";
+//    }
+//
+//    out_string += "<br />Weapons:<br />";
+//    for (auto const &wep : character.weapons)
+//    {
+//        out_string += wep.name + "<br />";
+//    }
 
-    out_string += "<br />Weapons:<br />";
-    for (auto const &wep : character.weapons)
-    {
-        out_string += wep.name + "<br />";
-    }
-
-    out_string += "<br />";
+//    out_string += "<br />";
     return out_string;
 }
 
@@ -150,15 +150,42 @@ Character character_setup(const Armory &armory, const Buffs &buffs, const std::v
     {
         character.add_buff(buffs.trueshot_aura);
     }
-
-    character.add_buff(buffs.elixir_mongoose);
-    character.add_buff(buffs.blessed_sunfruit);
-    character.add_buff(buffs.juju_power);
-    character.add_buff(buffs.juju_might);
-    character.add_buff(buffs.roids);
-
-    character.add_weapon_buff(Socket::main_hand, buffs.dense_stone);
-    character.add_weapon_buff(Socket::off_hand, buffs.dense_stone);
+    if (find_string(buffs_vec, "elixir_mongoose"))
+    {
+        character.add_buff(buffs.elixir_mongoose);
+    }
+    if (find_string(buffs_vec, "blessed_sunfruit"))
+    {
+        character.add_buff(buffs.blessed_sunfruit);
+    }
+    if (find_string(buffs_vec, "juju_power"))
+    {
+        character.add_buff(buffs.juju_power);
+    }
+    if (find_string(buffs_vec, "juju_might"))
+    {
+        character.add_buff(buffs.juju_might);
+    }
+    if (find_string(buffs_vec, "roids"))
+    {
+        character.add_buff(buffs.roids);
+    }
+    if (find_string(buffs_vec, "dense_stone_main_hand"))
+    {
+        character.add_weapon_buff(Socket::main_hand, buffs.dense_stone);
+    }
+    else if (find_string(buffs_vec, "elemental_stone_main_hand"))
+    {
+        character.add_buff(buffs.elemental_stone);
+    }
+    if (find_string(buffs_vec, "dense_stone_off_hand"))
+    {
+        character.add_weapon_buff(Socket::off_hand, buffs.dense_stone);
+    }
+    else if (find_string(buffs_vec, "elemental_stone_off_hand"))
+    {
+        character.add_buff(buffs.elemental_stone);
+    }
 
     armory.compute_total_stats(character);
 
