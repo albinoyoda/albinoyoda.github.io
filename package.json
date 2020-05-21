@@ -4,7 +4,8 @@
   "description": "wow simulator",
   "main": "index.js",
   "dependencies": {
-    "node-static": "^0.7.11"
+    "node-static": "^0.7.11",
+    "express": "^6.14.4"
   },
   "devDependencies": {},
   "scripts": {
