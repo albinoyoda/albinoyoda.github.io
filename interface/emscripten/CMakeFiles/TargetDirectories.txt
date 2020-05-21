@@ -1,0 +1,7 @@
+/src/interface/emscripten/CMakeFiles/rebuild_cache.dir
+/src/interface/emscripten/CMakeFiles/wow_simulator.dir
+/src/interface/emscripten/CMakeFiles/wow_lib.dir
+/src/interface/emscripten/CMakeFiles/wow_stat_weights.dir
+/src/interface/emscripten/CMakeFiles/wow_web.dir
+/src/interface/emscripten/CMakeFiles/wow_interface.dir
+/src/interface/emscripten/CMakeFiles/edit_cache.dir

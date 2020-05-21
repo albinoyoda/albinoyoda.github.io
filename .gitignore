@@ -1,5 +1,3 @@
 .idea
-interface/emscripten/*
-!interface/emscripten/wow_interface.js
 cmake-build-debug
 node_modules
