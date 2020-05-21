@@ -24,6 +24,7 @@ EMSCRIPTEN_BINDINGS(module)
 
     value_object<Sim_output>("Sim_output")
         .field("dmg_batches", &Sim_output::dmg_batches)
+        .field("dmg_sources", &Sim_output::dmg_sources)
         .field("mean_dps", &Sim_output::mean_dps)
         .field("std_dps", &Sim_output::std_dps)
         .field("messages", &Sim_output::messages);

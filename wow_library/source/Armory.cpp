@@ -443,7 +443,7 @@ Armor Armory::find_armor(const Socket socket, const std::string &name) const
         }
     }
     std::cout << "ERROR: Could not find item: " << name << "\n";
-    return {"item_not_found", {}, {}, socket};
+    return {"item_not_found: " + name, {}, {}, socket};
 }
 
 Weapon Armory::find_weapon(const std::string &name) const
@@ -484,6 +484,6 @@ Weapon Armory::find_weapon(const std::string &name) const
         }
     }
     std::cout << "ERROR: Could not find item: " << name << "\n";
-    return {"item_not_found", {}, {}, 1.0, 0, 0, Weapon_socket::one_hand, Weapon_type::dagger};
+    return {"item_not_found: " + name, {}, {}, 1.0, 0, 0, Weapon_socket::one_hand, Weapon_type::dagger};
 }
 

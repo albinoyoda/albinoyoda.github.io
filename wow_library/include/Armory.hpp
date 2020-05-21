@@ -233,6 +233,10 @@ struct Armory
                                                                                            28},  1.7, 59,    110,   Weapon_socket::main_hand, Weapon_type::sword, std::vector<Hit_effect>(), Set::warblade_of_the_hakkari},
                     {"warblade_hakkari_oh",          Attributes{0, 0},       Special_stats{0, 0,
                                                                                            40},  1.7, 57,    106,   Weapon_socket::off_hand,  Weapon_type::sword, std::vector<Hit_effect>(), Set::warblade_of_the_hakkari},
+                    {"grand_marshals_swiftblade",    Attributes{0, 0},       Special_stats{1, 0,
+                                                                                           28},  1.8, 85,    129,   Weapon_socket::one_hand,  Weapon_type::sword},
+                    {"grand_marshals_longsword",     Attributes{0, 0},       Special_stats{1, 0,
+                                                                                           28},  2.9, 138,   209,   Weapon_socket::one_hand,  Weapon_type::sword},
             };
 
 //    std::vector<Weapon> two_handed_swords_t
@@ -265,27 +269,33 @@ struct Armory
 
     std::vector<Weapon> maces_t
             {
-                    {"ebon_hand", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, 2.3, 83.0, 154.0,
-                     Weapon_socket::one_hand, Weapon_type::mace,
-                     {{"ebon_hand", Hit_effect::Type::damage_magic, {}, {}, 200, 0, 0.08}}},
-                    {"spineshatter", Attributes{9.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, 2.5, 99.0, 184.0,
-                     Weapon_socket::main_hand, Weapon_type::mace},
-                    {"stormstike_hammer", Attributes{15, 0}, Special_stats{0, 0, 0}, 2.7, 80, 150,
-                     Weapon_socket::one_hand, Weapon_type::mace},
-                    {"aq_sand_polished_hammer", Attributes{0, 0}, Special_stats{1, 0, 20}, 2.6, 97, 181,
-                     Weapon_socket::one_hand, Weapon_type::mace},
-                    {"empyrean_demolisher", Attributes{0, 0}, Special_stats{0, 0, 0}, 2.8, 94, 175,
-                     Weapon_socket::one_hand, Weapon_type::mace,
-                     {{"empyrean_demolisher", Hit_effect::Type::stat_boost, {0, 0}, Special_stats{0, 0, 0, 0, .2}, 0,
-                       10, 2.8 / 60}}},
-                    {"aq_anubisath_warhammer", Attributes{0, 0}, Special_stats{0, 0, 32, 0, 0, 0, 0, 0, 4}, 1.8, 66,
-                     123, Weapon_socket::one_hand, Weapon_type::mace},
+                    {"ebon_hand",               Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0},              2.3, 83.0, 154.0,
+                                                                                                                                 Weapon_socket::one_hand,  Weapon_type::mace,
+                            {{"ebon_hand",           Hit_effect::Type::damage_magic, {},     {},                200, 0,  0.08}}},
+                    {"spineshatter",            Attributes{9.0, 0.0}, Special_stats{0.0, 0.0,
+                                                                                    0.0},                        2.5, 99.0, 184.0,
+                                                                                                                                 Weapon_socket::main_hand, Weapon_type::mace},
+                    {"stormstike_hammer",       Attributes{15, 0},    Special_stats{0, 0,
+                                                                                    0},                          2.7, 80,   150,
+                                                                                                                                 Weapon_socket::one_hand,  Weapon_type::mace},
+                    {"aq_sand_polished_hammer", Attributes{0, 0},     Special_stats{1, 0,
+                                                                                    20},                         2.6, 97,   181,
+                                                                                                                                 Weapon_socket::one_hand,  Weapon_type::mace},
+                    {"empyrean_demolisher",     Attributes{0, 0},     Special_stats{0, 0,
+                                                                                    0},                          2.8, 94,   175,
+                                                                                                                                 Weapon_socket::one_hand,  Weapon_type::mace,
+                            {{"empyrean_demolisher", Hit_effect::Type::stat_boost,   {0, 0}, Special_stats{0, 0, 0, 0,
+                                                                                                           .2}, 0,
+                                                                                                                     10, 2.8 / 60}}},
+                    {"aq_anubisath_warhammer",  Attributes{0, 0},     Special_stats{0, 0, 32, 0, 0, 0, 0, 0,
+                                                                                    4},                          1.8, 66,
+                                                                                                                            123, Weapon_socket::one_hand,  Weapon_type::mace},
             };
 
     std::vector<Weapon> fists_t
             {
                     {"claw_of_the_black_drake", Attributes{13, 0}, Special_stats{1, 0, 0}, 2.6, 102, 191,
-                     Weapon_socket::main_hand, Weapon_type::unarmed},
+                            Weapon_socket::main_hand, Weapon_type::unarmed},
             };
 
     std::vector<Set_bonus> set_bonuses{
@@ -297,9 +307,9 @@ struct Armory
             {Attributes{0, 0}, Special_stats{0, 0, 0, 0, 0, 6}, 2, Set::warblade_of_the_hakkari},
     };
 
-    Armor find_armor(Socket socket, const std::string& name) const;
+    Armor find_armor(Socket socket, const std::string &name) const;
 
-    Weapon find_weapon(const std::string& name) const;
+    Weapon find_weapon(const std::string &name) const;
 
     std::vector<Set_bonus> get_set_bonuses() const;
 

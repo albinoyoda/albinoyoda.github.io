@@ -162,6 +162,8 @@ public:
 
     void print_damage_distribution() const;
 
+    std::vector<Damage_sources> get_damage_distribution() const;
+
     template<typename T>
     void print_statement(T t)
     {

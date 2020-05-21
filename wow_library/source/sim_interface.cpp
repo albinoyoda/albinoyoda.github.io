@@ -6,6 +6,23 @@
 
 #include <sstream>
 
+std::vector<double> get_damage_sources(const std::vector<Damage_sources> &damage_sources_vector)
+{
+    Damage_sources total_damage_source{};
+
+    for (const auto &damage_source: damage_sources_vector)
+    {
+        total_damage_source = total_damage_source + damage_source;
+    }
+    return {total_damage_source.white_mh_damage / total_damage_source.sum_damage_sources(),
+            total_damage_source.white_oh_damage / total_damage_source.sum_damage_sources(),
+            total_damage_source.heroic_strike_damage / total_damage_source.sum_damage_sources(),
+            total_damage_source.bloodthirst_damage / total_damage_source.sum_damage_sources(),
+            total_damage_source.whirlwind_damage / total_damage_source.sum_damage_sources(),
+            total_damage_source.execute_damage / total_damage_source.sum_damage_sources(),
+            total_damage_source.item_hit_effects_damage / total_damage_source.sum_damage_sources()};
+}
+
 bool find_string(const std::vector<std::string> &string_vec, const std::string &match_string)
 {
     for (const auto &string : string_vec)
@@ -190,10 +207,11 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     Combat_simulator simulator(config);
 
     std::vector<double> dps_vec = simulator.simulate(character);
+    std::vector<double> dps_dist = get_damage_sources(simulator.get_damage_distribution());
     double mean_init = Statistics::average(dps_vec);
     double std_init = Statistics::standard_deviation(dps_vec, mean_init);
     double sample_std_init = Statistics::sample_deviation(std_init, config.n_batches);
 
-    return {dps_vec, mean_init, sample_std_init, {get_character_stat(character)}};
+    return {dps_vec, dps_dist, mean_init, sample_std_init, {get_character_stat(character)}};
 }
 

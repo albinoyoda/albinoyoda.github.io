@@ -1,0 +1,23 @@
+{
+  "name": "wow_nerd",
+  "version": "1.0.0",
+  "description": "wow simulator",
+  "main": "index.js",
+  "dependencies": {
+    "node-static": "^0.7.11"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/albinoyoda/wow_classic_simulator.git"
+  },
+  "author": "Oliver Sundell",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/albinoyoda/wow_classic_simulator/issues"
+  },
+  "homepage": "https://github.com/albinoyoda/wow_classic_simulator#readme"
+}

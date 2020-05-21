@@ -23,8 +23,8 @@ int main()
     armor_vec.emplace_back("blastershot");
 
     std::vector<std::string> weapons_vec;
-    weapons_vec.emplace_back("maladath");
-    weapons_vec.emplace_back("brutality_blade");
+    weapons_vec.emplace_back("grand_marshals_longsword");
+    weapons_vec.emplace_back("grand_marshals_longsword");
 
     std::vector<std::string> buff_vec;
     buff_vec.emplace_back("rallying_cry");
@@ -40,6 +40,11 @@ int main()
     for (double dmg_batch : sim_output.dmg_batches)
     {
         std::cout << "batch = " << dmg_batch << "\n";
+    }
+
+    for (double dmg_source : sim_output.dmg_sources)
+    {
+        std::cout << "source = " << dmg_source << "\n";
     }
 
     std::cout << "DPS = " << sim_output.mean_dps << "\n";

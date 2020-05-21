@@ -633,7 +633,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                         simulator_cout("------------ Deathwish activated! ------------");
                         buff_manager_.add("Deathwish", Special_stats{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .2}, 30);
                         rage -= 10;
-                        time_keeper_.global_cd = 1.0;
+                        time_keeper_.global_cd = 1.5;
                     }
                 }
                 if (config.enable_recklessness)
@@ -641,7 +641,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                     if (sim_time - time_keeper_.time < 16.0 && !recklessness_active)
                     {
                         recklessness_active = true;
-                        time_keeper_.global_cd = 1.0;
+                        time_keeper_.global_cd = 1.5;
                         simulator_cout("------------ Recklessness activated! ------------");
                     }
                 }
@@ -665,7 +665,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                         double damage = 600 + (rage - execute_rage_cost) * 15;
                         auto hit_outcome = generate_hit(damage, Hit_type::yellow, Socket::main_hand,
                                                         heroic_strike_active, special_stats, recklessness_active);
-                        time_keeper_.global_cd = 1.0;
+                        time_keeper_.global_cd = 1.5;
                         if (hit_outcome.hit_result == Hit_result::dodge || hit_outcome.hit_result == Hit_result::miss)
                         {
                             rage *= 0.85;
@@ -696,7 +696,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                             rage -= 30;
                         }
                         time_keeper_.blood_thirst_cd = 6.0;
-                        time_keeper_.global_cd = 1.0;
+                        time_keeper_.global_cd = 1.5;
                         manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges, true);
                         damage_sources.add_damage(Damage_source::bloodthirst, hit_outcome.damage);
                         simulator_cout(rage, " rage");
@@ -713,7 +713,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                                                         heroic_strike_active, special_stats, recklessness_active);
                         rage -= 25;
                         time_keeper_.whirlwind_cd = 10;
-                        time_keeper_.global_cd = 1.0;
+                        time_keeper_.global_cd = 1.5;
                         manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges, true);
                         damage_sources.add_damage(Damage_source::whirlwind, hit_outcome.damage);
                         simulator_cout(rage, " rage");
@@ -746,4 +746,9 @@ const std::vector<double> &Combat_simulator::get_hit_probabilities_white_mh() co
 void Combat_simulator::print_damage_distribution() const
 {
     print_damage_source_vector(damage_distribution_);
+}
+
+std::vector<Damage_sources> Combat_simulator::get_damage_distribution() const
+{
+    return damage_distribution_;
 }
