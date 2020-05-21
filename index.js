@@ -1,5 +1,4 @@
 
-// const PORT = process.env.PORT || 5000
 //
 
 
@@ -7,6 +6,7 @@ var static = require('node-static');
 var file = new static.Server();
 const express = require('express')
 const path = require('path')
+const PORT = process.env.PORT || 5000
 
 express()
   .use(express.static(path.join(__dirname, 'interface')))
