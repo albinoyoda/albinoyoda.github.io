@@ -85,11 +85,11 @@ Character character_setup(const Armory &armory, const Buffs &buffs, const std::v
 
     character.equip_weapon(armory.find_weapon(weapons_vec[0]), armory.find_weapon(weapons_vec[1]));
 
-    if (find_string(ench_vec, "h+8 strength"))
+    if (find_string(ench_vec, "he+8 strength"))
     {
         character.add_enchant(Socket::head, Enchant::Type::strength);
     }
-    else if (find_string(ench_vec, "h+1 haste"))
+    else if (find_string(ench_vec, "he+1 haste"))
     {
         character.add_enchant(Socket::head, Enchant::Type::haste);
     }
