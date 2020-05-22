@@ -78,6 +78,10 @@ for wep_type in weapons:
 with open("index.html", "r") as f:
     lines = f.readlines()
 
+for armors in armor_types:
+    armors.items.sort()
+all_weapons.sort()
+
 washed_lines = []
 copy_line = True
 armor_index = 0

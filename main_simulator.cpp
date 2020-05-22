@@ -80,23 +80,23 @@ Character character_setup(const Armory &armory, const Buffs &buffs)
 {
     Character character{Race::human, 60};
 
-//    character.equip_armor(armory.find_armor(Socket::head, "lionheart_helm"));
-//    character.equip_armor(armory.find_armor(Socket::neck, "onyxia_tooth_pendant"));
-//    character.equip_armor(armory.find_armor(Socket::shoulder, "drake_talon_pauldrons"));
-//    character.equip_armor(armory.find_armor(Socket::back, "cape_of_the_black_baron"));
-//    character.equip_armor(armory.find_armor(Socket::chest, "savage_gladiator_chain"));
-//    character.equip_armor(armory.find_armor(Socket::wrist, "wristguards_of_stability"));
-//    character.equip_armor(armory.find_armor(Socket::hands, "flameguard_gauntlets"));
-//    character.equip_armor(armory.find_armor(Socket::belt, "onslaught_girdle"));
-//    character.equip_armor(armory.find_armor(Socket::legs, "legguards_of_the_fallen_crusader"));
-//    character.equip_armor(armory.find_armor(Socket::boots, "chromatic_boots"));
-//    character.equip_armor(armory.find_armor(Socket::ring, "don_julios_band"));
-//    character.equip_armor(armory.find_armor(Socket::ring, "master_dragonslayers_ring"));
-//    character.equip_armor(armory.find_armor(Socket::trinket, "hand_of_justice"));
-//    character.equip_armor(armory.find_armor(Socket::trinket, "diamond_flask"));
-//    character.equip_armor(armory.find_armor(Socket::ranged, "blastershot"));
+    character.equip_armor(armory.find_armor(Socket::head, "lionheart_helm"));
+    character.equip_armor(armory.find_armor(Socket::neck, "onyxia_tooth_pendant"));
+    character.equip_armor(armory.find_armor(Socket::shoulder, "drake_talon_pauldrons"));
+    character.equip_armor(armory.find_armor(Socket::back, "cape_of_the_black_baron"));
+    character.equip_armor(armory.find_armor(Socket::chest, "savage_gladiator_chain"));
+    character.equip_armor(armory.find_armor(Socket::wrist, "wristguards_of_stability"));
+    character.equip_armor(armory.find_armor(Socket::hands, "flameguard_gauntlets"));
+    character.equip_armor(armory.find_armor(Socket::belt, "onslaught_girdle"));
+    character.equip_armor(armory.find_armor(Socket::legs, "legguards_of_the_fallen_crusader"));
+    character.equip_armor(armory.find_armor(Socket::boots, "chromatic_boots"));
+    character.equip_armor(armory.find_armor(Socket::ring, "don_julios_band"));
+    character.equip_armor(armory.find_armor(Socket::ring, "master_dragonslayers_ring"));
+    character.equip_armor(armory.find_armor(Socket::trinket, "hand_of_justice"));
+    character.equip_armor(armory.find_armor(Socket::trinket, "diamond_flask"));
+    character.equip_armor(armory.find_armor(Socket::ranged, "blastershot"));
 
-    character.equip_weapon(armory.find_weapon("maladath"), armory.find_weapon("brutality_blade"));
+    character.equip_weapon(armory.find_weapon("empyrean_demolisher"), armory.find_weapon("brutality_blade"));
 
     // Enchants
     character.add_enchant(Socket::head, Enchant::Type::haste);
@@ -144,7 +144,7 @@ Character delta_gear(const Character &character, const Armory &armory, const Buf
 //    delta_character.add_buff(buffs.spirit_of_zandalar); // 7.8
 //    delta_character.add_buff(buffs.songflower); // 9.3
 
-//    armory.change_weapon(delta_character.weapons, armory.swords.maladath, Socket::off_hand);
+    armory.change_weapon(delta_character.weapons, armory.find_weapon("maladath"), Socket::main_hand);
 
 //    armory.change_armor(delta_character.armor, armory.ranged.strikers_mark);
 
@@ -168,7 +168,7 @@ int main()
 
     // Simulator & Combat settings
     Combat_simulator_config config{};
-    config.n_batches = 100000;
+    config.n_batches = 10000;
     config.sim_time = 60;
     config.opponent_level = 63;
 
@@ -218,6 +218,14 @@ int main()
               << ". (Negative number means capped)\n\n";
     simulator.print_damage_distribution();
 
+    auto aura_uptimes = simulator.get_aura_uptimes();
+    std::cout << "\nAura uptimes Character 1: \n";
+    for (const auto &aura : aura_uptimes)
+    {
+        std::cout << aura << "\n";
+    }
+    std::cout << "\n\n";
+
     std::vector<double> dps_snapshots2 = simulator.simulate(character2);
     double mean_dps2 = Statistics::average(dps_snapshots2);
     double std_dps2 = Statistics::standard_deviation(dps_snapshots2, mean_dps2);
@@ -230,6 +238,14 @@ int main()
     std::cout << "Crit % left to crit cap: " << 100 - simulator.get_hit_probabilities_white_mh().back()
               << ". (Negative number means capped)\n\n";
     simulator.print_damage_distribution();
+
+    aura_uptimes = simulator.get_aura_uptimes();
+    std::cout << "\nAura uptimes Character 1: \n";
+    for (const auto &aura : aura_uptimes)
+    {
+        std::cout << aura << "\n";
+    }
+    std::cout << "\n";
 
     std::cout << "Simulations executed in: " << double(clock() - startTime) / (double) CLOCKS_PER_SEC << " seconds."
               << std::endl;

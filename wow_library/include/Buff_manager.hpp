@@ -16,6 +16,36 @@ struct Combat_buff
     double duration_left;
 };
 
+struct Aura
+{
+    Aura(std::string id, double duration) :
+            id(std::move(id)),
+            duration(duration) {};
+
+    std::string id;
+    double duration;
+};
+
+struct Aura_uptime
+{
+    Aura_uptime() = default;
+
+    void add(const std::string &name, double duration)
+    {
+        for (auto &aura : auras)
+        {
+            if (name == aura.id)
+            {
+                aura.duration += duration;
+                return;
+            }
+        }
+        auras.emplace_back(name, duration);
+    }
+
+    std::vector<Aura> auras;
+};
+
 class Buff_manager
 {
 public:
@@ -40,6 +70,7 @@ public:
         size_t i = 0;
         while (i < stat_gains.size())
         {
+            aura_uptime.add(stat_gains[i].id, dt);
             stat_gains[i].duration_left -= dt;
             if (stat_gains[i].duration_left < 0.0)
             {
@@ -69,6 +100,7 @@ public:
 
     Special_stats *simulation_special_stats;
     std::vector<Combat_buff> stat_gains;
+    Aura_uptime aura_uptime;
 };
 
 #endif //WOW_SIMULATOR_BUFF_MANAGER_HPP

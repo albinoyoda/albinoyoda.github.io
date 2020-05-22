@@ -30,6 +30,5 @@ void print_damage_source_vector(const std::vector<Damage_sources> &damage_source
                                &Damage_sources::whirlwind_count);
     extract_damage_source_data(damage_sources_vector, "Item effects", &Damage_sources::item_hit_effects_damage,
                                &Damage_sources::item_hit_effects_count);
-    std::cout << "\n";
 }
 

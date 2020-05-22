@@ -164,6 +164,8 @@ public:
 
     std::vector<Damage_sources> get_damage_distribution() const;
 
+    std::vector<std::string> get_aura_uptimes() const;
+
     template<typename T>
     void print_statement(T t)
     {

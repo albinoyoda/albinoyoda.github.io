@@ -461,6 +461,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
     {
         n_damage_batches = 1;
     }
+    buff_manager_.aura_uptime.auras = {}; // Clear aura uptimes
     batch_damage_.clear();
     batch_damage_.reserve(n_damage_batches);
     damage_distribution_.clear();
@@ -751,4 +752,17 @@ void Combat_simulator::print_damage_distribution() const
 std::vector<Damage_sources> Combat_simulator::get_damage_distribution() const
 {
     return damage_distribution_;
+}
+
+std::vector<std::string> Combat_simulator::get_aura_uptimes() const
+{
+    std::vector<std::string> aura_uptimes;
+    double total_sim_time = config.n_batches * config.sim_time;
+    for (const auto &aura : buff_manager_.aura_uptime.auras)
+    {
+        std::string aura_name = aura.id;
+        double uptime = aura.duration / total_sim_time;
+        aura_uptimes.emplace_back(aura.id + ": " + std::to_string(uptime) + "%");
+    }
+    return aura_uptimes;
 }
