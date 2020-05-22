@@ -338,15 +338,15 @@
 </form>
 
 <h3>Simulation settings:</h3>
-<label for="n_simulations">Number of simulations: (between 10 and 100000):</label>
+<label for="n_simulations">Number of simulations: (default 10000):</label>
 <input type="number" id="n_simulations" name="quantity" min="10" max="100000">
 
 <p></p>
-<label for="opponent_level">Opponent level: (60-63):</label>
+<label for="opponent_level">Opponent level: (Default 63. 60-63):</label>
 <input type="number" id="opponent_level" name="quantity" min="60" max="63">
 
 <p></p>
-<label for="fight_time">Fight time: (second. 10-300s):</label>
+<label for="fight_time">Fight time: (default 60s. 10-300s):</label>
 <input type="number" id="fight_time" name="quantity" min="10" max="300">
 
 <p id="button_id"></p>
@@ -359,6 +359,9 @@
 
 <p></p>
 <canvas id="line-chart-fight"></canvas>
+
+<p></p>
+<canvas id="line-chart-fight-cumulative"></canvas>
 
 <p></p>
 <canvas id="bar-chart-damage"></canvas>
@@ -699,6 +702,19 @@
             aura_uptimes.push(parseFloat(split_string[1]));
         }
 
+        var aura_list = [];
+        for (var j = 0; j < aura_name.length; j++)
+            aura_list.push({'name': aura_name[j], 'duration': aura_uptimes[j]});
+
+        aura_list.sort(function(a, b) {
+            return ((a.duration > b.duration) ? -1 : ((a.name === b.name) ? 0 : 1));
+        });
+
+        for (var k = 0; k < aura_list.length; k++) {
+            aura_name[k] = aura_list[k].name;
+            aura_uptimes[k] = aura_list[k].duration;
+        }
+
         let colors = ["#3e95cd", "#8e5ea2", "#FFFF00", "#c45850", "#e8c3b9", "#145A32", "#FFFFFF"];
         let damage_name = ["white_mh", "white_oh", "bloodthirst", "execute", "heroic_strike", "whirlwind", "item_hit_effects"];
         let white_mh = [];
@@ -719,11 +735,24 @@
                     damage_vec[i].push(result[damage_name[i]].get(j) + damage_vec[i - 1][j]);
                 }
             }
-            // damage_history_cumulative[i].push(damage_history[i][0]);
-            // for (let j = 1; j < damage_history[i].length; j++) {
-            //     damage_history_cumulative[i].push(damage_history_cumulative[i][j-1] + damage_history[i][j]);
-            // }
         }
+
+        let cumulative_white_mh = [];
+        let cumulative_white_oh = [];
+        let cumulative_bloodthirst = [];
+        let cumulative_execute = [];
+        let cumulative_heroic_strike = [];
+        let cumulative_whirlwind = [];
+        let cumulative_item_hit_effects = [];
+        let cumulative_vec = [cumulative_white_mh, cumulative_white_oh, cumulative_bloodthirst, cumulative_execute,
+            cumulative_heroic_strike, cumulative_whirlwind, cumulative_item_hit_effects];
+        for (let i = 0; i < cumulative_vec.length; i++) {
+            cumulative_vec[i][0] = damage_vec[i][0];
+            for (let j = 1; j < damage_vec[i].length; j++) {
+                cumulative_vec[i].push(cumulative_vec[i][j - 1] + damage_vec[i][j]);
+            }
+        }
+
         let time_stamps = [];
         time_stamps.push(0);
         for (let j = 1; j < damage_vec[0].length; j++) {
@@ -786,42 +815,42 @@
                     borderColor: colors[0],
                     backgroundColor: colors[0],
                     fill: origin
-                },{
+                }, {
                     data: damage_vec[1],
                     label: damage_name[1],
                     borderWidth: 10,
                     borderColor: colors[1],
                     backgroundColor: colors[1],
                     fill: origin
-                },{
+                }, {
                     data: damage_vec[2],
                     label: damage_name[2],
                     borderWidth: 10,
                     borderColor: colors[2],
                     backgroundColor: colors[2],
                     fill: origin
-                },{
+                }, {
                     data: damage_vec[3],
                     label: damage_name[3],
                     borderWidth: 10,
                     borderColor: colors[3],
                     backgroundColor: colors[3],
                     fill: origin
-                },{
+                }, {
                     data: damage_vec[4],
                     label: damage_name[4],
                     borderWidth: 10,
                     borderColor: colors[4],
                     backgroundColor: colors[4],
                     fill: origin
-                },{
+                }, {
                     data: damage_vec[5],
                     label: damage_name[5],
                     borderWidth: 10,
                     borderColor: colors[5],
                     backgroundColor: colors[5],
                     fill: origin
-                },{
+                }, {
                     data: damage_vec[6],
                     label: damage_name[6],
                     borderWidth: 10,
@@ -833,12 +862,108 @@
             options: {
                 title: {
                     display: true,
-                    text: 'Damage histogram'
+                    text: 'Fight time lapse (DPS)'
+                },
+                scales: {
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Average DPS from source'
+                        }
+                    }],
+                    xAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Time'
+                        }
+                    }]
                 }
             }
         });
 
         canvas = document.getElementById("line-chart-fight");
+        canvas.maintainAspectRatio = false;
+        canvas.style.height = '600px';
+        canvas.style.width = '800px';
+
+        line_chart_hist = new Chart(document.getElementById("line-chart-fight-cumulative"), {
+            type: 'line',
+            data: {
+                labels: time_stamps,
+                datasets: [{
+                    data: cumulative_vec[0],
+                    label: damage_name[0],
+                    borderWidth: 10,
+                    borderColor: colors[0],
+                    backgroundColor: colors[0],
+                    fill: origin
+                }, {
+                    data: cumulative_vec[1],
+                    label: damage_name[1],
+                    borderWidth: 10,
+                    borderColor: colors[1],
+                    backgroundColor: colors[1],
+                    fill: origin
+                }, {
+                    data: cumulative_vec[2],
+                    label: damage_name[2],
+                    borderWidth: 10,
+                    borderColor: colors[2],
+                    backgroundColor: colors[2],
+                    fill: origin
+                }, {
+                    data: cumulative_vec[3],
+                    label: damage_name[3],
+                    borderWidth: 10,
+                    borderColor: colors[3],
+                    backgroundColor: colors[3],
+                    fill: origin
+                }, {
+                    data: cumulative_vec[4],
+                    label: damage_name[4],
+                    borderWidth: 10,
+                    borderColor: colors[4],
+                    backgroundColor: colors[4],
+                    fill: origin
+                }, {
+                    data: cumulative_vec[5],
+                    label: damage_name[5],
+                    borderWidth: 10,
+                    borderColor: colors[5],
+                    backgroundColor: colors[5],
+                    fill: origin
+                }, {
+                    data: cumulative_vec[6],
+                    label: damage_name[6],
+                    borderWidth: 10,
+                    borderColor: colors[6],
+                    backgroundColor: colors[6],
+                    fill: origin
+                },]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'Fight time lapse'
+                },
+                scales: {
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Average cumulative damage from source'
+                        }
+                    }],
+                    xAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Time'
+                        }
+                    }]
+                }
+            }
+        });
+
+        canvas = document.getElementById("line-chart-fight-cumulative");
         canvas.maintainAspectRatio = false;
         canvas.style.height = '600px';
         canvas.style.width = '800px';
