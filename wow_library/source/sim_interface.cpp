@@ -62,7 +62,8 @@ std::string get_character_stat(const Character &character)
 }
 
 Character character_setup(const Armory &armory, const Buffs &buffs, const std::vector<std::string> &armor_vec,
-                          const std::vector<std::string> &weapons_vec, const std::vector<std::string> &buffs_vec)
+                          const std::vector<std::string> &weapons_vec, const std::vector<std::string> &buffs_vec,
+                          const std::vector<std::string> &ench_vec)
 {
     Character character{Race::human, 60};
 
@@ -84,17 +85,76 @@ Character character_setup(const Armory &armory, const Buffs &buffs, const std::v
 
     character.equip_weapon(armory.find_weapon(weapons_vec[0]), armory.find_weapon(weapons_vec[1]));
 
-    character.add_enchant(Socket::head, Enchant::Type::haste);
-    character.add_enchant(Socket::back, Enchant::Type::agility);
-    character.add_enchant(Socket::chest, Enchant::Type::major_stats);
-    character.add_enchant(Socket::wrist, Enchant::Type::strength9);
-    character.add_enchant(Socket::hands, Enchant::Type::haste);
-    character.add_enchant(Socket::legs, Enchant::Type::haste);
-    character.add_enchant(Socket::boots, Enchant::Type::agility);
-    character.add_enchant(Socket::main_hand, Enchant::Type::crusader);
-    character.add_enchant(Socket::off_hand, Enchant::Type::crusader);
+    if (find_string(ench_vec, "h+8 strength"))
+    {
+        character.add_enchant(Socket::head, Enchant::Type::strength);
+    }
+    else if (find_string(ench_vec, "h+1 haste"))
+    {
+        character.add_enchant(Socket::head, Enchant::Type::haste);
+    }
 
-    // rayying cry
+    if (find_string(ench_vec, "b+3 agility"))
+    {
+        character.add_enchant(Socket::back, Enchant::Type::agility);
+    }
+
+    if (find_string(ench_vec, "c+3 stats"))
+    {
+        character.add_enchant(Socket::chest, Enchant::Type::minor_stats);
+    }
+    else if (find_string(ench_vec, "c+4 stats"))
+    {
+        character.add_enchant(Socket::chest, Enchant::Type::major_stats);
+    }
+
+    if (find_string(ench_vec, "w+7 strength"))
+    {
+        character.add_enchant(Socket::wrist, Enchant::Type::strength7);
+    }
+    else if (find_string(ench_vec, "w+9 strength"))
+    {
+        character.add_enchant(Socket::wrist, Enchant::Type::strength9);
+    }
+
+    if (find_string(ench_vec, "h+7 strength"))
+    {
+        character.add_enchant(Socket::hands, Enchant::Type::strength);
+    }
+    else if (find_string(ench_vec, "h+7 agility"))
+    {
+        character.add_enchant(Socket::hands, Enchant::Type::agility);
+    }
+    else if (find_string(ench_vec, "h+1 haste"))
+    {
+        character.add_enchant(Socket::hands, Enchant::Type::haste);
+    }
+
+    if (find_string(ench_vec, "l+8 strength"))
+    {
+        character.add_enchant(Socket::legs, Enchant::Type::strength);
+    }
+    else if (find_string(ench_vec, "l+1 haste"))
+    {
+        character.add_enchant(Socket::legs, Enchant::Type::haste);
+    }
+
+    if (find_string(ench_vec, "b+7 agility"))
+    {
+        character.add_enchant(Socket::boots, Enchant::Type::agility);
+    }
+
+    if (find_string(ench_vec, "mcrusader"))
+    {
+        character.add_enchant(Socket::main_hand, Enchant::Type::crusader);
+    }
+
+    if (find_string(ench_vec, "ocrusader"))
+    {
+        character.add_enchant(Socket::off_hand, Enchant::Type::crusader);
+    }
+
+    // rallying cry
     if (find_string(buffs_vec, "rallying_cry"))
     {
         character.add_buff(buffs.rallying_cry);
@@ -184,7 +244,7 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     Armory armory{};
     Buffs buffs{};
 
-    Character character = character_setup(armory, buffs, input.armor, input.weapons, input.buffs);
+    Character character = character_setup(armory, buffs, input.armor, input.weapons, input.buffs, input.enchants);
 
     // Simulator & Combat settings
     Combat_simulator_config config{};

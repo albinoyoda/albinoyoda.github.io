@@ -253,17 +253,61 @@
 <p> Select enchants: </p>
 
 <select id="helmet_ench_dd" onchange="read_drop_down()">
-    <option value="Helmet" selected disabled>Helmet</option>
-    <option value="3">3</option>
-    <option value="4">4</option>
-    <option value="5">5</option>
+    <option value="helmet">helmet</option>
+    <option value="+8 strength">+8 strength</option>
+    <option value="+1 haste">+1 haste</option>
 </select>
 
-<select id="weapon_ench_dd" onchange="read_drop_down()">
-    <option value="Weapon" selected disabled>Weapon</option>
-    <option value="3">3</option>
-    <option value="4">4</option>
-    <option value="5">5</option>
+<select id="shoulder_ench_dd" onchange="read_drop_down()">
+    <option value="shoulder">shoulder</option>
+    <option value="+30 Attack power">+30 Attack power</option>
+</select>
+
+<select id="back_ench_dd" onchange="read_drop_down()">
+    <option value="back">back</option>
+    <option value="+3 agility">+3 agility</option>
+</select>
+
+<select id="chest_ench_dd" onchange="read_drop_down()">
+    <option value="back">chest</option>
+    <option value="+3 stats">+3 stats</option>
+    <option value="+4 stats">+4 stats</option>
+</select>
+
+<select id="wrist_ench_dd" onchange="read_drop_down()">
+    <option value="wrist">wrist</option>
+    <option value="+7 strength">+7 strength</option>
+    <option value="+9 strength">+9 strength</option>
+</select>
+
+<select id="hands_ench_dd" onchange="read_drop_down()">
+    <option value="hands">hands</option>
+    <option value="+7 agility">+7 agility</option>
+    <option value="+7 strength">+7 strength</option>
+    <option value="+1 haste">+1 haste</option>
+</select>
+
+<select id="legs_ench_dd" onchange="read_drop_down()">
+    <option value="legs">legs</option>
+    <option value="+8 strength">+8 strength</option>
+    <option value="+1 haste">+1 haste</option>
+</select>
+
+<select id="boots_ench_dd" onchange="read_drop_down()">
+    <option value="boots">boots</option>
+    <option value="+7 agility">+7 agility</option>
+</select>
+
+<p></p>
+
+<select id="main_hand_ench_dd" onchange="read_drop_down()">
+    <option value="main_hand">weapon</option>
+    <option value="crusader">crusader</option>
+</select>
+
+<select id="off_hand_ench_dd" onchange="read_drop_down()">
+    <option value="off_hand">off_hand</option>
+    <option value="crusader">crusader</option>
 </select>
 
 <h3> Buffs: </h3>
@@ -338,16 +382,16 @@
 </form>
 
 <h3>Simulation settings:</h3>
-<label for="n_simulations">Number of simulations: (default 10000):</label>
-<input type="number" id="n_simulations" name="quantity" min="10" max="100000">
+<label for="n_simulations">Number of simulations: (100 - 100000):</label>
+<input type="number" id="n_simulations" name="quantity" min="100" max="100000" value="10000">
 
 <p></p>
-<label for="opponent_level">Opponent level: (Default 63. 60-63):</label>
-<input type="number" id="opponent_level" name="quantity" min="60" max="63">
+<label for="opponent_level">Opponent level: (60-63):</label>
+<input type="number" id="opponent_level" name="quantity" min="60" max="63" value="63">
 
 <p></p>
-<label for="fight_time">Fight time: (default 60s. 10-300s):</label>
-<input type="number" id="fight_time" name="quantity" min="10" max="300">
+<label for="fight_time">Fight time: (10-300s):</label>
+<input type="number" id="fight_time" name="quantity" min="10" max="300" value="60">
 
 <p id="button_id"></p>
 <button onclick="myFunction()">Run simulator</button>
@@ -508,6 +552,27 @@
     var off_hand;
     var off_hand_string;
 
+    var helmet_ench;
+    var helmet_ench_string;
+    var shoulder_ench;
+    var shoulder_ench_string;
+    var back_ench;
+    var back_ench_string;
+    var chest_ench;
+    var chest_ench_string;
+    var wrist_ench;
+    var wrist_ench_string;
+    var hands_ench;
+    var hands_ench_string;
+    var legs_ench;
+    var legs_ench_string;
+    var boots_ench;
+    var boots_ench_string;
+    var main_hand_ench;
+    var main_hand_ench_string;
+    var off_hand_ench;
+    var off_hand_ench_string;
+
     function read_drop_down() {
         helmet = document.getElementById("helmet_dd");
         helmet_string = helmet.options[helmet.selectedIndex].value;
@@ -559,18 +624,52 @@
 
         off_hand = document.getElementById("off_hand_dd");
         off_hand_string = off_hand.options[off_hand.selectedIndex].value;
+
+        helmet_ench = document.getElementById("helmet_ench_dd");
+        helmet_ench_string = "h" + helmet_ench.options[helmet_ench.selectedIndex].value;
+
+        shoulder_ench = document.getElementById("shoulder_ench_dd");
+        shoulder_ench_string = "s" + shoulder_ench.options[shoulder_ench.selectedIndex].value;
+
+        back_ench = document.getElementById("back_ench_dd");
+        back_ench_string = "b" + back_ench.options[back_ench.selectedIndex].value;
+
+        chest_ench = document.getElementById("chest_ench_dd");
+        chest_ench_string = "c" + chest_ench.options[chest_ench.selectedIndex].value;
+
+        wrist_ench = document.getElementById("wrist_ench_dd");
+        wrist_ench_string = "w" + wrist_ench.options[wrist_ench.selectedIndex].value;
+
+        hands_ench = document.getElementById("hands_ench_dd");
+        hands_ench_string = "h" + hands_ench.options[hands_ench.selectedIndex].value;
+
+        legs_ench = document.getElementById("legs_ench_dd");
+        legs_ench_string = "l" + legs_ench.options[legs_ench.selectedIndex].value;
+
+        boots_ench = document.getElementById("boots_ench_dd");
+        boots_ench_string = "b" + boots_ench.options[boots_ench.selectedIndex].value;
+
+        main_hand_ench = document.getElementById("main_hand_ench_dd");
+        main_hand_ench_string = "m" + main_hand_ench.options[main_hand_ench.selectedIndex].value;
+
+        off_hand_ench = document.getElementById("off_hand_ench_dd");
+        off_hand_ench_string = "o" + helmet_ench.options[helmet_ench.selectedIndex].value;
     }
 
     var run_before = false;
     var bar_chart_auras;
     var bar_chart_damage;
     var line_chart_hist;
+    var line_chart_fight;
+    var line_chart_fight_cum;
 
     function clean_charts() {
         if (run_before) {
             bar_chart_auras.destroy();
             bar_chart_damage.destroy();
             line_chart_hist.destroy();
+            line_chart_fight.destroy();
+            line_chart_fight_cum.destroy();
         }
         run_before = true;
     }
@@ -579,7 +678,7 @@
 
         read_drop_down();
         read_checkboxes();
-        clean_charts();
+        // clean_charts();
 
         const armor_vec = new Module.StringList();
         armor_vec.push_back(helmet_string);
@@ -623,20 +722,35 @@
         buff_vec.push_back(dense_stone_off_hand_enabled);
         buff_vec.push_back(elemental_stone_off_hand_enabled);
 
+        const ench_vec = new Module.StringList();
+        ench_vec.push_back(helmet_ench_string);
+        ench_vec.push_back(shoulder_ench_string);
+        ench_vec.push_back(back_ench_string);
+        ench_vec.push_back(chest_ench_string);
+        ench_vec.push_back(wrist_ench_string);
+        ench_vec.push_back(hands_ench_string);
+        ench_vec.push_back(legs_ench_string);
+        ench_vec.push_back(boots_ench_string);
+        ench_vec.push_back(main_hand_ench_string);
+        ench_vec.push_back(off_hand_ench_string);
+
         let n_simulations = parseFloat(document.getElementById("n_simulations").value);
         if (n_simulations != n_simulations) { // Check for NaN
             n_simulations = 5000;
         }
+        n_simulations = Math.min(Math.max(n_simulations, 100), 100000);
 
         let opponent_level = parseFloat(document.getElementById("opponent_level").value);
         if (opponent_level != opponent_level) { // Check for NaN
             opponent_level = 63;
         }
+        opponent_level = Math.min(Math.max(opponent_level, 60), 63);
 
         let fight_time = parseFloat(document.getElementById("fight_time").value);
         if (fight_time != fight_time) { // Check for NaN
             fight_time = 60;
         }
+        fight_time = Math.min(Math.max(fight_time, 10), 300);
 
         // config.curse_of_recklessness_active = true;
         // config.faerie_fire_feral_active = true;
@@ -650,6 +764,7 @@
             armor: armor_vec,
             weapons: weapons_vec,
             buffs: buff_vec,
+            enchants: ench_vec,
             target_level: opponent_level,
             fight_time: fight_time,
             n_simulations: n_simulations
@@ -706,7 +821,7 @@
         for (var j = 0; j < aura_name.length; j++)
             aura_list.push({'name': aura_name[j], 'duration': aura_uptimes[j]});
 
-        aura_list.sort(function(a, b) {
+        aura_list.sort(function (a, b) {
             return ((a.duration > b.duration) ? -1 : ((a.name === b.name) ? 0 : 1));
         });
 
@@ -804,7 +919,7 @@
         canvas.style.height = '600px';
         canvas.style.width = '800px';
 
-        line_chart_hist = new Chart(document.getElementById("line-chart-fight"), {
+        line_chart_fight = new Chart(document.getElementById("line-chart-fight"), {
             type: 'line',
             data: {
                 labels: time_stamps,
@@ -886,7 +1001,7 @@
         canvas.style.height = '600px';
         canvas.style.width = '800px';
 
-        line_chart_hist = new Chart(document.getElementById("line-chart-fight-cumulative"), {
+        line_chart_fight_cum = new Chart(document.getElementById("line-chart-fight-cumulative"), {
             type: 'line',
             data: {
                 labels: time_stamps,

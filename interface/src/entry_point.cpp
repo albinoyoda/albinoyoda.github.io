@@ -19,6 +19,7 @@ EMSCRIPTEN_BINDINGS(module)
         .field("armor", &Sim_input::armor)
         .field("weapons", &Sim_input::weapons)
         .field("buffs", &Sim_input::buffs)
+        .field("enchants", &Sim_input::enchants)
         .field("target_level", &Sim_input::target_level)
         .field("fight_time", &Sim_input::fight_time)
         .field("n_simulations", &Sim_input::n_simulations);

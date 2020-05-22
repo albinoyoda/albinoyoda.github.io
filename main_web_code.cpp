@@ -34,7 +34,10 @@ int main()
     buff_vec.emplace_back("spirit_of_zandalar");
     buff_vec.emplace_back("sayges_fortune");
 
-    Sim_input sim_input{armor_vec, weapons_vec, buff_vec, 60, 63, 10};
+    std::vector<std::string> ench_vec;
+    ench_vec.emplace_back("h+8 strength");
+
+    Sim_input sim_input{armor_vec, weapons_vec, buff_vec, ench_vec, 60, 63, 10};
     auto sim_output = sim_interface.simulate(sim_input);
 
     for (double dmg_batch : sim_output.dmg_batches)
