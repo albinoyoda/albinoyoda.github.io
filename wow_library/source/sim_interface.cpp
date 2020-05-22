@@ -228,6 +228,9 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
 
     std::vector<std::string> aura_uptimes = simulator.get_aura_uptimes();
 
-    return {dps_vec, dps_dist, aura_uptimes, mean_init, sample_std_init, {get_character_stat(character)}};
+    auto a = simulator.get_damage_time_lapse();
+
+    return {dps_vec, dps_dist, a[0], a[1], a[2], a[3], a[4], a[5], a[6],
+            aura_uptimes, mean_init, sample_std_init, {get_character_stat(character)}};
 }
 

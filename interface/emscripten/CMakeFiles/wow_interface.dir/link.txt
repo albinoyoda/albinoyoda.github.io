@@ -1,1 +1,1 @@
-/emsdk_portable/emscripten/tag-1.39.4/em++  -O2  -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s DEMANGLE_SUPPORT=1 -s --bind @CMakeFiles/wow_interface.dir/objects1.rsp  -o wow_interface.js @CMakeFiles/wow_interface.dir/linklibs.rsp
+/emsdk_portable/emscripten/tag-1.39.4/em++  -Werror -Wall -Wextra  -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s DEMANGLE_SUPPORT=1 -s TOTAL_MEMORY=1280MB -s --bind @CMakeFiles/wow_interface.dir/objects1.rsp  -o wow_interface.js @CMakeFiles/wow_interface.dir/linklibs.rsp

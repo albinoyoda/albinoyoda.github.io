@@ -699,6 +699,37 @@
             aura_uptimes.push(parseFloat(split_string[1]));
         }
 
+        let colors = ["#3e95cd", "#8e5ea2", "#FFFF00", "#c45850", "#e8c3b9", "#145A32", "#FFFFFF"];
+        let damage_name = ["white_mh", "white_oh", "bloodthirst", "execute", "heroic_strike", "whirlwind", "item_hit_effects"];
+        let white_mh = [];
+        let white_oh = [];
+        let bloodthirst = [];
+        let execute = [];
+        let heroic_strike = [];
+        let whirlwind = [];
+        let item_hit_effects = [];
+        let damage_vec = [white_mh, white_oh, bloodthirst, execute, heroic_strike, whirlwind, item_hit_effects];
+        for (let i = 0; i < damage_vec.length; i++) {
+            if (i === 0) {
+                for (let j = 0; j < result[damage_name[i]].size(); j++) {
+                    damage_vec[i].push(result[damage_name[i]].get(j));
+                }
+            } else {
+                for (let j = 0; j < result[damage_name[i]].size(); j++) {
+                    damage_vec[i].push(result[damage_name[i]].get(j) + damage_vec[i - 1][j]);
+                }
+            }
+            // damage_history_cumulative[i].push(damage_history[i][0]);
+            // for (let j = 1; j < damage_history[i].length; j++) {
+            //     damage_history_cumulative[i].push(damage_history_cumulative[i][j-1] + damage_history[i][j]);
+            // }
+        }
+        let time_stamps = [];
+        time_stamps.push(0);
+        for (let j = 1; j < damage_vec[0].length; j++) {
+            time_stamps.push(time_stamps[j - 1] + 0.25);
+        }
+
         document.getElementById("output1").innerHTML = 'Average DPS: ' + result['mean_dps'].toFixed(2) + ' +- ' + result['std_dps'].toFixed(2) + ', (95% confidence interval)';
         document.getElementById("output2").innerHTML = result['messages'].get(0);
 
@@ -744,6 +775,74 @@
         canvas.style.height = '600px';
         canvas.style.width = '800px';
 
+        line_chart_hist = new Chart(document.getElementById("line-chart-fight"), {
+            type: 'line',
+            data: {
+                labels: time_stamps,
+                datasets: [{
+                    data: damage_vec[0],
+                    label: damage_name[0],
+                    borderWidth: 10,
+                    borderColor: colors[0],
+                    backgroundColor: colors[0],
+                    fill: origin
+                },{
+                    data: damage_vec[1],
+                    label: damage_name[1],
+                    borderWidth: 10,
+                    borderColor: colors[1],
+                    backgroundColor: colors[1],
+                    fill: origin
+                },{
+                    data: damage_vec[2],
+                    label: damage_name[2],
+                    borderWidth: 10,
+                    borderColor: colors[2],
+                    backgroundColor: colors[2],
+                    fill: origin
+                },{
+                    data: damage_vec[3],
+                    label: damage_name[3],
+                    borderWidth: 10,
+                    borderColor: colors[3],
+                    backgroundColor: colors[3],
+                    fill: origin
+                },{
+                    data: damage_vec[4],
+                    label: damage_name[4],
+                    borderWidth: 10,
+                    borderColor: colors[4],
+                    backgroundColor: colors[4],
+                    fill: origin
+                },{
+                    data: damage_vec[5],
+                    label: damage_name[5],
+                    borderWidth: 10,
+                    borderColor: colors[5],
+                    backgroundColor: colors[5],
+                    fill: origin
+                },{
+                    data: damage_vec[6],
+                    label: damage_name[6],
+                    borderWidth: 10,
+                    borderColor: colors[6],
+                    backgroundColor: colors[6],
+                    fill: origin
+                },]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'Damage histogram'
+                }
+            }
+        });
+
+        canvas = document.getElementById("line-chart-fight");
+        canvas.maintainAspectRatio = false;
+        canvas.style.height = '600px';
+        canvas.style.width = '800px';
+
         // Bar chart
         bar_chart_damage = new Chart(document.getElementById("bar-chart-damage"), {
             type: 'bar',
@@ -751,7 +850,7 @@
                 labels: sources_names,
                 datasets: [
                     {
-                        backgroundColor: ["#3e95cd", "#8e5ea2", "#FFFF00", "#c45850", "#e8c3b9", "#145A32"],
+                        backgroundColor: colors,
                         data: sources
                     }
                 ]

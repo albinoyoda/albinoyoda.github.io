@@ -160,11 +160,17 @@ public:
     void cout_damage_parse(Combat_simulator::Hit_type hit_type, Socket weapon_hand,
                            Combat_simulator::Hit_outcome hit_outcome);
 
+    void add_damage_source_to_time_lapse(std::vector<Damage_instance> &damage_instances, int n_iter);
+
     void print_damage_distribution() const;
 
     std::vector<Damage_sources> get_damage_distribution() const;
 
     std::vector<std::string> get_aura_uptimes() const;
+
+    void reset_damage_instances();
+
+    std::vector<std::vector<double>> get_damage_time_lapse() const;
 
     template<typename T>
     void print_statement(T t)
@@ -202,6 +208,15 @@ private:
     double armor_reduction_factor_{};
     Time_keeper time_keeper_{};
     Buff_manager buff_manager_{};
+    std::vector<std::vector<double>> damage_time_lapse{};
+    std::map<Damage_source, int> source_map{{Damage_source::white_mh,         0},
+                                            {Damage_source::white_oh,         1},
+                                            {Damage_source::bloodthirst,      2},
+                                            {Damage_source::execute,          3},
+                                            {Damage_source::heroic_strike,    4},
+                                            {Damage_source::whirlwind,        5},
+                                            {Damage_source::item_hit_effects, 6}
+    };
 };
 
 #include "Combat_simulator.tcc"

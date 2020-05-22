@@ -38,7 +38,7 @@ IF (EMSCRIPTEN)
             )
 
     target_link_libraries(wow_interface wow_lib)
-    set_target_properties(wow_interface PROPERTIES LINK_FLAGS "-s ERROR_ON_UNDEFINED_SYMBOLS=0 -s DEMANGLE_SUPPORT=1 -s --bind") #
+    set_target_properties(wow_interface PROPERTIES LINK_FLAGS "-s ERROR_ON_UNDEFINED_SYMBOLS=0 -s DEMANGLE_SUPPORT=1 -s TOTAL_MEMORY=1280MB -s --bind") #
 
 
 ENDIF ()

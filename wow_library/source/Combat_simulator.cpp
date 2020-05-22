@@ -370,7 +370,7 @@ void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_we
                                    special_stats, recklessness_active);
         heroic_strike_active = false;
         rage -= heroic_strike_rage_cost;
-        damage_sources.add_damage(Damage_source::heroic_strike, hit_outcome.damage);
+        damage_sources.add_damage(Damage_source::heroic_strike, hit_outcome.damage, time_keeper_.time);
         simulator_cout(rage, " rage");
     }
     else
@@ -395,11 +395,11 @@ void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_we
         rage = std::min(100.0, rage);
         if (weapon.socket == Socket::main_hand)
         {
-            damage_sources.add_damage(Damage_source::white_mh, hit_outcome.damage);
+            damage_sources.add_damage(Damage_source::white_mh, hit_outcome.damage, time_keeper_.time);
         }
         else
         {
-            damage_sources.add_damage(Damage_source::white_oh, hit_outcome.damage);
+            damage_sources.add_damage(Damage_source::white_oh, hit_outcome.damage, time_keeper_.time);
         }
         simulator_cout(rage, " rage");
     }
@@ -422,14 +422,16 @@ void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_we
                         break;
                     case Hit_effect::Type::damage_magic:
                         simulator_cout("PROC: damage from: ", hit_effect.name);
-                        damage_sources.add_damage(Damage_source::item_hit_effects, hit_effect.damage * 0.85);
+                        damage_sources.add_damage(Damage_source::item_hit_effects, hit_effect.damage * 0.85,
+                                                  time_keeper_.time);
                         break;
                     case Hit_effect::Type::damage_physical:
                         simulator_cout("PROC: damage from: ", hit_effect.name);
                         damage_sources.add_damage(Damage_source::item_hit_effects,
                                                   generate_hit(hit_effect.damage, Hit_type::yellow,
                                                                Socket::main_hand, heroic_strike_active,
-                                                               special_stats, recklessness_active).damage);
+                                                               special_stats, recklessness_active).damage,
+                                                  time_keeper_.time);
                         break;
                     case Hit_effect::Type::stat_boost:
                         simulator_cout("PROC: stats increased: ", hit_effect.name);
@@ -461,7 +463,8 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
     {
         n_damage_batches = 1;
     }
-    buff_manager_.aura_uptime.auras = {}; // Clear aura uptimes
+    buff_manager_.aura_uptime.auras.clear();
+    reset_damage_instances();
     batch_damage_.clear();
     batch_damage_.reserve(n_damage_batches);
     damage_distribution_.clear();
@@ -490,10 +493,9 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
     armor_reduction_factor_ = 1 - target_mitigation;
 
     double sim_time = config.sim_time;
-    double sim_time_increment = config.sim_time / 5.0 / n_damage_batches;
     if (config.use_sim_time_ramp)
     {
-        sim_time -= config.sim_time / 10.0;
+        sim_time -= 2.0;
     }
 
     for (int iter = 0; iter < n_damage_batches; iter++)
@@ -528,7 +530,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
         // To avoid local max/min results from running a specific run time
         if (config.use_sim_time_ramp)
         {
-            sim_time += sim_time_increment;
+            sim_time += 2.0 / config.n_batches;
         }
 
         while (time_keeper_.time < sim_time)
@@ -539,6 +541,11 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
             double dt = time_keeper_.get_dynamic_time_step(mh_dt, oh_dt, buff_dt, sim_time);
             time_keeper_.increment(dt);
             buff_manager_.increment(dt);
+
+            if (time_keeper_.time > sim_time)
+            {
+                break;
+            }
 
             bool mh_swing = weapons[0].time_for_swing(dt);
             bool oh_swing = (weapons.size() == 2) ? weapons[1].time_for_swing(dt) : false;
@@ -676,7 +683,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                             rage = 0;
                         }
                         manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges, true);
-                        damage_sources.add_damage(Damage_source::execute, hit_outcome.damage);
+                        damage_sources.add_damage(Damage_source::execute, hit_outcome.damage, time_keeper_.time);
                         simulator_cout(rage, " rage");
                     }
                 }
@@ -699,7 +706,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                         time_keeper_.blood_thirst_cd = 6.0;
                         time_keeper_.global_cd = 1.5;
                         manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges, true);
-                        damage_sources.add_damage(Damage_source::bloodthirst, hit_outcome.damage);
+                        damage_sources.add_damage(Damage_source::bloodthirst, hit_outcome.damage, time_keeper_.time);
                         simulator_cout(rage, " rage");
                     }
 
@@ -716,7 +723,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                         time_keeper_.whirlwind_cd = 10;
                         time_keeper_.global_cd = 1.5;
                         manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges, true);
-                        damage_sources.add_damage(Damage_source::whirlwind, hit_outcome.damage);
+                        damage_sources.add_damage(Damage_source::whirlwind, hit_outcome.damage, time_keeper_.time);
                         simulator_cout(rage, " rage");
                     }
                     if (rage > 60 && !heroic_strike_active)
@@ -729,6 +736,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
         }
         batch_damage_.push_back(damage_sources.sum_damage_sources() / time_keeper_.time);
         damage_distribution_.emplace_back(damage_sources);
+        add_damage_source_to_time_lapse(damage_sources.damage_instances, n_damage_batches);
     }
     return batch_damage_;
 }
@@ -765,4 +773,39 @@ std::vector<std::string> Combat_simulator::get_aura_uptimes() const
         aura_uptimes.emplace_back(aura.id + " " + std::to_string(uptime));
     }
     return aura_uptimes;
+}
+
+void Combat_simulator::reset_damage_instances()
+{
+    double resolution = 0.25;
+    std::vector<double> history;
+    history.reserve(config.sim_time / resolution);
+    for (double t = 0; t < config.sim_time; t += resolution)
+    {
+        history.push_back(0);
+    }
+    if (!(damage_time_lapse.empty()))
+    {
+        damage_time_lapse.clear();
+    }
+    for (int i = 0; i < 7; i++)
+    {
+        damage_time_lapse.push_back(history);
+    }
+}
+
+void Combat_simulator::add_damage_source_to_time_lapse(std::vector<Damage_instance> &damage_instances, int n_iter)
+{
+    double resolution = 0.25;
+    for (const auto &damage_instance : damage_instances)
+    {
+        size_t first_idx = source_map.at(damage_instance.damage_source);
+        size_t second_idx = damage_instance.time_stamp / resolution; // automatically floored
+        damage_time_lapse[first_idx][second_idx] += damage_instance.damage / n_iter;
+    }
+}
+
+std::vector<std::vector<double>> Combat_simulator::get_damage_time_lapse() const
+{
+    return damage_time_lapse;
 }

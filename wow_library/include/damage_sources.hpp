@@ -16,6 +16,16 @@ enum class Damage_source
     item_hit_effects
 };
 
+struct Damage_instance
+{
+    Damage_instance(Damage_source source, double damage, double time_stamp) : damage_source(source),
+            damage(damage), time_stamp(time_stamp) {};
+
+    Damage_source damage_source;
+    double damage{};
+    double time_stamp{};
+};
+
 struct Damage_sources
 {
     Damage_sources() = default;
@@ -50,8 +60,9 @@ struct Damage_sources
         return white_mh_count + white_oh_count + bloodthirst_count + heroic_strike_count + whirlwind_count + execute_count + item_hit_effects_count;
     }
 
-    void add_damage(Damage_source source, double damage)
+    void add_damage(Damage_source source, double damage, double time_stamp)
     {
+        damage_instances.emplace_back(source, damage, time_stamp);
         switch (source)
         {
             case Damage_source::white_mh:
@@ -100,6 +111,8 @@ struct Damage_sources
     long int heroic_strike_count{};
     long int whirlwind_count{};
     long int item_hit_effects_count{};
+
+    std::vector<Damage_instance> damage_instances;
 };
 
 void print_damage_sources(const std::string &source_name, double source_percent,

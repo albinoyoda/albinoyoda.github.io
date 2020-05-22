@@ -12,6 +12,7 @@ EMSCRIPTEN_BINDINGS(module)
         .function("simulate", &Sim_interface::simulate);
 
     register_vector<double>("vector<double>");
+    register_vector<std::vector<double>>("vector<vector<double>>");
     register_vector<std::string>("StringList");
 
     value_object<Sim_input>("Sim_input")
@@ -25,6 +26,13 @@ EMSCRIPTEN_BINDINGS(module)
     value_object<Sim_output>("Sim_output")
         .field("dmg_batches", &Sim_output::dmg_batches)
         .field("dmg_sources", &Sim_output::dmg_sources)
+        .field("white_mh", &Sim_output::white_mh)
+        .field("white_oh", &Sim_output::white_oh)
+        .field("bloodthirst", &Sim_output::bloodthirst)
+        .field("execute", &Sim_output::execute)
+        .field("heroic_strike", &Sim_output::heroic_strike)
+        .field("whirlwind", &Sim_output::whirlwind)
+        .field("item_hit_effects", &Sim_output::item_hit_effects)
         .field("aura_uptimes", &Sim_output::aura_uptimes)
         .field("mean_dps", &Sim_output::mean_dps)
         .field("std_dps", &Sim_output::std_dps)
