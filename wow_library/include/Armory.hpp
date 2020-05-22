@@ -133,6 +133,8 @@ struct Armory
                                                                                         0},       Socket::belt},
                     {"brigam_girdle",                 Attributes{15, 0},  Special_stats{0, 1,
                                                                                         0},       Socket::belt},
+                    {"zandalar_vindicators_belt",     Attributes{25, 0},  Special_stats{1, 0,
+                                                                                        0},       Socket::belt},
                     {"thurazane_link",                Attributes{0, 0},   Special_stats{1, 0,
                                                                                         44},      Socket::belt},
                     {"girdle_of_the_fallen_crusader", Attributes{20, 10}, Special_stats{0, 0,
@@ -174,13 +176,14 @@ struct Armory
 
     std::vector<Armor> ring_t
             {
-                    {"don_julios_band",           Attributes{0, 0},   Special_stats{1, 1, 16}, Socket::ring},
-                    {"magnis_will",               Attributes{6, 0},   Special_stats{1, 0, 0},  Socket::ring},
-                    {"quick_strike_ring",         Attributes{8, 0},   Special_stats{1, 0, 30}, Socket::ring},
-                    {"master_dragonslayers_ring", Attributes{0, 0},   Special_stats{0, 1, 48}, Socket::ring},
-                    {"circle_of_applied_force",   Attributes{12, 22}, Special_stats{0, 0, 0},  Socket::ring},
-                    {"blackstone_ring",           Attributes{0, 0},   Special_stats{0, 1, 20}, Socket::ring},
-                    {"tarnished_elven",           Attributes{0, 15},  Special_stats{0, 1, 0},  Socket::ring},
+                    {"don_julios_band",                 Attributes{0, 0},   Special_stats{1, 1, 16}, Socket::ring},
+                    {"magnis_will",                     Attributes{6, 0},   Special_stats{1, 0, 0},  Socket::ring},
+                    {"quick_strike_ring",               Attributes{8, 0},   Special_stats{1, 0, 30}, Socket::ring},
+                    {"master_dragonslayers_ring",       Attributes{0, 0},   Special_stats{0, 1, 48}, Socket::ring},
+                    {"circle_of_applied_force",         Attributes{12, 22}, Special_stats{0, 0, 0},  Socket::ring},
+                    {"blackstone_ring",                 Attributes{0, 0},   Special_stats{0, 1, 20}, Socket::ring},
+                    {"tarnished_elven",                 Attributes{0, 15},  Special_stats{0, 1, 0},  Socket::ring},
+                    {"seal_of_the_gurubashi_berserker", Attributes{0, 0},   Special_stats{0, 0, 40}, Socket::ring},
             };
 
     std::vector<Armor> trinket_t
@@ -203,6 +206,7 @@ struct Armory
                     {"aq_larvae_of_the_great_worm",    Attributes{0, 0},  Special_stats{1, 0, 18}, Socket::ranged},
                     {"bloodseeker",                    Attributes{8, 7},  Special_stats{0, 0, 0},  Socket::ranged},
                     {"riphook",                        Attributes{0, 0},  Special_stats{0, 0, 22}, Socket::ranged},
+                    {"gurubashi_dwarf_cannon",         Attributes{0, 0},  Special_stats{0, 0, 30}, Socket::ranged},
             };
 
     std::vector<Weapon> swords_t
@@ -269,27 +273,27 @@ struct Armory
 
     std::vector<Weapon> maces_t
             {
-                    {"ebon_hand",               Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0},              2.3, 83.0, 154.0,
-                                                                                                                                 Weapon_socket::one_hand,  Weapon_type::mace,
+                    {"ebon_hand",               Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, 2.3, 83.0, 154.0,
+                                                                                                                    Weapon_socket::one_hand,  Weapon_type::mace,
                             {{"ebon_hand",           Hit_effect::Type::damage_magic, {},     {},                200, 0,  0.08}}},
                     {"spineshatter",            Attributes{9.0, 0.0}, Special_stats{0.0, 0.0,
-                                                                                    0.0},                        2.5, 99.0, 184.0,
-                                                                                                                                 Weapon_socket::main_hand, Weapon_type::mace},
+                                                                                    0.0},           2.5, 99.0, 184.0,
+                                                                                                                    Weapon_socket::main_hand, Weapon_type::mace},
                     {"stormstike_hammer",       Attributes{15, 0},    Special_stats{0, 0,
-                                                                                    0},                          2.7, 80,   150,
-                                                                                                                                 Weapon_socket::one_hand,  Weapon_type::mace},
+                                                                                    0},             2.7, 80,   150,
+                                                                                                                    Weapon_socket::one_hand,  Weapon_type::mace},
                     {"aq_sand_polished_hammer", Attributes{0, 0},     Special_stats{1, 0,
-                                                                                    20},                         2.6, 97,   181,
-                                                                                                                                 Weapon_socket::one_hand,  Weapon_type::mace},
+                                                                                    20},            2.6, 97,   181,
+                                                                                                                    Weapon_socket::one_hand,  Weapon_type::mace},
                     {"empyrean_demolisher",     Attributes{0, 0},     Special_stats{0, 0,
-                                                                                    0},                          2.8, 94,   175,
-                                                                                                                                 Weapon_socket::one_hand,  Weapon_type::mace,
+                                                                                    0},             2.8, 94,   175,
+                                                                                                                    Weapon_socket::one_hand,  Weapon_type::mace,
                             {{"empyrean_demolisher", Hit_effect::Type::stat_boost,   {0, 0}, Special_stats{0, 0, 0, 0,
                                                                                                            .2}, 0,
                                                                                                                      10, 2.8 / 60}}},
                     {"aq_anubisath_warhammer",  Attributes{0, 0},     Special_stats{0, 0, 32, 0, 0, 0, 0, 0,
-                                                                                    4},                          1.8, 66,
-                                                                                                                            123, Weapon_socket::one_hand,  Weapon_type::mace},
+                                                                                    4},             1.8, 66,
+                                                                                                               123, Weapon_socket::one_hand,  Weapon_type::mace},
             };
 
     std::vector<Weapon> fists_t
