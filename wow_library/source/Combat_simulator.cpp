@@ -762,7 +762,7 @@ std::vector<std::string> Combat_simulator::get_aura_uptimes() const
     {
         std::string aura_name = aura.id;
         double uptime = aura.duration / total_sim_time;
-        aura_uptimes.emplace_back(aura.id + ": " + std::to_string(uptime) + "%");
+        aura_uptimes.emplace_back(aura.id + " " + std::to_string(uptime));
     }
     return aura_uptimes;
 }

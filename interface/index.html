@@ -355,10 +355,16 @@
 <p id="output1">Average DPS: </p>
 <p id="output2">Character stats: </p>
 
-<canvas id="line-chart"></canvas>
+<canvas id="line-chart-hist"></canvas>
 
 <p></p>
-<canvas id="bar-chart"></canvas>
+<canvas id="line-chart-fight"></canvas>
+
+<p></p>
+<canvas id="bar-chart-damage"></canvas>
+
+<p></p>
+<canvas id="bar-chart-auras"></canvas>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 
@@ -552,10 +558,25 @@
         off_hand_string = off_hand.options[off_hand.selectedIndex].value;
     }
 
+    var run_before = false;
+    var bar_chart_auras;
+    var bar_chart_damage;
+    var line_chart_hist;
+
+    function clean_charts() {
+        if (run_before) {
+            bar_chart_auras.destroy();
+            bar_chart_damage.destroy();
+            line_chart_hist.destroy();
+        }
+        run_before = true;
+    }
+
     function myFunction() {
 
         read_drop_down();
         read_checkboxes();
+        clean_charts();
 
         const armor_vec = new Module.StringList();
         armor_vec.push_back(helmet_string);
@@ -657,7 +678,7 @@
 
         let bin_idx = 0;
         for (let i = 0; i < dps.length; i++) {
-            while (dps[i] > hist_x[bin_idx] + dps_per_bin/2) {
+            while (dps[i] > hist_x[bin_idx] + dps_per_bin / 2) {
                 bin_idx++;
             }
             hist_y[bin_idx]++;
@@ -669,12 +690,21 @@
             sources.push(result['dmg_sources'].get(i));
         }
 
+        let aura_name = [];
+        let aura_uptimes = [];
+        for (let i = 0; i < result['aura_uptimes'].size(); i++) {
+            let aura_string = result['aura_uptimes'].get(i);
+            let split_string = aura_string.split(" ");
+            aura_name.push(split_string[0]);
+            aura_uptimes.push(parseFloat(split_string[1]));
+        }
+
         document.getElementById("output1").innerHTML = 'Average DPS: ' + result['mean_dps'].toFixed(2) + ' +- ' + result['std_dps'].toFixed(2) + ', (95% confidence interval)';
         document.getElementById("output2").innerHTML = result['messages'].get(0);
 
         Chart.defaults.global.defaultFontSize = 36;
 
-        var line_chart = new Chart(document.getElementById("line-chart"), {
+        line_chart_hist = new Chart(document.getElementById("line-chart-hist"), {
             type: 'line',
             data: {
                 labels: hist_x_labels,
@@ -709,13 +739,13 @@
             }
         });
 
-        let canvas = document.getElementById("line-chart");
+        let canvas = document.getElementById("line-chart-hist");
         canvas.maintainAspectRatio = false;
         canvas.style.height = '600px';
         canvas.style.width = '800px';
 
         // Bar chart
-        var bar_chart = new Chart(document.getElementById("bar-chart"), {
+        bar_chart_damage = new Chart(document.getElementById("bar-chart-damage"), {
             type: 'bar',
             data: {
                 labels: sources_names,
@@ -743,7 +773,45 @@
             }
         });
 
-        canvas = document.getElementById("bar-chart");
+        canvas = document.getElementById("bar-chart-damage");
+        canvas.maintainAspectRatio = false;
+        canvas.style.height = '600px';
+        canvas.style.width = '800px';
+
+        // Bar chart
+        bar_chart_auras = new Chart(document.getElementById("bar-chart-auras"), {
+            type: 'bar',
+            data: {
+                labels: aura_name,
+                datasets: [
+                    {
+                        backgroundColor: ["#3e95cd", "#8e5ea2", "#FFFF00"],
+                        data: aura_uptimes
+                    }
+                ]
+            },
+            options: {
+                legend: {display: false},
+                title: {
+                    display: true,
+                    text: 'DPS (%) from different sources'
+                },
+                scales: {
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Percentage',
+                        },
+                        ticks:
+                            {
+                                beginAtZero: true
+                            }
+                    }]
+                }
+            }
+        });
+
+        canvas = document.getElementById("bar-chart-auras");
         canvas.maintainAspectRatio = false;
         canvas.style.height = '600px';
         canvas.style.width = '800px';

@@ -58,19 +58,6 @@ std::string get_character_stat(const Character &character)
     out_string += print_stat("Unrm skil: ", character.total_special_stats.fist_skill);
     out_string += "<br />";
 
-//    out_string += "Armor:<br />";
-//    for (auto const &armor_piece : character.armor)
-//    {
-//        out_string += armor_piece.name + "<br />";
-//    }
-//
-//    out_string += "<br />Weapons:<br />";
-//    for (auto const &wep : character.weapons)
-//    {
-//        out_string += wep.name + "<br />";
-//    }
-
-//    out_string += "<br />";
     return out_string;
 }
 
@@ -239,6 +226,8 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     double std_init = Statistics::standard_deviation(dps_vec, mean_init);
     double sample_std_init = Statistics::sample_deviation(std_init, config.n_batches);
 
-    return {dps_vec, dps_dist, mean_init, sample_std_init, {get_character_stat(character)}};
+    std::vector<std::string> aura_uptimes = simulator.get_aura_uptimes();
+
+    return {dps_vec, dps_dist, aura_uptimes, mean_init, sample_std_init, {get_character_stat(character)}};
 }
 
