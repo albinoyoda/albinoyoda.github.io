@@ -57,9 +57,6 @@ set(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "CMakeFiles/wow_simulator.dir/DependInfo.cmake"
   "CMakeFiles/wow_lib.dir/DependInfo.cmake"
-  "CMakeFiles/wow_stat_weights.dir/DependInfo.cmake"
-  "CMakeFiles/wow_web.dir/DependInfo.cmake"
   "CMakeFiles/wow_interface.dir/DependInfo.cmake"
   )

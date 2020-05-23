@@ -56,17 +56,6 @@ CMAKE_BINARY_DIR = /src/interface/emscripten
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target rebuild_cache
-rebuild_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/opt/cmake/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : rebuild_cache
-
-# Special rule for the target rebuild_cache
-rebuild_cache/fast: rebuild_cache
-
-.PHONY : rebuild_cache/fast
-
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
@@ -77,6 +66,17 @@ edit_cache:
 edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
+
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	/opt/cmake/bin/cmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : rebuild_cache
+
+# Special rule for the target rebuild_cache
+rebuild_cache/fast: rebuild_cache
+
+.PHONY : rebuild_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -111,19 +111,6 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named wow_simulator
-
-# Build rule for target.
-wow_simulator: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 wow_simulator
-.PHONY : wow_simulator
-
-# fast build rule for target.
-wow_simulator/fast:
-	$(MAKE) -f CMakeFiles/wow_simulator.dir/build.make CMakeFiles/wow_simulator.dir/build
-.PHONY : wow_simulator/fast
-
-#=============================================================================
 # Target rules for targets named wow_lib
 
 # Build rule for target.
@@ -135,32 +122,6 @@ wow_lib: cmake_check_build_system
 wow_lib/fast:
 	$(MAKE) -f CMakeFiles/wow_lib.dir/build.make CMakeFiles/wow_lib.dir/build
 .PHONY : wow_lib/fast
-
-#=============================================================================
-# Target rules for targets named wow_stat_weights
-
-# Build rule for target.
-wow_stat_weights: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 wow_stat_weights
-.PHONY : wow_stat_weights
-
-# fast build rule for target.
-wow_stat_weights/fast:
-	$(MAKE) -f CMakeFiles/wow_stat_weights.dir/build.make CMakeFiles/wow_stat_weights.dir/build
-.PHONY : wow_stat_weights/fast
-
-#=============================================================================
-# Target rules for targets named wow_web
-
-# Build rule for target.
-wow_web: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 wow_web
-.PHONY : wow_web
-
-# fast build rule for target.
-wow_web/fast:
-	$(MAKE) -f CMakeFiles/wow_web.dir/build.make CMakeFiles/wow_web.dir/build
-.PHONY : wow_web/fast
 
 #=============================================================================
 # Target rules for targets named wow_interface
@@ -201,87 +162,6 @@ interface/src/entry_point.s: interface/src/entry_point.cpp.s
 interface/src/entry_point.cpp.s:
 	$(MAKE) -f CMakeFiles/wow_interface.dir/build.make CMakeFiles/wow_interface.dir/interface/src/entry_point.cpp.s
 .PHONY : interface/src/entry_point.cpp.s
-
-main_simulator.o: main_simulator.cpp.o
-
-.PHONY : main_simulator.o
-
-# target to build an object file
-main_simulator.cpp.o:
-	$(MAKE) -f CMakeFiles/wow_simulator.dir/build.make CMakeFiles/wow_simulator.dir/main_simulator.cpp.o
-.PHONY : main_simulator.cpp.o
-
-main_simulator.i: main_simulator.cpp.i
-
-.PHONY : main_simulator.i
-
-# target to preprocess a source file
-main_simulator.cpp.i:
-	$(MAKE) -f CMakeFiles/wow_simulator.dir/build.make CMakeFiles/wow_simulator.dir/main_simulator.cpp.i
-.PHONY : main_simulator.cpp.i
-
-main_simulator.s: main_simulator.cpp.s
-
-.PHONY : main_simulator.s
-
-# target to generate assembly for a file
-main_simulator.cpp.s:
-	$(MAKE) -f CMakeFiles/wow_simulator.dir/build.make CMakeFiles/wow_simulator.dir/main_simulator.cpp.s
-.PHONY : main_simulator.cpp.s
-
-main_stat_weights.o: main_stat_weights.cpp.o
-
-.PHONY : main_stat_weights.o
-
-# target to build an object file
-main_stat_weights.cpp.o:
-	$(MAKE) -f CMakeFiles/wow_stat_weights.dir/build.make CMakeFiles/wow_stat_weights.dir/main_stat_weights.cpp.o
-.PHONY : main_stat_weights.cpp.o
-
-main_stat_weights.i: main_stat_weights.cpp.i
-
-.PHONY : main_stat_weights.i
-
-# target to preprocess a source file
-main_stat_weights.cpp.i:
-	$(MAKE) -f CMakeFiles/wow_stat_weights.dir/build.make CMakeFiles/wow_stat_weights.dir/main_stat_weights.cpp.i
-.PHONY : main_stat_weights.cpp.i
-
-main_stat_weights.s: main_stat_weights.cpp.s
-
-.PHONY : main_stat_weights.s
-
-# target to generate assembly for a file
-main_stat_weights.cpp.s:
-	$(MAKE) -f CMakeFiles/wow_stat_weights.dir/build.make CMakeFiles/wow_stat_weights.dir/main_stat_weights.cpp.s
-.PHONY : main_stat_weights.cpp.s
-
-main_web_code.o: main_web_code.cpp.o
-
-.PHONY : main_web_code.o
-
-# target to build an object file
-main_web_code.cpp.o:
-	$(MAKE) -f CMakeFiles/wow_web.dir/build.make CMakeFiles/wow_web.dir/main_web_code.cpp.o
-.PHONY : main_web_code.cpp.o
-
-main_web_code.i: main_web_code.cpp.i
-
-.PHONY : main_web_code.i
-
-# target to preprocess a source file
-main_web_code.cpp.i:
-	$(MAKE) -f CMakeFiles/wow_web.dir/build.make CMakeFiles/wow_web.dir/main_web_code.cpp.i
-.PHONY : main_web_code.cpp.i
-
-main_web_code.s: main_web_code.cpp.s
-
-.PHONY : main_web_code.s
-
-# target to generate assembly for a file
-main_web_code.cpp.s:
-	$(MAKE) -f CMakeFiles/wow_web.dir/build.make CMakeFiles/wow_web.dir/main_web_code.cpp.s
-.PHONY : main_web_code.cpp.s
 
 wow_library/source/Armory.o: wow_library/source/Armory.cpp.o
 
@@ -532,25 +412,13 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... rebuild_cache"
-	@echo "... wow_simulator"
-	@echo "... wow_lib"
-	@echo "... wow_stat_weights"
-	@echo "... wow_web"
-	@echo "... wow_interface"
 	@echo "... edit_cache"
+	@echo "... rebuild_cache"
+	@echo "... wow_lib"
+	@echo "... wow_interface"
 	@echo "... interface/src/entry_point.o"
 	@echo "... interface/src/entry_point.i"
 	@echo "... interface/src/entry_point.s"
-	@echo "... main_simulator.o"
-	@echo "... main_simulator.i"
-	@echo "... main_simulator.s"
-	@echo "... main_stat_weights.o"
-	@echo "... main_stat_weights.i"
-	@echo "... main_stat_weights.s"
-	@echo "... main_web_code.o"
-	@echo "... main_web_code.i"
-	@echo "... main_web_code.s"
 	@echo "... wow_library/source/Armory.o"
 	@echo "... wow_library/source/Armory.i"
 	@echo "... wow_library/source/Armory.s"

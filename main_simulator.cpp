@@ -168,7 +168,7 @@ int main()
 
     // Simulator & Combat settings
     Combat_simulator_config config{};
-    config.n_batches = 10000;
+    config.n_batches = 100000;
     config.sim_time = 60;
     config.opponent_level = 63;
 
@@ -203,7 +203,6 @@ int main()
     std::cout << "Simulation settings: \n";
     std::cout << "Opponent level: " << config.opponent_level << "\n";
     std::cout << "Simulation time: " << config.sim_time << " seconds.\n\n";
-//    std::cout << "Opponent level: " << config.opponent_level << "\n";
 
     std::vector<double> dps_snapshots1 = simulator.simulate(character1);
     double mean_dps1 = Statistics::average(dps_snapshots1);

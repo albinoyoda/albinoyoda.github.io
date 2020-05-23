@@ -7,16 +7,25 @@ struct Sim_input
 {
     Sim_input() = default;
 
-    Sim_input(std::vector<std::string> armor, std::vector<std::string> weapons, std::vector<std::string> buffs,
-              std::vector<std::string> enchants, double fight_time, double target_level, double n_simulations)
-            : armor(std::move(armor)), weapons(std::move(weapons)), buffs(std::move(buffs)),
-            enchants(std::move(enchants)), fight_time(fight_time), target_level(target_level),
+    Sim_input(std::vector<std::string> race, std::vector<std::string> armor, std::vector<std::string> weapons,
+              std::vector<std::string> buffs, std::vector<std::string> enchants, std::vector<std::string> stat_weights,
+              double fight_time, double target_level, double n_simulations) :
+            race(std::move(race)),
+            armor(std::move(armor)),
+            weapons(std::move(weapons)),
+            buffs(std::move(buffs)),
+            enchants(std::move(enchants)),
+            stat_weights(std::move(stat_weights)),
+            fight_time(fight_time),
+            target_level(target_level),
             n_simulations(n_simulations) {}
 
+    std::vector<std::string> race;
     std::vector<std::string> armor;
     std::vector<std::string> weapons;
     std::vector<std::string> buffs;
     std::vector<std::string> enchants;
+    std::vector<std::string> stat_weights;
     double fight_time;
     double target_level;
     double n_simulations;

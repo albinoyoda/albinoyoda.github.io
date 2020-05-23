@@ -752,6 +752,16 @@ const std::vector<double> &Combat_simulator::get_hit_probabilities_white_mh() co
     return hit_probabilities_white_mh_;
 }
 
+const std::vector<double> &Combat_simulator::get_hit_probabilities_white_oh() const
+{
+    return hit_probabilities_white_oh_;
+}
+
+const std::vector<double> &Combat_simulator::get_hit_probabilities_yellow() const
+{
+    return hit_probabilities_yellow_;
+}
+
 void Combat_simulator::print_damage_distribution() const
 {
     print_damage_source_vector(damage_distribution_);

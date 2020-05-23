@@ -6,6 +6,45 @@
 
 #include <sstream>
 
+
+struct Stat_weight
+{
+    Stat_weight(double dps_plus, double std_dps_plus, double dps_minus, double std_dps_minus, double amount,
+                std::string stat) :
+            dps_plus{dps_plus},
+            std_dps_plus{std_dps_plus},
+            dps_minus{dps_minus},
+            std_dps_minus{std_dps_minus},
+            amount{amount},
+            stat{std::move(stat)} {};
+
+    double dps_plus;
+    double std_dps_plus;
+    double dps_minus;
+    double std_dps_minus;
+    double amount;
+    std::string stat;
+};
+
+Stat_weight compute_stat_weight(Combat_simulator &combat_simulator, Character &char_plus, Character &char_minus,
+                                const std::string &permuted_stat, double permute_amount, double mean_init,
+                                double sample_std_init)
+{
+    auto dmg_plus = combat_simulator.simulate(char_plus);
+    double mean_plus = Statistics::average(dmg_plus);
+    double std_plus = Statistics::standard_deviation(dmg_plus, mean_plus);
+    double sample_std_plus = Statistics::sample_deviation(std_plus, dmg_plus.size());
+
+    auto dmg_minus = combat_simulator.simulate(char_minus);
+    double mean_minus = Statistics::average(dmg_minus);
+    double std_minus = Statistics::standard_deviation(dmg_minus, mean_minus);
+    double sample_std_minus = Statistics::sample_deviation(std_minus, dmg_plus.size());
+
+    return {mean_plus - mean_init, Statistics::add_standard_deviations(sample_std_init, sample_std_plus),
+            mean_minus - mean_init, Statistics::add_standard_deviations(sample_std_init, sample_std_minus),
+            permute_amount, permuted_stat};
+}
+
 std::vector<double> get_damage_sources(const std::vector<Damage_sources> &damage_sources_vector)
 {
     Damage_sources total_damage_source{};
@@ -47,10 +86,11 @@ std::string get_character_stat(const Character &character)
     std::string out_string = "Character stats: <br />";
     out_string += print_stat("Strength : ", character.total_attributes.strength);
     out_string += print_stat("Agility  : ", character.total_attributes.agility);
-    out_string += print_stat("Hit:     : ", character.total_special_stats.hit);
-    out_string += print_stat("Crit:    : ", character.total_special_stats.critical_strike);
+    out_string += print_stat("Hit      : ", character.total_special_stats.hit);
+    out_string += print_stat("Crit     : ", character.total_special_stats.critical_strike);
     out_string += print_stat("Atk Pwr  : ", character.total_special_stats.attack_power);
     out_string += print_stat("Haste    : ", character.total_special_stats.haste);
+
     out_string += print_stat("Swrd skil: ", character.total_special_stats.sword_skill);
     out_string += print_stat("Axe  skil: ", character.total_special_stats.axe_skill);
     out_string += print_stat("Dagr skil: ", character.total_special_stats.dagger_skill);
@@ -61,11 +101,54 @@ std::string get_character_stat(const Character &character)
     return out_string;
 }
 
-Character character_setup(const Armory &armory, const Buffs &buffs, const std::vector<std::string> &armor_vec,
-                          const std::vector<std::string> &weapons_vec, const std::vector<std::string> &buffs_vec,
-                          const std::vector<std::string> &ench_vec)
+Character get_race(const std::string &race)
 {
-    Character character{Race::human, 60};
+    if (race == "human")
+    {
+        return {Race::human, 60};
+    }
+    else if (race == "gnome")
+    {
+        return {Race::gnome, 60};
+    }
+    else if (race == "dwarf")
+    {
+        return {Race::dwarf, 60};
+    }
+    else if (race == "night_elf")
+    {
+        return {Race::night_elf, 60};
+    }
+    else if (race == "orc")
+    {
+        return {Race::orc, 60};
+    }
+    else if (race == "troll")
+    {
+        return {Race::troll, 60};
+    }
+    else if (race == "undead")
+    {
+        return {Race::undead, 60};
+    }
+    else if (race == "tauren")
+    {
+        return {Race::tauren, 60};
+    }
+    else
+    {
+        std::cout << "Race not found!!! picking human" << "\n";
+        return {Race::human, 60};
+    }
+}
+
+Character
+character_setup(const Armory &armory, const Buffs &buffs, const std::string &race,
+                const std::vector<std::string> &armor_vec,
+                const std::vector<std::string> &weapons_vec, const std::vector<std::string> &buffs_vec,
+                const std::vector<std::string> &ench_vec)
+{
+    auto character = get_race(race);
 
     character.equip_armor(armory.find_armor(Socket::head, armor_vec[0]));
     character.equip_armor(armory.find_armor(Socket::neck, armor_vec[1]));
@@ -249,7 +332,8 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     Armory armory{};
     Buffs buffs{};
 
-    Character character = character_setup(armory, buffs, input.armor, input.weapons, input.buffs, input.enchants);
+    Character character = character_setup(armory, buffs, input.race[0], input.armor, input.weapons, input.buffs,
+                                          input.enchants);
 
     // Simulator & Combat settings
     Combat_simulator_config config{};
@@ -295,7 +379,90 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
 
     auto a = simulator.get_damage_time_lapse();
 
+    std::string extra_info_string = "Crit cap details: <br/>";
+    extra_info_string += "Main-hand, white hits: ";
+    auto left_to_crit_cap_mh = 100 - simulator.get_hit_probabilities_white_mh().back();
+    if (left_to_crit_cap_mh > 0)
+    {
+        extra_info_string += std::to_string(left_to_crit_cap_mh) + "% left to cap. <br/>";
+    }
+    else
+    {
+        extra_info_string += std::to_string(left_to_crit_cap_mh) + "% over cap! <br/>";
+    }
+
+    extra_info_string += "Off-hand, white hits: ";
+    auto left_to_crit_cap_oh = 100 - simulator.get_hit_probabilities_white_oh().back();
+    if (left_to_crit_cap_oh > 0)
+    {
+        extra_info_string += std::to_string(left_to_crit_cap_oh) + "% left to cap. <br/>";
+    }
+    else
+    {
+        extra_info_string += std::to_string(left_to_crit_cap_oh) + "% over cap! <br/>";
+    }
+
+    extra_info_string += "Yellow hits: ";
+    auto left_to_crit_cap_yellow = 100 - simulator.get_hit_probabilities_yellow().back();
+    if (left_to_crit_cap_yellow > 0)
+    {
+        extra_info_string += std::to_string(left_to_crit_cap_yellow) + "% left to cap. <br/>";
+    }
+    else
+    {
+        extra_info_string += std::to_string(left_to_crit_cap_yellow) + "% over cap! <br/>";
+    }
+
+    std::vector<std::string> stat_weights;
+    if (!input.stat_weights.empty())
+    {
+        Character char_plus = character;
+        Character char_minus = character;
+        char_plus.total_special_stats.attack_power += 100;
+        char_minus.total_special_stats.attack_power -= 100;
+        Stat_weight base_line = compute_stat_weight(simulator, char_plus, char_minus, "attack power", 100, mean_init,
+                                                    sample_std_init);
+        char_plus.total_special_stats = character.total_special_stats;
+        char_minus.total_special_stats = character.total_special_stats;
+
+        stat_weights.emplace_back("attack_power: " + std::to_string(base_line.dps_plus) + " " + std::to_string(
+                base_line.std_dps_plus) + " " + std::to_string(base_line.dps_minus) + " " + std::to_string(
+                base_line.std_dps_minus));
+
+        for (const auto &stat_weight : input.stat_weights)
+        {
+            if (stat_weight == "crit")
+            {
+                char_plus.total_special_stats.critical_strike += 1;
+                char_minus.total_special_stats.critical_strike -= 1;
+                Stat_weight crit = compute_stat_weight(simulator, char_plus, char_minus, "crit", 1, mean_init,
+                                                       sample_std_init);
+                char_plus.total_special_stats = character.total_special_stats;
+                char_minus.total_special_stats = character.total_special_stats;
+
+                stat_weights.emplace_back("crit: " + std::to_string(crit.dps_plus) + " " + std::to_string(
+                        crit.std_dps_plus) + " " + std::to_string(crit.dps_minus) + " " + std::to_string(
+                        crit.std_dps_minus));
+            }
+
+            if (stat_weight == "hit")
+            {
+                char_plus.total_special_stats.hit += 1;
+                char_minus.total_special_stats.hit -= 1;
+                Stat_weight hit = compute_stat_weight(simulator, char_plus, char_minus, "hit", 1, mean_init,
+                                                      sample_std_init);
+                char_plus.total_special_stats = character.total_special_stats;
+                char_minus.total_special_stats = character.total_special_stats;
+
+                stat_weights.emplace_back("hit: " + std::to_string(hit.dps_plus) + " " + std::to_string(
+                        hit.std_dps_plus) + " " + std::to_string(hit.dps_minus) + " " + std::to_string(
+                        hit.std_dps_minus));
+            }
+        }
+    }
+
     return {dps_vec, dps_dist, a[0], a[1], a[2], a[3], a[4], a[5], a[6],
-            aura_uptimes, mean_init, sample_std_init, {get_character_stat(character)}};
+            aura_uptimes, stat_weights, {extra_info_string}, mean_init, sample_std_init,
+            {get_character_stat(character)}};
 }
 

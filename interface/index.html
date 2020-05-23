@@ -314,6 +314,19 @@
     <option value="crusader">crusader</option>
 </select>
 
+<p> Select race: </p>
+
+<select id="race_dd" onchange="read_drop_down()">
+    <option value="human">human</option>
+    <option value="gnome">gnome</option>
+    <option value="dwarf">dwarf</option>
+    <option value="night_elf">night_elf</option>
+    <option value="orc">orc</option>
+    <option value="troll">troll</option>
+    <option value="undead">undead</option>
+    <option value="tauren">tauren</option>
+</select>
+
 <h3> Buffs: </h3>
 <p> World buffs: </p>
 <input type="checkbox" id="rallying_cry" onchange="read_checkboxes()">
@@ -386,22 +399,24 @@
 </form>
 
 <h3>Simulation settings:</h3>
-<label for="n_simulations">Number of simulations: (100 - 100000):</label>
-<input type="number" id="n_simulations" name="quantity" min="100" max="100000" value="10000">
+<label for="n_simulations">Number of simulations: (100 - 30000):</label>
+<input type="number" id="n_simulations" name="quantity" min="100" max="30000" value="10000">
 
 <p></p>
 <label for="opponent_level">Opponent level: (60-63):</label>
 <input type="number" id="opponent_level" name="quantity" min="60" max="63" value="63">
 
 <p></p>
-<label for="fight_time">Fight time: (10-300s):</label>
-<input type="number" id="fight_time" name="quantity" min="10" max="300" value="60">
+<label for="fight_time">Fight time: (10-200s):</label>
+<input type="number" id="fight_time" name="quantity" min="10" max="200" value="60">
 
 <p id="button_id"></p>
 <button onclick="myFunction()">Run simulator</button>
 
 <p id="output1">Average DPS: </p>
+<p id="output3">Stat weights: </p>
 <p id="output2">Character stats: </p>
+<p id="output4">Crit cap details: </p>
 
 <canvas id="line-chart-hist"></canvas>
 
@@ -577,7 +592,13 @@
     var off_hand_ench;
     var off_hand_ench_string;
 
+    var race;
+    var race_string;
+
     function read_drop_down() {
+        race = document.getElementById("race_dd");
+        race_string = race.options[race.selectedIndex].value;
+
         helmet = document.getElementById("helmet_dd");
         helmet_string = helmet.options[helmet.selectedIndex].value;
 
@@ -742,7 +763,7 @@
         if (n_simulations != n_simulations) { // Check for NaN
             n_simulations = 5000;
         }
-        n_simulations = Math.min(Math.max(n_simulations, 100), 100000);
+        n_simulations = Math.min(Math.max(n_simulations, 100), 30000);
 
         let opponent_level = parseFloat(document.getElementById("opponent_level").value);
         if (opponent_level != opponent_level) { // Check for NaN
@@ -754,7 +775,7 @@
         if (fight_time != fight_time) { // Check for NaN
             fight_time = 60;
         }
-        fight_time = Math.min(Math.max(fight_time, 10), 300);
+        fight_time = Math.min(Math.max(fight_time, 10), 200);
 
         // config.curse_of_recklessness_active = true;
         // config.faerie_fire_feral_active = true;
@@ -764,11 +785,20 @@
         // config.enable_recklessness = false;
         // config.fuel_extra_rage = false; // Vaelastrasz
 
+        const stat_weight_vec = new Module.StringList();
+        stat_weight_vec.push_back("crit");
+        stat_weight_vec.push_back("hit");
+
+        const race_vec = new Module.StringList();
+        race_vec.push_back(race_string);
+
         let wow_input = {
+            race: race_vec,
             armor: armor_vec,
             weapons: weapons_vec,
             buffs: buff_vec,
             enchants: ench_vec,
+            stat_weights: stat_weight_vec,
             target_level: opponent_level,
             fight_time: fight_time,
             n_simulations: n_simulations
@@ -778,6 +808,9 @@
 
         let result = obj.simulate(wow_input);
 
+        document.getElementById("output1").innerHTML = 'Average DPS: ' + result['mean_dps'].toFixed(2) + ' +- ' + result['std_dps'].toFixed(2) + ', (95% confidence interval)';
+        document.getElementById("output2").innerHTML = result['messages'].get(0);
+
         let dps = [];
         for (let i = 0; i < result['dmg_batches'].size(); i++) {
             dps.push(result['dmg_batches'].get(i));
@@ -785,6 +818,38 @@
         dps.sort(function (a, b) {
             return a - b
         });
+
+        let stat_weights = [];
+        if (result['stat_weights'].size() > 0) {
+            let ap_string = result['stat_weights'].get(0);
+            ap_string = ap_string.split(" ");
+            let dps_per_ap = parseFloat(ap_string[1]) / 100;
+            let dps_per_ap_max = (parseFloat(ap_string[1]) + parseFloat(ap_string[2])) / 100;
+            let dps_per_ap_min = (parseFloat(ap_string[1]) - parseFloat(ap_string[2])) / 100;
+            for (let i = 1; i < result['stat_weights'].size(); i++) {
+                let stat_string = result['stat_weights'].get(i);
+                stat_string = stat_string.split(" ");
+                stat_weights.push({
+                    'name': stat_string[0],
+                    'value': parseFloat(stat_string[1]) / dps_per_ap,
+                    'value_max': (parseFloat(stat_string[1]) + parseFloat(stat_string[2])) / dps_per_ap_min,
+                    'value_min': (parseFloat(stat_string[1]) - parseFloat(stat_string[2])) / dps_per_ap_max,
+                    // 'std': parseFloat(stat_string[2]) / dps_per_ap
+                });
+            }
+        }
+
+        let string = "Stat weights: <br />";
+        if (result['stat_weights'].size() > 0) {
+            for (let i = 0; i < stat_weights.length; i++) {
+                string += stat_weights[i]['name'] + " between [" + stat_weights[i]['value_min'].toFixed(2) +
+                    " - " + stat_weights[i]['value_max'].toFixed(2) + "] attack power. <br />";
+            }
+        }
+        document.getElementById("output3").innerHTML = string;
+
+        // Crit cap details:
+        document.getElementById("output4").innerHTML = result['extra_stats'].get(0);
 
         let n_bins = Math.min(n_simulations, 20);
         let hist_x = [];
@@ -877,9 +942,6 @@
         for (let j = 1; j < damage_vec[0].length; j++) {
             time_stamps.push(time_stamps[j - 1] + 0.25);
         }
-
-        document.getElementById("output1").innerHTML = 'Average DPS: ' + result['mean_dps'].toFixed(2) + ' +- ' + result['std_dps'].toFixed(2) + ', (95% confidence interval)';
-        document.getElementById("output2").innerHTML = result['messages'].get(0);
 
         Chart.defaults.global.defaultFontSize = 36;
 

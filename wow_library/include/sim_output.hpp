@@ -17,6 +17,8 @@ struct Sim_output
                std::vector<double> whirlwind,
                std::vector<double> item_hit_effects,
                std::vector<std::string> aura_uptimes,
+               std::vector<std::string> stat_weights,
+               std::vector<std::string> extra_stats,
                double mean_dps,
                double std_dps,
                std::vector<std::string> messages) :
@@ -30,6 +32,8 @@ struct Sim_output
             whirlwind(std::move(whirlwind)),
             item_hit_effects(std::move(item_hit_effects)),
             aura_uptimes(std::move(aura_uptimes)),
+            stat_weights(std::move(stat_weights)),
+            extra_stats(std::move(extra_stats)),
             mean_dps(mean_dps),
             std_dps(std_dps),
             messages(std::move(messages)) {}
@@ -44,6 +48,8 @@ struct Sim_output
     std::vector<double> whirlwind;
     std::vector<double> item_hit_effects;
     std::vector<std::string> aura_uptimes;
+    std::vector<std::string> stat_weights;
+    std::vector<std::string> extra_stats;
     double mean_dps{};
     double std_dps{};
     std::vector<std::string> messages;

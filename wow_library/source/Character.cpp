@@ -29,7 +29,7 @@ Character::Character(const Race &race, int level)
             break;
         case Race::orc:
             base_attributes = Attributes{123, 77};
-            base_special_stats = Special_stats{0, 0, 0, 0, 0, 0, 5, 0, 0};
+            base_special_stats += Special_stats{0, 0, 0, 0, 0, 0, 5, 0, 0};
             break;
         case Race::tauren:
             base_attributes = Attributes{125, 75};

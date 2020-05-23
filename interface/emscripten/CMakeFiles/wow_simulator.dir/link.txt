@@ -1,1 +1,0 @@
-/emsdk_portable/emscripten/tag-1.39.4/em++  -O2   @CMakeFiles/wow_simulator.dir/objects1.rsp  -o wow_simulator.js @CMakeFiles/wow_simulator.dir/linklibs.rsp

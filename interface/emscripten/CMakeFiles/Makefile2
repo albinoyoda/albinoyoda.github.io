@@ -65,43 +65,6 @@ CMAKE_SOURCE_DIR = /src
 CMAKE_BINARY_DIR = /src/interface/emscripten
 
 #=============================================================================
-# Target rules for target CMakeFiles/wow_simulator.dir
-
-# All Build rule for target.
-CMakeFiles/wow_simulator.dir/all: CMakeFiles/wow_lib.dir/all
-	$(MAKE) -f CMakeFiles/wow_simulator.dir/build.make CMakeFiles/wow_simulator.dir/depend
-	$(MAKE) -f CMakeFiles/wow_simulator.dir/build.make CMakeFiles/wow_simulator.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/src/interface/emscripten/CMakeFiles --progress-num=13,14 "Built target wow_simulator"
-.PHONY : CMakeFiles/wow_simulator.dir/all
-
-# Include target in all.
-all: CMakeFiles/wow_simulator.dir/all
-
-.PHONY : all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/wow_simulator.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /src/interface/emscripten/CMakeFiles 12
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/wow_simulator.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /src/interface/emscripten/CMakeFiles 0
-.PHONY : CMakeFiles/wow_simulator.dir/rule
-
-# Convenience name for target.
-wow_simulator: CMakeFiles/wow_simulator.dir/rule
-
-.PHONY : wow_simulator
-
-# clean rule for target.
-CMakeFiles/wow_simulator.dir/clean:
-	$(MAKE) -f CMakeFiles/wow_simulator.dir/build.make CMakeFiles/wow_simulator.dir/clean
-.PHONY : CMakeFiles/wow_simulator.dir/clean
-
-# clean rule for target.
-clean: CMakeFiles/wow_simulator.dir/clean
-
-.PHONY : clean
-
-#=============================================================================
 # Target rules for target CMakeFiles/wow_lib.dir
 
 # All Build rule for target.
@@ -135,80 +98,6 @@ CMakeFiles/wow_lib.dir/clean:
 
 # clean rule for target.
 clean: CMakeFiles/wow_lib.dir/clean
-
-.PHONY : clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/wow_stat_weights.dir
-
-# All Build rule for target.
-CMakeFiles/wow_stat_weights.dir/all: CMakeFiles/wow_lib.dir/all
-	$(MAKE) -f CMakeFiles/wow_stat_weights.dir/build.make CMakeFiles/wow_stat_weights.dir/depend
-	$(MAKE) -f CMakeFiles/wow_stat_weights.dir/build.make CMakeFiles/wow_stat_weights.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/src/interface/emscripten/CMakeFiles --progress-num=15,16 "Built target wow_stat_weights"
-.PHONY : CMakeFiles/wow_stat_weights.dir/all
-
-# Include target in all.
-all: CMakeFiles/wow_stat_weights.dir/all
-
-.PHONY : all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/wow_stat_weights.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /src/interface/emscripten/CMakeFiles 12
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/wow_stat_weights.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /src/interface/emscripten/CMakeFiles 0
-.PHONY : CMakeFiles/wow_stat_weights.dir/rule
-
-# Convenience name for target.
-wow_stat_weights: CMakeFiles/wow_stat_weights.dir/rule
-
-.PHONY : wow_stat_weights
-
-# clean rule for target.
-CMakeFiles/wow_stat_weights.dir/clean:
-	$(MAKE) -f CMakeFiles/wow_stat_weights.dir/build.make CMakeFiles/wow_stat_weights.dir/clean
-.PHONY : CMakeFiles/wow_stat_weights.dir/clean
-
-# clean rule for target.
-clean: CMakeFiles/wow_stat_weights.dir/clean
-
-.PHONY : clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/wow_web.dir
-
-# All Build rule for target.
-CMakeFiles/wow_web.dir/all: CMakeFiles/wow_lib.dir/all
-	$(MAKE) -f CMakeFiles/wow_web.dir/build.make CMakeFiles/wow_web.dir/depend
-	$(MAKE) -f CMakeFiles/wow_web.dir/build.make CMakeFiles/wow_web.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/src/interface/emscripten/CMakeFiles --progress-num=17,18 "Built target wow_web"
-.PHONY : CMakeFiles/wow_web.dir/all
-
-# Include target in all.
-all: CMakeFiles/wow_web.dir/all
-
-.PHONY : all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/wow_web.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /src/interface/emscripten/CMakeFiles 12
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/wow_web.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /src/interface/emscripten/CMakeFiles 0
-.PHONY : CMakeFiles/wow_web.dir/rule
-
-# Convenience name for target.
-wow_web: CMakeFiles/wow_web.dir/rule
-
-.PHONY : wow_web
-
-# clean rule for target.
-CMakeFiles/wow_web.dir/clean:
-	$(MAKE) -f CMakeFiles/wow_web.dir/build.make CMakeFiles/wow_web.dir/clean
-.PHONY : CMakeFiles/wow_web.dir/clean
-
-# clean rule for target.
-clean: CMakeFiles/wow_web.dir/clean
 
 .PHONY : clean
 

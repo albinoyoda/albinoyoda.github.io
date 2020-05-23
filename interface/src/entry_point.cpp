@@ -16,10 +16,12 @@ EMSCRIPTEN_BINDINGS(module)
     register_vector<std::string>("StringList");
 
     value_object<Sim_input>("Sim_input")
+        .field("race", &Sim_input::race)
         .field("armor", &Sim_input::armor)
         .field("weapons", &Sim_input::weapons)
         .field("buffs", &Sim_input::buffs)
         .field("enchants", &Sim_input::enchants)
+        .field("stat_weights", &Sim_input::stat_weights)
         .field("target_level", &Sim_input::target_level)
         .field("fight_time", &Sim_input::fight_time)
         .field("n_simulations", &Sim_input::n_simulations);
@@ -35,6 +37,8 @@ EMSCRIPTEN_BINDINGS(module)
         .field("whirlwind", &Sim_output::whirlwind)
         .field("item_hit_effects", &Sim_output::item_hit_effects)
         .field("aura_uptimes", &Sim_output::aura_uptimes)
+        .field("stat_weights", &Sim_output::stat_weights)
+        .field("extra_stats", &Sim_output::extra_stats)
         .field("mean_dps", &Sim_output::mean_dps)
         .field("std_dps", &Sim_output::std_dps)
         .field("messages", &Sim_output::messages);
