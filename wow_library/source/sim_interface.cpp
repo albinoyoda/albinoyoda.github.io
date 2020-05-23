@@ -94,6 +94,11 @@ Character character_setup(const Armory &armory, const Buffs &buffs, const std::v
         character.add_enchant(Socket::head, Enchant::Type::haste);
     }
 
+    if (find_string(ench_vec, "s+30 attack power"))
+    {
+        character.add_enchant(Socket::shoulder, Enchant::Type::attack_power);
+    }
+
     if (find_string(ench_vec, "b+3 agility"))
     {
         character.add_enchant(Socket::back, Enchant::Type::agility);

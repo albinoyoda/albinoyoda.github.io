@@ -103,6 +103,16 @@ Special_stats Armory::get_enchant_special_stats(Socket socket, Enchant::Type typ
                     return {0, 0, 0};
             }
         }
+        case Socket::shoulder:
+        {
+            switch (type)
+            {
+                case Enchant::Type::attack_power:
+                    return {0, 0, 30};
+                default:
+                    return {0, 0, 0};
+            }
+        }
         case Socket::hands :
         {
             switch (type)

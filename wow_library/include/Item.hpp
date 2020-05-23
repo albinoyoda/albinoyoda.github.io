@@ -112,7 +112,8 @@ struct Enchant
         haste,
         crusader,
         minor_stats,
-        major_stats
+        major_stats,
+        attack_power
     };
 
     Enchant() = default;

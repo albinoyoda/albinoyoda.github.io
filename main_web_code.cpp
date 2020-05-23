@@ -36,6 +36,7 @@ int main()
 
     std::vector<std::string> ench_vec;
     ench_vec.emplace_back("h+8 strength");
+    ench_vec.emplace_back("s+30 attack power");
 
     Sim_input sim_input{armor_vec, weapons_vec, buff_vec, ench_vec, 60, 63, 10};
     auto sim_output = sim_interface.simulate(sim_input);
