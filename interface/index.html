@@ -733,7 +733,7 @@
         if (isNaN(sunder_armor)) {
             sunder_armor = 5;
         }
-        sunder_armor = Math.min(Math.max(fight_time, 0), 5);
+        sunder_armor = Math.min(Math.max(sunder_armor, 0), 5);
 
         let faerie_fire_feral_active = document.getElementById("faerie_fire_feral_active").checked;
         let curse_of_recklessness_active = document.getElementById("curse_of_recklessness_active").checked;
@@ -755,14 +755,15 @@
             buffs: buff_vec,
             enchants: ench_vec,
             stat_weights: stat_weight_vec,
-            target_level: opponent_level,
             fight_time: fight_time,
+            target_level: opponent_level,
+            n_simulations: n_simulations,
             sunder_armor: sunder_armor,
             faerie_fire: faerie_fire_feral_active,
             curse_of_recklessness: curse_of_recklessness_active,
             death_wish: enable_death_wish,
             recklessness: enable_recklessness,
-            mighty_rage_potion: use_mighty_rage_potion
+            mighty_rage_potion: use_mighty_rage_potion,
         };
 
         let obj = new Module['Sim_interface']();
