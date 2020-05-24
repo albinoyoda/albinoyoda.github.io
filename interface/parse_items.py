@@ -110,7 +110,7 @@ if found_start and found_stop:
     for armor_type in armor_types:
         if armor_type.category == 'ring' or armor_type.category == 'trinket':
             for i in range(2):
-                generated_1.append('<select id="' + armor_type.category + '_dd' + str(i+1) + '" onchange="read_drop_down()">\n')
+                generated_1.append('<select id="' + armor_type.category + '_dd' + str(i+1) + '>\n')
                 generated_1.append(
                     '    <option value="none" selected disabled>' + armor_type.category + str(i + 1) + '</option>\n')
                 for item in armor_type.items:
@@ -119,7 +119,7 @@ if found_start and found_stop:
                 generated_1.append('\n')
                 dropdowns_in_a_row = dropdowns_in_a_row + 1
         else:
-            generated_1.append('<select id="' + armor_type.category + '_dd" onchange="read_drop_down()">\n')
+            generated_1.append('<select id="' + armor_type.category + '_dd" >\n')
             generated_1.append('    <option value="none" selected disabled>' + armor_type.category + '</option>\n')
             for item in armor_type.items:
                 generated_1.append('    <option value="' + item + '">' + item + '</option>\n')
@@ -136,7 +136,7 @@ if found_start and found_stop:
     alternatives = ["main_hand", "off_hand"]
     generated_2 = ['<p> Select weapons: </p>\n']
     for i in range(2):
-        generated_2.append('<select id="' + alternatives[i] + '_dd" onchange="read_drop_down()">\n')
+        generated_2.append('<select id="' + alternatives[i] + '_dd" >\n')
         generated_2.append('    <option value="none" selected disabled>' + alternatives[i] + '</option>\n')
         for item in all_weapons:
             generated_2.append('    <option value="' + item + '">' + item + '</option>\n')
