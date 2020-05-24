@@ -1,438 +1,573 @@
 <!DOCTYPE html>
 <html>
-<body style="background-color:#AEB6BF;">
+<style>
+    body {
+        font-family: Arial;
+    }
 
-<p> Select armor: </p>
+    /* Style the tab */
+    .tab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+    }
 
-<!--armor begin-->
-<select id="helmet_dd" onchange="read_drop_down()">
-    <option value="none" selected disabled>helmet</option>
-    <option value="crown_of_destruction">crown_of_destruction</option>
-    <option value="expert_goldminers_head">expert_goldminers_head</option>
-    <option value="helm_of_endless_rage">helm_of_endless_rage</option>
-    <option value="lionheart_helm">lionheart_helm</option>
-    <option value="mask_of_the_unforgiven">mask_of_the_unforgiven</option>
-</select>
+    /* Style the buttons inside the tab */
+    .tab button {
+        background-color: inherit;
+        float: left;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 14px 16px;
+        transition: 0.3s;
+        font-size: 17px;
+    }
 
-<select id="neck_dd" onchange="read_drop_down()">
-    <option value="none" selected disabled>neck</option>
-    <option value="aq_barbed_choker">aq_barbed_choker</option>
-    <option value="mark_of_fordring">mark_of_fordring</option>
-    <option value="onyxia_tooth_pendant">onyxia_tooth_pendant</option>
-    <option value="prestors_talisman_of_connivery">prestors_talisman_of_connivery</option>
-    <option value="the_eye_of_hakkar">the_eye_of_hakkar</option>
-</select>
+    /* Change background color of buttons on hover */
+    .tab button:hover {
+        background-color: #ddd;
+    }
 
-<select id="shoulder_dd" onchange="read_drop_down()">
-    <option value="none" selected disabled>shoulder</option>
-    <option value="aq_chitinous_shoulderguards">aq_chitinous_shoulderguards</option>
-    <option value="aq_conquerors_spaulders">aq_conquerors_spaulders</option>
-    <option value="aq_mantle_of_wicked_revenge">aq_mantle_of_wicked_revenge</option>
-    <option value="black_dragonscale_shoulders">black_dragonscale_shoulders</option>
-    <option value="drake_talon_pauldrons">drake_talon_pauldrons</option>
-    <option value="leutenant_shoulders">leutenant_shoulders</option>
-    <option value="spaulders_of_valor">spaulders_of_valor</option>
-    <option value="truestrike_shoulders">truestrike_shoulders</option>
-    <option value="wyrmhide_spaulders">wyrmhide_spaulders</option>
-</select>
+    /* Create an active/current tablink class */
+    .tab button.active {
+        background-color: #ccc;
+    }
 
-<select id="back_dd" onchange="read_drop_down()">
-    <option value="none" selected disabled>back</option>
-    <option value="aq_cloak_of_concentrated_hate">aq_cloak_of_concentrated_hate</option>
-    <option value="blackveil_cloak">blackveil_cloak</option>
-    <option value="cape_of_the_black_baron">cape_of_the_black_baron</option>
-    <option value="cloak_of_draconic_might">cloak_of_draconic_might</option>
-    <option value="cloak_of_firemaw">cloak_of_firemaw</option>
-</select>
+    /* Style the tab content */
+    .tabcontent {
+        display: none;
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        border-top: none;
+    }
+</style>
 
-<p></p>
+<body style="background-color:#AEB6BF;" onload="openTab('event', 'Simulator');">
 
-<select id="chest_dd" onchange="read_drop_down()">
-    <option value="none" selected disabled>chest</option>
-    <option value="aq_breatplate_of_annihilation">aq_breatplate_of_annihilation</option>
-    <option value="aq_conquerors_breastplate">aq_conquerors_breastplate</option>
-    <option value="aq_vest_of_swift_execution">aq_vest_of_swift_execution</option>
-    <option value="black_dragonscale_chest">black_dragonscale_chest</option>
-    <option value="breastplate_of_bloodthirst">breastplate_of_bloodthirst</option>
-    <option value="cadaverous_armor">cadaverous_armor</option>
-    <option value="knight_captains_plate_hauberk">knight_captains_plate_hauberk</option>
-    <option value="malfurions_blessed_bulwark">malfurions_blessed_bulwark</option>
-    <option value="runed_bloodstaind_hauberk">runed_bloodstaind_hauberk</option>
-    <option value="savage_gladiator_chain">savage_gladiator_chain</option>
-    <option value="tombstone_breastplate">tombstone_breastplate</option>
-</select>
+<div class="tab">
+    <button class="tablinks" onclick="openTab(event, 'Simulator')">Simulator</button>
+    <button class="tablinks" onclick="openTab(event, 'About')">About</button>
+    <button class="tablinks" onclick="openTab(event, 'Equations')">Equations</button>
+    <button class="tablinks" onclick="openTab(event, 'Coming soon')">Coming soon</button>
+</div>
 
-<select id="wrists_dd" onchange="read_drop_down()">
-    <option value="none" selected disabled>wrists</option>
-    <option value="aq_bracers_of_brutality">aq_bracers_of_brutality</option>
-    <option value="aq_hive_defiler_wristguards">aq_hive_defiler_wristguards</option>
-    <option value="aq_quiraji_execution_bracers">aq_quiraji_execution_bracers</option>
-    <option value="battleborn_armbraces">battleborn_armbraces</option>
-    <option value="blinkstrike">blinkstrike</option>
-    <option value="vambraces_of_the_sadist">vambraces_of_the_sadist</option>
-    <option value="wristguards_of_stability">wristguards_of_stability</option>
-    <option value="wristhuards_of_true_flight">wristhuards_of_true_flight</option>
-    <option value="zandalar_armguards">zandalar_armguards</option>
-</select>
+<div id="About" class="tabcontent">
+    <h2>Welcome to my fury simulator!</h2>
+    <h3>FAQ:</h3>
+    <p><b>Q: Is this a spreadsheet?</b></p>
+    <p> A: No, this is not a spreadsheet. On the contrary, this is an attempt to create a actual simulator with world of
+        warcraft classic mechanics.<br/>
+        Meaning that when the "Run simulator" button is pressed, a character is created, wearing the items specified in
+        the drop down menus. <br/>
+        Then all the stats from the items are combined and the following values, which are used
+        in the simulator, are computed: <br/>
+        - Total attack power<br/>
+        - Weapon skill<br/>
+        - Hit chance<br/>
+        - Haste rating<br/>
+        - Weapons extra hit probability<br/>
+        - Damage multipliers<br/><br/>
+        Where the hit and crit are used to create the following hit tables:<br/>
+        - Main-hand white-hit table<br/>
+        - Off-hand white-hit table<br/>
+        - Two-hand white-hit table (queried for the off-hand when a heroic strike is queued)<br/>
+        - Yellow-hit table<br/><br/>
+        In the next step a target is generated and the combat phase starts, where the simulator will start to swing the
+        characters weapons towards the target. <br/> Rage generated will be spent on abilities following a configurable
+        ability-policy, and hits are generated by drawing random samples from the hit-tables.<br/>
 
-<select id="hands_dd" onchange="read_drop_down()">
-    <option value="none" selected disabled>hands</option>
-    <option value="aged_core_leather_gloves">aged_core_leather_gloves</option>
-    <option value="aq_gauntlets_of_annihilation">aq_gauntlets_of_annihilation</option>
-    <option value="aq_gloves_of_enforcement">aq_gloves_of_enforcement</option>
-    <option value="bloodmail_gauntlets">bloodmail_gauntlets</option>
-    <option value="devilsaur_gauntlets">devilsaur_gauntlets</option>
-    <option value="edgemasters_handguards">edgemasters_handguards</option>
-    <option value="flameguard_gauntlets">flameguard_gauntlets</option>
-    <option value="sacrificial_gauntlets">sacrificial_gauntlets</option>
-</select>
+        This process is then repeated X times where data is sampled from each such simulation.
+    </p>
+    <p><b>Q: Whats the difference between a simulator and a spreadsheet?</b></p>
+    <p>A: A spreadsheet performs no simulation! Instead a spreadsheet consists of a
+        mash-up of expected values, where white-hit damage, rage, yellow hits, <br/> flurry charges etc., are modelled
+        as good as possible. But its nearly impossible to accurately model discrete events, such as cooldowns, flurry
+        charges,<br/> rage-capping, swing timer resets (extra hit), etc. with this approach, and the results might
+        therefore be inaccurate. I believe people have done a great effort<br/> in developing such models, but from the
+        forementioned reasons they will never be as accurate as a simulator!
+    </p>
+    <p><b>Q: What equations are used in this simulator?</b></p>
+    <p>A: The tables for crit, hit, glancing hits, and weapon skill have all been based on the results of the <a
+            href="https://github.com/magey/classic-warrior/wiki/Attack-table">Attack table</a> github. <br/>
+        Their models have been verified on classic servers and which I strongly recommend to check out.<br/>
+        I have derived models for rage myself, since the ones available online are inaccurate (try them yourself!).<br/>
+        To derive models I have sampled data myself, with different weapons, against different targets, and the model
+        used now matches the sampled data perfectly.
+    </p>
+    <p><b>Q: Wow, I really love the webdesign from the 90's! </b></p>
+    <p>A: Said no one ever...<br/>
+        The reason why this page looks to have a target audience in their 50's is that I have very limited experience
+        with any web based programming languages. <br/>
+        I found something that I understood and stuck to that. And it works, hey! <br/>
+        However, the C++ based simulator and the derivation/interpretation of the results should be of higher quality, since they are
+        closed to my field of expertise</p>
+</div>
 
-<select id="belt_dd" onchange="read_drop_down()">
-    <option value="none" selected disabled>belt</option>
-    <option value="brigam_girdle">brigam_girdle</option>
-    <option value="girdle_of_the_fallen_crusader">girdle_of_the_fallen_crusader</option>
-    <option value="mugglers_belt">mugglers_belt</option>
-    <option value="omokks_girth">omokks_girth</option>
-    <option value="onslaught_girdle">onslaught_girdle</option>
-    <option value="thurazane_link">thurazane_link</option>
-    <option value="zandalar_vindicators_belt">zandalar_vindicators_belt</option>
-</select>
+<div id="Equations" class="tabcontent">
+    <h2>Details about the simulator will be coming soon!</h2>
+</div>
 
-<p></p>
+<div id="Coming soon" class="tabcontent">
+    <h2>Stuff to be added soon:</h2>
+    <p>TPS calculator for tanking. </p>
+    <p>Ability to save/load gear setups. </p>
+    <p>Increased simulator configurations</p>
+    <p>Boss selection. (for unique fights such as Vaelstrasz) </p>
+    <p>Ability to compare gear setups side-by-side </p>
+</div>
 
-<select id="legs_dd" onchange="read_drop_down()">
-    <option value="none" selected disabled>legs</option>
-    <option value="aq_conquerors_legguards">aq_conquerors_legguards</option>
-    <option value="aq_legplates_of_the_qiraji_command">aq_legplates_of_the_qiraji_command</option>
-    <option value="aq_scaled_sand_reaver_leggings">aq_scaled_sand_reaver_leggings</option>
-    <option value="black_dragonscale_leggings">black_dragonscale_leggings</option>
-    <option value="bloodsoaked_legplates">bloodsoaked_legplates</option>
-    <option value="cloudkeeper_legplaters">cloudkeeper_legplaters</option>
-    <option value="devilsaur_leggings">devilsaur_leggings</option>
-    <option value="eldritch_legplates">eldritch_legplates</option>
-    <option value="knight_captain_plate_leggings">knight_captain_plate_leggings</option>
-    <option value="legguards_of_the_fallen_crusader">legguards_of_the_fallen_crusader</option>
-    <option value="titanic_leggings">titanic_leggings</option>
-    <option value="ubrs_legs">ubrs_legs</option>
-</select>
+<div id="Simulator" class="tabcontent">
 
-<select id="boots_dd" onchange="read_drop_down()">
-    <option value="none" selected disabled>boots</option>
-    <option value="aq_boots_of_the_vanguard">aq_boots_of_the_vanguard</option>
-    <option value="battlechasers">battlechasers</option>
-    <option value="black_dragonscale_boots">black_dragonscale_boots</option>
-    <option value="bloodmail_boots">bloodmail_boots</option>
-    <option value="boots_of_shadow_flame">boots_of_shadow_flame</option>
-    <option value="chromatic_boots">chromatic_boots</option>
-    <option value="knight_leutenants_greaves">knight_leutenants_greaves</option>
-    <option value="windreaver_greaves">windreaver_greaves</option>
-</select>
+    <p> Select armor: </p>
 
-<select id="ring_dd1" onchange="read_drop_down()">
-    <option value="none" selected disabled>ring1</option>
-    <option value="blackstone_ring">blackstone_ring</option>
-    <option value="circle_of_applied_force">circle_of_applied_force</option>
-    <option value="don_julios_band">don_julios_band</option>
-    <option value="magnis_will">magnis_will</option>
-    <option value="master_dragonslayers_ring">master_dragonslayers_ring</option>
-    <option value="quick_strike_ring">quick_strike_ring</option>
-    <option value="seal_of_the_gurubashi_berserker">seal_of_the_gurubashi_berserker</option>
-    <option value="tarnished_elven">tarnished_elven</option>
-</select>
+    <!--armor begin-->
+    <select id="helmet_dd" onchange="read_drop_down()">
+        <option value="none" selected disabled>helmet</option>
+        <option value="crown_of_destruction">crown_of_destruction</option>
+        <option value="expert_goldminers_head">expert_goldminers_head</option>
+        <option value="helm_of_endless_rage">helm_of_endless_rage</option>
+        <option value="lionheart_helm">lionheart_helm</option>
+        <option value="mask_of_the_unforgiven">mask_of_the_unforgiven</option>
+    </select>
 
-<select id="ring_dd2" onchange="read_drop_down()">
-    <option value="none" selected disabled>ring2</option>
-    <option value="blackstone_ring">blackstone_ring</option>
-    <option value="circle_of_applied_force">circle_of_applied_force</option>
-    <option value="don_julios_band">don_julios_band</option>
-    <option value="magnis_will">magnis_will</option>
-    <option value="master_dragonslayers_ring">master_dragonslayers_ring</option>
-    <option value="quick_strike_ring">quick_strike_ring</option>
-    <option value="seal_of_the_gurubashi_berserker">seal_of_the_gurubashi_berserker</option>
-    <option value="tarnished_elven">tarnished_elven</option>
-</select>
+    <select id="neck_dd" onchange="read_drop_down()">
+        <option value="none" selected disabled>neck</option>
+        <option value="aq_barbed_choker">aq_barbed_choker</option>
+        <option value="mark_of_fordring">mark_of_fordring</option>
+        <option value="onyxia_tooth_pendant">onyxia_tooth_pendant</option>
+        <option value="prestors_talisman_of_connivery">prestors_talisman_of_connivery</option>
+        <option value="the_eye_of_hakkar">the_eye_of_hakkar</option>
+    </select>
 
-<p></p>
+    <select id="shoulder_dd" onchange="read_drop_down()">
+        <option value="none" selected disabled>shoulder</option>
+        <option value="aq_chitinous_shoulderguards">aq_chitinous_shoulderguards</option>
+        <option value="aq_conquerors_spaulders">aq_conquerors_spaulders</option>
+        <option value="aq_mantle_of_wicked_revenge">aq_mantle_of_wicked_revenge</option>
+        <option value="black_dragonscale_shoulders">black_dragonscale_shoulders</option>
+        <option value="drake_talon_pauldrons">drake_talon_pauldrons</option>
+        <option value="leutenant_shoulders">leutenant_shoulders</option>
+        <option value="spaulders_of_valor">spaulders_of_valor</option>
+        <option value="truestrike_shoulders">truestrike_shoulders</option>
+        <option value="wyrmhide_spaulders">wyrmhide_spaulders</option>
+    </select>
 
-<select id="trinket_dd1" onchange="read_drop_down()">
-    <option value="none" selected disabled>trinket1</option>
-    <option value="blackhands_breadth">blackhands_breadth</option>
-    <option value="diamond_flask">diamond_flask</option>
-    <option value="drake_fang_talisman">drake_fang_talisman</option>
-    <option value="hand_of_justice">hand_of_justice</option>
-</select>
+    <select id="back_dd" onchange="read_drop_down()">
+        <option value="none" selected disabled>back</option>
+        <option value="aq_cloak_of_concentrated_hate">aq_cloak_of_concentrated_hate</option>
+        <option value="blackveil_cloak">blackveil_cloak</option>
+        <option value="cape_of_the_black_baron">cape_of_the_black_baron</option>
+        <option value="cloak_of_draconic_might">cloak_of_draconic_might</option>
+        <option value="cloak_of_firemaw">cloak_of_firemaw</option>
+    </select>
 
-<select id="trinket_dd2" onchange="read_drop_down()">
-    <option value="none" selected disabled>trinket2</option>
-    <option value="blackhands_breadth">blackhands_breadth</option>
-    <option value="diamond_flask">diamond_flask</option>
-    <option value="drake_fang_talisman">drake_fang_talisman</option>
-    <option value="hand_of_justice">hand_of_justice</option>
-</select>
+    <p></p>
 
-<select id="ranged_dd" onchange="read_drop_down()">
-    <option value="none" selected disabled>ranged</option>
-    <option value="aq_crossbow_of_imminent_doom">aq_crossbow_of_imminent_doom</option>
-    <option value="aq_larvae_of_the_great_worm">aq_larvae_of_the_great_worm</option>
-    <option value="blastershot">blastershot</option>
-    <option value="bloodseeker">bloodseeker</option>
-    <option value="dragonbreath_hand_cannon">dragonbreath_hand_cannon</option>
-    <option value="gurubashi_dwarf_cannon">gurubashi_dwarf_cannon</option>
-    <option value="heartstriker">heartstriker</option>
-    <option value="precisely_calibrated_boomstick">precisely_calibrated_boomstick</option>
-    <option value="riphook">riphook</option>
-    <option value="satyrs_bow">satyrs_bow</option>
-    <option value="strikers_mark">strikers_mark</option>
-</select>
+    <select id="chest_dd" onchange="read_drop_down()">
+        <option value="none" selected disabled>chest</option>
+        <option value="aq_breatplate_of_annihilation">aq_breatplate_of_annihilation</option>
+        <option value="aq_conquerors_breastplate">aq_conquerors_breastplate</option>
+        <option value="aq_vest_of_swift_execution">aq_vest_of_swift_execution</option>
+        <option value="black_dragonscale_chest">black_dragonscale_chest</option>
+        <option value="breastplate_of_bloodthirst">breastplate_of_bloodthirst</option>
+        <option value="cadaverous_armor">cadaverous_armor</option>
+        <option value="knight_captains_plate_hauberk">knight_captains_plate_hauberk</option>
+        <option value="malfurions_blessed_bulwark">malfurions_blessed_bulwark</option>
+        <option value="runed_bloodstaind_hauberk">runed_bloodstaind_hauberk</option>
+        <option value="savage_gladiator_chain">savage_gladiator_chain</option>
+        <option value="tombstone_breastplate">tombstone_breastplate</option>
+    </select>
 
-<p> Select weapons: </p>
-<select id="main_hand_dd" onchange="read_drop_down()">
-    <option value="none" selected disabled>main_hand</option>
-    <option value="ancient_hakkari_manslayer">ancient_hakkari_manslayer</option>
-    <option value="aq_ancient_quiraj_ripper">aq_ancient_quiraj_ripper</option>
-    <option value="aq_anubisath_warhammer">aq_anubisath_warhammer</option>
-    <option value="aq_deaths_sting">aq_deaths_sting</option>
-    <option value="aq_sand_polished_hammer">aq_sand_polished_hammer</option>
-    <option value="assassination_blade">assassination_blade</option>
-    <option value="axe_of_the_deep_woods">axe_of_the_deep_woods</option>
-    <option value="brutality_blade">brutality_blade</option>
-    <option value="chromatically_tempered_sword">chromatically_tempered_sword</option>
-    <option value="claw_of_the_black_drake">claw_of_the_black_drake</option>
-    <option value="core_hound_tooth">core_hound_tooth</option>
-    <option value="crul_shorukh_edge_of_chaos">crul_shorukh_edge_of_chaos</option>
-    <option value="dal_rends_sacred_charge">dal_rends_sacred_charge</option>
-    <option value="dal_rends_tribal_guardian">dal_rends_tribal_guardian</option>
-    <option value="deathbringer">deathbringer</option>
-    <option value="dooms_edge">dooms_edge</option>
-    <option value="ebon_hand">ebon_hand</option>
-    <option value="empyrean_demolisher">empyrean_demolisher</option>
-    <option value="grand_marshals_longsword">grand_marshals_longsword</option>
-    <option value="grand_marshals_swiftblade">grand_marshals_swiftblade</option>
-    <option value="maladath">maladath</option>
-    <option value="mirahs_song">mirahs_song</option>
-    <option value="quel_serrar">quel_serrar</option>
-    <option value="spineshatter">spineshatter</option>
-    <option value="stormstike_hammer">stormstike_hammer</option>
-    <option value="thrash_blade">thrash_blade</option>
-    <option value="viskag">viskag</option>
-    <option value="warblade_hakkari_mh">warblade_hakkari_mh</option>
-    <option value="warblade_hakkari_oh">warblade_hakkari_oh</option>
-</select>
+    <select id="wrists_dd" onchange="read_drop_down()">
+        <option value="none" selected disabled>wrists</option>
+        <option value="aq_bracers_of_brutality">aq_bracers_of_brutality</option>
+        <option value="aq_hive_defiler_wristguards">aq_hive_defiler_wristguards</option>
+        <option value="aq_quiraji_execution_bracers">aq_quiraji_execution_bracers</option>
+        <option value="battleborn_armbraces">battleborn_armbraces</option>
+        <option value="blinkstrike">blinkstrike</option>
+        <option value="vambraces_of_the_sadist">vambraces_of_the_sadist</option>
+        <option value="wristguards_of_stability">wristguards_of_stability</option>
+        <option value="wristhuards_of_true_flight">wristhuards_of_true_flight</option>
+        <option value="zandalar_armguards">zandalar_armguards</option>
+    </select>
 
-<select id="off_hand_dd" onchange="read_drop_down()">
-    <option value="none" selected disabled>off_hand</option>
-    <option value="ancient_hakkari_manslayer">ancient_hakkari_manslayer</option>
-    <option value="aq_ancient_quiraj_ripper">aq_ancient_quiraj_ripper</option>
-    <option value="aq_anubisath_warhammer">aq_anubisath_warhammer</option>
-    <option value="aq_deaths_sting">aq_deaths_sting</option>
-    <option value="aq_sand_polished_hammer">aq_sand_polished_hammer</option>
-    <option value="assassination_blade">assassination_blade</option>
-    <option value="axe_of_the_deep_woods">axe_of_the_deep_woods</option>
-    <option value="brutality_blade">brutality_blade</option>
-    <option value="chromatically_tempered_sword">chromatically_tempered_sword</option>
-    <option value="claw_of_the_black_drake">claw_of_the_black_drake</option>
-    <option value="core_hound_tooth">core_hound_tooth</option>
-    <option value="crul_shorukh_edge_of_chaos">crul_shorukh_edge_of_chaos</option>
-    <option value="dal_rends_sacred_charge">dal_rends_sacred_charge</option>
-    <option value="dal_rends_tribal_guardian">dal_rends_tribal_guardian</option>
-    <option value="deathbringer">deathbringer</option>
-    <option value="dooms_edge">dooms_edge</option>
-    <option value="ebon_hand">ebon_hand</option>
-    <option value="empyrean_demolisher">empyrean_demolisher</option>
-    <option value="grand_marshals_longsword">grand_marshals_longsword</option>
-    <option value="grand_marshals_swiftblade">grand_marshals_swiftblade</option>
-    <option value="maladath">maladath</option>
-    <option value="mirahs_song">mirahs_song</option>
-    <option value="quel_serrar">quel_serrar</option>
-    <option value="spineshatter">spineshatter</option>
-    <option value="stormstike_hammer">stormstike_hammer</option>
-    <option value="thrash_blade">thrash_blade</option>
-    <option value="viskag">viskag</option>
-    <option value="warblade_hakkari_mh">warblade_hakkari_mh</option>
-    <option value="warblade_hakkari_oh">warblade_hakkari_oh</option>
-</select>
+    <select id="hands_dd" onchange="read_drop_down()">
+        <option value="none" selected disabled>hands</option>
+        <option value="aged_core_leather_gloves">aged_core_leather_gloves</option>
+        <option value="aq_gauntlets_of_annihilation">aq_gauntlets_of_annihilation</option>
+        <option value="aq_gloves_of_enforcement">aq_gloves_of_enforcement</option>
+        <option value="bloodmail_gauntlets">bloodmail_gauntlets</option>
+        <option value="devilsaur_gauntlets">devilsaur_gauntlets</option>
+        <option value="edgemasters_handguards">edgemasters_handguards</option>
+        <option value="flameguard_gauntlets">flameguard_gauntlets</option>
+        <option value="sacrificial_gauntlets">sacrificial_gauntlets</option>
+    </select>
 
-<!--armor stop-->
+    <select id="belt_dd" onchange="read_drop_down()">
+        <option value="none" selected disabled>belt</option>
+        <option value="brigam_girdle">brigam_girdle</option>
+        <option value="girdle_of_the_fallen_crusader">girdle_of_the_fallen_crusader</option>
+        <option value="mugglers_belt">mugglers_belt</option>
+        <option value="omokks_girth">omokks_girth</option>
+        <option value="onslaught_girdle">onslaught_girdle</option>
+        <option value="thurazane_link">thurazane_link</option>
+        <option value="zandalar_vindicators_belt">zandalar_vindicators_belt</option>
+    </select>
 
-<p> Select enchants: </p>
+    <p></p>
 
-<select id="helmet_ench_dd" onchange="read_drop_down()">
-    <option value="helmet">helmet</option>
-    <option value="+8 strength">+8 strength</option>
-    <option value="+1 haste">+1 haste</option>
-</select>
+    <select id="legs_dd" onchange="read_drop_down()">
+        <option value="none" selected disabled>legs</option>
+        <option value="aq_conquerors_legguards">aq_conquerors_legguards</option>
+        <option value="aq_legplates_of_the_qiraji_command">aq_legplates_of_the_qiraji_command</option>
+        <option value="aq_scaled_sand_reaver_leggings">aq_scaled_sand_reaver_leggings</option>
+        <option value="black_dragonscale_leggings">black_dragonscale_leggings</option>
+        <option value="bloodsoaked_legplates">bloodsoaked_legplates</option>
+        <option value="cloudkeeper_legplaters">cloudkeeper_legplaters</option>
+        <option value="devilsaur_leggings">devilsaur_leggings</option>
+        <option value="eldritch_legplates">eldritch_legplates</option>
+        <option value="knight_captain_plate_leggings">knight_captain_plate_leggings</option>
+        <option value="legguards_of_the_fallen_crusader">legguards_of_the_fallen_crusader</option>
+        <option value="titanic_leggings">titanic_leggings</option>
+        <option value="ubrs_legs">ubrs_legs</option>
+    </select>
 
-<select id="shoulder_ench_dd" onchange="read_drop_down()">
-    <option value="shoulder">shoulder</option>
-    <option value="+30 attack power">+30 attack power</option>
-</select>
+    <select id="boots_dd" onchange="read_drop_down()">
+        <option value="none" selected disabled>boots</option>
+        <option value="aq_boots_of_the_vanguard">aq_boots_of_the_vanguard</option>
+        <option value="battlechasers">battlechasers</option>
+        <option value="black_dragonscale_boots">black_dragonscale_boots</option>
+        <option value="bloodmail_boots">bloodmail_boots</option>
+        <option value="boots_of_shadow_flame">boots_of_shadow_flame</option>
+        <option value="chromatic_boots">chromatic_boots</option>
+        <option value="knight_leutenants_greaves">knight_leutenants_greaves</option>
+        <option value="windreaver_greaves">windreaver_greaves</option>
+    </select>
 
-<select id="back_ench_dd" onchange="read_drop_down()">
-    <option value="back">back</option>
-    <option value="+3 agility">+3 agility</option>
-</select>
+    <select id="ring_dd1" onchange="read_drop_down()">
+        <option value="none" selected disabled>ring1</option>
+        <option value="blackstone_ring">blackstone_ring</option>
+        <option value="circle_of_applied_force">circle_of_applied_force</option>
+        <option value="don_julios_band">don_julios_band</option>
+        <option value="magnis_will">magnis_will</option>
+        <option value="master_dragonslayers_ring">master_dragonslayers_ring</option>
+        <option value="quick_strike_ring">quick_strike_ring</option>
+        <option value="seal_of_the_gurubashi_berserker">seal_of_the_gurubashi_berserker</option>
+        <option value="tarnished_elven">tarnished_elven</option>
+    </select>
 
-<select id="chest_ench_dd" onchange="read_drop_down()">
-    <option value="back">chest</option>
-    <option value="+3 stats">+3 stats</option>
-    <option value="+4 stats">+4 stats</option>
-</select>
+    <select id="ring_dd2" onchange="read_drop_down()">
+        <option value="none" selected disabled>ring2</option>
+        <option value="blackstone_ring">blackstone_ring</option>
+        <option value="circle_of_applied_force">circle_of_applied_force</option>
+        <option value="don_julios_band">don_julios_band</option>
+        <option value="magnis_will">magnis_will</option>
+        <option value="master_dragonslayers_ring">master_dragonslayers_ring</option>
+        <option value="quick_strike_ring">quick_strike_ring</option>
+        <option value="seal_of_the_gurubashi_berserker">seal_of_the_gurubashi_berserker</option>
+        <option value="tarnished_elven">tarnished_elven</option>
+    </select>
 
-<select id="wrist_ench_dd" onchange="read_drop_down()">
-    <option value="wrist">wrist</option>
-    <option value="+7 strength">+7 strength</option>
-    <option value="+9 strength">+9 strength</option>
-</select>
+    <p></p>
 
-<select id="hands_ench_dd" onchange="read_drop_down()">
-    <option value="hands">hands</option>
-    <option value="+7 agility">+7 agility</option>
-    <option value="+7 strength">+7 strength</option>
-    <option value="+1 haste">+1 haste</option>
-</select>
+    <select id="trinket_dd1" onchange="read_drop_down()">
+        <option value="none" selected disabled>trinket1</option>
+        <option value="blackhands_breadth">blackhands_breadth</option>
+        <option value="diamond_flask">diamond_flask</option>
+        <option value="drake_fang_talisman">drake_fang_talisman</option>
+        <option value="hand_of_justice">hand_of_justice</option>
+    </select>
 
-<select id="legs_ench_dd" onchange="read_drop_down()">
-    <option value="legs">legs</option>
-    <option value="+8 strength">+8 strength</option>
-    <option value="+1 haste">+1 haste</option>
-</select>
+    <select id="trinket_dd2" onchange="read_drop_down()">
+        <option value="none" selected disabled>trinket2</option>
+        <option value="blackhands_breadth">blackhands_breadth</option>
+        <option value="diamond_flask">diamond_flask</option>
+        <option value="drake_fang_talisman">drake_fang_talisman</option>
+        <option value="hand_of_justice">hand_of_justice</option>
+    </select>
 
-<select id="boots_ench_dd" onchange="read_drop_down()">
-    <option value="boots">boots</option>
-    <option value="+7 agility">+7 agility</option>
-</select>
+    <select id="ranged_dd" onchange="read_drop_down()">
+        <option value="none" selected disabled>ranged</option>
+        <option value="aq_crossbow_of_imminent_doom">aq_crossbow_of_imminent_doom</option>
+        <option value="aq_larvae_of_the_great_worm">aq_larvae_of_the_great_worm</option>
+        <option value="blastershot">blastershot</option>
+        <option value="bloodseeker">bloodseeker</option>
+        <option value="dragonbreath_hand_cannon">dragonbreath_hand_cannon</option>
+        <option value="gurubashi_dwarf_cannon">gurubashi_dwarf_cannon</option>
+        <option value="heartstriker">heartstriker</option>
+        <option value="precisely_calibrated_boomstick">precisely_calibrated_boomstick</option>
+        <option value="riphook">riphook</option>
+        <option value="satyrs_bow">satyrs_bow</option>
+        <option value="strikers_mark">strikers_mark</option>
+    </select>
 
-<p></p>
+    <p> Select weapons: </p>
+    <select id="main_hand_dd" onchange="read_drop_down()">
+        <option value="none" selected disabled>main_hand</option>
+        <option value="ancient_hakkari_manslayer">ancient_hakkari_manslayer</option>
+        <option value="aq_ancient_quiraj_ripper">aq_ancient_quiraj_ripper</option>
+        <option value="aq_anubisath_warhammer">aq_anubisath_warhammer</option>
+        <option value="aq_deaths_sting">aq_deaths_sting</option>
+        <option value="aq_sand_polished_hammer">aq_sand_polished_hammer</option>
+        <option value="assassination_blade">assassination_blade</option>
+        <option value="axe_of_the_deep_woods">axe_of_the_deep_woods</option>
+        <option value="brutality_blade">brutality_blade</option>
+        <option value="chromatically_tempered_sword">chromatically_tempered_sword</option>
+        <option value="claw_of_the_black_drake">claw_of_the_black_drake</option>
+        <option value="core_hound_tooth">core_hound_tooth</option>
+        <option value="crul_shorukh_edge_of_chaos">crul_shorukh_edge_of_chaos</option>
+        <option value="dal_rends_sacred_charge">dal_rends_sacred_charge</option>
+        <option value="dal_rends_tribal_guardian">dal_rends_tribal_guardian</option>
+        <option value="deathbringer">deathbringer</option>
+        <option value="dooms_edge">dooms_edge</option>
+        <option value="ebon_hand">ebon_hand</option>
+        <option value="empyrean_demolisher">empyrean_demolisher</option>
+        <option value="grand_marshals_longsword">grand_marshals_longsword</option>
+        <option value="grand_marshals_swiftblade">grand_marshals_swiftblade</option>
+        <option value="maladath">maladath</option>
+        <option value="mirahs_song">mirahs_song</option>
+        <option value="quel_serrar">quel_serrar</option>
+        <option value="spineshatter">spineshatter</option>
+        <option value="stormstike_hammer">stormstike_hammer</option>
+        <option value="thrash_blade">thrash_blade</option>
+        <option value="viskag">viskag</option>
+        <option value="warblade_hakkari_mh">warblade_hakkari_mh</option>
+        <option value="warblade_hakkari_oh">warblade_hakkari_oh</option>
+    </select>
 
-<select id="main_hand_ench_dd" onchange="read_drop_down()">
-    <option value="main_hand">weapon</option>
-    <option value="crusader">crusader</option>
-</select>
+    <select id="off_hand_dd" onchange="read_drop_down()">
+        <option value="none" selected disabled>off_hand</option>
+        <option value="ancient_hakkari_manslayer">ancient_hakkari_manslayer</option>
+        <option value="aq_ancient_quiraj_ripper">aq_ancient_quiraj_ripper</option>
+        <option value="aq_anubisath_warhammer">aq_anubisath_warhammer</option>
+        <option value="aq_deaths_sting">aq_deaths_sting</option>
+        <option value="aq_sand_polished_hammer">aq_sand_polished_hammer</option>
+        <option value="assassination_blade">assassination_blade</option>
+        <option value="axe_of_the_deep_woods">axe_of_the_deep_woods</option>
+        <option value="brutality_blade">brutality_blade</option>
+        <option value="chromatically_tempered_sword">chromatically_tempered_sword</option>
+        <option value="claw_of_the_black_drake">claw_of_the_black_drake</option>
+        <option value="core_hound_tooth">core_hound_tooth</option>
+        <option value="crul_shorukh_edge_of_chaos">crul_shorukh_edge_of_chaos</option>
+        <option value="dal_rends_sacred_charge">dal_rends_sacred_charge</option>
+        <option value="dal_rends_tribal_guardian">dal_rends_tribal_guardian</option>
+        <option value="deathbringer">deathbringer</option>
+        <option value="dooms_edge">dooms_edge</option>
+        <option value="ebon_hand">ebon_hand</option>
+        <option value="empyrean_demolisher">empyrean_demolisher</option>
+        <option value="grand_marshals_longsword">grand_marshals_longsword</option>
+        <option value="grand_marshals_swiftblade">grand_marshals_swiftblade</option>
+        <option value="maladath">maladath</option>
+        <option value="mirahs_song">mirahs_song</option>
+        <option value="quel_serrar">quel_serrar</option>
+        <option value="spineshatter">spineshatter</option>
+        <option value="stormstike_hammer">stormstike_hammer</option>
+        <option value="thrash_blade">thrash_blade</option>
+        <option value="viskag">viskag</option>
+        <option value="warblade_hakkari_mh">warblade_hakkari_mh</option>
+        <option value="warblade_hakkari_oh">warblade_hakkari_oh</option>
+    </select>
 
-<select id="off_hand_ench_dd" onchange="read_drop_down()">
-    <option value="off_hand">off_hand</option>
-    <option value="crusader">crusader</option>
-</select>
+    <!--armor stop-->
 
-<p> Select race: </p>
+    <p> Select enchants: </p>
 
-<select id="race_dd" onchange="read_drop_down()">
-    <option value="human">human</option>
-    <option value="gnome">gnome</option>
-    <option value="dwarf">dwarf</option>
-    <option value="night_elf">night_elf</option>
-    <option value="orc">orc</option>
-    <option value="troll">troll</option>
-    <option value="undead">undead</option>
-    <option value="tauren">tauren</option>
-</select>
+    <select id="helmet_ench_dd" onchange="read_drop_down()">
+        <option value="helmet">helmet</option>
+        <option value="+8 strength">+8 strength</option>
+        <option value="+1 haste">+1 haste</option>
+    </select>
 
-<h3> Buffs: </h3>
-<p> World buffs: </p>
-<input type="checkbox" id="rallying_cry" onchange="read_checkboxes()">
-<label for="rallying_cry"> rallying_cry</label><br>
+    <select id="shoulder_ench_dd" onchange="read_drop_down()">
+        <option value="shoulder">shoulder</option>
+        <option value="+30 attack power">+30 attack power</option>
+    </select>
 
-<input type="checkbox" id="dire_maul" onchange="read_checkboxes()">
-<label for="dire_maul"> dire_maul</label><br>
+    <select id="back_ench_dd" onchange="read_drop_down()">
+        <option value="back">back</option>
+        <option value="+3 agility">+3 agility</option>
+    </select>
 
-<input type="checkbox" id="songflower" onchange="read_checkboxes()">
-<label for="songflower"> songflower</label><br>
+    <select id="chest_ench_dd" onchange="read_drop_down()">
+        <option value="back">chest</option>
+        <option value="+3 stats">+3 stats</option>
+        <option value="+4 stats">+4 stats</option>
+    </select>
 
-<input type="checkbox" id="warchiefs_blessing" onchange="read_checkboxes()">
-<label for="warchiefs_blessing"> warchiefs_blessing</label><br>
+    <select id="wrist_ench_dd" onchange="read_drop_down()">
+        <option value="wrist">wrist</option>
+        <option value="+7 strength">+7 strength</option>
+        <option value="+9 strength">+9 strength</option>
+    </select>
 
-<input type="checkbox" id="spirit_of_zandalar" onchange="read_checkboxes()">
-<label for="spirit_of_zandalar"> spirit_of_zandalar</label><br>
+    <select id="hands_ench_dd" onchange="read_drop_down()">
+        <option value="hands">hands</option>
+        <option value="+7 agility">+7 agility</option>
+        <option value="+7 strength">+7 strength</option>
+        <option value="+1 haste">+1 haste</option>
+    </select>
 
-<input type="checkbox" id="sayges_fortune" onchange="read_checkboxes()">
-<label for="sayges_fortune"> sayges_fortune</label><br>
+    <select id="legs_ench_dd" onchange="read_drop_down()">
+        <option value="legs">legs</option>
+        <option value="+8 strength">+8 strength</option>
+        <option value="+1 haste">+1 haste</option>
+    </select>
 
-<p> Player buffs: </p>
-<input type="checkbox" id="blessing_of_kings" onchange="read_checkboxes()">
-<label for="blessing_of_kings"> blessing_of_kings</label><br>
+    <select id="boots_ench_dd" onchange="read_drop_down()">
+        <option value="boots">boots</option>
+        <option value="+7 agility">+7 agility</option>
+    </select>
 
-<input type="checkbox" id="blessing_of_might" onchange="read_checkboxes()">
-<label for="blessing_of_might"> blessing_of_might</label><br>
+    <p></p>
 
-<input type="checkbox" id="gift_of_the_wild" onchange="read_checkboxes()">
-<label for="gift_of_the_wild"> gift_of_the_wild</label><br>
+    <select id="main_hand_ench_dd" onchange="read_drop_down()">
+        <option value="main_hand">weapon</option>
+        <option value="crusader">crusader</option>
+    </select>
 
-<input type="checkbox" id="trueshot_aura" onchange="read_checkboxes()">
-<label for="trueshot_aura"> trueshot_aura</label><br>
+    <select id="off_hand_ench_dd" onchange="read_drop_down()">
+        <option value="off_hand">off_hand</option>
+        <option value="crusader">crusader</option>
+    </select>
 
-<p> Consumables: </p>
-<input type="checkbox" id="elixir_mongoose" onchange="read_checkboxes()">
-<label for="elixir_mongoose"> elixir_mongoose</label><br>
+    <p> Select race: </p>
 
-<input type="checkbox" id="blessed_sunfruit" onchange="read_checkboxes()">
-<label for="blessed_sunfruit"> blessed_sunfruit</label><br>
+    <select id="race_dd" onchange="read_drop_down()">
+        <option value="human">human</option>
+        <option value="gnome">gnome</option>
+        <option value="dwarf">dwarf</option>
+        <option value="night_elf">night_elf</option>
+        <option value="orc">orc</option>
+        <option value="troll">troll</option>
+        <option value="undead">undead</option>
+        <option value="tauren">tauren</option>
+    </select>
 
-<input type="checkbox" id="juju_power" onchange="read_checkboxes()">
-<label for="juju_power"> juju_power</label><br>
+    <h3> Buffs: </h3>
+    <p> World buffs: </p>
+    <input type="checkbox" id="rallying_cry" onchange="read_checkboxes()">
+    <label for="rallying_cry"> rallying_cry</label><br>
 
-<input type="checkbox" id="juju_might" onchange="read_checkboxes()">
-<label for="juju_might"> juju_might</label><br>
+    <input type="checkbox" id="dire_maul" onchange="read_checkboxes()">
+    <label for="dire_maul"> dire_maul</label><br>
 
-<input type="checkbox" id="roids" onchange="read_checkboxes()">
-<label for="roids"> roids</label><br>
+    <input type="checkbox" id="songflower" onchange="read_checkboxes()">
+    <label for="songflower"> songflower</label><br>
 
-<form>
-    <p>Stone main-hand:</p>
-    <input type="radio" id="dense_stone_main_hand" name="gender">
-    <label for="dense_stone_main_hand">dense_stone</label><br>
-    <input type="radio" id="elemental_stone_main_hand" name="gender">
-    <label for="elemental_stone_main_hand">elemental_stone</label><br>
-    <input type=button value="Uncheck" onclick=
-            "document.getElementById('dense_stone_main_hand').checked = false;
+    <input type="checkbox" id="warchiefs_blessing" onchange="read_checkboxes()">
+    <label for="warchiefs_blessing"> warchiefs_blessing</label><br>
+
+    <input type="checkbox" id="spirit_of_zandalar" onchange="read_checkboxes()">
+    <label for="spirit_of_zandalar"> spirit_of_zandalar</label><br>
+
+    <input type="checkbox" id="sayges_fortune" onchange="read_checkboxes()">
+    <label for="sayges_fortune"> sayges_fortune</label><br>
+
+    <p> Player buffs: </p>
+    <input type="checkbox" id="blessing_of_kings" onchange="read_checkboxes()">
+    <label for="blessing_of_kings"> blessing_of_kings</label><br>
+
+    <input type="checkbox" id="blessing_of_might" onchange="read_checkboxes()">
+    <label for="blessing_of_might"> blessing_of_might</label><br>
+
+    <input type="checkbox" id="gift_of_the_wild" onchange="read_checkboxes()">
+    <label for="gift_of_the_wild"> gift_of_the_wild</label><br>
+
+    <input type="checkbox" id="trueshot_aura" onchange="read_checkboxes()">
+    <label for="trueshot_aura"> trueshot_aura</label><br>
+
+    <p> Consumables: </p>
+    <input type="checkbox" id="elixir_mongoose" onchange="read_checkboxes()">
+    <label for="elixir_mongoose"> elixir_mongoose</label><br>
+
+    <input type="checkbox" id="blessed_sunfruit" onchange="read_checkboxes()">
+    <label for="blessed_sunfruit"> blessed_sunfruit</label><br>
+
+    <input type="checkbox" id="juju_power" onchange="read_checkboxes()">
+    <label for="juju_power"> juju_power</label><br>
+
+    <input type="checkbox" id="juju_might" onchange="read_checkboxes()">
+    <label for="juju_might"> juju_might</label><br>
+
+    <input type="checkbox" id="roids" onchange="read_checkboxes()">
+    <label for="roids"> roids</label><br>
+
+    <form>
+        <p>Stone main-hand:</p>
+        <input type="radio" id="dense_stone_main_hand" name="gender">
+        <label for="dense_stone_main_hand">dense_stone</label><br>
+        <input type="radio" id="elemental_stone_main_hand" name="gender">
+        <label for="elemental_stone_main_hand">elemental_stone</label><br>
+        <input type=button value="Uncheck" onclick=
+                "document.getElementById('dense_stone_main_hand').checked = false;
             document.getElementById('elemental_stone_main_hand').checked = false;">
-</form>
+    </form>
 
-<form>
-    <p>Stone off-hand:</p>
-    <input type="radio" id="dense_stone_off_hand" name="gender">
-    <label for="dense_stone_off_hand">dense_stone</label><br>
-    <input type="radio" id="elemental_stone_off_hand" name="gender">
-    <label for="elemental_stone_off_hand">elemental_stone</label><br>
-    <input type=button value="Uncheck" onclick=
-            "document.getElementById('dense_stone_off_hand').checked = false;
+    <form>
+        <p>Stone off-hand:</p>
+        <input type="radio" id="dense_stone_off_hand" name="gender">
+        <label for="dense_stone_off_hand">dense_stone</label><br>
+        <input type="radio" id="elemental_stone_off_hand" name="gender">
+        <label for="elemental_stone_off_hand">elemental_stone</label><br>
+        <input type=button value="Uncheck" onclick=
+                "document.getElementById('dense_stone_off_hand').checked = false;
             document.getElementById('elemental_stone_off_hand').checked = false;">
-</form>
+    </form>
 
-<h3>Simulation settings:</h3>
-<label for="n_simulations">Number of simulations: (100 - 30000):</label>
-<input type="number" id="n_simulations" name="quantity" min="100" max="30000" value="10000">
+    <h3>Simulation settings:</h3>
+    <label for="n_simulations">Number of simulations: (100 - 30000):</label>
+    <input type="number" id="n_simulations" name="quantity" min="100" max="30000" value="10000">
 
-<p></p>
-<label for="opponent_level">Opponent level: (60-63):</label>
-<input type="number" id="opponent_level" name="quantity" min="60" max="63" value="63">
+    <p></p>
+    <label for="opponent_level">Opponent level: (60-63):</label>
+    <input type="number" id="opponent_level" name="quantity" min="60" max="63" value="63">
 
-<p></p>
-<label for="fight_time">Fight time: (10-200s):</label>
-<input type="number" id="fight_time" name="quantity" min="10" max="200" value="60">
+    <p></p>
+    <label for="fight_time">Fight time: (10-200s):</label>
+    <input type="number" id="fight_time" name="quantity" min="10" max="200" value="60">
 
-<p id="button_id"></p>
-<button onclick="myFunction()">Run simulator</button>
+    <p id="button_id"></p>
+    <button onclick="myFunction()">Run simulator</button>
 
-<p id="output1">Average DPS: </p>
-<p id="output3">Stat weights: </p>
-<p id="output2">Character stats: </p>
-<p id="output4">Crit cap details: </p>
+    <p id="output1">Average DPS: </p>
+    <p id="output3">Stat weights: </p>
+    <p id="output2">Character stats: </p>
+    <p id="output4">Crit cap details: </p>
 
-<canvas id="line-chart-hist"></canvas>
+    <canvas id="line-chart-hist"></canvas>
 
-<p></p>
-<canvas id="line-chart-fight"></canvas>
+    <p></p>
+    <canvas id="line-chart-fight"></canvas>
 
-<p></p>
-<canvas id="line-chart-fight-cumulative"></canvas>
+    <p></p>
+    <canvas id="line-chart-fight-cumulative"></canvas>
 
-<p></p>
-<canvas id="bar-chart-damage"></canvas>
+    <p></p>
+    <canvas id="bar-chart-damage"></canvas>
 
-<p></p>
-<canvas id="bar-chart-auras"></canvas>
+    <p></p>
+    <canvas id="bar-chart-auras"></canvas>
+
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+
+<script>
+    function openTab(evt, cityName) {
+        let i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(cityName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+</script>
 
 <script>
     var rallying_cry;
