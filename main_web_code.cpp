@@ -57,15 +57,15 @@ int main()
     std::string race = "orc";
 
     Sim_input sim_input{{race}, armor_vec, weapons_vec, buff_vec, ench_vec, {"crit", "hit"},
-                        60, 63, 10, 5, true, true,
+                        60, 63, 1000, 5, true, true,
                         false, false, true};
 
     auto sim_output = sim_interface.simulate(sim_input);
 
-    for (double dmg_batch : sim_output.dmg_batches)
-    {
-        std::cout << "batch = " << dmg_batch << "\n";
-    }
+//    for (double dmg_batch : sim_output.dmg_batches)
+//    {
+//        std::cout << "batch = " << dmg_batch << "\n";
+//    }
 
     for (double dmg_source : sim_output.dmg_sources)
     {

@@ -12,6 +12,7 @@ EMSCRIPTEN_BINDINGS(module)
         .function("simulate", &Sim_interface::simulate);
 
     register_vector<double>("vector<double>");
+    register_vector<int>("vector<int>");
     register_vector<std::vector<double>>("vector<vector<double>>");
     register_vector<std::string>("StringList");
 
@@ -33,7 +34,8 @@ EMSCRIPTEN_BINDINGS(module)
         .field("mighty_rage_potion", &Sim_input::mighty_rage_potion);
 
     value_object<Sim_output>("Sim_output")
-        .field("dmg_batches", &Sim_output::dmg_batches)
+        .field("hist_x", &Sim_output::hist_x)
+        .field("hist_y", &Sim_output::hist_y)
         .field("dmg_sources", &Sim_output::dmg_sources)
         .field("white_mh", &Sim_output::white_mh)
         .field("white_oh", &Sim_output::white_oh)

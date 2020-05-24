@@ -773,14 +773,6 @@
         document.getElementById("output1").innerHTML = 'Average DPS: ' + result['mean_dps'].toFixed(2) + ' +- ' + result['std_dps'].toFixed(2) + ', (95% confidence interval)';
         document.getElementById("output2").innerHTML = result['messages'].get(0);
 
-        let dps = [];
-        for (let i = 0; i < result['dmg_batches'].size(); i++) {
-            dps.push(result['dmg_batches'].get(i));
-        }
-        dps.sort(function (a, b) {
-            return a - b
-        });
-
         let stat_weights = [];
         if (result['stat_weights'].size() > 0) {
             let ap_string = result['stat_weights'].get(0);
@@ -813,25 +805,7 @@
         // Crit cap details:
         document.getElementById("output4").innerHTML = result['extra_stats'].get(0);
 
-        let n_bins = Math.min(n_simulations, 20);
-        let hist_x = [];
-        let hist_x_labels = [];
-        let hist_y = [];
-        let dps_per_bin = (dps[dps.length - 1] - dps[0]) / n_bins;
-        let start_dps = dps[0];
-        for (let i = start_dps; i <= dps[dps.length - 1] + .01; i += dps_per_bin) {
-            hist_x.push(i);
-            hist_x_labels.push(i.toFixed(0));
-            hist_y.push(0);
-        }
 
-        let bin_idx = 0;
-        for (let i = 0; i < dps.length; i++) {
-            while (dps[i] > hist_x[bin_idx] + dps_per_bin / 2) {
-                bin_idx++;
-            }
-            hist_y[bin_idx]++;
-        }
 
         let sources = [];
         let sources_names = ["Main hand", "Off hand", "Heroic Strike", "Blood Thirst", "Whirlwind", "Execute", "Item procs"];
@@ -907,10 +881,17 @@
 
         Chart.defaults.global.defaultFontSize = 36;
 
+        let hist_x = [];
+        let hist_y = [];
+        for (let i = 0; i < result['hist_x'].size(); i++) {
+            hist_x.push(parseInt(result['hist_x'].get(i)));
+            hist_y.push(result['hist_y'].get(i));
+        }
+
         line_chart_hist = new Chart(document.getElementById("line-chart-hist"), {
             type: 'line',
             data: {
-                labels: hist_x_labels,
+                labels: hist_x,
                 datasets: [{
                     data: hist_y,
                     label: "Simulator results",

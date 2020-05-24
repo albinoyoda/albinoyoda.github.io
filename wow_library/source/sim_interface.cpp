@@ -461,7 +461,29 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
         }
     }
 
-    return {dps_vec, dps_dist, a[0], a[1], a[2], a[3], a[4], a[5], a[6],
+    sort(dps_vec.begin(), dps_vec.end());
+    int n_bins = std::min(input.n_simulations, 20.0);
+    std::vector<double> hist_x{};
+    std::vector<int> hist_y{};
+    double dps_per_bin = (dps_vec.back() - dps_vec[0]) / n_bins;
+    double start_dps = dps_vec[0];
+    for (double dps_val = start_dps; dps_val <= dps_vec.back() + .01; dps_val += dps_per_bin)
+    {
+        hist_x.push_back(dps_val);
+        hist_y.push_back(0);
+    }
+
+    int bin_idx = 0;
+    for (double i : dps_vec)
+    {
+        while (i > hist_x[bin_idx] + dps_per_bin / 2)
+        {
+            bin_idx++;
+        }
+        hist_y[bin_idx]++;
+    }
+
+    return {hist_x, hist_y, dps_dist, a[0], a[1], a[2], a[3], a[4], a[5], a[6],
             aura_uptimes, stat_weights, {extra_info_string}, mean_init, sample_std_init,
             {get_character_stat(character)}};
 }
