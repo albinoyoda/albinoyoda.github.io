@@ -341,25 +341,25 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     config.sim_time = input.fight_time;
     config.opponent_level = input.target_level;
 
-    config.curse_of_recklessness_active = true;
-    config.faerie_fire_feral_active = true;
+    config.curse_of_recklessness_active = input.curse_of_recklessness;
+    config.faerie_fire_feral_active = input.faerie_fire;
     config.sunder_armor_active = true;
-    config.n_sunder_armor_stacks = 5;
+    config.n_sunder_armor_stacks = input.sunder_armor;
 
     config.talents.improved_heroic_strike = 2;
     config.talents.unbridled_wrath = 5;
     config.talents.flurry = 5;
     config.talents.anger_management = true;
-    config.talents.death_wish = true;
+    config.talents.death_wish = input.death_wish;
     config.talents.impale = 2;
     config.talents.improved_execute = 2;
     config.talents.dual_wield_specialization = 5;
 
     config.use_sim_time_ramp = true;
     config.enable_spell_rotation = true;
-    config.use_mighty_rage_potion = true;
+    config.use_mighty_rage_potion = input.mighty_rage_potion;
     config.enable_bloodrage = true;
-    config.enable_recklessness = false;
+    config.enable_recklessness = input.recklessness;
 //    config.display_combat_debug = true;
     config.use_seed = true;
     config.seed = 110000;

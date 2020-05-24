@@ -24,7 +24,13 @@ EMSCRIPTEN_BINDINGS(module)
         .field("stat_weights", &Sim_input::stat_weights)
         .field("target_level", &Sim_input::target_level)
         .field("fight_time", &Sim_input::fight_time)
-        .field("n_simulations", &Sim_input::n_simulations);
+        .field("n_simulations", &Sim_input::n_simulations)
+        .field("sunder_armor", &Sim_input::sunder_armor)
+        .field("faerie_fire", &Sim_input::faerie_fire)
+        .field("curse_of_recklessness", &Sim_input::curse_of_recklessness)
+        .field("death_wish", &Sim_input::death_wish)
+        .field("recklessness", &Sim_input::recklessness)
+        .field("mighty_rage_potion", &Sim_input::mighty_rage_potion);
 
     value_object<Sim_output>("Sim_output")
         .field("dmg_batches", &Sim_output::dmg_batches)

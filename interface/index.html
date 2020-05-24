@@ -114,6 +114,7 @@
     <p>TPS calculator for tanking. </p>
     <p>Ability to save/load gear setups. </p>
     <p>MORE ITEMS!!</p>
+    <p>Talents </p>
     <p>Increased simulator configurations</p>
     <p>Boss selection. (for unique fights such as Vaelstrasz) </p>
     <p>Ability to compare gear setups side-by-side </p>
@@ -529,9 +530,28 @@
     <label for="fight_time">Fight time: (10-200s):</label>
     <input type="number" id="fight_time" name="quantity" min="10" max="200" value="60">
 
+    <p></p>
+    <input type="checkbox" id="faerie_fire_feral_active" checked>
+    <label for="faerie_fire_feral_active"> Faerie fire feral active</label><br>
+    <input type="checkbox" id="curse_of_recklessness_active" checked>
+    <label for="curse_of_recklessness_active"> Curse of recklessness active</label><br>
+    <input type="checkbox" id="enable_death_wish" checked>
+    <label for="enable_death_wish"> Use death wish</label><br>
+    <input type="checkbox" id="enable_recklessness">
+    <label for="enable_recklessness"> Use recklessness</label><br>
+    <input type="checkbox" id="use_mighty_rage_potion">
+    <label for="use_mighty_rage_potion"> Use mighty rage potion</label><br>
+
+    <!--    // config.fuel_extra_rage = false; // Vaelastrasz-->
+
+    <p></p>
+    <label for="sunder_armor">Sunder armor stacks: (0-5):</label>
+    <input type="number" id="sunder_armor" name="quantity" min="0" max="5" value="5">
+
     <p id="button_id"></p>
     <button onclick="myFunction()">Run simulator</button>
 
+    <h2>----------- RESULTS BELOW -----------</h2>
     <p id="output1">Average DPS: </p>
     <p id="output3">Stat weights: </p>
     <p id="output2">Character stats: </p>
@@ -709,13 +729,17 @@
         }
         fight_time = Math.min(Math.max(fight_time, 10), 200);
 
-        // config.curse_of_recklessness_active = true;
-        // config.faerie_fire_feral_active = true;
-        // config.n_sunder_armor_stacks = 5;
-        // config.use_mighty_rage_potion = true;
-        // config.enable_bloodrage = true;
-        // config.enable_recklessness = false;
-        // config.fuel_extra_rage = false; // Vaelastrasz
+        let sunder_armor = parseInt(document.getElementById("sunder_armor").value);
+        if (isNaN(sunder_armor)) {
+            sunder_armor = 5;
+        }
+        sunder_armor = Math.min(Math.max(fight_time, 0), 5);
+
+        let faerie_fire_feral_active = document.getElementById("faerie_fire_feral_active").checked;
+        let curse_of_recklessness_active = document.getElementById("curse_of_recklessness_active").checked;
+        let enable_death_wish = document.getElementById("enable_death_wish").checked;
+        let enable_recklessness = document.getElementById("enable_recklessness").checked;
+        let use_mighty_rage_potion = document.getElementById("use_mighty_rage_potion").checked;
 
         const stat_weight_vec = new Module.StringList();
         stat_weight_vec.push_back("crit");
@@ -733,7 +757,12 @@
             stat_weights: stat_weight_vec,
             target_level: opponent_level,
             fight_time: fight_time,
-            n_simulations: n_simulations
+            sunder_armor: sunder_armor,
+            faerie_fire: faerie_fire_feral_active,
+            curse_of_recklessness: curse_of_recklessness_active,
+            death_wish: enable_death_wish,
+            recklessness: enable_recklessness,
+            mighty_rage_potion: use_mighty_rage_potion
         };
 
         let obj = new Module['Sim_interface']();
