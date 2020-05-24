@@ -787,7 +787,7 @@ std::vector<std::string> Combat_simulator::get_aura_uptimes() const
 
 void Combat_simulator::reset_damage_instances()
 {
-    double resolution = 0.25;
+    double resolution = .50;
     std::vector<double> history;
     history.reserve(config.sim_time / resolution);
     for (double t = 0; t < config.sim_time; t += resolution)
@@ -806,7 +806,7 @@ void Combat_simulator::reset_damage_instances()
 
 void Combat_simulator::add_damage_source_to_time_lapse(std::vector<Damage_instance> &damage_instances, int n_iter)
 {
-    double resolution = 0.25;
+    double resolution = .50;
     for (const auto &damage_instance : damage_instances)
     {
         size_t first_idx = source_map.at(damage_instance.damage_source);

@@ -656,28 +656,22 @@
         }
     }
 
-    var bar_chart_auras = false;
-    var bar_chart_damage = false;
-    var line_chart_hist = false;
-    var line_chart_fight = false;
-    var line_chart_fight_cum = false;
+    var needs_cleanup = false;
+    var bar_chart_auras;
+    var bar_chart_damage;
+    var line_chart_hist;
+    var line_chart_fight;
+    var line_chart_fight_cum;
 
     function clean_charts() {
-        if (bar_chart_auras) {
+        if (needs_cleanup) {
             bar_chart_auras.destroy();
+            bar_chart_damage.destroy();
+            line_chart_hist.destroy();
+            line_chart_fight.destroy();
+            line_chart_fight_cum.destroy();
         }
-        if (bar_chart_damage) {
-            bar_chart_auras.destroy();
-        }
-        if (line_chart_hist) {
-            bar_chart_auras.destroy();
-        }
-        if (line_chart_fight) {
-            bar_chart_auras.destroy();
-        }
-        if (line_chart_fight_cum) {
-            bar_chart_auras.destroy();
-        }
+        needs_cleanup = true;
     }
 
     function myFunction() {
@@ -806,7 +800,6 @@
         document.getElementById("output4").innerHTML = result['extra_stats'].get(0);
 
 
-
         let sources = [];
         let sources_names = ["Main hand", "Off hand", "Heroic Strike", "Blood Thirst", "Whirlwind", "Execute", "Item procs"];
         for (let i = 0; i < result['dmg_sources'].size(); i++) {
@@ -876,7 +869,7 @@
         let time_stamps = [];
         time_stamps.push(0);
         for (let j = 1; j < damage_vec[0].length; j++) {
-            time_stamps.push(time_stamps[j - 1] + 0.25);
+            time_stamps.push(time_stamps[j - 1] + .50);
         }
 
         Chart.defaults.global.defaultFontSize = 36;
@@ -938,6 +931,7 @@
                     borderWidth: 10,
                     borderColor: colors[0],
                     backgroundColor: colors[0],
+                    pointRadius: 0.1,
                     fill: origin
                 }, {
                     data: damage_vec[1],
@@ -945,6 +939,7 @@
                     borderWidth: 10,
                     borderColor: colors[1],
                     backgroundColor: colors[1],
+                    pointRadius: 0.1,
                     fill: origin
                 }, {
                     data: damage_vec[2],
@@ -952,6 +947,7 @@
                     borderWidth: 10,
                     borderColor: colors[2],
                     backgroundColor: colors[2],
+                    pointRadius: 0.1,
                     fill: origin
                 }, {
                     data: damage_vec[3],
@@ -959,6 +955,7 @@
                     borderWidth: 10,
                     borderColor: colors[3],
                     backgroundColor: colors[3],
+                    pointRadius: 0.1,
                     fill: origin
                 }, {
                     data: damage_vec[4],
@@ -966,6 +963,7 @@
                     borderWidth: 10,
                     borderColor: colors[4],
                     backgroundColor: colors[4],
+                    pointRadius: 0.1,
                     fill: origin
                 }, {
                     data: damage_vec[5],
@@ -973,6 +971,7 @@
                     borderWidth: 10,
                     borderColor: colors[5],
                     backgroundColor: colors[5],
+                    pointRadius: 0.1,
                     fill: origin
                 }, {
                     data: damage_vec[6],
@@ -980,10 +979,12 @@
                     borderWidth: 10,
                     borderColor: colors[6],
                     backgroundColor: colors[6],
+                    pointRadius: 0.1,
                     fill: origin
                 },]
             },
             options: {
+                bezierCurve: false,
                 title: {
                     display: true,
                     text: 'Fight time lapse (DPS)'
@@ -996,6 +997,10 @@
                         }
                     }],
                     xAxes: [{
+                        ticks: {
+                            autoSkip: true,
+                            maxTicksLimit: 30
+                        },
                         scaleLabel: {
                             display: true,
                             labelString: 'Time'
@@ -1020,6 +1025,8 @@
                     borderWidth: 10,
                     borderColor: colors[0],
                     backgroundColor: colors[0],
+                    pointRadius: 0.1,
+                    lineTension: 0,
                     fill: origin
                 }, {
                     data: cumulative_vec[1],
@@ -1027,6 +1034,8 @@
                     borderWidth: 10,
                     borderColor: colors[1],
                     backgroundColor: colors[1],
+                    pointRadius: 0.1,
+                    lineTension: 0,
                     fill: origin
                 }, {
                     data: cumulative_vec[2],
@@ -1034,6 +1043,8 @@
                     borderWidth: 10,
                     borderColor: colors[2],
                     backgroundColor: colors[2],
+                    pointRadius: 0.1,
+                    lineTension: 0,
                     fill: origin
                 }, {
                     data: cumulative_vec[3],
@@ -1041,6 +1052,8 @@
                     borderWidth: 10,
                     borderColor: colors[3],
                     backgroundColor: colors[3],
+                    pointRadius: 0.1,
+                    lineTension: 0,
                     fill: origin
                 }, {
                     data: cumulative_vec[4],
@@ -1048,6 +1061,8 @@
                     borderWidth: 10,
                     borderColor: colors[4],
                     backgroundColor: colors[4],
+                    pointRadius: 0.1,
+                    lineTension: 0,
                     fill: origin
                 }, {
                     data: cumulative_vec[5],
@@ -1055,6 +1070,8 @@
                     borderWidth: 10,
                     borderColor: colors[5],
                     backgroundColor: colors[5],
+                    pointRadius: 0.1,
+                    lineTension: 0,
                     fill: origin
                 }, {
                     data: cumulative_vec[6],
@@ -1062,6 +1079,8 @@
                     borderWidth: 10,
                     borderColor: colors[6],
                     backgroundColor: colors[6],
+                    pointRadius: 0.1,
+                    lineTension: 0,
                     fill: origin
                 },]
             },
@@ -1078,6 +1097,10 @@
                         }
                     }],
                     xAxes: [{
+                        ticks: {
+                            autoSkip: true,
+                            maxTicksLimit: 30
+                        },
                         scaleLabel: {
                             display: true,
                             labelString: 'Time'
