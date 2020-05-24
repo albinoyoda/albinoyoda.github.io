@@ -121,9 +121,15 @@
 </div>
 
 <div id="Simulator" class="tabcontent">
+    <p> Save/Load config from file:</p>
+    <input type="file" id="myFile" name="filename" accept=".txt">
+    <input type="submit" onclick="load_file()">
+
+    <p id="save_button"></p>
+    <button onclick="save_button()">Save current config</button>
 
     <p> Select armor: </p>
-
+    <p></p>
     <!--armor begin-->
     <select id="helmet_dd">
         <option value="none" selected disabled>helmet</option>
@@ -576,6 +582,63 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 
 <script>
+
+    function load_file() {
+        let file = document.getElementById("myFile");
+        var myFile = file.files[0];
+        var reader = new FileReader();
+        reader.readAsText(myFile);
+        reader.onload = function () {
+            let rawLog = reader.result;
+            let splitlog = rawLog.split("\n");
+            for (let item of splitlog) {
+                let dd_name = item.split(" ");
+                selectElement(dd_name[0], dd_name[1])
+            }
+        }
+    }
+
+    function selectElement(id, valueToSelect) {
+        let element = document.getElementById(id);
+        element.value = valueToSelect;
+    }
+
+    function save_button() {
+        read_inputs();
+        var file_content = "";
+        for (let i = 0; i < armor.length; i++) {
+            file_content += armor[i] + " " + armor_input[i] + "\n";
+        }
+        for (let i = 0; i < weapons.length; i++) {
+            file_content += weapons[i] + " " + weapons_input[i] + "\n";
+        }
+        // for (let i = 0; i < enchants.length; i++)
+        // {
+        //     file_content += enchants[i] + " " + armor_input[i] + "\n";
+        // }
+        uriContent = "data:application/octet-stream," + encodeURIComponent(file_content);
+        saveAs(uriContent, "wow-fury-sim-config.txt")
+        // var world_buffs_input = [];
+        // var buffs_input = [];
+        // var consumables_input = [];
+        // var armor_input = [];
+        // var weapons_input = [];
+        // var enchants_input = [];
+    }
+
+    function saveAs(uri, filename) {
+        var link = document.createElement('a');
+        if (typeof link.download === 'string') {
+            document.body.appendChild(link); // Firefox requires the link to be in the body
+            link.download = filename;
+            link.href = uri;
+            link.click();
+            document.body.removeChild(link); // remove the link when done
+        } else {
+            location.replace(uri);
+        }
+    }
+
     function openTab(evt, cityName) {
         let i, tabcontent, tablinks;
         tabcontent = document.getElementsByClassName("tabcontent");
@@ -588,9 +651,7 @@
         }
         document.getElementById(cityName).style.display = "block";
     }
-</script>
 
-<script>
     var world_buffs = ["rallying_cry", "dire_maul", "songflower", "warchiefs_blessing", "spirit_of_zandalar", "sayges_fortune"];
     var world_buffs_input = [];
 
