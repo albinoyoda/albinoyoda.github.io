@@ -109,6 +109,7 @@
 <div id="Coming soon" class="tabcontent">
     <h2>Stuff to be added soon:</h2>
     <p>TPS calculator for tanking. </p>
+    <p>Buff configuration for horde side. </p>
     <p>Ability to save/load gear setups. </p>
     <p>MORE ITEMS!!</p>
     <p>Talents </p>
@@ -471,6 +472,9 @@
     <label for="sayges_fortune"> sayges_fortune</label><br>
 
     <p> Player buffs: </p>
+    <input type="checkbox" id="battle_shout">
+    <label for="battle_shout"> battle_shout</label><br>
+
     <input type="checkbox" id="blessing_of_kings">
     <label for="blessing_of_kings"> blessing_of_kings</label><br>
 
@@ -487,62 +491,92 @@
     <input type="checkbox" id="elixir_mongoose">
     <label for="elixir_mongoose"> elixir_mongoose</label><br>
 
-    <input type="checkbox" id="blessed_sunfruit">
+    <input type="checkbox" id="blessed_sunfruit" onclick=
+            "if (document.getElementById('smoked_dessert_dumplings').checked)
+                {
+                    document.getElementById('smoked_dessert_dumplings').checked = false;
+                }">
     <label for="blessed_sunfruit"> blessed_sunfruit</label><br>
+
+    <input type="checkbox" id="smoked_dessert_dumplings" onclick=
+            "if (document.getElementById('blessed_sunfruit').checked)
+                {
+                    document.getElementById('blessed_sunfruit').checked = false;
+                }">
+    <label for="smoked_dessert_dumplings"> smoked_dessert_dumplings</label><br>
+
+    <input type="checkbox" id="juju_might" onclick=
+            "if (document.getElementById('winterfall_firewater').checked)
+                {
+                    document.getElementById('winterfall_firewater').checked = false;
+                }">
+    <label for="juju_might"> juju_might</label><br>
+
+    <input type="checkbox" id="winterfall_firewater" onclick=
+            "if (document.getElementById('juju_might').checked)
+                {
+                    document.getElementById('juju_might').checked = false;
+                }">
+    <label for="winterfall_firewater"> winterfall_firewater</label><br>
 
     <input type="checkbox" id="juju_power">
     <label for="juju_power"> juju_power</label><br>
 
-    <input type="checkbox" id="juju_might">
-    <label for="juju_might"> juju_might</label><br>
-
     <input type="checkbox" id="roids">
     <label for="roids"> roids</label><br>
 
-    <form>
-        <p>Stone main-hand:</p>
-        <input type="radio" id="dense_stone_main_hand" name="gender">
-        <label for="dense_stone_main_hand">dense_stone</label><br>
-        <input type="radio" id="elemental_stone_main_hand" name="gender">
-        <label for="elemental_stone_main_hand">elemental_stone</label><br>
-        <input type=button value="Uncheck" onclick=
-                "document.getElementById('dense_stone_main_hand').checked = false;
-            document.getElementById('elemental_stone_main_hand').checked = false;">
-    </form>
+    <p>Stones:</p>
 
-    <form>
-        <p>Stone off-hand:</p>
-        <input type="radio" id="dense_stone_off_hand" name="gender">
-        <label for="dense_stone_off_hand">dense_stone</label><br>
-        <input type="radio" id="elemental_stone_off_hand" name="gender">
-        <label for="elemental_stone_off_hand">elemental_stone</label><br>
-        <input type=button value="Uncheck" onclick=
-                "document.getElementById('dense_stone_off_hand').checked = false;
-            document.getElementById('elemental_stone_off_hand').checked = false;">
-    </form>
+    <input type="checkbox" id="dense_stone_main_hand" onclick=
+            "if (document.getElementById('elemental_stone_main_hand').checked)
+                {
+                    document.getElementById('elemental_stone_main_hand').checked = false;
+                }">
+    <label for="dense_stone_main_hand"> dense_stone_main_hand</label><br>
+
+    <input type="checkbox" id="elemental_stone_main_hand" onclick=
+            "if (document.getElementById('dense_stone_main_hand').checked)
+                {
+                    document.getElementById('dense_stone_main_hand').checked = false;
+                }">
+    <label for="elemental_stone_main_hand"> elemental_stone_main_hand</label><br>
+
+    <input type="checkbox" id="dense_stone_off_hand" onclick=
+            "if (document.getElementById('elemental_stone_off_hand').checked)
+                {
+                    document.getElementById('elemental_stone_off_hand').checked = false;
+                }">
+    <label for="dense_stone_off_hand"> dense_stone_off_hand</label><br>
+
+    <input type="checkbox" id="elemental_stone_off_hand" onclick=
+            "if (document.getElementById('dense_stone_off_hand').checked)
+                {
+                    document.getElementById('dense_stone_off_hand').checked = false;
+                }">
+    <label for="elemental_stone_off_hand"> elemental_stone_off_hand</label><br>
 
     <h3>Simulation settings:</h3>
-    <label for="n_simulations">Number of simulations: (100 - 30000):</label>
-    <input type="number" id="n_simulations" name="quantity" min="100" max="30000" value="10000">
+    <label for="n_simulations_dd">Number of simulations: (100 - 30000):</label>
+    <input type="number" id="n_simulations_dd" name="quantity" min="100" max="30000" value="10000">
 
     <p></p>
-    <label for="opponent_level">Opponent level: (60-63):</label>
-    <input type="number" id="opponent_level" name="quantity" min="60" max="63" value="63">
+    <label for="opponent_level_dd">Opponent level: (60-63):</label>
+    <input type="number" id="opponent_level_dd" name="quantity" min="60" max="63" value="63">
 
     <p></p>
-    <label for="fight_time">Fight time: (10-200s):</label>
-    <input type="number" id="fight_time" name="quantity" min="10" max="200" value="60">
+    <label for="fight_time_dd">Fight time: (10-200s):</label>
+    <input type="number" id="fight_time_dd" name="quantity" min="10" max="200" value="60">
 
     <p></p>
-    <label for="sunder_armor">Sunder armor stacks: (0-5):</label>
-    <input type="number" id="sunder_armor" name="quantity" min="0" max="5" value="5">
+    <label for="sunder_armor_dd">Sunder armor stacks: (0-5):</label>
+    <input type="number" id="sunder_armor_dd" name="quantity" min="0" max="5" value="5">
 
     <p></p>
-    <input type="checkbox" id="faerie_fire_feral_active" checked>
+    <input type="checkbox" id="faerie_fire_feral_active" >
     <label for="faerie_fire_feral_active"> Faerie fire feral active</label><br>
-    <input type="checkbox" id="curse_of_recklessness_active" checked>
+    <input type="checkbox" id="curse_of_recklessness_active" >
     <label for="curse_of_recklessness_active"> Curse of recklessness active</label><br>
-    <input type="checkbox" id="enable_death_wish" checked>
+    <input type="checkbox" id="enable_death_wish" >
     <label for="enable_death_wish"> Use death wish (used in the last 30sec)</label><br>
     <input type="checkbox" id="use_mighty_rage_potion">
     <label for="use_mighty_rage_potion"> Use mighty rage potion (used in the last 25sec)</label><br>
@@ -558,8 +592,8 @@
 
     <h2>----------- RESULTS BELOW -----------</h2>
     <p id="output1">Average DPS: </p>
-    <p id="output3">Stat weights: </p>
-    <p id="output2">Character stats: </p>
+    <p id="output2">Stat weights: </p>
+    <p id="output3">Character stats: </p>
     <p id="output4">Crit cap details: </p>
 
     <canvas id="line-chart-hist"></canvas>
@@ -592,14 +626,29 @@
             let splitlog = rawLog.split("\n");
             for (let item of splitlog) {
                 let dd_name = item.split(" ");
-                selectElement(dd_name[0], dd_name[1])
+                console.log(dd_name[0]);
+                if (dd_name.length === 2) {
+                    console.log(dd_name[1]);
+                    selectElement(dd_name[0], dd_name[1])
+                } else {
+                    console.log(dd_name[1] + " " + dd_name[2]);
+                    selectElement(dd_name[0], dd_name[1] + " " + dd_name[2])
+                }
             }
         }
     }
 
     function selectElement(id, valueToSelect) {
-        let element = document.getElementById(id);
-        element.value = valueToSelect;
+        if (id !== "" && id !== "undefined") {
+            if (id.slice(id.length - 2, id.length) === "dd") {
+                let element = document.getElementById(id);
+                element.value = valueToSelect;
+            } else {
+                if (id === valueToSelect) {
+                    document.getElementById(id).checked = true;
+                }
+            }
+        }
     }
 
     function save_button() {
@@ -611,18 +660,34 @@
         for (let i = 0; i < weapons.length; i++) {
             file_content += weapons[i] + " " + weapons_input[i] + "\n";
         }
-        // for (let i = 0; i < enchants.length; i++)
-        // {
-        //     file_content += enchants[i] + " " + armor_input[i] + "\n";
-        // }
+        for (let i = 0; i < enchants.length; i++) {
+            let dd_string = enchants_input[i].slice(1, enchants_input[i].length);
+            file_content += enchants[i] + " " + dd_string + "\n";
+        }
+        for (let i = 0; i < world_buffs.length; i++) {
+            file_content += world_buffs[i] + " " + world_buffs_input[i] + "\n";
+        }
+        for (let i = 0; i < buffs.length; i++) {
+            file_content += buffs[i] + " " + buffs_input[i] + "\n";
+        }
+        for (let i = 0; i < consumables.length; i++) {
+            file_content += consumables[i] + " " + consumables_input[i] + "\n";
+        }
+        let var_array = ["n_simulations_dd", "opponent_level_dd", "fight_time_dd", "sunder_armor_dd"];
+        for (let variable of var_array) {
+            file_content += variable + " " + parseFloat(document.getElementById(variable).value) + "\n";
+        }
+        let var_array2 = ["faerie_fire_feral_active", "curse_of_recklessness_active", "enable_death_wish",
+            "enable_recklessness", "enable_recklessness", "use_mighty_rage_potion", "vaelastrasz"];
+        for (let variable of var_array2) {
+            if (document.getElementById(variable).checked)
+            {
+                file_content += variable + " " + variable + "\n";
+            }
+        }
+
         uriContent = "data:application/octet-stream," + encodeURIComponent(file_content);
         saveAs(uriContent, "wow-fury-sim-config.txt")
-        // var world_buffs_input = [];
-        // var buffs_input = [];
-        // var consumables_input = [];
-        // var armor_input = [];
-        // var weapons_input = [];
-        // var enchants_input = [];
     }
 
     function saveAs(uri, filename) {
@@ -654,11 +719,11 @@
     var world_buffs = ["rallying_cry", "dire_maul", "songflower", "warchiefs_blessing", "spirit_of_zandalar", "sayges_fortune"];
     var world_buffs_input = [];
 
-    var buffs = ["blessing_of_kings", "blessing_of_might", "gift_of_the_wild", "trueshot_aura"];
+    var buffs = ["battle_shout", "blessing_of_kings", "blessing_of_might", "gift_of_the_wild", "trueshot_aura"];
     var buffs_input = [];
 
-    var consumables = ["elixir_mongoose", "blessed_sunfruit", "juju_power", "juju_might", "roids",
-        "dense_stone_main_hand", "elemental_stone_main_hand", "dense_stone_off_hand", "elemental_stone_off_hand"];
+    var consumables = ["elixir_mongoose", "blessed_sunfruit", "smoked_dessert_dumplings", "juju_power", "winterfall_firewater",
+        "juju_might", "roids", "dense_stone_main_hand", "elemental_stone_main_hand", "dense_stone_off_hand", "elemental_stone_off_hand"];
     var consumables_input = [];
 
     var armor = ["helmet_dd", "neck_dd", "shoulder_dd", "back_dd",
@@ -671,7 +736,7 @@
 
     var enchants = ["helmet_ench_dd", "shoulder_ench_dd", "back_ench_dd", "chest_ench_dd", "wrist_ench_dd",
         "hands_ench_dd", "legs_ench_dd", "boots_ench_dd", "main_hand_ench_dd", "off_hand_ench_dd"];
-    var enchant_prefixes = ["he", "s", "b", "c", "w", "h", "l", "b", "m", "o"];
+    var enchant_prefixes = ["e", "s", "b", "c", "w", "h", "l", "b", "m", "o"];
     var enchants_input = [];
 
     var race;
@@ -765,29 +830,29 @@
             ench_vec.push_back(ench);
         }
 
-        let n_simulations = parseFloat(document.getElementById("n_simulations").value);
-        if (isNaN(n_simulations)) {
-            n_simulations = 5000;
+        let n_simulations_dd = parseFloat(document.getElementById("n_simulations_dd").value);
+        if (isNaN(n_simulations_dd)) {
+            n_simulations_dd = 5000;
         }
-        n_simulations = Math.min(Math.max(n_simulations, 100), 30000);
+        n_simulations_dd = Math.min(Math.max(n_simulations_dd, 100), 30000);
 
-        let opponent_level = parseFloat(document.getElementById("opponent_level").value);
-        if (isNaN(opponent_level)) {
-            opponent_level = 63;
+        let opponent_level_dd = parseFloat(document.getElementById("opponent_level_dd").value);
+        if (isNaN(opponent_level_dd)) {
+            opponent_level_dd = 63;
         }
-        opponent_level = Math.min(Math.max(opponent_level, 60), 63);
+        opponent_level_dd = Math.min(Math.max(opponent_level_dd, 60), 63);
 
-        let fight_time = parseFloat(document.getElementById("fight_time").value);
-        if (isNaN(fight_time)) {
-            fight_time = 60;
+        let fight_time_dd = parseFloat(document.getElementById("fight_time_dd").value);
+        if (isNaN(fight_time_dd)) {
+            fight_time_dd = 60;
         }
-        fight_time = Math.min(Math.max(fight_time, 10), 200);
+        fight_time_dd = Math.min(Math.max(fight_time_dd, 10), 200);
 
-        let sunder_armor = parseInt(document.getElementById("sunder_armor").value);
-        if (isNaN(sunder_armor)) {
-            sunder_armor = 5;
+        let sunder_armor_dd = parseInt(document.getElementById("sunder_armor_dd").value);
+        if (isNaN(sunder_armor_dd)) {
+            sunder_armor_dd = 5;
         }
-        sunder_armor = Math.min(Math.max(sunder_armor, 0), 5);
+        sunder_armor_dd = Math.min(Math.max(sunder_armor_dd, 0), 5);
 
         let faerie_fire_feral_active = document.getElementById("faerie_fire_feral_active").checked;
         let curse_of_recklessness_active = document.getElementById("curse_of_recklessness_active").checked;
@@ -811,10 +876,10 @@
             buffs: buff_vec,
             enchants: ench_vec,
             stat_weights: stat_weight_vec,
-            fight_time: fight_time,
-            target_level: opponent_level,
-            n_simulations: n_simulations,
-            sunder_armor: sunder_armor,
+            fight_time: fight_time_dd,
+            target_level: opponent_level_dd,
+            n_simulations: n_simulations_dd,
+            sunder_armor: sunder_armor_dd,
             faerie_fire: faerie_fire_feral_active,
             curse_of_recklessness: curse_of_recklessness_active,
             death_wish: enable_death_wish,
@@ -827,8 +892,9 @@
 
         let result = obj.simulate(wow_input);
 
-        document.getElementById("output1").innerHTML = 'Average DPS: <b>' + result['mean_dps'].toFixed(2) + ' &plusmn ' + result['std_dps'].toFixed(2) + '</b>, (95% confidence interval)';
-        document.getElementById("output2").innerHTML = result['messages'].get(0);
+        document.getElementById("output1").innerHTML = 'Average DPS: <b>' + result['mean_dps'].toFixed(2) + ' &plusmn ' +
+            result['std_dps'].toFixed(2) + '</b>, (95% confidence interval)';
+        document.getElementById("output3").innerHTML = result['messages'].get(0);
 
         let stat_weights = [];
         if (result['stat_weights'].size() > 0) {
@@ -843,8 +909,8 @@
                 stat_weights.push({
                     'name': stat_string[0],
                     'value': parseFloat(stat_string[1]) / dps_per_ap,
-                    'value_max': (parseFloat(stat_string[1]) + parseFloat(stat_string[2])) / dps_per_ap_min,
-                    'value_min': (parseFloat(stat_string[1]) - parseFloat(stat_string[2])) / dps_per_ap_max,
+                    'value_max': Math.max((parseFloat(stat_string[1]) + parseFloat(stat_string[2])) / dps_per_ap_min, 0),
+                    'value_min': Math.max((parseFloat(stat_string[1]) - parseFloat(stat_string[2])) / dps_per_ap_max, 0)
                     // 'std': parseFloat(stat_string[2]) / dps_per_ap
                 });
             }
@@ -857,7 +923,7 @@
                     " &#8722 " + stat_weights[i]['value_max'].toFixed(2) + "</b>] attack power. <br />";
             }
         }
-        document.getElementById("output3").innerHTML = string;
+        document.getElementById("output2").innerHTML = string;
 
         // Crit cap details:
         document.getElementById("output4").innerHTML = result['extra_stats'].get(0);

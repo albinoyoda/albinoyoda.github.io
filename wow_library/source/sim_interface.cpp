@@ -168,11 +168,11 @@ character_setup(const Armory &armory, const Buffs &buffs, const std::string &rac
 
     character.equip_weapon(armory.find_weapon(weapons_vec[0]), armory.find_weapon(weapons_vec[1]));
 
-    if (find_string(ench_vec, "he+8 strength"))
+    if (find_string(ench_vec, "e+8 strength"))
     {
         character.add_enchant(Socket::head, Enchant::Type::strength);
     }
-    else if (find_string(ench_vec, "he+1 haste"))
+    else if (find_string(ench_vec, "e+1 haste"))
     {
         character.add_enchant(Socket::head, Enchant::Type::haste);
     }
@@ -269,6 +269,10 @@ character_setup(const Armory &armory, const Buffs &buffs, const std::string &rac
     }
 
     // Player buffs
+    if (find_string(buffs_vec, "battle_shout"))
+    {
+        character.add_buff(buffs.battle_shout);
+    }
     if (find_string(buffs_vec, "blessing_of_kings"))
     {
         character.add_buff(buffs.blessing_of_kings);
@@ -293,6 +297,10 @@ character_setup(const Armory &armory, const Buffs &buffs, const std::string &rac
     {
         character.add_buff(buffs.blessed_sunfruit);
     }
+    if (find_string(buffs_vec, "smoked_dessert_dumplings"))
+    {
+        character.add_buff(buffs.smoked_dessert_dumplings);
+    }
     if (find_string(buffs_vec, "juju_power"))
     {
         character.add_buff(buffs.juju_power);
@@ -300,6 +308,10 @@ character_setup(const Armory &armory, const Buffs &buffs, const std::string &rac
     if (find_string(buffs_vec, "juju_might"))
     {
         character.add_buff(buffs.juju_might);
+    }
+    if (find_string(buffs_vec, "winterfall_firewater"))
+    {
+        character.add_buff(buffs.winterfall_firewater);
     }
     if (find_string(buffs_vec, "roids"))
     {

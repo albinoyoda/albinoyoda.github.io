@@ -275,7 +275,6 @@ void Armory::compute_total_stats(Character &character) const
     }
 
     // TODO implement shout in simulator instead
-    total_special_stats.attack_power += 241;  // battle shout
     total_special_stats.critical_strike += 5; // crit from talent
     total_special_stats.critical_strike += 3; // crit from berserker stance
 
