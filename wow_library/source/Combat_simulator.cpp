@@ -762,6 +762,16 @@ const std::vector<double> &Combat_simulator::get_hit_probabilities_yellow() cons
     return hit_probabilities_yellow_;
 }
 
+double Combat_simulator::get_glancing_penalty_mh() const
+{
+    return glancing_factor_mh_;
+}
+
+double Combat_simulator::get_glancing_penalty_oh() const
+{
+    return glancing_factor_oh_;
+}
+
 void Combat_simulator::print_damage_distribution() const
 {
     print_damage_source_vector(damage_distribution_);

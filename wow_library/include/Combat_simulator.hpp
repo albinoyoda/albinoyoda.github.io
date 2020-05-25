@@ -158,6 +158,9 @@ public:
     const std::vector<double> &get_hit_probabilities_white_mh() const;
     const std::vector<double> &get_hit_probabilities_white_oh() const;
     const std::vector<double> &get_hit_probabilities_yellow() const;
+    double get_glancing_penalty_mh() const;
+    double get_glancing_penalty_oh() const;
+
 
     void cout_damage_parse(Combat_simulator::Hit_type hit_type, Socket weapon_hand,
                            Combat_simulator::Hit_outcome hit_outcome);
