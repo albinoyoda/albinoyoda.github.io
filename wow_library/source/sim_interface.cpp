@@ -285,6 +285,10 @@ character_setup(const Armory &armory, const Buffs &buffs, const std::string &rac
     {
         character.add_buff(buffs.gift_of_the_wild);
     }
+    if (find_string(buffs_vec, "leader_of_the_pack"))
+    {
+        character.add_buff(buffs.leader_of_the_pack);
+    }
     if (find_string(buffs_vec, "trueshot_aura"))
     {
         character.add_buff(buffs.trueshot_aura);
@@ -304,6 +308,10 @@ character_setup(const Armory &armory, const Buffs &buffs, const std::string &rac
     if (find_string(buffs_vec, "juju_power"))
     {
         character.add_buff(buffs.juju_power);
+    }
+    if (find_string(buffs_vec, "elixir_of_giants"))
+    {
+        character.add_buff(buffs.elixir_of_giants);
     }
     if (find_string(buffs_vec, "juju_might"))
     {

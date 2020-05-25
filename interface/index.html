@@ -43,6 +43,12 @@
     }
 </style>
 
+<head>
+    <title>wow fury sim</title>
+</head>
+
+<h1>wow fury sim</h1>
+
 <body style="background-color:#AEB6BF;" onload="openTab('event', 'Simulator');">
 
 <div class="tab">
@@ -54,6 +60,10 @@
 
 <div id="About" class="tabcontent">
     <h2>Welcome to my fury simulator!</h2>
+
+    <h3> Discord link:</h3>
+    <p>https://discord.gg/xTuKsRz</p>
+
     <h3>FAQ:</h3>
     <p><b>Q: Is this a spreadsheet? How does it work? </b></p>
     <p> A: No, this is not a spreadsheet. This is an actual simulator with world of warcraft classic mechanics.<br/>
@@ -119,6 +129,7 @@
 </div>
 
 <div id="Simulator" class="tabcontent">
+
     <p> Save/Load config from file:</p>
     <input type="file" id="myFile" name="filename" accept=".txt">
     <input type="submit" onclick="load_file()">
@@ -389,7 +400,7 @@
 
     <select id="shoulder_ench_dd">
         <option value="shoulder">shoulder</option>
-        <option value="+30 attack_power">+30 attack power</option>
+        <option value="+30_attack_power">+30 attack power</option>
     </select>
 
     <select id="back_ench_dd">
@@ -485,6 +496,9 @@
     <input type="checkbox" id="gift_of_the_wild">
     <label for="gift_of_the_wild"> gift_of_the_wild</label><br>
 
+    <input type="checkbox" id="leader_of_the_pack">
+    <label for="leader_of_the_pack"> leader_of_the_pack</label><br>
+
     <input type="checkbox" id="trueshot_aura">
     <label for="trueshot_aura"> trueshot_aura</label><br>
 
@@ -520,8 +534,19 @@
                 }">
     <label for="winterfall_firewater"> winterfall_firewater</label><br>
 
-    <input type="checkbox" id="juju_power">
+    <input type="checkbox" id="juju_power" onclick=
+            "if (document.getElementById('elixir_of_giants').checked)
+                {
+                    document.getElementById('elixir_of_giants').checked = false;
+                }">
     <label for="juju_power"> juju_power</label><br>
+
+    <input type="checkbox" id="elixir_of_giants" onclick=
+            "if (document.getElementById('juju_power').checked)
+                {
+                    document.getElementById('juju_power').checked = false;
+                }">
+    <label for="elixir_of_giants"> elixir_of_giants</label><br>
 
     <input type="checkbox" id="roids">
     <label for="roids"> roids</label><br>
@@ -719,10 +744,10 @@
     var world_buffs = ["rallying_cry", "dire_maul", "songflower", "warchiefs_blessing", "spirit_of_zandalar", "sayges_fortune"];
     var world_buffs_input = [];
 
-    var buffs = ["battle_shout", "blessing_of_kings", "blessing_of_might", "gift_of_the_wild", "trueshot_aura"];
+    var buffs = ["battle_shout", "blessing_of_kings", "blessing_of_might", "gift_of_the_wild", "leader_of_the_pack", "trueshot_aura"];
     var buffs_input = [];
 
-    var consumables = ["elixir_mongoose", "blessed_sunfruit", "smoked_dessert_dumplings", "juju_power", "winterfall_firewater",
+    var consumables = ["elixir_mongoose", "blessed_sunfruit", "smoked_dessert_dumplings", "juju_power", "elixir_of_giants", "winterfall_firewater",
         "juju_might", "roids", "dense_stone_main_hand", "elemental_stone_main_hand", "dense_stone_off_hand", "elemental_stone_off_hand"];
     var consumables_input = [];
 
