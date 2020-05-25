@@ -177,7 +177,7 @@ character_setup(const Armory &armory, const Buffs &buffs, const std::string &rac
         character.add_enchant(Socket::head, Enchant::Type::haste);
     }
 
-    if (find_string(ench_vec, "s+30 attack power"))
+    if (find_string(ench_vec, "s+30 attack_power"))
     {
         character.add_enchant(Socket::shoulder, Enchant::Type::attack_power);
     }

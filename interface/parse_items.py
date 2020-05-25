@@ -91,11 +91,11 @@ for index, line in enumerate(lines):
     l = line
     if copy_line:
         washed_lines.append(line)
-    if line == "<!--armor begin-->\n":
+    if line == "    <!--armor begin-->\n":
         found_start = True
         armor_index = index
         copy_line = False
-    if line == "<!--armor stop-->\n":
+    if line == "    <!--armor stop-->\n":
         found_stop = True
         washed_lines.append(line)
         copy_line = True
@@ -110,7 +110,7 @@ if found_start and found_stop:
     for armor_type in armor_types:
         if armor_type.category == 'ring' or armor_type.category == 'trinket':
             for i in range(2):
-                generated_1.append('<select id="' + armor_type.category + '_dd' + str(i+1) + '>\n')
+                generated_1.append('<select id="' + armor_type.category + str(i+1) + '_dd"' + '>\n')
                 generated_1.append(
                     '    <option value="none" selected disabled>' + armor_type.category + str(i + 1) + '</option>\n')
                 for item in armor_type.items:

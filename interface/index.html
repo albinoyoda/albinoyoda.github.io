@@ -128,6 +128,7 @@
 
     <p> Select armor: </p>
     <p></p>
+
     <!--armor begin-->
     <select id="helmet_dd">
         <option value="none" selected disabled>helmet</option>
@@ -252,7 +253,7 @@
         <option value="windreaver_greaves">windreaver_greaves</option>
     </select>
 
-    <select id="ring_dd1">
+    <select id="ring1_dd">
         <option value="none" selected disabled>ring1</option>
         <option value="blackstone_ring">blackstone_ring</option>
         <option value="circle_of_applied_force">circle_of_applied_force</option>
@@ -264,7 +265,7 @@
         <option value="tarnished_elven">tarnished_elven</option>
     </select>
 
-    <select id="ring_dd2">
+    <select id="ring2_dd">
         <option value="none" selected disabled>ring2</option>
         <option value="blackstone_ring">blackstone_ring</option>
         <option value="circle_of_applied_force">circle_of_applied_force</option>
@@ -278,7 +279,7 @@
 
     <p></p>
 
-    <select id="trinket_dd1">
+    <select id="trinket1_dd">
         <option value="none" selected disabled>trinket1</option>
         <option value="blackhands_breadth">blackhands_breadth</option>
         <option value="diamond_flask">diamond_flask</option>
@@ -286,7 +287,7 @@
         <option value="hand_of_justice">hand_of_justice</option>
     </select>
 
-    <select id="trinket_dd2">
+    <select id="trinket2_dd">
         <option value="none" selected disabled>trinket2</option>
         <option value="blackhands_breadth">blackhands_breadth</option>
         <option value="diamond_flask">diamond_flask</option>
@@ -388,7 +389,7 @@
 
     <select id="shoulder_ench_dd">
         <option value="shoulder">shoulder</option>
-        <option value="+30 attack power">+30 attack power</option>
+        <option value="+30 attack_power">+30 attack power</option>
     </select>
 
     <select id="back_ench_dd">
@@ -572,11 +573,11 @@
     <input type="number" id="sunder_armor_dd" name="quantity" min="0" max="5" value="5">
 
     <p></p>
-    <input type="checkbox" id="faerie_fire_feral_active" >
+    <input type="checkbox" id="faerie_fire_feral_active">
     <label for="faerie_fire_feral_active"> Faerie fire feral active</label><br>
-    <input type="checkbox" id="curse_of_recklessness_active" >
+    <input type="checkbox" id="curse_of_recklessness_active">
     <label for="curse_of_recklessness_active"> Curse of recklessness active</label><br>
-    <input type="checkbox" id="enable_death_wish" >
+    <input type="checkbox" id="enable_death_wish">
     <label for="enable_death_wish"> Use death wish (used in the last 30sec)</label><br>
     <input type="checkbox" id="use_mighty_rage_potion">
     <label for="use_mighty_rage_potion"> Use mighty rage potion (used in the last 25sec)</label><br>
@@ -680,8 +681,7 @@
         let var_array2 = ["faerie_fire_feral_active", "curse_of_recklessness_active", "enable_death_wish",
             "enable_recklessness", "enable_recklessness", "use_mighty_rage_potion", "vaelastrasz"];
         for (let variable of var_array2) {
-            if (document.getElementById(variable).checked)
-            {
+            if (document.getElementById(variable).checked) {
                 file_content += variable + " " + variable + "\n";
             }
         }
@@ -728,7 +728,7 @@
 
     var armor = ["helmet_dd", "neck_dd", "shoulder_dd", "back_dd",
         "chest_dd", "wrists_dd", "hands_dd", "belt_dd", "legs_dd",
-        "boots_dd", "ring_dd1", "ring_dd2", "trinket_dd1", "trinket_dd2", "ranged_dd"];
+        "boots_dd", "ring1_dd", "ring2_dd", "trinket1_dd", "trinket2_dd", "ranged_dd"];
     var armor_input = [];
 
     var weapons = ["main_hand_dd", "off_hand_dd"];
