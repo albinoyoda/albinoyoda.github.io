@@ -534,22 +534,24 @@
     <input type="number" id="fight_time" name="quantity" min="10" max="200" value="60">
 
     <p></p>
+    <label for="sunder_armor">Sunder armor stacks: (0-5):</label>
+    <input type="number" id="sunder_armor" name="quantity" min="0" max="5" value="5">
+
+    <p></p>
     <input type="checkbox" id="faerie_fire_feral_active" checked>
     <label for="faerie_fire_feral_active"> Faerie fire feral active</label><br>
     <input type="checkbox" id="curse_of_recklessness_active" checked>
     <label for="curse_of_recklessness_active"> Curse of recklessness active</label><br>
     <input type="checkbox" id="enable_death_wish" checked>
-    <label for="enable_death_wish"> Use death wish</label><br>
-    <input type="checkbox" id="enable_recklessness">
-    <label for="enable_recklessness"> Use recklessness</label><br>
+    <label for="enable_death_wish"> Use death wish (used in the last 30sec)</label><br>
     <input type="checkbox" id="use_mighty_rage_potion">
-    <label for="use_mighty_rage_potion"> Use mighty rage potion</label><br>
+    <label for="use_mighty_rage_potion"> Use mighty rage potion (used in the last 25sec)</label><br>
+    <input type="checkbox" id="enable_recklessness">
+    <label for="enable_recklessness"> Use recklessness (used in the last 20sec)</label><br>
 
-    <!--    // config.fuel_extra_rage = false; // Vaelastrasz-->
-
-    <p></p>
-    <label for="sunder_armor">Sunder armor stacks: (0-5):</label>
-    <input type="number" id="sunder_armor" name="quantity" min="0" max="5" value="5">
+    <p><b>Bosses:</b></p>
+    <input type="checkbox" id="vaelastrasz">
+    <label for="vaelastrasz"> Fight against Vaelastrasz (essence of the red + initial boss HP = 30%)</label><br>
 
     <p id="button_id"></p>
     <button onclick="myFunction()">Run simulator</button>
@@ -792,6 +794,7 @@
         let enable_death_wish = document.getElementById("enable_death_wish").checked;
         let enable_recklessness = document.getElementById("enable_recklessness").checked;
         let use_mighty_rage_potion = document.getElementById("use_mighty_rage_potion").checked;
+        let vaelastrasz = document.getElementById("vaelastrasz").checked;
 
         const stat_weight_vec = new Module.StringList();
         stat_weight_vec.push_back("crit");
@@ -817,6 +820,7 @@
             death_wish: enable_death_wish,
             recklessness: enable_recklessness,
             mighty_rage_potion: use_mighty_rage_potion,
+            vaelastrasz: vaelastrasz,
         };
 
         let obj = new Module['Sim_interface']();

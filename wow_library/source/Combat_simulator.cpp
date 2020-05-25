@@ -511,13 +511,12 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
         bool deathwish_used{false};
         bool heroic_strike_active = false;
         bool recklessness_active = false;
-        bool have_printed_execute_phase = false;
+        bool execute_phase = false;
         bool bloodrage_active = false;
         bool used_mighty_rage_potion = false;
-        bool reset_mighty_rage_potion = false;
-        double mightyrage_init_time = 10000000.0;
         int bloodrage_ticks = 0;
         int anger_management_ticks = 0;
+        int burning_adrenaline_ticks = 0;
         int fuel_ticks = 0;
         double bloodrage_init_time = 0.0;
         double bloodrage_cooldown = -1e-5;
@@ -585,6 +584,17 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                 }
             }
 
+            if (config.mode.vaelastrasz)
+            {
+                if (time_keeper_.time - 1 * burning_adrenaline_ticks > 0.0)
+                {
+                    simulator_cout("burning_adrenaline_ticks, +20 rage");
+                    rage += 10;
+                    rage = std::min(100.0, rage);
+                    burning_adrenaline_ticks++;
+                }
+            }
+
             if (config.enable_bloodrage)
             {
                 if (!bloodrage_active && bloodrage_cooldown < 0.0)
@@ -614,20 +624,13 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
 
             if (config.use_mighty_rage_potion)
             {
-                if (sim_time - time_keeper_.time < 30.0 && !used_mighty_rage_potion)
+                if (sim_time - time_keeper_.time < 25.0 && !used_mighty_rage_potion)
                 {
                     simulator_cout("------------ Mighty Rage Potion! ------------");
                     rage += 45 + 30 * get_uniform_random(1);
                     rage = std::min(100.0, rage);
-                    special_stats.attack_power += 132;
+                    buff_manager_.add("Mighty_rage_potion", Special_stats{0, 0, 145}, 20);
                     used_mighty_rage_potion = true;
-                    mightyrage_init_time = time_keeper_.time;
-                }
-                if (time_keeper_.time - mightyrage_init_time > 20.0 && !reset_mighty_rage_potion)
-                {
-                    simulator_cout("------------ Mighty Rage Potion wears off! ------------");
-                    special_stats.attack_power -= 132;
-                    reset_mighty_rage_potion = true;
                 }
             }
 
@@ -654,14 +657,32 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                     }
                 }
 
-                // Execute phase, starts at 85% in
-                if (time_keeper_.time > sim_time * 0.85)
+                // Execute phase
+                if (config.mode.vaelastrasz)
                 {
-                    if (!have_printed_execute_phase)
+                    if (time_keeper_.time > sim_time * 0.33)
                     {
-                        simulator_cout("------------ Execute phase! ------------");
-                        have_printed_execute_phase = true;
+                        if (!execute_phase)
+                        {
+                            simulator_cout("------------ Execute phase! ------------");
+                            execute_phase = true;
+                        }
                     }
+                }
+                else
+                {
+                    if (time_keeper_.time > sim_time * 0.85)
+                    {
+                        if (!execute_phase)
+                        {
+                            simulator_cout("------------ Execute phase! ------------");
+                            execute_phase = true;
+                        }
+                    }
+                }
+                if (execute_phase)
+                {
+
                     if (rage > heroic_strike_rage_cost && !heroic_strike_active)
                     {
                         heroic_strike_active = true;

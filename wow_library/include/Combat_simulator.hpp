@@ -52,6 +52,11 @@ struct Combat_simulator_config
         int improved_execute = 0;
         int dual_wield_specialization = 0;
     } talents;
+
+    struct mode_t
+    {
+        bool vaelastrasz{false};
+    } mode;
 };
 
 class Combat_simulator
@@ -156,9 +161,13 @@ public:
     void compute_hit_table(int level_difference, int weapon_skill, Special_stats special_stats, Socket weapon_hand);
 
     const std::vector<double> &get_hit_probabilities_white_mh() const;
+
     const std::vector<double> &get_hit_probabilities_white_oh() const;
+
     const std::vector<double> &get_hit_probabilities_yellow() const;
+
     double get_glancing_penalty_mh() const;
+
     double get_glancing_penalty_oh() const;
 
 

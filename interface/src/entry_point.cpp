@@ -31,7 +31,8 @@ EMSCRIPTEN_BINDINGS(module)
         .field("curse_of_recklessness", &Sim_input::curse_of_recklessness)
         .field("death_wish", &Sim_input::death_wish)
         .field("recklessness", &Sim_input::recklessness)
-        .field("mighty_rage_potion", &Sim_input::mighty_rage_potion);
+        .field("mighty_rage_potion", &Sim_input::mighty_rage_potion)
+        .field("vaelastrasz", &Sim_input::vaelastrasz);
 
     value_object<Sim_output>("Sim_output")
         .field("hist_x", &Sim_output::hist_x)

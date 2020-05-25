@@ -21,7 +21,8 @@ struct Sim_input
               bool curse_of_recklessness,
               bool death_wish,
               bool recklessness,
-              bool mighty_rage_potion
+              bool mighty_rage_potion,
+              bool vaelastrasz
              ) :
             race(std::move(race)),
             armor(std::move(armor)),
@@ -37,8 +38,8 @@ struct Sim_input
             curse_of_recklessness(curse_of_recklessness),
             death_wish(death_wish),
             recklessness(recklessness),
-            mighty_rage_potion(mighty_rage_potion)
-            {}
+            mighty_rage_potion(mighty_rage_potion),
+            vaelastrasz(vaelastrasz) {}
 
     std::vector<std::string> race;
     std::vector<std::string> armor;
@@ -55,6 +56,7 @@ struct Sim_input
     bool death_wish{};
     bool recklessness{};
     bool mighty_rage_potion{};
+    bool vaelastrasz{};
 };
 
 #endif // COVID_INPUT_HPP

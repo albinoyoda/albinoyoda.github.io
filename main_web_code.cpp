@@ -42,7 +42,7 @@ int main()
 
     Sim_input sim_input{{race}, armor_vec, weapons_vec, buff_vec, ench_vec, {"crit", "hit", "haste"},
                         60, 63, 10000, 5, true, true,
-                        true, true, true};
+                        true, true, true, false};
 
     auto sim_output = sim_interface.simulate(sim_input);
 
