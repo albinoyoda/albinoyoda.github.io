@@ -98,6 +98,12 @@ std::string get_character_stat(const Character &character)
     out_string += print_stat("Unarmed skill: ", character.total_special_stats.fist_skill);
     out_string += "<br />";
 
+    out_string += "Set bonuses:<br />";
+    for (const auto &bonus: character.set_bonuses)
+    {
+        out_string += "<b>" + bonus.name + "-" + std::to_string(bonus.pieces) + "-pieces</b>";
+    }
+
     return out_string;
 }
 

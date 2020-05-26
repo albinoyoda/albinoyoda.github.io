@@ -142,7 +142,7 @@ Hit_effect Armory::enchant_hit_effect(double weapon_speed, Enchant::Type type) c
 {
     if (type == Enchant::Type::crusader)
     {
-        return {"crusader", Hit_effect::Type::stat_boost, {100, 0}, {0, 0, 0}, 0, 15, weapon_speed / 40};
+        return {"crusader", Hit_effect::Type::stat_boost, {100, 0}, {0, 0, 0}, 0, 15, weapon_speed / 60};
     }
     return {"none", Hit_effect::Type::none, {}, {}, 0, 0, 0};
 }
@@ -156,13 +156,14 @@ void Armory::clean_weapon(Weapon &weapon) const
 {
     if (!weapon.hit_effects.empty())
     {
-        if (weapon.hit_effects[0].name == weapon.name)
+        auto temp = weapon.hit_effects;
+        weapon.hit_effects = {};
+        for (const auto &hit_effect : temp)
         {
-            weapon.hit_effects = {weapon.hit_effects[0]};
-        }
-        else
-        {
-            weapon.hit_effects = {};
+            if (hit_effect.name == weapon.name)
+            {
+                weapon.hit_effects.emplace_back(hit_effect);
+            }
         }
     }
 }
@@ -181,6 +182,7 @@ void Armory::compute_total_stats(Character &character) const
     }
     character.total_attributes = {};
     character.total_special_stats = {};
+    character.set_bonuses = {};
     clean_weapon(character.weapons[0]);
     clean_weapon(character.weapons[1]);
     Attributes total_attributes{};
@@ -199,14 +201,13 @@ void Armory::compute_total_stats(Character &character) const
         total_special_stats += get_enchant_special_stats(armor.socket, armor.enchant.type);
 
         set_names.emplace_back(armor.set_name);
-    }
 
-    if (total_special_stats.chance_for_extra_hit > 0)
-    {
-        for (Weapon &weapon : character.weapons)
+        for (const auto &hit_effect : armor.hit_effects)
         {
-            weapon.hit_effects.emplace_back(Hit_effect{"HoJ", Hit_effect::Type::extra_hit, {}, {}, 0, 0,
-                                                       total_special_stats.chance_for_extra_hit});
+            for (Weapon &weapon : character.weapons)
+            {
+                weapon.hit_effects.emplace_back(hit_effect);
+            }
         }
     }
 
@@ -263,6 +264,7 @@ void Armory::compute_total_stats(Character &character) const
             {
                 total_attributes += set_bonus.attributes;
                 total_special_stats += set_bonus.special_stats;
+                character.set_bonuses.emplace_back(set_bonus);
             }
         }
     }
@@ -342,7 +344,8 @@ bool Armory::check_if_weapons_valid(std::vector<Weapon> &weapons) const
     return is_valid;
 }
 
-void Armory::change_weapon(std::vector<Weapon> &current_weapons, const Weapon &equip_weapon, const Socket &socket) const
+void
+Armory::change_weapon(std::vector<Weapon> &current_weapons, const Weapon &equip_weapon, const Socket &socket) const
 {
     // TODO fix twohanded -> dual wield item swap!
     assert(socket == Socket::main_hand || socket == Socket::off_hand);

@@ -23,8 +23,8 @@ int main()
     armor_vec.emplace_back("blastershot");
 
     std::vector<std::string> weapons_vec;
-    weapons_vec.emplace_back("maladath");
-    weapons_vec.emplace_back("deathbringer");
+    weapons_vec.emplace_back("dal_rends_sacred_charge");
+    weapons_vec.emplace_back("dal_rends_tribal_guardian");
 
     std::vector<std::string> buff_vec;
     buff_vec.emplace_back("rallying_cry");
@@ -41,7 +41,7 @@ int main()
     std::string race = "human";
 
     Sim_input sim_input{{race}, armor_vec, weapons_vec, buff_vec, ench_vec, {"crit", "hit", "haste"},
-                        60, 63, 10000, 5, true, true,
+                        60, 63, 100, 5, true, true,
                         true, true, true, false};
 
     auto sim_output = sim_interface.simulate(sim_input);

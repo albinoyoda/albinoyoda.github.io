@@ -70,17 +70,20 @@ for line in lines:
         found_item_vector = False
         weapons.append(armor)
 
-all_weapons = []
+# all_weapons = []
 for wep_type in weapons:
-    for item in wep_type.items:
-        all_weapons.append(item)
+    wep_type.items = list(set(wep_type.items))
+    wep_type.items.sort()
+    # for item in wep_type.items:
+    #     all_weapons.append(item)
 
 with open("index.html", "r") as f:
     lines = f.readlines()
 
 for armors in armor_types:
+    armors.items = list(set(armors.items))
     armors.items.sort()
-all_weapons.sort()
+# all_weapons.sort()
 
 washed_lines = []
 copy_line = True
@@ -110,7 +113,7 @@ if found_start and found_stop:
     for armor_type in armor_types:
         if armor_type.category == 'ring' or armor_type.category == 'trinket':
             for i in range(2):
-                generated_1.append('<select id="' + armor_type.category + str(i+1) + '_dd"' + '>\n')
+                generated_1.append('<select id="' + armor_type.category + str(i + 1) + '_dd"' + '>\n')
                 generated_1.append(
                     '    <option value="none" selected disabled>' + armor_type.category + str(i + 1) + '</option>\n')
                 for item in armor_type.items:
@@ -127,7 +130,7 @@ if found_start and found_stop:
             generated_1.append('\n')
             dropdowns_in_a_row = dropdowns_in_a_row + 1
 
-        if dropdowns_in_a_row >= 4:
+        if dropdowns_in_a_row >= 3:
             generated_1.append('<p></p>\n')
             generated_1.append('\n')
             dropdowns_in_a_row = 0
@@ -138,8 +141,11 @@ if found_start and found_stop:
     for i in range(2):
         generated_2.append('<select id="' + alternatives[i] + '_dd" >\n')
         generated_2.append('    <option value="none" selected disabled>' + alternatives[i] + '</option>\n')
-        for item in all_weapons:
-            generated_2.append('    <option value="' + item + '">' + item + '</option>\n')
+        for wep_type in weapons:
+            generated_2.append(
+                '    <option value="none" disabled> --- ' + wep_type.category.upper() + ' --- </option>\n')
+            for item in wep_type.items:
+                generated_2.append('    <option value="' + item + '">' + item + '</option>\n')
         generated_2.append('</select>\n')
         generated_2.append('\n')
 

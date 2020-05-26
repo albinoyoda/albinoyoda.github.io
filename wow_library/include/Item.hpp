@@ -43,19 +43,14 @@ enum class Weapon_type
     unarmed
 };
 
-enum class Consumable_socket
-{
-    agility,
-    strength,
-
-};
-
 enum class Set
 {
     none,
     devilsaur,
+    valor,
     black_dragonscale,
     rare_pvp_set,
+    epic_pvp_set,
     dal_rends,
     warblade_of_the_hakkari
 };
@@ -127,9 +122,10 @@ struct Enchant
 
 struct Set_bonus
 {
-    Set_bonus(Attributes attributes, Special_stats special_stats, int pieces, Set set) :
-            attributes(attributes), special_stats(special_stats), pieces(pieces), set(set) {};
+    Set_bonus(std::string name, Attributes attributes, Special_stats special_stats, int pieces, Set set) :
+            name(std::move(name)), attributes(attributes), special_stats(special_stats), pieces(pieces), set(set) {};
 
+    std::string name;
     Attributes attributes;
     Special_stats special_stats;
     int pieces;
@@ -168,17 +164,20 @@ struct Weapon_buff
 
 struct Armor
 {
-    Armor(std::string name, Attributes attributes, Special_stats special_stats, Socket socket, Set set_name = Set::none)
+    Armor(std::string name, Attributes attributes, Special_stats special_stats, Socket socket,
+          Set set_name = Set::none, std::vector<Hit_effect> hit_effects = std::vector<Hit_effect>())
             :
             name(std::move(name)), attributes(attributes), special_stats(special_stats),
             socket(socket),
-            set_name(set_name) {};
+            set_name(set_name),
+            hit_effects(std::move(hit_effects)) {};
     std::string name;
     Attributes attributes;
     Special_stats special_stats;
     Socket socket;
     Set set_name;
     Enchant enchant{};
+    std::vector<Hit_effect> hit_effects{};
 };
 
 struct Weapon
