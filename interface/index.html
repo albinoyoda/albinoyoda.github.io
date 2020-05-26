@@ -827,12 +827,12 @@
     <label for="use_bt_in_exec_phase"> Use bloodthirst in execute phase</label><br>
     <input type="checkbox" id="use_hs_in_exec_phase">
     <label for="use_hs_in_exec_phase"> Use heroic strike in execute phase</label><br>
-    <label for="heroic_strike_rage_thresh">Heroic strike when rage is above:</label>
-    <input type="number" id="heroic_strike_rage_thresh" name="quantity" min="0" max="100" value="50"><br>
-    <label for="whirlwind_rage_thresh">Whirlwind when rage is above:</label>
-    <input type="number" id="whirlwind_rage_thresh" name="quantity" min="0" max="100" value="0"><br>
-    <label for="whirlwind_bt_cooldown_thresh">Whirlwind when bloodthirst CD is above:</label>
-    <input type="number" id="whirlwind_bt_cooldown_thresh" name="quantity" min="0" max="6" value="1.5">
+    <label for="heroic_strike_rage_thresh_dd">Heroic strike when rage is above:</label>
+    <input type="number" id="heroic_strike_rage_thresh_dd" name="quantity" min="0" max="100" value="50"><br>
+    <label for="whirlwind_rage_thresh_dd">Whirlwind when rage is above:</label>
+    <input type="number" id="whirlwind_rage_thresh_dd" name="quantity" min="0" max="100" value="0"><br>
+    <label for="whirlwind_bt_cooldown_thresh_dd">Whirlwind when bloodthirst CD is above:</label>
+    <input type="number" id="whirlwind_bt_cooldown_thresh_dd" name="quantity" min="0" max="6" value="1.5">
 
     <p><b>Bosses:</b></p>
     <input type="checkbox" id="vaelastrasz">
@@ -931,12 +931,17 @@
         for (let i = 0; i < consumables.length; i++) {
             file_content += consumables[i] + " " + consumables_input[i] + "\n";
         }
-        let var_array = ["n_simulations_dd", "opponent_level_dd", "fight_time_dd", "sunder_armor_dd"];
+
+        let var_array = ["n_simulations_dd", "opponent_level_dd", "fight_time_dd", "sunder_armor_dd",
+            "heroic_strike_rage_thresh_dd", "whirlwind_rage_thresh_dd", "whirlwind_bt_cooldown_thresh_dd"];
         for (let variable of var_array) {
             file_content += variable + " " + parseFloat(document.getElementById(variable).value) + "\n";
         }
+
         let var_array2 = ["faerie_fire_feral_active", "curse_of_recklessness_active", "enable_death_wish",
-            "enable_recklessness", "enable_recklessness", "use_mighty_rage_potion", "vaelastrasz"];
+            "enable_recklessness", "enable_recklessness", "use_mighty_rage_potion", "vaelastrasz",
+            "use_bt_in_exec_phase", "use_hs_in_exec_phase"];
+
         for (let variable of var_array2) {
             if (document.getElementById(variable).checked) {
                 file_content += variable + " " + variable + "\n";
@@ -1122,9 +1127,9 @@
 
         let use_bt_in_exec_phase = document.getElementById("use_bt_in_exec_phase").checked;
         let use_hs_in_exec_phase = document.getElementById("use_hs_in_exec_phase").checked;
-        let heroic_strike_rage_thresh = parseFloat(document.getElementById("heroic_strike_rage_thresh").value);
-        let whirlwind_rage_thresh = parseFloat(document.getElementById("whirlwind_rage_thresh").value);
-        let whirlwind_bt_cooldown_thresh = parseFloat(document.getElementById("whirlwind_bt_cooldown_thresh").value);
+        let heroic_strike_rage_thresh = parseFloat(document.getElementById("heroic_strike_rage_thresh_dd").value);
+        let whirlwind_rage_thresh = parseFloat(document.getElementById("whirlwind_rage_thresh_dd").value);
+        let whirlwind_bt_cooldown_thresh = parseFloat(document.getElementById("whirlwind_bt_cooldown_thresh_dd").value);
 
         const stat_weight_vec = new Module.StringList();
         stat_weight_vec.push_back("crit");
