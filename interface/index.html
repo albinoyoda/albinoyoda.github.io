@@ -943,6 +943,8 @@
             }
         }
 
+        file_content += "race_dd" + " " + race_string + "\n";
+
         uriContent = "data:application/octet-stream," + encodeURIComponent(file_content);
         saveAs(uriContent, "wow-fury-sim-config.txt")
     }
