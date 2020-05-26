@@ -172,6 +172,30 @@
         margin: 4px 2px;
         cursor: pointer;
     }
+
+    .collapsible {
+        background-color: #777;
+        color: white;
+        cursor: pointer;
+        padding: 18px;
+        width: 600px;
+        border: none;
+        text-align: center;
+        outline: none;
+        font-size: 15px;
+    }
+
+    .active, .collapsible:hover {
+        background-color: #555;
+    }
+
+    .content {
+        padding: 18px;
+        display: none;
+        overflow: hidden;
+        width: 600px;
+        background-color: #d9d9d9;
+    }
 </style>
 
 <head>
@@ -258,15 +282,19 @@
 
 <div id="Simulator" class="tabcontent">
 
-    <p> Save/Load config from file:</p>
+    <b>Load config from file:</b><br/>
     <input type="file" id="myFile" name="filename" accept=".txt">
-    <input type="submit" onclick="load_file()">
+    <input type="submit" onclick="load_file()"><br/><br/>
 
-    <p id="save_button"></p>
+    <b>Save config to file:</b><br/>
     <button onclick="save_button()">Save current config</button>
+    <br/><br/>
 
-    <p> Select armor: </p>
-    <p></p>
+    <b> Presets:</b><br/>
+    <button onclick="load_p1prebis()">Phase 1 "pre-BiS"</button>
+    <br/><br/>
+
+    <b> Select armor:</b><br/>
 
     <!--armor begin-->
     <select id="helmet_dd">
@@ -498,7 +526,7 @@
 
     <p></p>
 
-    <p> Select weapons: </p>
+    <b> Select weapons:</b><br/>
     <select id="main_hand_dd">
         <option value="none" selected disabled>main_hand</option>
         <option value="none" disabled> --- SWORDS ---</option>
@@ -605,7 +633,7 @@
 
     <!--armor stop-->
 
-    <p> Select enchants: </p>
+    <br/><br/><b> Select enchants:</b><br/>
 
     <select id="helmet_ench_dd">
         <option value="helmet">helmet</option>
@@ -667,7 +695,7 @@
         <option value="crusader">crusader</option>
     </select>
 
-    <p> Select race: </p>
+    <br/><br/><b> Select enchants:</b><br/>
 
     <select id="race_dd">
         <option value="human">human</option>
@@ -678,165 +706,169 @@
         <option value="troll">troll</option>
         <option value="undead">undead</option>
         <option value="tauren">tauren</option>
-    </select>
+    </select><br/><br/>
 
-    <h3> Buffs: </h3>
-    <p> World buffs: </p>
-    <input type="checkbox" id="rallying_cry">
-    <label for="rallying_cry"> rallying_cry</label><br>
+    <button type="button" class="collapsible">Open Buffs and Consumables</button>
+    <div class="content">
+        <b> World buffs:</b><br>
+        <input type="checkbox" id="rallying_cry" checked>
+        <label for="rallying_cry"> rallying_cry</label><br>
 
-    <input type="checkbox" id="dire_maul">
-    <label for="dire_maul"> dire_maul</label><br>
+        <input type="checkbox" id="dire_maul" checked>
+        <label for="dire_maul"> dire_maul</label><br>
 
-    <input type="checkbox" id="songflower">
-    <label for="songflower"> songflower</label><br>
+        <input type="checkbox" id="songflower">
+        <label for="songflower"> songflower</label><br>
 
-    <input type="checkbox" id="warchiefs_blessing">
-    <label for="warchiefs_blessing"> warchiefs_blessing</label><br>
+        <input type="checkbox" id="warchiefs_blessing">
+        <label for="warchiefs_blessing"> warchiefs_blessing</label><br>
 
-    <input type="checkbox" id="spirit_of_zandalar">
-    <label for="spirit_of_zandalar"> spirit_of_zandalar</label><br>
+        <input type="checkbox" id="spirit_of_zandalar" checked>
+        <label for="spirit_of_zandalar"> spirit_of_zandalar</label><br>
 
-    <input type="checkbox" id="sayges_fortune">
-    <label for="sayges_fortune"> sayges_fortune</label><br>
+        <input type="checkbox" id="sayges_fortune">
+        <label for="sayges_fortune"> sayges_fortune</label><br><br>
 
-    <p> Player buffs: </p>
-    <input type="checkbox" id="battle_shout">
-    <label for="battle_shout"> battle_shout</label><br>
+        <b> Player buffs:</b><br>
+        <input type="checkbox" id="battle_shout" checked>
+        <label for="battle_shout"> battle_shout</label><br>
 
-    <input type="checkbox" id="blessing_of_kings">
-    <label for="blessing_of_kings"> blessing_of_kings</label><br>
+        <input type="checkbox" id="blessing_of_kings" checked>
+        <label for="blessing_of_kings"> blessing_of_kings</label><br>
 
-    <input type="checkbox" id="blessing_of_might">
-    <label for="blessing_of_might"> blessing_of_might</label><br>
+        <input type="checkbox" id="blessing_of_might" checked>
+        <label for="blessing_of_might"> blessing_of_might</label><br>
 
-    <input type="checkbox" id="gift_of_the_wild">
-    <label for="gift_of_the_wild"> gift_of_the_wild</label><br>
+        <input type="checkbox" id="gift_of_the_wild" checked>
+        <label for="gift_of_the_wild"> gift_of_the_wild</label><br>
 
-    <input type="checkbox" id="leader_of_the_pack">
-    <label for="leader_of_the_pack"> leader_of_the_pack</label><br>
+        <input type="checkbox" id="leader_of_the_pack">
+        <label for="leader_of_the_pack"> leader_of_the_pack</label><br>
 
-    <input type="checkbox" id="trueshot_aura">
-    <label for="trueshot_aura"> trueshot_aura</label><br>
+        <input type="checkbox" id="trueshot_aura" checked>
+        <label for="trueshot_aura"> trueshot_aura</label><br><br>
 
-    <p> Consumables: </p>
-    <input type="checkbox" id="elixir_mongoose">
-    <label for="elixir_mongoose"> elixir_mongoose</label><br>
+        <b> Consumables:</b><br>
+        <input type="checkbox" id="elixir_mongoose" checked>
+        <label for="elixir_mongoose"> elixir_mongoose</label><br>
 
-    <input type="checkbox" id="blessed_sunfruit" onclick=
-            "if (document.getElementById('smoked_dessert_dumplings').checked)
+        <input type="checkbox" id="blessed_sunfruit" onclick=
+                "if (document.getElementById('smoked_dessert_dumplings').checked)
                 {
                     document.getElementById('smoked_dessert_dumplings').checked = false;
-                }">
-    <label for="blessed_sunfruit"> blessed_sunfruit</label><br>
+                }" checked>
+        <label for="blessed_sunfruit"> blessed_sunfruit</label><br>
 
-    <input type="checkbox" id="smoked_dessert_dumplings" onclick=
-            "if (document.getElementById('blessed_sunfruit').checked)
+        <input type="checkbox" id="smoked_dessert_dumplings" onclick=
+                "if (document.getElementById('blessed_sunfruit').checked)
                 {
                     document.getElementById('blessed_sunfruit').checked = false;
                 }">
-    <label for="smoked_dessert_dumplings"> smoked_dessert_dumplings</label><br>
+        <label for="smoked_dessert_dumplings"> smoked_dessert_dumplings</label><br>
 
-    <input type="checkbox" id="juju_might" onclick=
-            "if (document.getElementById('winterfall_firewater').checked)
+        <input type="checkbox" id="juju_might" onclick=
+                "if (document.getElementById('winterfall_firewater').checked)
                 {
                     document.getElementById('winterfall_firewater').checked = false;
                 }">
-    <label for="juju_might"> juju_might</label><br>
+        <label for="juju_might"> juju_might</label><br>
 
-    <input type="checkbox" id="winterfall_firewater" onclick=
-            "if (document.getElementById('juju_might').checked)
+        <input type="checkbox" id="winterfall_firewater" onclick=
+                "if (document.getElementById('juju_might').checked)
                 {
                     document.getElementById('juju_might').checked = false;
                 }">
-    <label for="winterfall_firewater"> winterfall_firewater</label><br>
+        <label for="winterfall_firewater"> winterfall_firewater</label><br>
 
-    <input type="checkbox" id="juju_power" onclick=
-            "if (document.getElementById('elixir_of_giants').checked)
+        <input type="checkbox" id="juju_power" onclick=
+                "if (document.getElementById('elixir_of_giants').checked)
                 {
                     document.getElementById('elixir_of_giants').checked = false;
-                }">
-    <label for="juju_power"> juju_power</label><br>
+                }" checked>
+        <label for="juju_power"> juju_power</label><br>
 
-    <input type="checkbox" id="elixir_of_giants" onclick=
-            "if (document.getElementById('juju_power').checked)
+        <input type="checkbox" id="elixir_of_giants" onclick=
+                "if (document.getElementById('juju_power').checked)
                 {
                     document.getElementById('juju_power').checked = false;
                 }">
-    <label for="elixir_of_giants"> elixir_of_giants</label><br>
+        <label for="elixir_of_giants"> elixir_of_giants</label><br>
 
-    <input type="checkbox" id="roids">
-    <label for="roids"> roids</label><br>
+        <input type="checkbox" id="roids" checked>
+        <label for="roids"> roids</label><br><br>
 
-    <p>Stones:</p>
-
-    <input type="checkbox" id="dense_stone_main_hand" onclick=
-            "if (document.getElementById('elemental_stone_main_hand').checked)
+        <b> Consumables:</b><br>
+        <input type="checkbox" id="dense_stone_main_hand" onclick=
+                "if (document.getElementById('elemental_stone_main_hand').checked)
                 {
                     document.getElementById('elemental_stone_main_hand').checked = false;
-                }">
-    <label for="dense_stone_main_hand"> dense_stone_main_hand</label><br>
+                }" checked>
+        <label for="dense_stone_main_hand"> dense_stone_main_hand</label><br>
 
-    <input type="checkbox" id="elemental_stone_main_hand" onclick=
-            "if (document.getElementById('dense_stone_main_hand').checked)
+        <input type="checkbox" id="elemental_stone_main_hand" onclick=
+                "if (document.getElementById('dense_stone_main_hand').checked)
                 {
                     document.getElementById('dense_stone_main_hand').checked = false;
                 }">
-    <label for="elemental_stone_main_hand"> elemental_stone_main_hand</label><br>
+        <label for="elemental_stone_main_hand"> elemental_stone_main_hand</label><br>
 
-    <input type="checkbox" id="dense_stone_off_hand" onclick=
-            "if (document.getElementById('elemental_stone_off_hand').checked)
+        <input type="checkbox" id="dense_stone_off_hand" onclick=
+                "if (document.getElementById('elemental_stone_off_hand').checked)
                 {
                     document.getElementById('elemental_stone_off_hand').checked = false;
-                }">
-    <label for="dense_stone_off_hand"> dense_stone_off_hand</label><br>
+                }" checked>
+        <label for="dense_stone_off_hand"> dense_stone_off_hand</label><br>
 
-    <input type="checkbox" id="elemental_stone_off_hand" onclick=
-            "if (document.getElementById('dense_stone_off_hand').checked)
+        <input type="checkbox" id="elemental_stone_off_hand" onclick=
+                "if (document.getElementById('dense_stone_off_hand').checked)
                 {
                     document.getElementById('dense_stone_off_hand').checked = false;
                 }">
-    <label for="elemental_stone_off_hand"> elemental_stone_off_hand</label><br>
+        <label for="elemental_stone_off_hand"> elemental_stone_off_hand</label>
+    </div>
+    <br/><br/>
 
-    <h3>Simulation settings:</h3>
-    <label for="n_simulations_dd">Number of simulations: (100 - 30000):</label>
-    <input type="number" id="n_simulations_dd" name="quantity" min="100" max="30000" value="10000"><br/>
-    <label for="opponent_level_dd">Opponent level: (60-63):</label>
-    <input type="number" id="opponent_level_dd" name="quantity" min="60" max="63" value="63"><br/>
-    <label for="fight_time_dd">Fight time: (10-200s):</label>
-    <input type="number" id="fight_time_dd" name="quantity" min="10" max="200" value="60"><br/>
+    <button type="button" class="collapsible">Open Advanced simulation settings</button>
+    <div class="content">
+        <label for="n_simulations_dd">Number of simulations: (100 - 30000):</label>
+        <input type="number" id="n_simulations_dd" name="quantity" min="100" max="30000" value="10000"><br/>
+        <label for="opponent_level_dd">Opponent level: (60-63):</label>
+        <input type="number" id="opponent_level_dd" name="quantity" min="60" max="63" value="63"><br/>
+        <label for="fight_time_dd">Fight duration: (10-200s):</label>
+        <input type="number" id="fight_time_dd" name="quantity" min="10" max="200" value="60"><br/><br/>
 
-    <h4>Armor reduction</h4>
-    <label for="sunder_armor_dd">Sunder armor stacks: (0-5):</label>
-    <input type="number" id="sunder_armor_dd" name="quantity" min="0" max="5" value="5"><br/>
-    <input type="checkbox" id="faerie_fire_feral_active">
-    <label for="faerie_fire_feral_active"> Faerie fire feral active</label><br>
-    <input type="checkbox" id="curse_of_recklessness_active">
-    <label for="curse_of_recklessness_active"> Curse of recklessness active</label><br>
+        <b>Cooldowns:</b><br/>
+        <input type="checkbox" id="enable_death_wish" checked>
+        <label for="enable_death_wish"> Use death wish (used in the last 30sec)</label><br>
+        <input type="checkbox" id="use_mighty_rage_potion">
+        <label for="use_mighty_rage_potion"> Use mighty rage potion (used in the last 25sec)</label><br>
+        <input type="checkbox" id="enable_recklessness">
+        <label for="enable_recklessness"> Use recklessness (used in the last 20sec)</label><br><br/>
 
-    <h4>Cooldowns:</h4>
-    <input type="checkbox" id="enable_death_wish">
-    <label for="enable_death_wish"> Use death wish (used in the last 30sec)</label><br>
-    <input type="checkbox" id="use_mighty_rage_potion">
-    <label for="use_mighty_rage_potion"> Use mighty rage potion (used in the last 25sec)</label><br>
-    <input type="checkbox" id="enable_recklessness">
-    <label for="enable_recklessness"> Use recklessness (used in the last 20sec)</label><br>
+        <b>Armor reduction:</b><br/>
+        <label for="sunder_armor_dd">Sunder armor stacks: (0-5):</label>
+        <input type="number" id="sunder_armor_dd" name="quantity" min="0" max="5" value="5"><br/>
+        <input type="checkbox" id="faerie_fire_feral_active" checked>
+        <label for="faerie_fire_feral_active"> Faerie fire feral active</label><br>
+        <input type="checkbox" id="curse_of_recklessness_active" checked>
+        <label for="curse_of_recklessness_active"> Curse of recklessness active</label><br><br/>
 
-    <p><b>Combat strategy:</b></p>
-    <input type="checkbox" id="use_bt_in_exec_phase">
-    <label for="use_bt_in_exec_phase"> Use bloodthirst in execute phase</label><br>
-    <input type="checkbox" id="use_hs_in_exec_phase">
-    <label for="use_hs_in_exec_phase"> Use heroic strike in execute phase</label><br>
-    <label for="heroic_strike_rage_thresh_dd">Heroic strike when rage is above:</label>
-    <input type="number" id="heroic_strike_rage_thresh_dd" name="quantity" min="0" max="100" value="50"><br>
-    <label for="whirlwind_rage_thresh_dd">Whirlwind when rage is above:</label>
-    <input type="number" id="whirlwind_rage_thresh_dd" name="quantity" min="0" max="100" value="0"><br>
-    <label for="whirlwind_bt_cooldown_thresh_dd">Whirlwind when bloodthirst CD is above:</label>
-    <input type="number" id="whirlwind_bt_cooldown_thresh_dd" name="quantity" min="0" max="6" value="1.5">
+        <b>Combat strategy:</b><br/>
+        <input type="checkbox" id="use_bt_in_exec_phase">
+        <label for="use_bt_in_exec_phase"> Use bloodthirst in execute phase</label><br>
+        <input type="checkbox" id="use_hs_in_exec_phase" checked>
+        <label for="use_hs_in_exec_phase"> Use heroic strike in execute phase</label><br>
+        <label for="heroic_strike_rage_thresh_dd">Heroic strike when rage is above:</label>
+        <input type="number" id="heroic_strike_rage_thresh_dd" name="quantity" min="0" max="100" value="50"><br>
+        <label for="whirlwind_rage_thresh_dd">Whirlwind when rage is above:</label>
+        <input type="number" id="whirlwind_rage_thresh_dd" name="quantity" min="0" max="100" value="0"><br>
+        <label for="whirlwind_bt_cooldown_thresh_dd">Whirlwind when bloodthirst CD is above:</label>
+        <input type="number" id="whirlwind_bt_cooldown_thresh_dd" name="quantity" min="0" max="6" value="1.5"><br/><br/>
 
-    <p><b>Bosses:</b></p>
-    <input type="checkbox" id="vaelastrasz">
-    <label for="vaelastrasz"> Fight against Vaelastrasz (essence of the red + initial boss HP = 30%)</label><br>
+        <b>Bosses:</b><br/>
+        <input type="checkbox" id="vaelastrasz">
+        <label for="vaelastrasz"> Fight against Vaelastrasz (essence of the red + initial boss HP = 30%)</label><br>
+    </div>
 
     <p id="button_id"></p>
     <button style="width: 400px; height: 60px;" onclick="myFunction()" class="button">Run simulator</button>
@@ -866,6 +898,21 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 
 <script>
+
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function () {
+            this.classList.toggle("active");
+            var content = this.nextElementSibling;
+            if (content.style.display === "block") {
+                content.style.display = "none";
+            } else {
+                content.style.display = "block";
+            }
+        });
+    }
 
     function load_file() {
         let file = document.getElementById("myFile");
@@ -906,6 +953,35 @@
                     }
                 }
             }
+        }
+    }
+
+    function load_p1prebis() {
+        var armor = ["helmet_dd", "neck_dd", "shoulder_dd", "back_dd",
+            "chest_dd", "wrists_dd", "hands_dd", "belt_dd", "legs_dd",
+            "boots_dd", "ring1_dd", "ring2_dd", "trinket1_dd", "trinket2_dd", "ranged_dd"];
+        var items = ["lionheart_helm", "mark_of_fordring", "truestrike_shoulders",
+            "cape_of_the_black_baron", "savage_gladiator_chain", "wristguards_of_stability",
+            "devilsaur_gauntlets", "omokks_girth_restrainer", "devilsaur_leggings",
+            "battlechasers_greaves", "magnis_will", "blackstone_ring",
+            "blackhands_breadth", "hand_of_justice", "satyrs_bow"];
+
+        var wep_slots = ["main_hand_dd", "off_hand_dd"];
+        var weapons = ["dal_rends_sacred_charge", "dal_rends_tribal_guardian"];
+
+        var armor_ench = ["helmet_ench_dd", "back_ench_dd", "chest_ench_dd", "wrist_ench_dd",
+            "hands_ench_dd", "legs_ench_dd", "main_hand_ench_dd", "off_hand_ench_dd"];
+        var enchants = ["+8 strength", "+3 agility", "+3 stats", "+9 strength",
+            "+7 strength", "+8 strength", "crusader", "crusader"];
+
+        for (let i = 0; i < armor.length; i++) {
+            selectElement(armor[i], items[i])
+        }
+        for (let i = 0; i < weapons.length; i++) {
+            selectElement(wep_slots[i], weapons[i])
+        }
+        for (let i = 0; i < enchants.length; i++) {
+            selectElement(armor_ench[i], enchants[i])
         }
     }
 

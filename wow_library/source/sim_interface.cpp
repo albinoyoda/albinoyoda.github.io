@@ -101,7 +101,7 @@ std::string get_character_stat(const Character &character)
     out_string += "Set bonuses:<br />";
     for (const auto &bonus: character.set_bonuses)
     {
-        out_string += "<b>" + bonus.name + "-" + std::to_string(bonus.pieces) + "-pieces</b>";
+        out_string += "<b>" + bonus.name + "-" + std::to_string(bonus.pieces) + "-pieces</b><br>";
     }
 
     return out_string;

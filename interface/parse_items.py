@@ -137,7 +137,7 @@ if found_start and found_stop:
 
     # Weapon selection
     alternatives = ["main_hand", "off_hand"]
-    generated_2 = ['<p> Select weapons: </p>\n']
+    generated_2 = ['<b> Select weapons:</b><br/>\n']
     for i in range(2):
         generated_2.append('<select id="' + alternatives[i] + '_dd" >\n')
         generated_2.append('    <option value="none" selected disabled>' + alternatives[i] + '</option>\n')
