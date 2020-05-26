@@ -41,6 +41,15 @@ struct Combat_simulator_config
     int extra_rage_interval{};
     int extra_rage_damage_amount{};
 
+    struct combat_t
+    {
+        bool use_bt_in_exec_phase;
+        bool use_hs_in_exec_phase;
+        double whirlwind_rage_thresh;
+        double whirlwind_bt_cooldown_thresh;
+        double heroic_strike_rage_thresh;
+    } combat;
+
     struct talents_t
     {
         bool death_wish{false};

@@ -32,7 +32,12 @@ EMSCRIPTEN_BINDINGS(module)
         .field("death_wish", &Sim_input::death_wish)
         .field("recklessness", &Sim_input::recklessness)
         .field("mighty_rage_potion", &Sim_input::mighty_rage_potion)
-        .field("vaelastrasz", &Sim_input::vaelastrasz);
+        .field("vaelastrasz", &Sim_input::vaelastrasz)
+        .field("use_bt_in_exec_phase", &Sim_input::use_bt_in_exec_phase)
+        .field("use_hs_in_exec_phase", &Sim_input::use_hs_in_exec_phase)
+        .field("heroic_strike_rage_thresh", &Sim_input::heroic_strike_rage_thresh)
+        .field("whirlwind_rage_thresh", &Sim_input::whirlwind_rage_thresh)
+        .field("whirlwind_bt_cooldown_thresh", &Sim_input::whirlwind_bt_cooldown_thresh);
 
     value_object<Sim_output>("Sim_output")
         .field("hist_x", &Sim_output::hist_x)

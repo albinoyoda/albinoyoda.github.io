@@ -41,12 +41,12 @@ int main()
     std::string race = "human";
 
     Sim_input sim_input{{race}, armor_vec, weapons_vec, buff_vec, ench_vec, {"crit", "hit", "haste"},
-                        60, 63, 100, 5, true, true,
-                        true, true, true, false};
+                        60, 63, 10000, 5, true, true,
+                        true, true, true, false, false,true,60, 25, 1};
 
     auto sim_output = sim_interface.simulate(sim_input);
 
-    for (auto dmg_batch : sim_output.stat_weights)
+    for (const auto dmg_batch : sim_output.stat_weights)
     {
         std::cout << dmg_batch << "\n";
     }

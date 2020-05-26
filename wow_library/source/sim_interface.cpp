@@ -381,6 +381,12 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     config.talents.improved_execute = 2;
     config.talents.dual_wield_specialization = 5;
 
+    config.combat.heroic_strike_rage_thresh = input.heroic_strike_rage_thresh;
+    config.combat.use_bt_in_exec_phase = input.use_bt_in_exec_phase;
+    config.combat.use_hs_in_exec_phase = input.use_hs_in_exec_phase;
+    config.combat.whirlwind_rage_thresh = input.whirlwind_rage_thresh;
+    config.combat.whirlwind_bt_cooldown_thresh = input.whirlwind_bt_cooldown_thresh;
+
     config.use_sim_time_ramp = true;
     config.enable_spell_rotation = true;
     config.use_mighty_rage_potion = input.mighty_rage_potion;
@@ -538,19 +544,47 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
                         hit.std_dps_plus) + " " + std::to_string(hit.dps_minus) + " " + std::to_string(
                         hit.std_dps_minus));
             }
-//            if (stat_weight == "skill")
-//            {
-//                char_plus.total_special_stats.hit += 1;
-//                char_minus.total_special_stats.hit -= 1;
-//                Stat_weight hit = compute_stat_weight(simulator, char_plus, char_minus, "hit", 1, mean_init,
-//                                                      sample_std_init);
-//                char_plus.total_special_stats = character.total_special_stats;
-//                char_minus.total_special_stats = character.total_special_stats;
-//
-//                stat_weights.emplace_back("hit: " + std::to_string(hit.dps_plus) + " " + std::to_string(
-//                        hit.std_dps_plus) + " " + std::to_string(hit.dps_minus) + " " + std::to_string(
-//                        hit.std_dps_minus));
-//            }
+            if (stat_weight == "skill")
+            {
+                std::string name{};
+                switch (char_plus.weapons[0].type)
+                {
+                    case Weapon_type::axe:
+                        char_plus.total_special_stats.axe_skill += 5;
+                        char_minus.total_special_stats.axe_skill -= 5;
+                        name = "5-axe-skill: ";
+                        break;
+                    case Weapon_type::sword:
+                        char_plus.total_special_stats.sword_skill += 5;
+                        char_minus.total_special_stats.sword_skill -= 5;
+                        name = "5-sword-skill: ";
+                        break;
+                    case Weapon_type::mace:
+                        char_plus.total_special_stats.mace_skill += 5;
+                        char_minus.total_special_stats.mace_skill -= 5;
+                        name = "5-mace-skill: ";
+                        break;
+                    case Weapon_type::dagger:
+                        char_plus.total_special_stats.dagger_skill += 5;
+                        char_minus.total_special_stats.dagger_skill -= 5;
+                        name = "5-dagger-skill: ";
+                        break;
+                    case Weapon_type::unarmed:
+                        char_plus.total_special_stats.fist_skill += 5;
+                        char_minus.total_special_stats.fist_skill -= 5;
+                        name = "5-unarmed-skill: ";
+                        break;
+                }
+
+                Stat_weight hit = compute_stat_weight(simulator, char_plus, char_minus, "skill", 5, mean_init,
+                                                      sample_std_init);
+                char_plus.total_special_stats = character.total_special_stats;
+                char_minus.total_special_stats = character.total_special_stats;
+
+                stat_weights.emplace_back(name + std::to_string(hit.dps_plus) + " " + std::to_string(
+                        hit.std_dps_plus) + " " + std::to_string(hit.dps_minus) + " " + std::to_string(
+                        hit.std_dps_minus));
+            }
         }
     }
 

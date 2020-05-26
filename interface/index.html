@@ -159,6 +159,19 @@
     option:disabled {
         color: #cc0000;
     }
+
+    .button {
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+    }
 </style>
 
 <head>
@@ -602,7 +615,7 @@
 
     <select id="shoulder_ench_dd">
         <option value="shoulder">shoulder</option>
-        <option value="+30_attack_power">+30 attack power</option>
+        <option value="+30 attack_power">+30 attack power</option>
     </select>
 
     <select id="back_ench_dd">
@@ -787,25 +800,21 @@
 
     <h3>Simulation settings:</h3>
     <label for="n_simulations_dd">Number of simulations: (100 - 30000):</label>
-    <input type="number" id="n_simulations_dd" name="quantity" min="100" max="30000" value="10000">
-
-    <p></p>
+    <input type="number" id="n_simulations_dd" name="quantity" min="100" max="30000" value="10000"><br/>
     <label for="opponent_level_dd">Opponent level: (60-63):</label>
-    <input type="number" id="opponent_level_dd" name="quantity" min="60" max="63" value="63">
-
-    <p></p>
+    <input type="number" id="opponent_level_dd" name="quantity" min="60" max="63" value="63"><br/>
     <label for="fight_time_dd">Fight time: (10-200s):</label>
-    <input type="number" id="fight_time_dd" name="quantity" min="10" max="200" value="60">
+    <input type="number" id="fight_time_dd" name="quantity" min="10" max="200" value="60"><br/>
 
-    <p></p>
+    <h4>Armor reduction</h4>
     <label for="sunder_armor_dd">Sunder armor stacks: (0-5):</label>
-    <input type="number" id="sunder_armor_dd" name="quantity" min="0" max="5" value="5">
-
-    <p></p>
+    <input type="number" id="sunder_armor_dd" name="quantity" min="0" max="5" value="5"><br/>
     <input type="checkbox" id="faerie_fire_feral_active">
     <label for="faerie_fire_feral_active"> Faerie fire feral active</label><br>
     <input type="checkbox" id="curse_of_recklessness_active">
     <label for="curse_of_recklessness_active"> Curse of recklessness active</label><br>
+
+    <h4>Cooldowns:</h4>
     <input type="checkbox" id="enable_death_wish">
     <label for="enable_death_wish"> Use death wish (used in the last 30sec)</label><br>
     <input type="checkbox" id="use_mighty_rage_potion">
@@ -813,12 +822,24 @@
     <input type="checkbox" id="enable_recklessness">
     <label for="enable_recklessness"> Use recklessness (used in the last 20sec)</label><br>
 
+    <p><b>Combat strategy:</b></p>
+    <input type="checkbox" id="use_bt_in_exec_phase">
+    <label for="use_bt_in_exec_phase"> Use bloodthirst in execute phase</label><br>
+    <input type="checkbox" id="use_hs_in_exec_phase">
+    <label for="use_hs_in_exec_phase"> Use heroic strike in execute phase</label><br>
+    <label for="heroic_strike_rage_thresh">Heroic strike when rage is above:</label>
+    <input type="number" id="heroic_strike_rage_thresh" name="quantity" min="0" max="100" value="50"><br>
+    <label for="whirlwind_rage_thresh">Whirlwind when rage is above:</label>
+    <input type="number" id="whirlwind_rage_thresh" name="quantity" min="0" max="100" value="0"><br>
+    <label for="whirlwind_bt_cooldown_thresh">Whirlwind when bloodthirst CD is above:</label>
+    <input type="number" id="whirlwind_bt_cooldown_thresh" name="quantity" min="0" max="6" value="1.5">
+
     <p><b>Bosses:</b></p>
     <input type="checkbox" id="vaelastrasz">
     <label for="vaelastrasz"> Fight against Vaelastrasz (essence of the red + initial boss HP = 30%)</label><br>
 
     <p id="button_id"></p>
-    <button onclick="myFunction()">Run simulator</button>
+    <button style="width: 400px; height: 60px;" onclick="myFunction()" class="button">Run simulator</button>
 
     <h2>----------- RESULTS BELOW -----------</h2>
     <p id="output1">Average DPS: </p>
@@ -1097,10 +1118,17 @@
         let use_mighty_rage_potion = document.getElementById("use_mighty_rage_potion").checked;
         let vaelastrasz = document.getElementById("vaelastrasz").checked;
 
+        let use_bt_in_exec_phase = document.getElementById("use_bt_in_exec_phase").checked;
+        let use_hs_in_exec_phase = document.getElementById("use_hs_in_exec_phase").checked;
+        let heroic_strike_rage_thresh = parseFloat(document.getElementById("heroic_strike_rage_thresh").value);
+        let whirlwind_rage_thresh = parseFloat(document.getElementById("whirlwind_rage_thresh").value);
+        let whirlwind_bt_cooldown_thresh = parseFloat(document.getElementById("whirlwind_bt_cooldown_thresh").value);
+
         const stat_weight_vec = new Module.StringList();
         stat_weight_vec.push_back("crit");
         stat_weight_vec.push_back("hit");
         stat_weight_vec.push_back("haste");
+        stat_weight_vec.push_back("skill");
 
         const race_vec = new Module.StringList();
         race_vec.push_back(race_string);
@@ -1122,6 +1150,11 @@
             recklessness: enable_recklessness,
             mighty_rage_potion: use_mighty_rage_potion,
             vaelastrasz: vaelastrasz,
+            use_bt_in_exec_phase: use_bt_in_exec_phase,
+            use_hs_in_exec_phase: use_hs_in_exec_phase,
+            heroic_strike_rage_thresh: heroic_strike_rage_thresh,
+            whirlwind_rage_thresh: whirlwind_rage_thresh,
+            whirlwind_bt_cooldown_thresh: whirlwind_bt_cooldown_thresh,
         };
 
         let obj = new Module['Sim_interface']();
@@ -1146,7 +1179,9 @@
                     'name': stat_string[0],
                     'value': parseFloat(stat_string[1]) / dps_per_ap,
                     'value_max': Math.max((parseFloat(stat_string[1]) + parseFloat(stat_string[2])) / dps_per_ap_min, 0),
-                    'value_min': Math.max((parseFloat(stat_string[1]) - parseFloat(stat_string[2])) / dps_per_ap_max, 0)
+                    'value_min': Math.max((parseFloat(stat_string[1]) - parseFloat(stat_string[2])) / dps_per_ap_max, 0),
+                    'negative_value_max': Math.max((parseFloat(stat_string[3]) - parseFloat(stat_string[4])) / -dps_per_ap_min, 0),
+                    'negative_value_min': Math.max((parseFloat(stat_string[3]) + parseFloat(stat_string[4])) / -dps_per_ap_max, 0)
                     // 'std': parseFloat(stat_string[2]) / dps_per_ap
                 });
             }
@@ -1155,8 +1190,10 @@
         let string = "Stat weights: <br />";
         if (result['stat_weights'].size() > 0) {
             for (let i = 0; i < stat_weights.length; i++) {
-                string += stat_weights[i]['name'] + " worth [<b>" + stat_weights[i]['value_min'].toFixed(2) +
+                string += "+" + stat_weights[i]['name'] + " gives [<b>" + stat_weights[i]['value_min'].toFixed(2) +
                     " &#8722 " + stat_weights[i]['value_max'].toFixed(2) + "</b>] attack power. <br />";
+                string += "-" + stat_weights[i]['name'] + " costs [<b>" + stat_weights[i]['negative_value_min'].toFixed(2) +
+                    " &#8722 " + stat_weights[i]['negative_value_max'].toFixed(2) + "</b>] attack power. <br /><br />";
             }
         }
         document.getElementById("output2").innerHTML = string;

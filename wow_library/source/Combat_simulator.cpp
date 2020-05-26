@@ -265,7 +265,7 @@ void Combat_simulator::compute_hit_table(int level_difference,
     double dodge_chance;
     if (level_difference > 0)
     {
-        dodge_chance = (5 + skill_diff * 0.1);
+        dodge_chance = std::max(5 + skill_diff * 0.1, 5.0);
     }
     else
     {
@@ -280,7 +280,7 @@ void Combat_simulator::compute_hit_table(int level_difference,
     }
 
     double glancing_penalty;
-    if (skill_diff > 8)
+    if (skill_diff >= 8)
     {
         glancing_penalty = 35.0 - (15.0 - skill_diff) * 4.0;
     }
@@ -682,11 +682,35 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                 }
                 if (execute_phase)
                 {
-
-                    if (rage > heroic_strike_rage_cost && !heroic_strike_active)
+                    if (rage > heroic_strike_rage_cost && !heroic_strike_active && config.combat.use_hs_in_exec_phase)
                     {
                         heroic_strike_active = true;
                         simulator_cout("Heroic strike activated");
+                    }
+                    if (config.combat.use_bt_in_exec_phase)
+                    {
+                        if (time_keeper_.blood_thirst_cd < 0.0 && time_keeper_.global_cd < 0 && rage > 30)
+                        {
+                            simulator_cout("Bloodthirst!");
+                            double damage = special_stats.attack_power * 0.45;
+                            auto hit_outcome = generate_hit(damage, Hit_type::yellow, Socket::main_hand,
+                                                            heroic_strike_active, special_stats, recklessness_active);
+                            if (hit_outcome.hit_result == Hit_result::dodge || hit_outcome
+                                                                                       .hit_result == Hit_result::miss)
+                            {
+                                rage -= 6;
+                            }
+                            else
+                            {
+                                rage -= 30;
+                            }
+                            time_keeper_.blood_thirst_cd = 6.0;
+                            time_keeper_.global_cd = 1.5;
+                            manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges, true);
+                            damage_sources
+                                    .add_damage(Damage_source::bloodthirst, hit_outcome.damage, time_keeper_.time);
+                            simulator_cout(rage, " rage");
+                        }
                     }
                     if (time_keeper_.global_cd < 0 && rage > execute_rage_cost)
                     {
@@ -695,7 +719,8 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                         auto hit_outcome = generate_hit(damage, Hit_type::yellow, Socket::main_hand,
                                                         heroic_strike_active, special_stats, recklessness_active);
                         time_keeper_.global_cd = 1.5;
-                        if (hit_outcome.hit_result == Hit_result::dodge || hit_outcome.hit_result == Hit_result::miss)
+                        if (hit_outcome.hit_result == Hit_result::dodge ||
+                            hit_outcome.hit_result == Hit_result::miss)
                         {
                             rage *= 0.85;
                         }
@@ -732,9 +757,9 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                     }
 
                     if (time_keeper_.whirlwind_cd < 0.0 &&
-                        rage > 25 &&
+                        rage > config.combat.whirlwind_rage_thresh &&
                         time_keeper_.global_cd < 0 &&
-                        time_keeper_.blood_thirst_cd > 1.0)
+                        time_keeper_.blood_thirst_cd > config.combat.whirlwind_bt_cooldown_thresh)
                     {
                         simulator_cout("Whirlwind!");
                         double damage = weapons[0].normalized_swing(special_stats.attack_power);
@@ -747,7 +772,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                         damage_sources.add_damage(Damage_source::whirlwind, hit_outcome.damage, time_keeper_.time);
                         simulator_cout(rage, " rage");
                     }
-                    if (rage > 60 && !heroic_strike_active)
+                    if (rage > config.combat.heroic_strike_rage_thresh && !heroic_strike_active)
                     {
                         heroic_strike_active = true;
                         simulator_cout("Heroic strike activated");

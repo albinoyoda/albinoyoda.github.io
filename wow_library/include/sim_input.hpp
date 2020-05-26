@@ -22,7 +22,12 @@ struct Sim_input
               bool death_wish,
               bool recklessness,
               bool mighty_rage_potion,
-              bool vaelastrasz
+              bool vaelastrasz,
+              bool use_bt_in_exec_phase,
+              bool use_hs_in_exec_phase,
+              double heroic_strike_rage_thresh,
+              double whirlwind_rage_thresh,
+              double whirlwind_bt_cooldown_thresh
              ) :
             race(std::move(race)),
             armor(std::move(armor)),
@@ -39,7 +44,12 @@ struct Sim_input
             death_wish(death_wish),
             recklessness(recklessness),
             mighty_rage_potion(mighty_rage_potion),
-            vaelastrasz(vaelastrasz) {}
+            vaelastrasz(vaelastrasz),
+            use_bt_in_exec_phase(use_bt_in_exec_phase),
+            use_hs_in_exec_phase(use_hs_in_exec_phase),
+            heroic_strike_rage_thresh(heroic_strike_rage_thresh),
+            whirlwind_rage_thresh(whirlwind_rage_thresh),
+            whirlwind_bt_cooldown_thresh(whirlwind_bt_cooldown_thresh) {}
 
     std::vector<std::string> race;
     std::vector<std::string> armor;
@@ -57,6 +67,11 @@ struct Sim_input
     bool recklessness{};
     bool mighty_rage_potion{};
     bool vaelastrasz{};
+    bool use_bt_in_exec_phase{};
+    bool use_hs_in_exec_phase{};
+    double heroic_strike_rage_thresh{};
+    double whirlwind_rage_thresh{};
+    double whirlwind_bt_cooldown_thresh{};
 };
 
 #endif // COVID_INPUT_HPP
