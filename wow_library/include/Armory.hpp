@@ -103,6 +103,8 @@ struct Armory
                                                                                                 0},  Socket::shoulder},
                     {"flamescarred_shoulders",                Attributes{12, 12}, Special_stats{0, 0,
                                                                                                 0},  Socket::shoulder},
+                    {"abyssal_plate_epaulets",                Attributes{13, 13}, Special_stats{0, 1,
+                                                                                                0},  Socket::shoulder},
             };
 
     std::vector<Armor> back_t
@@ -229,6 +231,7 @@ struct Armory
                                                                                            0},        Socket::legs, Set::epic_pvp_set},
                     {"blademaster_leggings",             Attributes{5, 0},   Special_stats{1, 1, 0},  Socket::legs},
                     {"legplates_of_valor",               Attributes{23, 11}, Special_stats{0, 0, 0},  Socket::legs},
+                    {"abyssal_plate_legplates",          Attributes{15, 15}, Special_stats{1, 0, 0},  Socket::legs},
             };
 
     std::vector<Armor> boots_t
