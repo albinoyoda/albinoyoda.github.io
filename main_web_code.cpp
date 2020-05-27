@@ -43,7 +43,7 @@ int main()
     std::string race = "human";
 
     Sim_input sim_input{{race}, armor_vec, weapons_vec, buff_vec, ench_vec, {"crit", "hit", "haste"},
-                        60, 63, 1, 5, true, true,
+                        60, 63, 100, 5, true, true,
                         true, true, true, false, false,
                         true, 60, 25, 1};
 

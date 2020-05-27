@@ -525,6 +525,8 @@ void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_we
         simulator_cout(rage, " rage");
     }
 
+    manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges);
+
     if (hit_outcome.hit_result != Hit_result::miss &&
         hit_outcome.hit_result != Hit_result::dodge)
     {
@@ -538,7 +540,6 @@ void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_we
             rage += 1;
             simulator_cout("Unbridled wrath, +1 rage");
         }
-        manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges);
     }
 }
 

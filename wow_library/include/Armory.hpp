@@ -307,7 +307,7 @@ struct Armory
                                                                                            0},   2.6, 100,   187,   Weapon_socket::one_hand,  Weapon_type::sword, {{"viskag",                    Hit_effect::Type::damage_physical, {}, {}, 240, 0, 0.026}}},
                     {"quel_serrar",                  Attributes{0, 0},       Special_stats{0, 0,
                                                                                            0},   2.0, 84,    126,   Weapon_socket::one_hand,  Weapon_type::sword},
-                    {"ancient_quiraj_ripper",        Attributes{0, 0},       Special_stats{1, 0,
+                    {"ancient_quiraji_ripper",       Attributes{0, 0},       Special_stats{1, 0,
                                                                                            20},  2.8, 114,   213,   Weapon_socket::one_hand,  Weapon_type::sword},
                     {"dal_rends_sacred_charge",      Attributes{4, 0},       Special_stats{1, 0,
                                                                                            0},   2.8, 81,    151,   Weapon_socket::main_hand, Weapon_type::sword, std::vector<Hit_effect>(), Set::dal_rends},
@@ -355,6 +355,8 @@ struct Armory
                                                                                         0},    2.7, 80,    150,   Weapon_socket::one_hand, Weapon_type::axe},
                     {"flurry_axe",                 Attributes{0, 0},      Special_stats{0, 0,
                                                                                         0},    1.5, 37,    69,    Weapon_socket::one_hand, Weapon_type::axe, {{"flurry_axe",                Hit_effect::Type::extra_hit,    {}, {}, 0,   0, 0.04625}}},
+                    {"bone_slicing_hatchet",       Attributes{0, 13},     Special_stats{0, 0,
+                                                                                        0},    1.7, 48,    90,    Weapon_socket::one_hand, Weapon_type::axe},
             };
 
     std::vector<Weapon> daggers_t
@@ -415,15 +417,15 @@ struct Armory
             };
 
     std::vector<Set_bonus> set_bonuses{
-            {"devilsaur",               Attributes{0, 0}, Special_stats{0, 2, 0},          2, Set::devilsaur},
-            {"black_dragonscale",       Attributes{0, 0}, Special_stats{0, 1, 0},          2, Set::black_dragonscale},
-            {"black_dragonscale",       Attributes{0, 0}, Special_stats{2, 0, 0},          3, Set::black_dragonscale},
-            {"rare_pvp_set",            Attributes{0, 0}, Special_stats{0, 0, 40},         2, Set::rare_pvp_set},
-            {"epic_pvp_set",            Attributes{0, 0}, Special_stats{0, 0, 40},         6, Set::epic_pvp_set},
-            {"dal_rends",               Attributes{0, 0}, Special_stats{0, 0, 50},         2, Set::dal_rends},
+            {"devilsaur",               Attributes{0, 0}, Special_stats{0, 2, 0},  2, Set::devilsaur},
+            {"black_dragonscale",       Attributes{0, 0}, Special_stats{0, 1, 0},  2, Set::black_dragonscale},
+            {"black_dragonscale",       Attributes{0, 0}, Special_stats{2, 0, 0},  3, Set::black_dragonscale},
+            {"rare_pvp_set",            Attributes{0, 0}, Special_stats{0, 0, 40}, 2, Set::rare_pvp_set},
+            {"epic_pvp_set",            Attributes{0, 0}, Special_stats{0, 0, 40}, 6, Set::epic_pvp_set},
+            {"dal_rends",               Attributes{0, 0}, Special_stats{0, 0, 50}, 2, Set::dal_rends},
             {"warblade_of_the_hakkari", Attributes{0, 0}, Special_stats{0, 0, 0, 0, 0,
-                                                                        6},                2, Set::warblade_of_the_hakkari},
-            {"valor",                   Attributes{0, 0}, Special_stats{0, 0, 40},         4, Set::valor},
+                                                                        6},        2, Set::warblade_of_the_hakkari},
+            {"valor",                   Attributes{0, 0}, Special_stats{0, 0, 40}, 4, Set::valor},
     };
 
     Armor find_armor(Socket socket, const std::string &name) const;

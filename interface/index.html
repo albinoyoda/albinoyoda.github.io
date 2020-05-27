@@ -197,7 +197,7 @@
         background-color: #d9d9d9;
     }
 
-    .loader div{
+    .loader div {
         border: 16px solid #f3f3f3; /* Light grey */
         border-top: 16px solid #003300; /* Blue */
         border-radius: 50%;
@@ -207,11 +207,21 @@
     }
 
     @keyframes spin {
-        0% { transform: rotate(0deg); }
-        25% { transform: rotate(180deg); }
-        50% { transform: rotate(0deg); }
-        75% { transform: rotate(-180deg); }
-        100% { transform: rotate(0deg); }
+        0% {
+            transform: rotate(0deg);
+        }
+        25% {
+            transform: rotate(180deg);
+        }
+        50% {
+            transform: rotate(0deg);
+        }
+        75% {
+            transform: rotate(-180deg);
+        }
+        100% {
+            transform: rotate(0deg);
+        }
     }
 </style>
 
@@ -234,6 +244,7 @@
     <h2>Welcome to my fury simulator!</h2>
 
     <h3><a href="https://discord.gg/xTuKsRz">Discord link</a></h3>
+    <h3><a href="https://github.com/albinoyoda/wow_classic_simulator">Github link</a></h3>
 
     <h3>FAQ:</h3>
     <p><b>Q: Is this a spreadsheet? How does it work? </b></p>
@@ -765,6 +776,22 @@
         <input type="checkbox" id="trueshot_aura" checked>
         <label for="trueshot_aura"> trueshot_aura</label><br><br>
 
+<!--        <input type="checkbox" id="blessing_of_kings" checked>-->
+<!--        <label for="blessing_of_kings" style="color: #003d99"> blessing_of_kings</label><br>-->
+
+<!--        <input type="checkbox" id="blessing_of_might" checked>-->
+<!--        <label for="blessing_of_might" style="color: #003d99"> blessing_of_might</label><br>-->
+
+<!--        <input type="checkbox" id="windfury_totem">-->
+<!--        <label for="windfury_totem" style="color: #cc0000"> windfury_totem</label><br>-->
+
+<!--        <input type="checkbox" id="strength_of_earth_totem">-->
+<!--        <label for="strength_of_earth_totem" style="color: #cc0000"> strength_of_earth_totem</label><br>-->
+
+<!--        <input type="checkbox" id="grace_of_air_totem">-->
+<!--        <label for="grace_of_air_totem" style="color: #cc0000"> grace_of_air_totem</label><br><br>-->
+
+
         <b> Consumables:</b><br>
         <input type="checkbox" id="elixir_mongoose" checked>
         <label for="elixir_mongoose"> elixir_mongoose</label><br>
@@ -1161,18 +1188,18 @@
         needs_cleanup = true;
     }
 
-    function show_loader(){
+    function show_loader() {
         $("#loader").addClass("loader");
         //event.preventDefault();
     }
 
-    function hide_loader(){
+    function hide_loader() {
         $("#loader").removeClass("loader");
         //event.preventDefault();
     }
 
-    if($(".button").length) {
-        $(".button").click(function(event) {
+    if ($(".button").length) {
+        $(".button").click(function (event) {
             show_loader();
             //load the ajax data
             // wait(1);
@@ -1288,7 +1315,7 @@
 
         let result = obj.simulate(wow_input);
 
-        document.getElementById("output1").innerHTML = 'Average DPS: <b>' + result['mean_dps'].toFixed(2) + ' &plusmn ' +
+        document.getElementById("output1").innerHTML = 'DPS: <b>' + result['mean_dps'].toFixed(2) + ' &plusmn ' +
             result['std_dps'].toFixed(2) + '</b>, (95% confidence interval)';
         document.getElementById("output3").innerHTML = result['messages'].get(0);
 
@@ -1667,7 +1694,13 @@
                         scaleLabel: {
                             display: true,
                             labelString: 'Percentage'
-                        }
+                        },
+                        ticks:
+                            {
+                                beginAtZero: true,
+                                suggestedMin: 0,
+                                suggestedMax: 1
+                            }
                     }]
                 }
             }
@@ -1704,7 +1737,9 @@
                         },
                         ticks:
                             {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                suggestedMin: 0,
+                                suggestedMax: 100
                             }
                     }]
                 }
