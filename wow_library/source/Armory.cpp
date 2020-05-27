@@ -187,7 +187,7 @@ void Armory::compute_total_stats(Character &character) const
     clean_weapon(character.weapons[1]);
     Attributes total_attributes{};
     Special_stats total_special_stats{};
-    double stat_multiplier = 0;
+    double stat_multiplier = 1;
 
     total_attributes += character.base_attributes;
     total_special_stats += character.base_special_stats;
@@ -273,14 +273,22 @@ void Armory::compute_total_stats(Character &character) const
     {
         total_attributes += buff.attributes;
         total_special_stats += buff.special_stats;
-        stat_multiplier += buff.stat_multiplier;
+        stat_multiplier *= (1 + buff.stat_multiplier);
+
+        for (const auto &hit_effect : buff.hit_effects)
+        {
+            for (Weapon &weapon : character.weapons)
+            {
+                weapon.hit_effects.emplace_back(hit_effect);
+            }
+        }
     }
 
     // TODO implement shout in simulator instead
     total_special_stats.critical_strike += 5; // crit from talent
     total_special_stats.critical_strike += 3; // crit from berserker stance
 
-    total_attributes *= (1.0 + stat_multiplier);
+    total_attributes *= stat_multiplier;
     total_special_stats += total_attributes.convert_to_special_stats();
 
     character.total_attributes = total_attributes;

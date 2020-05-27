@@ -761,12 +761,6 @@
         <input type="checkbox" id="battle_shout" checked>
         <label for="battle_shout"> battle_shout</label><br>
 
-        <input type="checkbox" id="blessing_of_kings" checked>
-        <label for="blessing_of_kings"> blessing_of_kings</label><br>
-
-        <input type="checkbox" id="blessing_of_might" checked>
-        <label for="blessing_of_might"> blessing_of_might</label><br>
-
         <input type="checkbox" id="gift_of_the_wild" checked>
         <label for="gift_of_the_wild"> gift_of_the_wild</label><br>
 
@@ -774,23 +768,22 @@
         <label for="leader_of_the_pack"> leader_of_the_pack</label><br>
 
         <input type="checkbox" id="trueshot_aura" checked>
-        <label for="trueshot_aura"> trueshot_aura</label><br><br>
+        <label for="trueshot_aura"> trueshot_aura</label><br>
 
-<!--        <input type="checkbox" id="blessing_of_kings" checked>-->
-<!--        <label for="blessing_of_kings" style="color: #003d99"> blessing_of_kings</label><br>-->
+        <input type="checkbox" id="blessing_of_kings" checked>
+        <label for="blessing_of_kings" style="color: #003d99"> blessing_of_kings</label><br>
 
-<!--        <input type="checkbox" id="blessing_of_might" checked>-->
-<!--        <label for="blessing_of_might" style="color: #003d99"> blessing_of_might</label><br>-->
+        <input type="checkbox" id="blessing_of_might" checked>
+        <label for="blessing_of_might" style="color: #003d99"> blessing_of_might</label><br>
 
-<!--        <input type="checkbox" id="windfury_totem">-->
-<!--        <label for="windfury_totem" style="color: #cc0000"> windfury_totem</label><br>-->
+        <input type="checkbox" id="windfury_totem">
+        <label for="windfury_totem" style="color: #cc0000"> windfury_totem</label><br>
 
-<!--        <input type="checkbox" id="strength_of_earth_totem">-->
-<!--        <label for="strength_of_earth_totem" style="color: #cc0000"> strength_of_earth_totem</label><br>-->
+        <input type="checkbox" id="strength_of_earth_totem">
+        <label for="strength_of_earth_totem" style="color: #cc0000"> strength_of_earth_totem</label><br>
 
-<!--        <input type="checkbox" id="grace_of_air_totem">-->
-<!--        <label for="grace_of_air_totem" style="color: #cc0000"> grace_of_air_totem</label><br><br>-->
-
+        <input type="checkbox" id="grace_of_air_totem">
+        <label for="grace_of_air_totem" style="color: #cc0000"> grace_of_air_totem</label><br><br>
 
         <b> Consumables:</b><br>
         <input type="checkbox" id="elixir_mongoose" checked>
@@ -942,6 +935,8 @@
     <p></p>
     <canvas id="bar-chart-auras"></canvas>
 
+    <p></p>
+    <canvas id="bar-chart-proc"></canvas>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
@@ -1108,7 +1103,8 @@
     var world_buffs = ["rallying_cry", "dire_maul", "songflower", "warchiefs_blessing", "spirit_of_zandalar", "sayges_fortune"];
     var world_buffs_input = [];
 
-    var buffs = ["battle_shout", "blessing_of_kings", "blessing_of_might", "gift_of_the_wild", "leader_of_the_pack", "trueshot_aura"];
+    var buffs = ["battle_shout", "blessing_of_kings", "blessing_of_might", "gift_of_the_wild", "leader_of_the_pack", "trueshot_aura",
+        "windfury_totem", "strength_of_earth_totem", "grace_of_air_totem"];
     var buffs_input = [];
 
     var consumables = ["elixir_mongoose", "blessed_sunfruit", "smoked_dessert_dumplings", "juju_power", "elixir_of_giants", "winterfall_firewater",
@@ -1172,6 +1168,7 @@
 
     var needs_cleanup = false;
     var bar_chart_auras;
+    var bar_chart_proc;
     var bar_chart_damage;
     var line_chart_hist;
     var line_chart_fight;
@@ -1180,6 +1177,7 @@
     function clean_charts() {
         if (needs_cleanup) {
             bar_chart_auras.destroy();
+            bar_chart_proc.destroy();
             bar_chart_damage.destroy();
             line_chart_hist.destroy();
             line_chart_fight.destroy();
@@ -1226,18 +1224,18 @@
         }
 
         const buff_vec = new Module.StringList();
-        for (buff of world_buffs_input) {
+        for (let buff of world_buffs_input) {
             buff_vec.push_back(buff);
         }
-        for (buff of buffs_input) {
+        for (let buff of buffs_input) {
             buff_vec.push_back(buff);
         }
-        for (buff of consumables_input) {
+        for (let buff of consumables_input) {
             buff_vec.push_back(buff);
         }
 
         const ench_vec = new Module.StringList();
-        for (ench of enchants_input) {
+        for (let ench of enchants_input) {
             ench_vec.push_back(ench);
         }
 
@@ -1344,7 +1342,7 @@
         let string = "Stat weights: <br />";
         if (result['stat_weights'].size() > 0) {
             for (let i = 0; i < stat_weights.length; i++) {
-                string += "+" + stat_weights[i]['name'] + " gives [<b>" + stat_weights[i]['value_min'].toFixed(2) +
+                string += "+" + stat_weights[i]['name'] + " equivalates [<b>" + stat_weights[i]['value_min'].toFixed(2) +
                     " &#8722 " + stat_weights[i]['value_max'].toFixed(2) + "</b>] attack power. <br />";
                 string += "-" + stat_weights[i]['name'] + " costs [<b>" + stat_weights[i]['negative_value_min'].toFixed(2) +
                     " &#8722 " + stat_weights[i]['negative_value_max'].toFixed(2) + "</b>] attack power. <br /><br />";
@@ -1371,17 +1369,35 @@
             aura_uptimes.push(parseFloat(split_string[1]));
         }
 
-        var aura_list = [];
-        for (var j = 0; j < aura_name.length; j++)
+        let aura_list = [];
+        for (let j = 0; j < aura_name.length; j++)
             aura_list.push({'name': aura_name[j], 'duration': aura_uptimes[j]});
 
         aura_list.sort(function (a, b) {
-            return ((a.duration > b.duration) ? -1 : ((a.name === b.name) ? 0 : 1));
+            return ((a.duration > b.duration) ? -1 : ((a.duration === b.duration) ? 0 : 1));
         });
 
-        for (var k = 0; k < aura_list.length; k++) {
+        for (let k = 0; k < aura_list.length; k++) {
             aura_name[k] = aura_list[k].name;
             aura_uptimes[k] = aura_list[k].duration;
+        }
+
+        let proc_list = [];
+        let proc_name = [];
+        let proc_counter = [];
+        for (let i = 0; i < result['proc_counter'].size(); i++) {
+            let proc_string = result['proc_counter'].get(i);
+            let split_string = proc_string.split(" ");
+            proc_list.push({'name': split_string[0], 'counter': parseFloat(split_string[1])});
+        }
+
+        proc_list.sort(function (a, b) {
+            return ((a.counter > b.counter) ? -1 : ((a.counter === b.counter) ? 0 : 1));
+        });
+
+        for (let k = 0; k < proc_list.length; k++) {
+            proc_name[k] = proc_list[k].name;
+            proc_counter[k] = proc_list[k].counter;
         }
 
         let colors = ["#3e95cd", "#8e5ea2", "#FFFF00", "#c45850", "#e8c3b9", "#145A32", "#FFFFFF"];
@@ -1678,7 +1694,7 @@
                 labels: sources_names,
                 datasets: [
                     {
-                        backgroundColor: colors,
+                        backgroundColor: [colors[0], colors[1], colors[4], colors[2], colors[5], colors[3], colors[6]],
                         data: sources
                     }
                 ]
@@ -1747,6 +1763,43 @@
         });
 
         canvas = document.getElementById("bar-chart-auras");
+        canvas.maintainAspectRatio = false;
+        canvas.style.height = '600px';
+        canvas.style.width = '800px';
+
+        // Bar chart
+        bar_chart_proc = new Chart(document.getElementById("bar-chart-proc"), {
+            type: 'bar',
+            data: {
+                labels: proc_name,
+                datasets: [
+                    {
+                        backgroundColor: colors,
+                        data: proc_counter
+                    }
+                ]
+            },
+            options: {
+                legend: {display: false},
+                title: {
+                    display: true,
+                    text: 'Average # of procs of different sources'
+                },
+                scales: {
+                    yAxes: [{
+                        scaleLabel: {
+                            display: true,
+                        },
+                        ticks:
+                            {
+                                beginAtZero: true,
+                            }
+                    }]
+                }
+            }
+        });
+
+        canvas = document.getElementById("bar-chart-proc");
         canvas.maintainAspectRatio = false;
         canvas.style.height = '600px';
         canvas.style.width = '800px';

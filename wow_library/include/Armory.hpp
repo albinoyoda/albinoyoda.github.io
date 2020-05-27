@@ -20,6 +20,10 @@ struct Buffs
     Buff gift_of_the_wild{"gift_of_the_wild", Attributes{12.0, 12.0}, Special_stats{0.0, 0.0, 0.0}};
     Buff leader_of_the_pack{"leader_of_the_pack", Attributes{0.0, 0.0}, Special_stats{3.0, 0.0, 0.0}};
     Buff trueshot_aura{"trueshot_aura", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 100}};
+    Buff windfury_totem{"windfury_totem", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0}, 0, 0,
+                        {{"windfury_totem", Hit_effect::Type::extra_hit, {}, {}, 0, 0, 0.2, 315}}};
+    Buff strength_of_earth_totem{"strength_of_earth_totem", Attributes{61.0, 0.0}, Special_stats{0.0, 0.0, 0}};
+    Buff grace_of_air_totem{"grace_of_air_totem", Attributes{0.0, 67.0}, Special_stats{0.0, 0.0, 0}};
 
     // Consumables
     Buff elixir_mongoose{"elixir_mongoose", Attributes{0.0, 25.0}, Special_stats{2.0, 0.0, 0.0}};

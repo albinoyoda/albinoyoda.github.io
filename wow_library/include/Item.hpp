@@ -70,14 +70,15 @@ public:
     Hit_effect() = default;
 
     Hit_effect(std::string name, Type type, Attributes attribute_boost, Special_stats special_stats_boost,
-               double damage, double duration, double probability) :
+               double damage, double duration, double probability, double attack_power_boost = 0) :
             name(std::move(name)),
             type(type),
             attribute_boost(attribute_boost),
             special_stats_boost(special_stats_boost),
             damage(damage),
             duration(duration),
-            probability(probability) {};
+            probability(probability),
+            attack_power_boost(attack_power_boost) {};
 
     inline Special_stats get_special_stat_equivalent() const
     {
@@ -93,6 +94,7 @@ public:
     double damage;
     double duration;
     double probability;
+    double attack_power_boost;
 };
 
 struct Enchant
@@ -135,15 +137,17 @@ struct Set_bonus
 struct Buff
 {
     Buff(std::string name, Attributes attributes, Special_stats special_stats, double stat_multiplier = 0,
-         double bonus_damage = 0) :
+         double bonus_damage = 0, std::vector<Hit_effect> hit_effects = std::vector<Hit_effect>()) :
             name(std::move(name)), attributes(attributes), special_stats(special_stats),
-            stat_multiplier(stat_multiplier), bonus_damage(bonus_damage) {};
+            stat_multiplier(stat_multiplier), bonus_damage(bonus_damage),
+            hit_effects(std::move(hit_effects)) {};
 
     std::string name;
     Attributes attributes;
     Special_stats special_stats;
     double stat_multiplier;
     double bonus_damage;
+    std::vector<Hit_effect> hit_effects{};
 };
 
 struct Weapon_buff

@@ -33,6 +33,10 @@ int main()
     buff_vec.emplace_back("warchiefs_blessing");
     buff_vec.emplace_back("spirit_of_zandalar");
     buff_vec.emplace_back("sayges_fortune");
+    buff_vec.emplace_back("windfury_totem");
+    buff_vec.emplace_back("blessing_of_kings");
+    buff_vec.emplace_back("strength_of_earth_totem");
+    buff_vec.emplace_back("grace_of_air_totem");
 
     std::vector<std::string> ench_vec;
     ench_vec.emplace_back("h+8 strength");
@@ -43,7 +47,7 @@ int main()
     std::string race = "human";
 
     Sim_input sim_input{{race}, armor_vec, weapons_vec, buff_vec, ench_vec, {"crit", "hit", "haste"},
-                        60, 63, 100, 5, true, true,
+                        60, 63, 1000, 5, true, true,
                         true, true, true, false, false,
                         true, 60, 25, 1};
 

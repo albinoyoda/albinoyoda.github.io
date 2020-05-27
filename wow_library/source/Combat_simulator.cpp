@@ -432,13 +432,14 @@ void Combat_simulator::hit_effects(Weapon_sim &weapon, Weapon_sim &main_hand_wea
         double r = get_uniform_random(1);
         if (r < hit_effect.probability)
         {
+            buff_manager_.increment_proc(hit_effect.name);
             switch (hit_effect.type)
             {
                 case Hit_effect::Type::extra_hit:
                     simulator_cout("PROC: extra hit from: ", hit_effect.name);
                     swing_weapon(main_hand_weapon, main_hand_weapon, special_stats,
                                  heroic_strike_active, rage, heroic_strike_rage_cost,
-                                 recklessness_active, damage_sources, flurry_charges);
+                                 recklessness_active, damage_sources, flurry_charges, hit_effect.attack_power_boost);
                     break;
                 case Hit_effect::Type::damage_magic:
                     simulator_cout("PROC: damage from: ", hit_effect.name);
@@ -469,10 +470,11 @@ void Combat_simulator::hit_effects(Weapon_sim &weapon, Weapon_sim &main_hand_wea
 
 void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_weapon, Special_stats &special_stats,
                                     bool &heroic_strike_active, double &rage, double &heroic_strike_rage_cost,
-                                    bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges)
+                                    bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges,
+                                    double attack_power_bonus)
 {
     Combat_simulator::Hit_outcome hit_outcome{0.0, Hit_result::TBD};
-    double swing_damage = weapon.swing(special_stats.attack_power);
+    double swing_damage = weapon.swing(special_stats.attack_power + attack_power_bonus);
     if (weapon.socket == Socket::off_hand)
     {
         swing_damage *= (0.5 + 0.025 * config.talents.dual_wield_specialization);
@@ -884,6 +886,18 @@ std::vector<std::string> Combat_simulator::get_aura_uptimes() const
     aura_uptimes.emplace_back("Flurry_main_hand " + std::to_string(100 * Statistics::average(flurry_uptime_mh_)));
     aura_uptimes.emplace_back("Flurry_off_hand " + std::to_string(100 * Statistics::average(flurry_uptime_oh_)));
     return aura_uptimes;
+}
+
+std::vector<std::string> Combat_simulator::get_proc_statistics() const
+{
+    std::vector<std::string> proc_counter;
+    for (const auto &proc : buff_manager_.procs)
+    {
+        std::string aura_name = proc.id;
+        double counter = static_cast<double>(proc.counter) / config.n_batches;
+        proc_counter.emplace_back(proc.id + " " + std::to_string(counter));
+    }
+    return proc_counter;
 }
 
 void Combat_simulator::reset_damage_instances()

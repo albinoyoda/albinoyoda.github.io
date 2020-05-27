@@ -148,7 +148,8 @@ public:
 
     void swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_weapon, Special_stats &special_stats,
                       bool &heroic_strike_active, double &rage, double &heroic_strike_rage_cost,
-                      bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges);
+                      bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges,
+                      double attack_power_bonus = 0);
 
     void hit_effects(Weapon_sim &weapon, Weapon_sim &main_hand_weapon, Special_stats &special_stats,
                      bool &heroic_strike_active, double &rage, double &heroic_strike_rage_cost,
@@ -207,6 +208,8 @@ public:
     std::vector<Damage_sources> get_damage_distribution() const;
 
     std::vector<std::string> get_aura_uptimes() const;
+
+    std::vector<std::string> get_proc_statistics() const;
 
     void reset_damage_instances();
 

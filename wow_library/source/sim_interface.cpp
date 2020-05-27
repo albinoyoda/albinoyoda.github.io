@@ -288,6 +288,18 @@ character_setup(const Armory &armory, const Buffs &buffs, const std::string &rac
     {
         character.add_buff(buffs.blessing_of_might);
     }
+    if (find_string(buffs_vec, "windfury_totem"))
+    {
+        character.add_buff(buffs.windfury_totem);
+    }
+    if (find_string(buffs_vec, "strength_of_earth_totem"))
+    {
+        character.add_buff(buffs.strength_of_earth_totem);
+    }
+    if (find_string(buffs_vec, "grace_of_air_totem"))
+    {
+        character.add_buff(buffs.grace_of_air_totem);
+    }
     if (find_string(buffs_vec, "gift_of_the_wild"))
     {
         character.add_buff(buffs.gift_of_the_wild);
@@ -410,6 +422,7 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     double sample_std_init = Statistics::sample_deviation(std_init, config.n_batches);
 
     std::vector<std::string> aura_uptimes = simulator.get_aura_uptimes();
+    std::vector<std::string> proc_statistics = simulator.get_proc_statistics();
 
     auto a = simulator.get_damage_time_lapse();
 
@@ -616,7 +629,7 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     }
 
     return {hist_x, hist_y, dps_dist, a[0], a[1], a[2], a[3], a[4], a[5], a[6],
-            aura_uptimes, stat_weights, {extra_info_string}, mean_init, sample_std_init,
+            aura_uptimes, proc_statistics, stat_weights, {extra_info_string}, mean_init, sample_std_init,
             {get_character_stat(character, simulator.get_hit_probabilities_white_mh()[3]
                                            - simulator.get_hit_probabilities_white_mh()[2])}};
 }
