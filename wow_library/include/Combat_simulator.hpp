@@ -150,6 +150,23 @@ public:
                       bool &heroic_strike_active, double &rage, double &heroic_strike_rage_cost,
                       bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges);
 
+    void hit_effects(Weapon_sim &weapon, Weapon_sim &main_hand_weapon, Special_stats &special_stats,
+                     bool &heroic_strike_active, double &rage, double &heroic_strike_rage_cost,
+                     bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges);
+
+    void bloodthirst(Weapon_sim &main_hand_weapon, Special_stats &special_stats,
+                     bool &heroic_strike_active, double &rage, double &heroic_strike_rage_cost,
+                     bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges);
+
+    void whirlwind(Weapon_sim &main_hand_weapon, Special_stats &special_stats,
+                   bool &heroic_strike_active, double &rage, double &heroic_strike_rage_cost,
+                   bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges);
+
+    void execute(Weapon_sim &main_hand_weapon, Special_stats &special_stats,
+                 bool &heroic_strike_active, double &rage, double &heroic_strike_rage_cost,
+                 bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges, double execute_cost);
+
+
     std::vector<double> &simulate(const Character &character, int n_batches);
 
     std::vector<double> &simulate(const Character &character);
@@ -231,6 +248,8 @@ private:
     double armor_reduction_factor_{};
     Time_keeper time_keeper_{};
     Buff_manager buff_manager_{};
+    std::vector<double> flurry_uptime_mh_{};
+    std::vector<double> flurry_uptime_oh_{};
     std::vector<std::vector<double>> damage_time_lapse{};
     std::map<Damage_source, int> source_map{{Damage_source::white_mh,         0},
                                             {Damage_source::white_oh,         1},

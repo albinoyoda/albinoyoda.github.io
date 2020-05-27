@@ -196,6 +196,23 @@
         width: 600px;
         background-color: #d9d9d9;
     }
+
+    .loader div{
+        border: 16px solid #f3f3f3; /* Light grey */
+        border-top: 16px solid #003300; /* Blue */
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        25% { transform: rotate(180deg); }
+        50% { transform: rotate(0deg); }
+        75% { transform: rotate(-180deg); }
+        100% { transform: rotate(0deg); }
+    }
 </style>
 
 <head>
@@ -870,14 +887,19 @@
         <label for="vaelastrasz"> Fight against Vaelastrasz (essence of the red + initial boss HP = 30%)</label><br>
     </div>
 
-    <p id="button_id"></p>
-    <button style="width: 400px; height: 60px;" onclick="myFunction()" class="button">Run simulator</button>
+    <p></p>
+    <button style="width: 400px; height: 60px;" class="button" data-item-name="itemname">Run simulator
+    </button>
 
     <h2>----------- RESULTS BELOW -----------</h2>
-    <p id="output1">Average DPS: </p>
-    <p id="output2">Stat weights: </p>
-    <p id="output3">Character stats: </p>
-    <p id="output4">Details: </p>
+    <div id="loader">
+        <div>
+        </div>
+    </div>
+    <p id="output1"></p>
+    <p id="output2"></p>
+    <p id="output3"></p>
+    <p id="output4"></p>
 
     <canvas id="line-chart-hist"></canvas>
 
@@ -896,9 +918,9 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <script>
-
     var coll = document.getElementsByClassName("collapsible");
     var i;
 
@@ -1137,6 +1159,28 @@
             line_chart_fight_cum.destroy();
         }
         needs_cleanup = true;
+    }
+
+    function show_loader(){
+        $("#loader").addClass("loader");
+        //event.preventDefault();
+    }
+
+    function hide_loader(){
+        $("#loader").removeClass("loader");
+        //event.preventDefault();
+    }
+
+    if($(".button").length) {
+        $(".button").click(function(event) {
+            show_loader();
+            //load the ajax data
+            // wait(1);
+            setTimeout(myFunction, 100);
+            setTimeout(hide_loader, 100);
+            //hide_loader();
+            event.preventDefault();
+        });
     }
 
     function myFunction() {
@@ -1650,13 +1694,13 @@
                 legend: {display: false},
                 title: {
                     display: true,
-                    text: 'Aura uptime from different sources'
+                    text: 'Uptime of different auras'
                 },
                 scales: {
                     yAxes: [{
                         scaleLabel: {
                             display: true,
-                            labelString: 'Percentage of time',
+                            labelString: '%',
                         },
                         ticks:
                             {

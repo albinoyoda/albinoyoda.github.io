@@ -89,7 +89,7 @@ std::string get_character_stat(const Character &character)
     out_string += print_stat("Hit: ", character.total_special_stats.hit);
     out_string += print_stat("Crit: ", character.total_special_stats.critical_strike);
     out_string += print_stat("Attack Power: ", character.total_special_stats.attack_power);
-    out_string += print_stat("Haste: ", character.total_special_stats.haste);
+    out_string += print_stat("Haste: ", 1 + character.total_special_stats.haste);
 
     out_string += print_stat("Sword skill: ", character.total_special_stats.sword_skill);
     out_string += print_stat("Axe skill: ", character.total_special_stats.axe_skill);

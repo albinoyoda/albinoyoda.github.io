@@ -37,12 +37,15 @@ int main()
     std::vector<std::string> ench_vec;
     ench_vec.emplace_back("h+8 strength");
     ench_vec.emplace_back("s+30 attack power");
+    ench_vec.emplace_back("mcrusader");
+    ench_vec.emplace_back("ocrusader");
 
     std::string race = "human";
 
     Sim_input sim_input{{race}, armor_vec, weapons_vec, buff_vec, ench_vec, {"crit", "hit", "haste"},
-                        60, 63, 10000, 5, true, true,
-                        true, true, true, false, false,true,60, 25, 1};
+                        60, 63, 1, 5, true, true,
+                        true, true, true, false, false,
+                        true, 60, 25, 1};
 
     auto sim_output = sim_interface.simulate(sim_input);
 
