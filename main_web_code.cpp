@@ -1,8 +1,10 @@
 #include <iostream>
 #include "sim_interface.hpp"
+#include <ctime>
 
 int main()
 {
+    clock_t startTime = clock();
     Sim_interface sim_interface;
 
     std::vector<std::string> armor_vec;
@@ -23,7 +25,7 @@ int main()
     armor_vec.emplace_back("blastershot");
 
     std::vector<std::string> weapons_vec;
-    weapons_vec.emplace_back("maladath");
+    weapons_vec.emplace_back("brutality_blade");
     weapons_vec.emplace_back("dal_rends_tribal_guardian");
 
     std::vector<std::string> buff_vec;
@@ -46,14 +48,14 @@ int main()
 
     std::string race = "human";
 
-    Sim_input sim_input{{race}, armor_vec, weapons_vec, buff_vec, ench_vec, {"crit", "hit", "haste"},
-                        60, 63, 1000, 5, true, true,
+    Sim_input sim_input{{race}, armor_vec, weapons_vec, buff_vec, ench_vec, {""},
+                        60, 63, 10000, 5, true, true,
                         true, true, true, false, false,
                         true, 60, 25, 1};
 
     auto sim_output = sim_interface.simulate(sim_input);
 
-    for (const auto dmg_batch : sim_output.stat_weights)
+    for (const auto &dmg_batch : sim_output.stat_weights)
     {
         std::cout << dmg_batch << "\n";
     }
@@ -74,6 +76,9 @@ int main()
     {
         std::cout << message << "\n";
     }
+
+    std::cout << "Code executed in: " << double(clock() - startTime) / (double) CLOCKS_PER_SEC << " seconds."
+              << std::endl;
 
     return 0;
 }

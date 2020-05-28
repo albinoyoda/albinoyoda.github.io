@@ -74,29 +74,59 @@ bool find_string(const std::vector<std::string> &string_vec, const std::string &
     return false;
 }
 
-std::string print_stat(const std::string &stat_name, double amount)
+
+std::string percent_to_str(const std::string &stat_name, double value, const std::string &description)
 {
     std::ostringstream stream;
-    stream << stat_name << std::setw(6) << std::left << std::setprecision(6) << "<b>" << amount << "</b><br />";
+    stream << stat_name << ": " << std::setprecision(3) << "<b>" << value << "%</b> " << description << "<br>";
     return stream.str();
 }
 
-std::string get_character_stat(const Character &character, double target_crit)
+std::string percent_to_str(const std::string &stat_name, double value1, const std::string &description1,
+                           double value2, const std::string &description2)
+{
+    std::ostringstream stream;
+    stream << stat_name << ": " << std::setprecision(3) << "<b>" << value1 << "%</b> " << description1 << ". (<b>"
+           << value2 << "%</b> " << description2 << ")<br>";
+    return stream.str();
+}
+
+std::string print_stat(const std::string &stat_name, double amount)
+{
+    std::ostringstream stream;
+    stream << stat_name << std::setprecision(4) << "<b>" << amount << "</b><br />";
+    return stream.str();
+}
+
+std::string get_character_stat(const Character &character)
 {
     std::string out_string = "Character stats: <br />";
     out_string += print_stat("Strength: ", character.total_attributes.strength);
     out_string += print_stat("Agility: ", character.total_attributes.agility);
     out_string += print_stat("Hit: ", character.total_special_stats.hit);
-    out_string += print_stat("Crit: (spellbook)", character.total_special_stats.critical_strike);
-    out_string += print_stat("Crit: (vs target) ", target_crit);
+    out_string += print_stat("Crit (spellbook):", character.total_special_stats.critical_strike);
     out_string += print_stat("Attack Power: ", character.total_special_stats.attack_power);
-    out_string += print_stat("Haste: ", 1 + character.total_special_stats.haste);
-
-    out_string += print_stat("Sword skill: ", character.total_special_stats.sword_skill);
-    out_string += print_stat("Axe skill: ", character.total_special_stats.axe_skill);
-    out_string += print_stat("Dagger skill: ", character.total_special_stats.dagger_skill);
-    out_string += print_stat("Mace skill: ", character.total_special_stats.mace_skill);
-    out_string += print_stat("Unarmed skill: ", character.total_special_stats.fist_skill);
+    out_string += print_stat("Haste factor: ", 1 + character.total_special_stats.haste);
+    if (character.weapons[0].type == Weapon_type::sword || character.weapons[1].type == Weapon_type::sword)
+    {
+        out_string += print_stat("Sword skill: ", character.total_special_stats.sword_skill);
+    }
+    if (character.weapons[0].type == Weapon_type::axe || character.weapons[1].type == Weapon_type::axe)
+    {
+        out_string += print_stat("Axe skill: ", character.total_special_stats.axe_skill);
+    }
+    if (character.weapons[0].type == Weapon_type::dagger || character.weapons[1].type == Weapon_type::dagger)
+    {
+        out_string += print_stat("Dagger skill: ", character.total_special_stats.dagger_skill);
+    }
+    if (character.weapons[0].type == Weapon_type::mace || character.weapons[1].type == Weapon_type::mace)
+    {
+        out_string += print_stat("Mace skill: ", character.total_special_stats.mace_skill);
+    }
+    if (character.weapons[0].type == Weapon_type::unarmed || character.weapons[1].type == Weapon_type::unarmed)
+    {
+        out_string += print_stat("Unarmed skill: ", character.total_special_stats.fist_skill);
+    }
     out_string += "<br />";
 
     out_string += "Set bonuses:<br />";
@@ -423,86 +453,45 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
 
     std::vector<std::string> aura_uptimes = simulator.get_aura_uptimes();
     std::vector<std::string> proc_statistics = simulator.get_proc_statistics();
-
     auto a = simulator.get_damage_time_lapse();
+    auto yellow_ht = simulator.get_hit_probabilities_yellow();
+    auto white_mh_ht = simulator.get_hit_probabilities_white_mh();
+    auto white_oh_ht = simulator.get_hit_probabilities_white_oh();
 
-    std::string extra_info_string = "Hit/crit details: <br/>";
-    extra_info_string = "<b>Hit:</b> <br/>";
-    int hit_left_to_yellow_cap = simulator.get_hit_probabilities_yellow()[0];
-    if (hit_left_to_yellow_cap > 0)
-    {
-        extra_info_string += "Yellow hits: <b>" + std::to_string(
-                hit_left_to_yellow_cap) + "%</b> hit to yellow hard-cap! <br/>";
-    }
-    else
-    {
-        extra_info_string += "Yellow hit hard-cap reached! <br/>";
-    }
-    extra_info_string += "Main-hand, white hits: ";
-    int left_to_crit_cap_mh = simulator.get_hit_probabilities_white_mh()[0];
-    if (left_to_crit_cap_mh > 0)
-    {
-        extra_info_string += "<b>" + std::to_string(left_to_crit_cap_mh) + "%</b> left to hard-cap. <br/>";
-    }
-    else
-    {
-        extra_info_string += "<b>" + std::to_string(left_to_crit_cap_mh) + "% </b>over hard-cap! <br/>";
-    }
-
-    extra_info_string += "Off-hand, white hits: ";
-    int left_to_crit_cap_oh = simulator.get_hit_probabilities_white_oh()[0];
-    if (left_to_crit_cap_oh > 0)
-    {
-        extra_info_string += "<b>" + std::to_string(left_to_crit_cap_oh) + "%</b> left to hard-cap. <br/>";
-    }
-    else
-    {
-        extra_info_string += "<b>" + std::to_string(left_to_crit_cap_oh) + "%</b> over hard-cap! <br/>";
-    }
+    std::string extra_info_string = "<b>Hit:</b> <br/>";
+    double yellow_miss_chance = yellow_ht[0];
+    double white_mh__miss_chance = white_mh_ht[0];
+    double white_oh__miss_chance = white_oh_ht[0];
+    extra_info_string += percent_to_str("Yellow hits", yellow_miss_chance, "chance to miss");
+    extra_info_string += percent_to_str("Main-hand, white hits", white_mh__miss_chance, "chance to miss");
+    extra_info_string += percent_to_str("off-hand, white hits", white_oh__miss_chance, "chance to miss");
 
     extra_info_string += "<b>Crit:</b> <br/>";
-    extra_info_string += "Yellow hits: ";
-    int left_to_crit_cap_yellow = 100 - simulator.get_hit_probabilities_yellow().back();
-    if (left_to_crit_cap_yellow > 0)
-    {
-        extra_info_string += "<b>" + std::to_string(left_to_crit_cap_yellow) + "%</b> left to hard-cap. <br/>";
-    }
-    else
-    {
-        extra_info_string += "<b>" + std::to_string(left_to_crit_cap_yellow) + "%</b> over hard-cap! <br/>";
-    }
-    extra_info_string += "Main-hand white hits: ";
-    int left_to_white_crit_cap_mh = 100 - simulator.get_hit_probabilities_white_mh().back();
-    if (left_to_white_crit_cap_mh > 0)
-    {
-        extra_info_string += "<b>" + std::to_string(left_to_white_crit_cap_mh) + "%</b> left to crit hard-cap. <br/>";
-    }
-    else
-    {
-        extra_info_string += "<b>" + std::to_string(left_to_white_crit_cap_mh) + "%</b> over crit hard-cap! <br/>";
-    }
-    extra_info_string += "Off-hand white hits: ";
-    int left_to_white_crit_cap_oh = 100 - simulator.get_hit_probabilities_white_oh().back();
-    if (left_to_white_crit_cap_oh > 0)
-    {
-        extra_info_string += "<b>" + std::to_string(left_to_white_crit_cap_oh) + "% </b>left to crit hard-cap. <br/>";
-    }
-    else
-    {
-        extra_info_string += "<b>" + std::to_string(left_to_white_crit_cap_oh) + "% </b>over crit hard-cap! <br/>";
-    }
-    extra_info_string += "<b>Glancing blows:</b><br/>";
-    extra_info_string += "Chance to occur: <b>" + std::to_string(
-            int(simulator.get_hit_probabilities_white_oh()[2] - simulator
-                    .get_hit_probabilities_white_oh()[1])) + "%</b> (based on level difference)<br/>";
-    extra_info_string += "Glancing damage main-hand: <b>" + std::to_string(
-            int(100 * simulator.get_glancing_penalty_mh())) + "%</b> (based on skill difference)<br/>";
-    extra_info_string += "Glancing damage off-hand: <b>" + std::to_string(
-            int(100 * simulator.get_glancing_penalty_oh())) + "%</b> (based on skill difference)<br/>";
-    extra_info_string += "<b>Dodge chance:</b><br/>";
-    extra_info_string += "<b>" + std::to_string(simulator.get_hit_probabilities_yellow()[1] - simulator
-            .get_hit_probabilities_yellow()[0]) + "%</b> (based on skill difference)<br/>";
+    double yellow_crit = std::min(yellow_ht[3], 100.0) - yellow_ht[2];
+    double left_to_crit_cap_yellow = std::max(100.0 - yellow_ht.back(), 0.0);
+    double white_mh_crit = std::min(white_mh_ht[3], 100.0) - white_mh_ht[2];
+    double left_to_crit_cap_white_mh = std::max(100.0 - white_mh_ht.back(), 0.0);
+    double white_oh_crit = std::min(white_oh_ht[3], 100.0) - white_oh_ht[2];
+    double left_to_crit_cap_white_oh = std::max(100.0 - white_oh_ht.back(), 0.0);
+    extra_info_string += percent_to_str("Yellow hits", yellow_crit, "chance to crit", left_to_crit_cap_yellow,
+                                        "left to crit-cap");
+    extra_info_string += percent_to_str("White hits main hand", white_mh_crit, "chance to crit",
+                                        left_to_crit_cap_white_mh, "left to crit-cap");
+    extra_info_string += percent_to_str("White hits off hand", white_oh_crit, "chance to crit",
+                                        left_to_crit_cap_white_oh, "left to crit-cap");
 
+    extra_info_string += "<b>Glancing blows:</b><br/>";
+    double glancing_probability = white_oh_ht[2] - white_oh_ht[1];
+    double glancing_penalty_mh = 100 * simulator.get_glancing_penalty_mh();
+    double glancing_penalty_oh = 100 * simulator.get_glancing_penalty_oh();
+    extra_info_string += percent_to_str("Chance to occur", glancing_probability, "(based on level difference)");
+    extra_info_string += percent_to_str("Glancing damage main-hand", glancing_penalty_mh,
+                                        "(based on skill difference)");
+    extra_info_string += percent_to_str("Glancing damage off-hand", glancing_penalty_oh, "(based on skill difference)");
+
+    extra_info_string += "<b>Other:</b><br/>";
+    double dodge_chance = yellow_ht[1] - yellow_ht[0];
+    extra_info_string += percent_to_str("Target dodge chance", dodge_chance, "(based on skill difference)");
 
     std::vector<std::string> stat_weights;
     if (!input.stat_weights.empty())
@@ -570,27 +559,27 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
                     case Weapon_type::axe:
                         char_plus.total_special_stats.axe_skill += 5;
                         char_minus.total_special_stats.axe_skill -= 5;
-                        name = "5-axe-skill: ";
+                        name = "5-axe-skill ";
                         break;
                     case Weapon_type::sword:
                         char_plus.total_special_stats.sword_skill += 5;
                         char_minus.total_special_stats.sword_skill -= 5;
-                        name = "5-sword-skill: ";
+                        name = "5-sword-skill ";
                         break;
                     case Weapon_type::mace:
                         char_plus.total_special_stats.mace_skill += 5;
                         char_minus.total_special_stats.mace_skill -= 5;
-                        name = "5-mace-skill: ";
+                        name = "5-mace-skill ";
                         break;
                     case Weapon_type::dagger:
                         char_plus.total_special_stats.dagger_skill += 5;
                         char_minus.total_special_stats.dagger_skill -= 5;
-                        name = "5-dagger-skill: ";
+                        name = "5-dagger-skill ";
                         break;
                     case Weapon_type::unarmed:
                         char_plus.total_special_stats.fist_skill += 5;
                         char_minus.total_special_stats.fist_skill -= 5;
-                        name = "5-unarmed-skill: ";
+                        name = "5-unarmed-skill ";
                         break;
                 }
 
@@ -630,7 +619,6 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
 
     return {hist_x, hist_y, dps_dist, a[0], a[1], a[2], a[3], a[4], a[5], a[6],
             aura_uptimes, proc_statistics, stat_weights, {extra_info_string}, mean_init, sample_std_init,
-            {get_character_stat(character, simulator.get_hit_probabilities_white_mh()[3]
-                                           - simulator.get_hit_probabilities_white_mh()[2])}};
+            {get_character_stat(character)}};
 }
 
