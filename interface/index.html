@@ -966,6 +966,18 @@
         let file = document.getElementById("myFile");
         var myFile = file.files[0];
         var reader = new FileReader();
+
+        //set all buff-values to unchecked before loading
+        for (let world_buff of world_buffs) {
+            document.getElementById(world_buff).checked = false;
+        }
+        for (let buff of buffs) {
+            document.getElementById(buff).checked = false;
+        }
+        for (let consumable of consumables) {
+            document.getElementById(consumable).checked = false;
+        }
+
         reader.readAsText(myFile);
         reader.onload = function () {
             let rawLog = reader.result;
