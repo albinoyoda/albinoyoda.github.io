@@ -23,7 +23,7 @@ int main()
     armor_vec.emplace_back("blastershot");
 
     std::vector<std::string> weapons_vec;
-    weapons_vec.emplace_back("dal_rends_sacred_charge");
+    weapons_vec.emplace_back("maladath");
     weapons_vec.emplace_back("dal_rends_tribal_guardian");
 
     std::vector<std::string> buff_vec;

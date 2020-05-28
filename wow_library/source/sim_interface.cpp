@@ -500,8 +500,8 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     extra_info_string += "Glancing damage off-hand: <b>" + std::to_string(
             int(100 * simulator.get_glancing_penalty_oh())) + "%</b> (based on skill difference)<br/>";
     extra_info_string += "<b>Dodge chance:</b><br/>";
-    extra_info_string += "<b>" + std::to_string(int(simulator.get_hit_probabilities_yellow()[1] - simulator
-            .get_hit_probabilities_yellow()[0])) + "%</b> (based on skill difference)<br/>";
+    extra_info_string += "<b>" + std::to_string(simulator.get_hit_probabilities_yellow()[1] - simulator
+            .get_hit_probabilities_yellow()[0]) + "%</b> (based on skill difference)<br/>";
 
 
     std::vector<std::string> stat_weights;
