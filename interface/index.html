@@ -238,6 +238,7 @@
     <button class="tablinks" onclick="openTab(event, 'About')">About</button>
     <button class="tablinks" onclick="openTab(event, 'Equations')">Equations</button>
     <button class="tablinks" onclick="openTab(event, 'Coming soon')">Coming soon</button>
+    <button class="tablinks" onclick="openTab(event, 'Change log')">Change log</button>
 </div>
 
 <div id="About" class="tabcontent">
@@ -295,15 +296,29 @@
     <h2>Details about the simulator will be coming soon!</h2>
 </div>
 
+<div id="Change log" class="tabcontent">
+    <h2>Change log:</h2>
+    <p><b>2020-05-29:</b></p>
+    <p>-Reworked "use effects": Now cloudkeepers, diamond flask, mighty rage potion, etc., adds an aura that is <br/>
+        tracked in the simulator. These auras take into account stat-multipilers, triggers GCD <br/>
+        (if it should) and has proper buff slots. As an example consider a character with both cloudkeepers and<br/>
+        diamondflask. Then the simulator will pick the best one (best = max(AP bonus * uptime)) and use that one<br/>
+        It will also stack all effects towards the end so that the uptime ends roughly when the fight ends<br/>
+        (stacking buffs towards the execute phase).<br/>
+        - Fixed the simulation output formatting.
+    </p>
+</div>
+
 <div id="Coming soon" class="tabcontent">
     <h2>Stuff to be added soon:</h2>
     <p>TPS calculator for tanking. </p>
     <p>More items! </p>
+    <p>Configure use effect timings. </p>
     <p>Combat log </p>
     <p>Talents </p>
     <p>2h fury support </p>
     <p>Ability to compare gear setups side-by-side </p>
-<!--    <p>Ability to find the best combination of gear given a  </p>-->
+    <!--    <p>Ability to find the best combination of gear given a  </p>-->
 </div>
 
 <div id="Simulator" class="tabcontent">

@@ -60,23 +60,29 @@ public:
         int counter;
     };
 
-    void set_target(Special_stats &special_stats)
+    void set_target(Special_stats &special_stats, const std::vector<Use_effect> &use_effects_input)
     {
         stat_gains.clear();
         simulation_special_stats = &special_stats;
+        use_effects = use_effects_input;
     };
 
-    double get_dt()
+    double get_dt(double time_left)
     {
         double dt = 1e10;
         for (const auto &gain : stat_gains)
         {
             dt = std::min(dt, gain.duration_left);
         }
+        for (const auto &use_effect : use_effects)
+        {
+            dt = std::min(dt, time_left - use_effect.duration - 1.5);
+            dt = std::max(dt, 1e-5);
+        }
         return dt;
     }
 
-    void increment(double dt)
+    void increment(double dt, double time_left, double &rage, double &global_cooldown)
     {
         size_t i = 0;
         while (i < stat_gains.size())
@@ -87,6 +93,26 @@ public:
             {
                 (*simulation_special_stats) -= stat_gains[i].special_stats;
                 stat_gains.erase(stat_gains.begin() + i);
+            }
+            else
+            {
+                ++i;
+            }
+        }
+        i = 0;
+        while (i < use_effects.size())
+        {
+            if (time_left - use_effects[i].duration - 1.5 < 0.0)
+            {
+                add(use_effects[i].name, use_effects[i].get_special_stat_equivalent(*simulation_special_stats),
+                    use_effects[i].duration);
+                rage += use_effects[i].rage_boost;
+                rage = std::min(100.0, rage);
+                use_effects.erase(use_effects.begin() + i);
+                if (use_effects[i].triggers_gcd)
+                {
+                    global_cooldown = 1.5;
+                }
             }
             else
             {
@@ -124,6 +150,7 @@ public:
 
     Special_stats *simulation_special_stats;
     std::vector<Combat_buff> stat_gains;
+    std::vector<Use_effect> use_effects;
     Aura_uptime aura_uptime;
     std::vector<Proc> procs;
 };

@@ -31,7 +31,6 @@ struct Combat_simulator_config
     // Simulator settings
     bool use_sim_time_ramp = false;
     bool enable_spell_rotation{false};
-    bool use_mighty_rage_potion{false};
     bool enable_bloodrage{false};
     bool enable_recklessness{false};
     bool display_combat_debug{false};

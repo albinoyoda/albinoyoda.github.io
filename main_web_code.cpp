@@ -16,7 +16,7 @@ int main()
     armor_vec.emplace_back("wristguards_of_stability");
     armor_vec.emplace_back("flameguard_gauntlets");
     armor_vec.emplace_back("onslaught_girdle");
-    armor_vec.emplace_back("legguards_of_the_fallen_crusader");
+    armor_vec.emplace_back("cloudkeeper_legplates");
     armor_vec.emplace_back("chromatic_boots");
     armor_vec.emplace_back("don_julios_band");
     armor_vec.emplace_back("master_dragonslayers_ring");

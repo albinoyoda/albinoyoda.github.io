@@ -10,17 +10,19 @@ struct Buffs
     Buff dire_maul{"dire_maul", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 200}};
     Buff songflower{"songflower", Attributes{15, 15}, Special_stats{5, 0, 0}};
     Buff warchiefs_blessing{"warchiefs_blessing", Attributes{0, 0}, Special_stats{0, 0, 0, 0, .15}};
-    Buff spirit_of_zandalar{"spirit_of_zandalar", Attributes{0, 0}, Special_stats{0, 0, 0}, .15};
+    Buff spirit_of_zandalar{"spirit_of_zandalar", Attributes{0, 0},
+                            Special_stats{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .15}};
     Buff sayges_fortune{"sayges_fortune", Attributes{0, 0}, Special_stats{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .1}};
 
     // Player_buffs
     Buff battle_shout{"battle_shout", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 241.0}};
-    Buff blessing_of_kings{"blessing_of_kings", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, .10};
+    Buff blessing_of_kings{"blessing_of_kings", Attributes{0.0, 0.0},
+                           Special_stats{0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0.1}};
     Buff blessing_of_might{"blessing_of_might", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 155}};
     Buff gift_of_the_wild{"gift_of_the_wild", Attributes{12.0, 12.0}, Special_stats{0.0, 0.0, 0.0}};
     Buff leader_of_the_pack{"leader_of_the_pack", Attributes{0.0, 0.0}, Special_stats{3.0, 0.0, 0.0}};
     Buff trueshot_aura{"trueshot_aura", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 100}};
-    Buff windfury_totem{"windfury_totem", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0}, 0, 0,
+    Buff windfury_totem{"windfury_totem", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0}, 0,
                         {{"windfury_totem", Hit_effect::Type::extra_hit, {}, {}, 0, 0, 0.2, 315}}};
     Buff strength_of_earth_totem{"strength_of_earth_totem", Attributes{61.0, 0.0}, Special_stats{0.0, 0.0, 0}};
     Buff grace_of_air_totem{"grace_of_air_totem", Attributes{0.0, 67.0}, Special_stats{0.0, 0.0, 0}};
@@ -34,8 +36,11 @@ struct Buffs
     Buff juju_might{"juju_might", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 40}};
     Buff winterfall_firewater{"winterfall_firewater", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 35}};
     Buff roids{"roids", Attributes{25.0, 0.0}, Special_stats{0.0, 0.0, 0.0}};
+    Buff mighty_rage_potion{"mighty_rage_potion", {}, {}, 0, {},
+                            {{"mighty_rage_potion", Use_effect::Effect_socket::unique, {60, 0}, {0, 0, 0}, 60, 20,
+                              120, false}}};
 
-    Weapon_buff dense_stone{"dense_stone", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, 0, 8};
+    Weapon_buff dense_stone{"dense_stone", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, 8};
     Buff elemental_stone{"elemental_stone", Attributes{0.0, 0.0}, Special_stats{2.0, 0.0, 0.0}};
 };
 
@@ -218,7 +223,11 @@ struct Armory
                                                                                            54},       Socket::legs, Set::black_dragonscale},
                     {"eldritch_legplates",               Attributes{15, 9},  Special_stats{1, 0, 0},  Socket::legs},
                     {"handcrafted_mastersmith_leggings", Attributes{29, 0},  Special_stats{0, 0, 0},  Socket::legs},
-                    {"cloudkeeper_legplates",            Attributes{20, 20}, Special_stats{0, 0, 0},  Socket::legs},
+                    {"cloudkeeper_legplates",            Attributes{20, 20}, Special_stats{0, 0,
+                                                                                           0},        Socket::legs, Set::none, {},
+                            {{"cloudkeeper_legplates", Use_effect::Effect_socket::shared, {}, {0, 0, 100}, 0, 30, 900, true}}},
+                    {"cloudkeeper_legplates_no_use",     Attributes{20, 20}, Special_stats{0, 0,
+                                                                                           0},        Socket::legs},
                     {"legguards_of_the_fallen_crusader", Attributes{28, 22}, Special_stats{0, 0, 0},  Socket::legs},
                     {"knight_captains_plate_leggings",   Attributes{12, 0},  Special_stats{2, 0,
                                                                                            0},        Socket::legs, Set::rare_pvp_set},
@@ -269,15 +278,16 @@ struct Armory
 
     std::vector<Armor> trinket_t
             {
-                    {"hand_of_justice",           Attributes{0, 0},  Special_stats{0, 0,
-                                                                                   20},       Socket::trinket, Set::none, {{"hand_of_justice",         Hit_effect::Type::extra_hit,    {}, {}, 0,   0, 0.02}}},
-                    {"diamond_flask",             Attributes{75, 0}, Special_stats{0, 0, 0},  Socket::trinket},
-                    {"blackhands_breadth",        Attributes{0, 0},  Special_stats{2, 0, 0},  Socket::trinket},
-                    {"drake_fang_talisman",       Attributes{0, 0},  Special_stats{0, 2, 56}, Socket::trinket},
-                    {"counterattack_lodestone",   Attributes{0, 0},  Special_stats{0, 0, 22}, Socket::trinket},
-                    {"darkmoon_card_maelstrom",   Attributes{0, 0},  Special_stats{0, 0,
-                                                                                   0},        Socket::trinket, Set::none, {{"darkmoon_card_maelstrom", Hit_effect::Type::damage_magic, {}, {}, 250, 0, 0.02}}},
-                    {"rune_of_the_guard_captain", Attributes{0, 0},  Special_stats{0, 1, 20}, Socket::trinket},
+                    {"hand_of_justice",           Attributes{0, 0}, Special_stats{0, 0,
+                                                                                  20},       Socket::trinket, Set::none, {{"hand_of_justice",         Hit_effect::Type::extra_hit,    {}, {}, 0,   0, 0.02}}},
+                    {"diamond_flask",             Attributes{0, 0}, Special_stats{0, 0,
+                                                                                  0},        Socket::trinket, Set::none, {}, {{"diamond_flask", Use_effect::Effect_socket::shared, {75, 0}, {}, 0, 60, 360, true}}},
+                    {"blackhands_breadth",        Attributes{0, 0}, Special_stats{2, 0, 0},  Socket::trinket},
+                    {"drake_fang_talisman",       Attributes{0, 0}, Special_stats{0, 2, 56}, Socket::trinket},
+                    {"counterattack_lodestone",   Attributes{0, 0}, Special_stats{0, 0, 22}, Socket::trinket},
+                    {"darkmoon_card_maelstrom",   Attributes{0, 0}, Special_stats{0, 0,
+                                                                                  0},        Socket::trinket, Set::none, {{"darkmoon_card_maelstrom", Hit_effect::Type::damage_magic, {}, {}, 250, 0, 0.02}}},
+                    {"rune_of_the_guard_captain", Attributes{0, 0}, Special_stats{0, 1, 20}, Socket::trinket},
             };
 
     std::vector<Armor> ranged_t

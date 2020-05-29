@@ -55,6 +55,51 @@ enum class Set
     warblade_of_the_hakkari
 };
 
+class Use_effect
+{
+public:
+    enum class Type
+    {
+        stat_boost,
+        special_stat_boost,
+        rage_boost,
+    };
+
+    enum class Effect_socket
+    {
+        shared,
+        unique,
+    };
+
+    Use_effect() = default;
+
+    Use_effect(std::string name, Effect_socket effect_socket, Attributes attribute_boost,
+               Special_stats special_stats_boost, double rage_boost, double duration, double cooldown,
+               bool triggers_gcd) :
+            name(std::move(name)),
+            effect_socket(effect_socket),
+            attribute_boost(attribute_boost),
+            special_stats_boost(special_stats_boost),
+            rage_boost(rage_boost),
+            duration(duration),
+            cooldown(cooldown),
+            triggers_gcd(triggers_gcd) {};
+
+    inline Special_stats get_special_stat_equivalent(const Special_stats &special_stats) const
+    {
+        return attribute_boost.convert_to_special_stats(special_stats) + special_stats_boost;
+    }
+
+    std::string name;
+    Effect_socket effect_socket;
+    Attributes attribute_boost;
+    Special_stats special_stats_boost;
+    double rage_boost{};
+    double duration{};
+    double cooldown{};
+    double triggers_gcd{false};
+};
+
 class Hit_effect
 {
 public:
@@ -80,11 +125,9 @@ public:
             probability(probability),
             attack_power_boost(attack_power_boost) {};
 
-    inline Special_stats get_special_stat_equivalent() const
+    inline Special_stats get_special_stat_equivalent(const Special_stats &special_stats) const
     {
-        Attributes attributes = attribute_boost;
-        attributes *= 1.1;
-        return attributes.convert_to_special_stats() + special_stats_boost;
+        return attribute_boost.convert_to_special_stats(special_stats) + special_stats_boost;
     }
 
     std::string name;
@@ -136,45 +179,45 @@ struct Set_bonus
 
 struct Buff
 {
-    Buff(std::string name, Attributes attributes, Special_stats special_stats, double stat_multiplier = 0,
-         double bonus_damage = 0, std::vector<Hit_effect> hit_effects = std::vector<Hit_effect>()) :
-            name(std::move(name)), attributes(attributes), special_stats(special_stats),
-            stat_multiplier(stat_multiplier), bonus_damage(bonus_damage),
-            hit_effects(std::move(hit_effects)) {};
+    Buff(std::string name, Attributes attributes, Special_stats special_stats, double bonus_damage = 0,
+         std::vector<Hit_effect> hit_effects = std::vector<Hit_effect>(),
+         std::vector<Use_effect> use_effects = std::vector<Use_effect>()) :
+            name(std::move(name)), attributes(attributes), special_stats(special_stats), bonus_damage(bonus_damage),
+            hit_effects(std::move(hit_effects)),
+            use_effects(std::move(use_effects)) {};
 
     std::string name;
     Attributes attributes;
     Special_stats special_stats;
-    double stat_multiplier;
     double bonus_damage;
     std::vector<Hit_effect> hit_effects{};
+    std::vector<Use_effect> use_effects{};
 };
 
 struct Weapon_buff
 {
     Weapon_buff() = default;
 
-    Weapon_buff(std::string name, Attributes attributes, Special_stats special_stats, double stat_multiplier = 0,
-                double bonus_damage = 0) :
-            name(std::move(name)), attributes(attributes), special_stats(special_stats),
-            stat_multiplier(stat_multiplier), bonus_damage(bonus_damage) {};
+    Weapon_buff(std::string name, Attributes attributes, Special_stats special_stats, double bonus_damage = 0) :
+            name(std::move(name)), attributes(attributes), special_stats(special_stats), bonus_damage(bonus_damage) {};
 
     std::string name{};
     Attributes attributes{};
     Special_stats special_stats{};
-    double stat_multiplier{};
     double bonus_damage{};
 };
 
 struct Armor
 {
     Armor(std::string name, Attributes attributes, Special_stats special_stats, Socket socket,
-          Set set_name = Set::none, std::vector<Hit_effect> hit_effects = std::vector<Hit_effect>())
+          Set set_name = Set::none, std::vector<Hit_effect> hit_effects = std::vector<Hit_effect>(),
+          std::vector<Use_effect> use_effects = std::vector<Use_effect>())
             :
             name(std::move(name)), attributes(attributes), special_stats(special_stats),
             socket(socket),
             set_name(set_name),
-            hit_effects(std::move(hit_effects)) {};
+            hit_effects(std::move(hit_effects)),
+            use_effects(std::move(use_effects)) {};
     std::string name;
     Attributes attributes;
     Special_stats special_stats;
@@ -182,6 +225,7 @@ struct Armor
     Set set_name;
     Enchant enchant{};
     std::vector<Hit_effect> hit_effects{};
+    std::vector<Use_effect> use_effects{};
 };
 
 struct Weapon

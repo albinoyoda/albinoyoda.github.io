@@ -374,6 +374,10 @@ character_setup(const Armory &armory, const Buffs &buffs, const std::string &rac
     {
         character.add_buff(buffs.roids);
     }
+    if (find_string(buffs_vec, "mighty_rage_potion"))
+    {
+        character.add_buff(buffs.mighty_rage_potion);
+    }
     if (find_string(buffs_vec, "dense_stone_main_hand"))
     {
         character.add_weapon_buff(Socket::main_hand, buffs.dense_stone);
@@ -401,7 +405,15 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     Armory armory{};
     Buffs buffs{};
 
-    Character character = character_setup(armory, buffs, input.race[0], input.armor, input.weapons, input.buffs,
+    auto temp_buffs = input.buffs;
+
+    if (input.mighty_rage_potion)
+    {
+        //temporary solution
+        temp_buffs.emplace_back("mighty_rage_potion");
+    }
+
+    Character character = character_setup(armory, buffs, input.race[0], input.armor, input.weapons, temp_buffs,
                                           input.enchants);
 
     // Simulator & Combat settings
@@ -432,7 +444,6 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
 
     config.use_sim_time_ramp = true;
     config.enable_spell_rotation = true;
-    config.use_mighty_rage_potion = input.mighty_rage_potion;
     config.enable_bloodrage = true;
     config.enable_recklessness = input.recklessness;
 //    config.display_combat_debug = true;
@@ -458,7 +469,8 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     auto white_mh_ht = simulator.get_hit_probabilities_white_mh();
     auto white_oh_ht = simulator.get_hit_probabilities_white_oh();
 
-    std::string extra_info_string = "<b>Hit:</b> <br/>";
+    std::string extra_info_string = "<b>Fight stats vs. target:</b> <br/>";
+     extra_info_string += "<b>Hit:</b> <br/>";
     double yellow_miss_chance = yellow_ht[0];
     double white_mh__miss_chance = white_mh_ht[0];
     double white_oh__miss_chance = white_oh_ht[0];

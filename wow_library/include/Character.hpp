@@ -108,6 +108,7 @@ public:
     std::vector<Weapon> weapons;
     std::vector<Buff> buffs;
     std::vector<Set_bonus> set_bonuses;
+    std::vector<Use_effect> use_effects;
     Race race;
     int level;
 };

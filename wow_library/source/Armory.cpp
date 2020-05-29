@@ -187,11 +187,11 @@ void Armory::compute_total_stats(Character &character) const
     clean_weapon(character.weapons[1]);
     Attributes total_attributes{};
     Special_stats total_special_stats{};
-    double stat_multiplier = 1;
 
     total_attributes += character.base_attributes;
     total_special_stats += character.base_special_stats;
     std::vector<Set> set_names{};
+    std::vector<Use_effect> use_effects{};
     for (const Armor &armor : character.armor)
     {
         total_attributes += armor.attributes;
@@ -201,7 +201,10 @@ void Armory::compute_total_stats(Character &character) const
         total_special_stats += get_enchant_special_stats(armor.socket, armor.enchant.type);
 
         set_names.emplace_back(armor.set_name);
-
+        for (const auto &use_effect : armor.use_effects)
+        {
+            use_effects.emplace_back(use_effect);
+        }
         for (const auto &hit_effect : armor.hit_effects)
         {
             for (Weapon &weapon : character.weapons)
@@ -273,7 +276,11 @@ void Armory::compute_total_stats(Character &character) const
     {
         total_attributes += buff.attributes;
         total_special_stats += buff.special_stats;
-        stat_multiplier *= (1 + buff.stat_multiplier);
+
+        for (const auto &use_effect : buff.use_effects)
+        {
+            use_effects.emplace_back(use_effect);
+        }
 
         for (const auto &hit_effect : buff.hit_effects)
         {
@@ -284,15 +291,14 @@ void Armory::compute_total_stats(Character &character) const
         }
     }
 
-    // TODO implement shout in simulator instead
     total_special_stats.critical_strike += 5; // crit from talent
     total_special_stats.critical_strike += 3; // crit from berserker stance
 
-    total_attributes *= stat_multiplier;
-    total_special_stats += total_attributes.convert_to_special_stats();
+    total_special_stats += total_attributes.convert_to_special_stats(total_special_stats);
 
-    character.total_attributes = total_attributes;
+    character.total_attributes = total_attributes.multiply(total_special_stats);
     character.total_special_stats = total_special_stats;
+    character.use_effects = use_effects;
 }
 
 bool Armory::check_if_armor_valid(const std::vector<Armor> &armor) const

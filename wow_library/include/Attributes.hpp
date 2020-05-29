@@ -14,7 +14,7 @@ struct Special_stats
 
     Special_stats(double critical_strike, double hit, double attack_power, double chance_for_extra_hit = 0.0,
                   double haste = 0.0, int sword_skill = 0, int axe_skill = 0, int dagger_skill = 0,
-                  int mace_skill = 0, int fist_skill = 0, double damage_multiplier = 0) :
+                  int mace_skill = 0, int fist_skill = 0, double damage_multiplier = 0, double stat_multiplier = 0) :
             critical_strike{critical_strike},
             hit{hit},
             attack_power{attack_power},
@@ -25,7 +25,8 @@ struct Special_stats
             dagger_skill(dagger_skill),
             mace_skill(mace_skill),
             fist_skill(fist_skill),
-            damage_multiplier(damage_multiplier) {}
+            damage_multiplier(damage_multiplier),
+            stat_multiplier(stat_multiplier) {}
 
     void clear()
     {
@@ -39,6 +40,7 @@ struct Special_stats
         dagger_skill = 0;
         mace_skill = 0;
         damage_multiplier = 0;
+        stat_multiplier = 0;
     }
 
     Special_stats operator+(const Special_stats &rhs)
@@ -53,7 +55,8 @@ struct Special_stats
                 dagger_skill + rhs.dagger_skill,
                 mace_skill + rhs.mace_skill,
                 fist_skill + rhs.fist_skill,
-                multiplicative_addition(damage_multiplier, rhs.damage_multiplier)
+                multiplicative_addition(damage_multiplier, rhs.damage_multiplier),
+                multiplicative_addition(stat_multiplier, rhs.stat_multiplier),
         };
     }
 
@@ -69,7 +72,8 @@ struct Special_stats
                 dagger_skill - rhs.dagger_skill,
                 mace_skill - rhs.mace_skill,
                 fist_skill - rhs.fist_skill,
-                multiplicative_subtraction(damage_multiplier, rhs.damage_multiplier)
+                multiplicative_subtraction(damage_multiplier, rhs.damage_multiplier),
+                multiplicative_subtraction(stat_multiplier, rhs.stat_multiplier)
         };
     }
 
@@ -96,6 +100,7 @@ struct Special_stats
     int mace_skill{};
     int fist_skill{};
     double damage_multiplier{};
+    double stat_multiplier{};
 };
 
 class Attributes
@@ -111,9 +116,16 @@ public:
         agility = 0;
     }
 
-    Special_stats convert_to_special_stats() const
+    Attributes multiply(const Special_stats &special_stats) const
     {
-        return {agility / 20, 0, strength * 2, 0, 0};
+        double multiplier = special_stats.stat_multiplier + 1;
+        return {strength * multiplier, agility * multiplier};
+    }
+
+    Special_stats convert_to_special_stats(const Special_stats &special_stats) const
+    {
+        double multiplier = special_stats.stat_multiplier + 1;
+        return {agility / 20 * multiplier, 0, strength * 2 * multiplier};
     }
 
     Attributes operator+(const Attributes &rhs)
@@ -145,11 +157,6 @@ public:
 std::ostream &operator<<(std::ostream &os, Special_stats const &special_stats);
 
 std::ostream &operator<<(std::ostream &os, Attributes const &stats);
-//{
-//    os << "Characters stats: " << "\n";
-//    os << "strength: " << stats.strength << "\n";
-//    os << "agility: " << stats.agility << "\n";
-//    return os;
-//}
+
 
 #endif //WOW_SIMULATOR_STATS_HPP

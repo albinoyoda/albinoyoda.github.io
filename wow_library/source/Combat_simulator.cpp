@@ -457,7 +457,7 @@ void Combat_simulator::hit_effects(Weapon_sim &weapon, Weapon_sim &main_hand_wea
                 case Hit_effect::Type::stat_boost:
                     simulator_cout("PROC: stats increased: ", hit_effect.name);
                     buff_manager_.add(weapon.socket_name + "_" + hit_effect.name,
-                                      hit_effect.get_special_stat_equivalent(),
+                                      hit_effect.get_special_stat_equivalent(special_stats),
                                       hit_effect.duration);
                     break;
                 default:
@@ -587,6 +587,42 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
         sim_time -= 2.0;
     }
 
+    // Pick out the best use effect if there are several that shares cooldown
+    std::vector<Use_effect> use_effects_all = character.use_effects;
+    std::vector<int> shared_items;
+    size_t best_idx = 0;
+    double best_value = 0;
+    for (size_t i = 0; i < use_effects_all.size(); i++)
+    {
+        if (use_effects_all[i].effect_socket == Use_effect::Effect_socket::shared)
+        {
+            shared_items.push_back(i);
+            double value = use_effects_all[i].get_special_stat_equivalent(starting_special_stats).attack_power *
+                           use_effects_all[i].duration;
+            if (value > best_value)
+            {
+                best_idx = i;
+                best_value = value;
+            }
+        }
+    }
+
+    std::vector<Use_effect> use_effects;
+    for (size_t i = 0; i < use_effects_all.size(); i++)
+    {
+        if (!(std::find(shared_items.begin(), shared_items.end(), i) != shared_items.end()))// Add if item is not shared
+        {
+            use_effects.emplace_back(use_effects_all[i]);
+        }
+        else
+        {
+            if (i == best_idx) // Pick the best one
+            {
+                use_effects.emplace_back(use_effects_all[i]);
+            }
+        }
+    }
+
     for (int iter = 0; iter < n_damage_batches; iter++)
     {
         time_keeper_.reset(); // Class variable that keeps track of the time spent, cooldowns, iteration number
@@ -594,7 +630,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
         // TODO better haste fix?
         Damage_sources damage_sources{};
         double rage = 0;
-        buff_manager_.set_target(special_stats);
+        buff_manager_.set_target(special_stats, use_effects);
         int flurry_charges = 0;
 
         bool deathwish_used{false};
@@ -602,7 +638,6 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
         bool recklessness_active = false;
         bool execute_phase = false;
         bool bloodrage_active = false;
-        bool used_mighty_rage_potion = false;
         int bloodrage_ticks = 0;
         int anger_management_ticks = 0;
         int burning_adrenaline_ticks = 0;
@@ -630,12 +665,12 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
         {
             double mh_dt = weapons[0].internal_swing_timer;
             double oh_dt = (weapons.size() == 2) ? weapons[1].internal_swing_timer : 100.0;
-            double buff_dt = buff_manager_.get_dt();
+            double buff_dt = buff_manager_.get_dt(sim_time - time_keeper_.time);
             double dt = time_keeper_.get_dynamic_time_step(mh_dt, oh_dt, buff_dt, sim_time);
             time_keeper_.increment(dt);
-            buff_manager_.increment(dt);
+            buff_manager_.increment(dt, sim_time - time_keeper_.time, rage, time_keeper_.global_cd);
 
-            if (time_keeper_.time > sim_time)
+            if (sim_time - time_keeper_.time < 0.0)
             {
                 break;
             }
@@ -718,18 +753,6 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                     }
                 }
                 bloodrage_cooldown -= dt;
-            }
-
-            if (config.use_mighty_rage_potion)
-            {
-                if (sim_time - time_keeper_.time < 25.0 && !used_mighty_rage_potion)
-                {
-                    simulator_cout("------------ Mighty Rage Potion! ------------");
-                    rage += 45 + 30 * get_uniform_random(1);
-                    rage = std::min(100.0, rage);
-                    buff_manager_.add("Mighty_rage_potion", Special_stats{0, 0, 145}, 20);
-                    used_mighty_rage_potion = true;
-                }
             }
 
             if (config.enable_spell_rotation)
