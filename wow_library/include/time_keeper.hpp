@@ -27,7 +27,7 @@ public:
         crusader_mh_buff_timer = -1e-10;
         crusader_oh_buff_timer = -1e-10;
         time = 0.0;
-        step_index = 1;
+        step_index = 0;
     }
 
     constexpr double get_dynamic_time_step(double mh_dt,

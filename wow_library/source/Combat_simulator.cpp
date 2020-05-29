@@ -36,13 +36,13 @@ void Combat_simulator::cout_damage_parse(Combat_simulator::Hit_type hit_type, So
             switch (hit_outcome.hit_result)
             {
                 case Hit_result::glancing:
-                    simulator_cout("Mainhand glancing hit for: ", hit_outcome.damage, " damage.");
+                    simulator_cout("Mainhand glancing hit for: ", int(hit_outcome.damage), " damage.");
                     break;
                 case Hit_result::hit:
-                    simulator_cout("Mainhand white hit for: ", hit_outcome.damage, " damage.");
+                    simulator_cout("Mainhand white hit for: ", int(hit_outcome.damage), " damage.");
                     break;
                 case Hit_result::crit:
-                    simulator_cout("Mainhand crit for: ", hit_outcome.damage, " damage.");
+                    simulator_cout("Mainhand crit for: ", int(hit_outcome.damage), " damage.");
                     break;
                 case Hit_result::dodge:
                     simulator_cout("Mainhand hit dodged");
@@ -51,6 +51,7 @@ void Combat_simulator::cout_damage_parse(Combat_simulator::Hit_type hit_type, So
                     simulator_cout("Mainhand hit missed");
                     break;
                 case Hit_result::TBD:
+                    // Should never happen!!
                     simulator_cout("BUUUUUUUUUUGGGGGGGGG");
                     break;
             }
@@ -60,13 +61,13 @@ void Combat_simulator::cout_damage_parse(Combat_simulator::Hit_type hit_type, So
             switch (hit_outcome.hit_result)
             {
                 case Hit_result::glancing:
-                    simulator_cout("BUG: Ability glanced for: ", hit_outcome.damage, " damage.");
+                    simulator_cout("BUG: Ability glanced for: ", int(hit_outcome.damage), " damage.");
                     break;
                 case Hit_result::hit:
-                    simulator_cout("Ability hit for: ", hit_outcome.damage, " damage.");
+                    simulator_cout("Ability hit for: ", int(hit_outcome.damage), " damage.");
                     break;
                 case Hit_result::crit:
-                    simulator_cout("Ability crit for: ", hit_outcome.damage, " damage.");
+                    simulator_cout("Ability crit for: ", int(hit_outcome.damage), " damage.");
                     break;
                 case Hit_result::dodge:
                     simulator_cout("Ability dodged");
@@ -85,13 +86,13 @@ void Combat_simulator::cout_damage_parse(Combat_simulator::Hit_type hit_type, So
         switch (hit_outcome.hit_result)
         {
             case Hit_result::glancing:
-                simulator_cout("Offhand glancing hit for: ", hit_outcome.damage, " damage.");
+                simulator_cout("Offhand glancing hit for: ", int(hit_outcome.damage), " damage.");
                 break;
             case Hit_result::hit:
-                simulator_cout("Offhand white hit for: ", hit_outcome.damage, " damage.");
+                simulator_cout("Offhand white hit for: ", int(hit_outcome.damage), " damage.");
                 break;
             case Hit_result::crit:
-                simulator_cout("Offhand crit for: ", hit_outcome.damage, " damage.");
+                simulator_cout("Offhand crit for: ", int(hit_outcome.damage), " damage.");
                 break;
             case Hit_result::dodge:
                 simulator_cout("Offhand hit dodged");
@@ -156,7 +157,7 @@ Combat_simulator::generate_hit_oh(double damage, bool heroic_strike_active, bool
     {
         if (heroic_strike_active)
         {
-            simulator_cout("Drawing outcome from recklessness twohanded hit table");
+            simulator_cout("Drawing outcome from OH recklessness twohanded hit table");
             double random_var = get_uniform_random(100);
             int outcome = std::lower_bound(hit_probabilities_recklessness_two_hand_.begin(),
                                            hit_probabilities_recklessness_two_hand_.end(),
@@ -177,7 +178,7 @@ Combat_simulator::generate_hit_oh(double damage, bool heroic_strike_active, bool
     {
         if (heroic_strike_active)
         {
-            simulator_cout("Drawing outcome from twohanded hit table");
+            simulator_cout("Drawing outcome from OH twohanded hit table");
             double random_var = get_uniform_random(100);
             int outcome = std::lower_bound(hit_probabilities_two_hand_.begin(),
                                            hit_probabilities_two_hand_.end(),
@@ -370,7 +371,7 @@ void Combat_simulator::bloodthirst(Weapon_sim &main_hand_weapon, Special_stats &
     time_keeper_.global_cd = 1.5;
     manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges, true);
     damage_sources.add_damage(Damage_source::bloodthirst, hit_outcome.damage, time_keeper_.time);
-    simulator_cout(rage, " rage");
+    simulator_cout(int(rage), " rage");
 }
 
 void Combat_simulator::whirlwind(Weapon_sim &main_hand_weapon, Special_stats &special_stats,
@@ -393,7 +394,7 @@ void Combat_simulator::whirlwind(Weapon_sim &main_hand_weapon, Special_stats &sp
     time_keeper_.global_cd = 1.5;
     manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges, true);
     damage_sources.add_damage(Damage_source::whirlwind, hit_outcome.damage, time_keeper_.time);
-    simulator_cout(rage, " rage");
+    simulator_cout(int(rage), " rage");
 }
 
 void Combat_simulator::execute(Weapon_sim &main_hand_weapon, Special_stats &special_stats,
@@ -420,7 +421,7 @@ void Combat_simulator::execute(Weapon_sim &main_hand_weapon, Special_stats &spec
     }
     manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges, true);
     damage_sources.add_damage(Damage_source::execute, hit_outcome.damage, time_keeper_.time);
-    simulator_cout(rage, " rage");
+    simulator_cout(int(rage), " rage");
 }
 
 void Combat_simulator::hit_effects(Weapon_sim &weapon, Weapon_sim &main_hand_weapon, Special_stats &special_stats,
@@ -494,7 +495,7 @@ void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_we
         heroic_strike_active = false;
         rage -= heroic_strike_rage_cost;
         damage_sources.add_damage(Damage_source::heroic_strike, hit_outcome.damage, time_keeper_.time);
-        simulator_cout(rage, " rage");
+        simulator_cout(int(rage), " rage");
     }
     else
     {
@@ -524,7 +525,7 @@ void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_we
         {
             damage_sources.add_damage(Damage_source::white_oh, hit_outcome.damage, time_keeper_.time);
         }
-        simulator_cout(rage, " rage");
+        simulator_cout(int(rage), " rage");
     }
 
     manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges);
@@ -668,8 +669,13 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
             double buff_dt = buff_manager_.get_dt(sim_time - time_keeper_.time);
             double dt = time_keeper_.get_dynamic_time_step(mh_dt, oh_dt, buff_dt, sim_time);
             time_keeper_.increment(dt);
-            buff_manager_.increment(dt, sim_time - time_keeper_.time, rage, time_keeper_.global_cd);
-
+            std::vector<std::string> debug_msg;
+            buff_manager_.increment(dt, sim_time - time_keeper_.time, rage, time_keeper_.global_cd, debug_msg,
+                                    config.display_combat_debug);
+            for (const auto &msg : debug_msg)
+            {
+                simulator_cout(msg);
+            }
             if (sim_time - time_keeper_.time < 0.0)
             {
                 break;
@@ -732,19 +738,18 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
             {
                 if (!bloodrage_active && bloodrage_cooldown < 0.0)
                 {
-                    simulator_cout("Bloodrage activated!");
                     bloodrage_active = true;
                     rage += 10;
                     rage = std::min(100.0, rage);
-                    simulator_cout(rage, " rage");
+                    simulator_cout("Bloodrage activated! rage: ", int(rage));
                     bloodrage_init_time = time_keeper_.time;
                     bloodrage_cooldown = 60.0 + dt;
                 }
                 if (bloodrage_active && time_keeper_.time - (bloodrage_init_time + bloodrage_ticks) > 1.0)
                 {
-                    simulator_cout("Bloodrage tick, +1 rage");
                     rage += 1;
                     rage = std::min(100.0, rage);
+                    simulator_cout("Bloodrage tick, rage: ", int(rage));
                     bloodrage_ticks++;
                     if (bloodrage_ticks == 10)
                     {
@@ -832,6 +837,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
 
                     if (time_keeper_.whirlwind_cd < 0.0 &&
                         rage > config.combat.whirlwind_rage_thresh &&
+                        rage > 25 &&
                         time_keeper_.global_cd < 0 &&
                         time_keeper_.blood_thirst_cd > config.combat.whirlwind_bt_cooldown_thresh)
                     {
@@ -846,7 +852,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                 }
             }
         }
-        batch_damage_.push_back(damage_sources.sum_damage_sources() / time_keeper_.time);
+        batch_damage_.push_back(damage_sources.sum_damage_sources() / sim_time);
         damage_distribution_.emplace_back(damage_sources);
         add_damage_source_to_time_lapse(damage_sources.damage_instances, n_damage_batches);
         flurry_uptime_mh_.emplace_back(mh_hits_w_flurry / mh_hits);
@@ -956,4 +962,9 @@ void Combat_simulator::add_damage_source_to_time_lapse(std::vector<Damage_instan
 std::vector<std::vector<double>> Combat_simulator::get_damage_time_lapse() const
 {
     return damage_time_lapse;
+}
+
+std::string Combat_simulator::get_debug_topic() const
+{
+    return debug_topic_;
 }

@@ -82,7 +82,8 @@ public:
         return dt;
     }
 
-    void increment(double dt, double time_left, double &rage, double &global_cooldown)
+    void increment(double dt, double time_left, double &rage, double &global_cooldown, std::vector<std::string> &status,
+                   bool debug)
     {
         size_t i = 0;
         while (i < stat_gains.size())
@@ -91,6 +92,10 @@ public:
             stat_gains[i].duration_left -= dt;
             if (stat_gains[i].duration_left < 0.0)
             {
+                if (debug)
+                {
+                    status.emplace_back(stat_gains[i].id + " fades.");
+                }
                 (*simulation_special_stats) -= stat_gains[i].special_stats;
                 stat_gains.erase(stat_gains.begin() + i);
             }
@@ -104,6 +109,10 @@ public:
         {
             if (time_left - use_effects[i].duration - 1.5 < 0.0)
             {
+                if (debug)
+                {
+                    status.emplace_back("Activating: " + use_effects[i].name);
+                }
                 add(use_effects[i].name, use_effects[i].get_special_stat_equivalent(*simulation_special_stats),
                     use_effects[i].duration);
                 rage += use_effects[i].rage_boost;

@@ -2,12 +2,10 @@
 #define WOW_SIMULATOR_COMBAT_SIMULATOR_HPP
 
 #include <vector>
-#include <iostream>
 #include <cassert>
 #include <map>
 #include <cmath>
 #include <iomanip>
-#include <random>
 
 #include "Character.hpp"
 #include "damage_sources.hpp"
@@ -214,10 +212,22 @@ public:
 
     std::vector<std::vector<double>> get_damage_time_lapse() const;
 
-    template<typename T>
-    void print_statement(T t)
+    std::string get_debug_topic() const;
+
+    void print_statement(std::string t)
     {
-        std::cout << std::setprecision(4) << t;
+        debug_topic_ += t;
+    }
+
+    void print_statement(int t)
+    {
+        debug_topic_ += std::to_string(t);
+    }
+
+    void print_statement(double t)
+    {
+
+        debug_topic_ += std::to_string(t);
     }
 
     template<typename... Args>
@@ -225,10 +235,10 @@ public:
     {
         if (config.display_combat_debug)
         {
-            std::cout << "Time: " << std::setw(8) << std::left << time_keeper_.time
-                      << "s. Loop idx:" << std::setw(4) << time_keeper_.step_index << "Event: ";
+            debug_topic_ += "Time: " + std::to_string(time_keeper_.time) + "s. Loop idx:" + std::to_string(
+                    time_keeper_.step_index) += ". Event: ";
             __attribute__((unused)) int dummy[] = {0, ((void) print_statement(std::forward<Args>(args)), 0)...};
-            std::cout << "\n";
+            debug_topic_ += "<br>";
         }
     }
 
@@ -253,6 +263,7 @@ private:
     std::vector<double> flurry_uptime_mh_{};
     std::vector<double> flurry_uptime_oh_{};
     std::vector<std::vector<double>> damage_time_lapse{};
+    std::string debug_topic_{};
     std::map<Damage_source, int> source_map{{Damage_source::white_mh,         0},
                                             {Damage_source::white_oh,         1},
                                             {Damage_source::bloodthirst,      2},

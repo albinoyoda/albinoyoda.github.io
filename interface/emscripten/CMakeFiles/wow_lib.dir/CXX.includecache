@@ -35,8 +35,6 @@ Item.hpp
 ../../wow_library/include/Combat_simulator.hpp
 vector
 -
-iostream
--
 cassert
 -
 map
@@ -44,8 +42,6 @@ map
 cmath
 -
 iomanip
--
-random
 -
 Character.hpp
 ../../wow_library/include/Character.hpp
@@ -139,8 +135,6 @@ Item.hpp
 /src/wow_library/include/Combat_simulator.hpp
 vector
 -
-iostream
--
 cassert
 -
 map
@@ -148,8 +142,6 @@ map
 cmath
 -
 iomanip
--
-random
 -
 Character.hpp
 /src/wow_library/include/Character.hpp

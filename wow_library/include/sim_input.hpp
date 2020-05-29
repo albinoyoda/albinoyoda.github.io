@@ -23,6 +23,7 @@ struct Sim_input
               bool recklessness,
               bool mighty_rage_potion,
               bool vaelastrasz,
+              bool debug_on,
               bool use_bt_in_exec_phase,
               bool use_hs_in_exec_phase,
               double heroic_strike_rage_thresh,
@@ -45,6 +46,7 @@ struct Sim_input
             recklessness(recklessness),
             mighty_rage_potion(mighty_rage_potion),
             vaelastrasz(vaelastrasz),
+            debug_on(debug_on),
             use_bt_in_exec_phase(use_bt_in_exec_phase),
             use_hs_in_exec_phase(use_hs_in_exec_phase),
             heroic_strike_rage_thresh(heroic_strike_rage_thresh),
@@ -67,6 +69,7 @@ struct Sim_input
     bool recklessness{};
     bool mighty_rage_potion{};
     bool vaelastrasz{};
+    bool debug_on{};
     bool use_bt_in_exec_phase{};
     bool use_hs_in_exec_phase{};
     double heroic_strike_rage_thresh{};
