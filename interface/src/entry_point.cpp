@@ -28,28 +28,10 @@ EMSCRIPTEN_BINDINGS(module)
         .field("fight_time", &Sim_input::fight_time)
         .field("n_simulations", &Sim_input::n_simulations)
         .field("sunder_armor", &Sim_input::sunder_armor)
-//        .field("faerie_fire", &Sim_input::faerie_fire)
-//        .field("curse_of_recklessness", &Sim_input::curse_of_recklessness)
-//        .field("death_wish", &Sim_input::death_wish)
-//        .field("recklessness", &Sim_input::recklessness)
-//        .field("mighty_rage_potion", &Sim_input::mighty_rage_potion)
-//        .field("vaelastrasz", &Sim_input::vaelastrasz)
-//        .field("debug_on", &Sim_input::debug_on)
-//        .field("use_bt_in_exec_phase", &Sim_input::use_bt_in_exec_phase)
-//        .field("use_hs_in_exec_phase", &Sim_input::use_hs_in_exec_phase)
         .field("heroic_strike_rage_thresh", &Sim_input::heroic_strike_rage_thresh)
+        .field("cleave_rage_thresh", &Sim_input::cleave_rage_thresh)
         .field("whirlwind_rage_thresh", &Sim_input::whirlwind_rage_thresh)
         .field("whirlwind_bt_cooldown_thresh", &Sim_input::whirlwind_bt_cooldown_thresh);
-
-//            faerie_fire(faerie_fire),
-//            curse_of_recklessness(curse_of_recklessness),
-//            death_wish(death_wish),
-//            recklessness(recklessness),
-//            mighty_rage_potion(mighty_rage_potion),
-//            vaelastrasz(vaelastrasz),
-//            debug_on(debug_on),
-//            use_bt_in_exec_phase(use_bt_in_exec_phase),
-//            use_hs_in_exec_phase(use_hs_in_exec_phase),
 
     value_object<Sim_output>("Sim_output")
         .field("hist_x", &Sim_output::hist_x)
@@ -60,6 +42,7 @@ EMSCRIPTEN_BINDINGS(module)
         .field("bloodthirst", &Sim_output::bloodthirst)
         .field("execute", &Sim_output::execute)
         .field("heroic_strike", &Sim_output::heroic_strike)
+        .field("cleave", &Sim_output::cleave)
         .field("whirlwind", &Sim_output::whirlwind)
         .field("item_hit_effects", &Sim_output::item_hit_effects)
         .field("aura_uptimes", &Sim_output::aura_uptimes)

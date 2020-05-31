@@ -27,15 +27,16 @@ struct Combat_simulator_config
 
     // Simulator settings
     bool use_sim_time_ramp = false;
-    bool enable_spell_rotation{false};
     bool enable_bloodrage{false};
     bool enable_recklessness{false};
-    bool display_combat_debug{false};
-    bool use_seed{false};
-    int seed{};
+
     bool fuel_extra_rage{false};
     int extra_rage_interval{};
     int extra_rage_damage_amount{};
+
+    bool display_combat_debug{false};
+    bool use_seed{false};
+    int seed{};
 
     struct combat_t
     {
@@ -44,6 +45,8 @@ struct Combat_simulator_config
         double whirlwind_rage_thresh;
         double whirlwind_bt_cooldown_thresh;
         double heroic_strike_rage_thresh;
+        double cleave_rage_thresh;
+        bool cleave_if_adds;
     } combat;
 
     struct talents_t
@@ -60,7 +63,10 @@ struct Combat_simulator_config
 
     struct mode_t
     {
+        bool sulfuron_harbinger{false};
+        bool golemagg{false};
         bool vaelastrasz{false};
+        bool chromaggus{false};
     } mode;
 };
 
@@ -91,8 +97,43 @@ public:
         yellow
     };
 
+    struct Ability_queue_manager
+    {
+        bool is_ability_queued()
+        {
+            return heroic_strike_queued || cleave_queued;
+        }
+
+        void queue_heroic_strike()
+        {
+            heroic_strike_queued = true;
+            cleave_queued = false;
+        }
+
+        void queue_cleave()
+        {
+            heroic_strike_queued = false;
+            cleave_queued = true;
+        }
+
+        void reset()
+        {
+            heroic_strike_queued = false;
+            cleave_queued = false;
+        }
+
+        bool heroic_strike_queued{false};
+        bool cleave_queued{false};
+    };
+
     struct Hit_outcome
     {
+        Hit_outcome()
+        {
+            damage = 0;
+            hit_result = Hit_result::TBD;
+        };
+
         Hit_outcome(double damage, Hit_result hit_result) : damage{damage}, hit_result{hit_result} {};
 
         double damage;
@@ -143,25 +184,21 @@ public:
     manage_flurry(Hit_result hit_result, Special_stats &special_stats, int &flurry_charges, bool is_ability = false);
 
     void swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_weapon, Special_stats &special_stats,
-                      bool &heroic_strike_active, double &rage, double &heroic_strike_rage_cost,
-                      bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges,
+                      double &rage, bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges,
                       double attack_power_bonus = 0);
 
     void hit_effects(Weapon_sim &weapon, Weapon_sim &main_hand_weapon, Special_stats &special_stats,
-                     bool &heroic_strike_active, double &rage, double &heroic_strike_rage_cost,
-                     bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges);
+                     double &rage, bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges);
 
     void bloodthirst(Weapon_sim &main_hand_weapon, Special_stats &special_stats,
-                     bool &heroic_strike_active, double &rage, double &heroic_strike_rage_cost,
-                     bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges);
+                     double &rage, bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges);
 
     void whirlwind(Weapon_sim &main_hand_weapon, Special_stats &special_stats,
-                   bool &heroic_strike_active, double &rage, double &heroic_strike_rage_cost,
-                   bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges);
+                   double &rage, bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges);
 
     void execute(Weapon_sim &main_hand_weapon, Special_stats &special_stats,
-                 bool &heroic_strike_active, double &rage, double &heroic_strike_rage_cost,
-                 bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges, double execute_cost);
+                 double &rage, bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges,
+                 double execute_cost);
 
 
     std::vector<double> &simulate(const Character &character, int n_batches);
@@ -173,11 +210,10 @@ public:
         return rand() * r_max / RAND_MAX;
     }
 
-    Combat_simulator::Hit_outcome
-    generate_hit(double damage, Hit_type hit_type, Socket weapon_hand, bool heroic_strike_active,
-                 const Special_stats &special_stats, bool recklessness_active);
+    Combat_simulator::Hit_outcome generate_hit(double damage, Hit_type hit_type, Socket weapon_hand,
+                                               const Special_stats &special_stats, bool recklessness_active);
 
-    Combat_simulator::Hit_outcome generate_hit_oh(double damage, bool heroic_strike_active, bool recklessness_active);
+    Combat_simulator::Hit_outcome generate_hit_oh(double damage, bool recklessness_active);
 
     Combat_simulator::Hit_outcome generate_hit_mh(double damage, Hit_type hit_type, bool recklessness_active);
 
@@ -259,17 +295,23 @@ private:
     double armor_reduction_factor_{};
     Time_keeper time_keeper_{};
     Buff_manager buff_manager_{};
+    Ability_queue_manager ability_queue_manager{};
     std::vector<double> flurry_uptime_mh_{};
     std::vector<double> flurry_uptime_oh_{};
-    std::vector<std::vector<double>> damage_time_lapse{};
     std::string debug_topic_{};
+    int adds_in_melee_range{};
+    double remove_adds_timer{};
+    double heroic_strike_rage_cost{};
+    double cleave_rage_cost = 20;
+    std::vector<std::vector<double>> damage_time_lapse{};
     std::map<Damage_source, int> source_map{{Damage_source::white_mh,         0},
                                             {Damage_source::white_oh,         1},
                                             {Damage_source::bloodthirst,      2},
                                             {Damage_source::execute,          3},
                                             {Damage_source::heroic_strike,    4},
-                                            {Damage_source::whirlwind,        5},
-                                            {Damage_source::item_hit_effects, 6}
+                                            {Damage_source::cleave,           5},
+                                            {Damage_source::whirlwind,        6},
+                                            {Damage_source::item_hit_effects, 7}
     };
 };
 

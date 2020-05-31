@@ -116,7 +116,7 @@ public:
     Hit_effect() = default;
 
     Hit_effect(std::string name, Type type, Attributes attribute_boost, Special_stats special_stats_boost,
-               double damage, double duration, double probability, double attack_power_boost = 0) :
+               double damage, double duration, double probability, double attack_power_boost = 0, int n_targets = 1) :
             name(std::move(name)),
             type(type),
             attribute_boost(attribute_boost),
@@ -124,7 +124,8 @@ public:
             damage(damage),
             duration(duration),
             probability(probability),
-            attack_power_boost(attack_power_boost) {};
+            attack_power_boost(attack_power_boost),
+            n_targets(n_targets) {};
 
     inline Special_stats get_special_stat_equivalent(const Special_stats &special_stats) const
     {
@@ -139,6 +140,7 @@ public:
     double duration;
     double probability;
     double attack_power_boost;
+    int n_targets;
 };
 
 struct Enchant

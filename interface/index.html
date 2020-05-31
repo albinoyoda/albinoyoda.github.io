@@ -330,6 +330,13 @@
         This is due to the printout being rounded down, where in reality the rage is a floating point number in <br/>
         the simulator. The same phenomena can be seen in the wow client aswell.<br/>
     </p>
+    <p><b>2020-05-31:</b></p>
+    <p> - Can now select what stat weights to compute (increases performance, since these are expensive)<br/>
+        - Added BOSSES!! now its possible to select different boss scenarios to test the item configuration against<br/>
+        more bosses will come soon.
+        - Added the cleave ability.
+        <br/>
+    </p>
 </div>
 
 <div id="Coming soon" class="tabcontent">
@@ -918,17 +925,39 @@
         <label for="use_bt_in_exec_phase"> Use bloodthirst in execute phase</label><br>
         <input type="checkbox" id="use_hs_in_exec_phase" checked>
         <label for="use_hs_in_exec_phase"> Use heroic strike in execute phase</label><br>
+        <input type="checkbox" id="cleave_if_adds" checked>
+        <label for="cleave_if_adds"> Use cleave if there are more than one target.</label><br>
         <label for="heroic_strike_rage_thresh_dd">Heroic strike when rage is above:</label>
         <input type="number" id="heroic_strike_rage_thresh_dd" name="quantity" min="0" max="100" value="50"><br>
+        <label for="cleave_rage_thresh_dd">Cleave when rage is above:</label>
+        <input type="number" id="cleave_rage_thresh_dd" name="quantity" min="0" max="100" value="50"><br>
         <label for="whirlwind_rage_thresh_dd">Whirlwind when rage is above:</label>
         <input type="number" id="whirlwind_rage_thresh_dd" name="quantity" min="0" max="100" value="0"><br>
         <label for="whirlwind_bt_cooldown_thresh_dd">Whirlwind when bloodthirst CD is above:</label>
         <input type="number" id="whirlwind_bt_cooldown_thresh_dd" name="quantity" min="0" max="6" value="1.5"><br/><br/>
 
-        <b>Bosses:</b><br/>
-        <input type="checkbox" id="vaelastrasz">
+        <b>Boss settings:</b><br/>
+        <b>Default:</b><br/>
+        <input type="checkbox" id="default_boss" checked onclick="unique_checkboxed('default_boss',
+        ['sulfuron_harbinger', 'golemagg', 'vaelastrasz'])">
+        <label for="default_boss"> Fight against a single target with 100% combat uptime. </label><br>
+        <b>Molten core:</b><br/>
+        <input type="checkbox" id="sulfuron_harbinger" onclick="unique_checkboxed('sulfuron_harbinger',
+        ['default_boss', 'golemagg', 'vaelastrasz'])">
+        <label for="sulfuron_harbinger"> Fight against Sulfuron Harbinger (Four adds in melee cleave range before
+            boss)</label><br>
+        <input type="checkbox" id="golemagg" onclick="unique_checkboxed('golemagg',
+        ['default_boss', 'sulfuron_harbinger', 'vaelastrasz'])">
+        <label for="golemagg"> Fight against Golemagg (Two adds in melee cleave range during the fight)</label><br>
+        <b>Black wing lair:</b><br/>
+        <input type="checkbox" id="vaelastrasz" onclick="unique_checkboxed('vaelastrasz',
+        ['default_boss', 'sulfuron_harbinger', 'golemagg'])">
         <label for="vaelastrasz"> Fight against Vaelastrasz (essence of the red + initial boss HP =
-            30%)</label><br><br/>
+            30%)</label><br/>
+        <input type="checkbox" id="chromaggus" disabled>
+        <label for="chromaggus"> Fight against Chromaggus (Coming soon)</label><br>
+        <input type="checkbox" id="firemaw" disabled>
+        <label for="firemaw"> Fight against Firemaw (Coming soon)</label><br>
     </div>
     <br/><br/>
 
@@ -938,10 +967,10 @@
         <input type="number" id="n_simulations_dd" name="quantity" min="100" max="50000" value="20000"><br/>
         <label for="opponent_level_dd">Opponent level: (60-63):</label>
         <input type="number" id="opponent_level_dd" name="quantity" min="60" max="63" value="63"><br/>
-        <label for="fight_time_dd">Fight duration: (10-200s):</label>
-        <input type="number" id="fight_time_dd" name="quantity" min="10" max="200" value="60"><br/><br/>
+        <label for="fight_time_dd">Fight duration: (10-120s):</label>
+        <input type="number" id="fight_time_dd" name="quantity" min="10" max="120" value="60"><br/><br/>
 
-        <b>Stat weights:</b><br/>
+        <b>Stat weights (each stat weight adds extra simulations):</b><br/>
         <input type="checkbox" id="stat_weight_crit" checked>
         <label for="stat_weight_crit"> Calculate stat weight for &plusmn1% crit.</label><br>
 
@@ -1007,6 +1036,15 @@
 <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/picnic">-->
 
 <script>
+    function unique_checkboxed(clicked_box, list_of_boxes) {
+        for (let box of list_of_boxes) {
+            if (document.getElementById(box).checked) {
+                document.getElementById(box).checked = false;
+            }
+        }
+        document.getElementById(clicked_box).checked = true;
+    }
+
     var coll = document.getElementsByClassName("collapsible");
     var i;
 
@@ -1047,8 +1085,8 @@
     var enchants_input = [];
 
     var sim_options = ["faerie_fire", "curse_of_recklessness", "death_wish",
-        "recklessness", "mighty_rage_potion", "vaelastrasz", "debug_on",
-        "use_bt_in_exec_phase", "use_hs_in_exec_phase"];
+        "recklessness", "mighty_rage_potion", "sulfuron_harbinger", "golemagg", "vaelastrasz", "chromaggus", "debug_on",
+        "use_bt_in_exec_phase", "use_hs_in_exec_phase", "cleave_if_adds"];
 
     var stat_weigths = ["stat_weight_hit", "stat_weight_crit", "stat_weight_haste", "stat_weight_skill"]
 
@@ -1168,7 +1206,8 @@
         }
 
         let var_array = ["n_simulations_dd", "opponent_level_dd", "fight_time_dd", "sunder_armor_dd",
-            "heroic_strike_rage_thresh_dd", "whirlwind_rage_thresh_dd", "whirlwind_bt_cooldown_thresh_dd"];
+            "heroic_strike_rage_thresh_dd", "cleave_rage_thresh_dd", "whirlwind_rage_thresh_dd",
+            "whirlwind_bt_cooldown_thresh_dd"];
         for (let variable of var_array) {
             file_content += variable + " " + parseFloat(document.getElementById(variable).value) + "\n";
         }
@@ -1340,7 +1379,7 @@
         if (isNaN(fight_time_dd)) {
             fight_time_dd = 60;
         }
-        fight_time_dd = Math.min(Math.max(fight_time_dd, 10), 200);
+        fight_time_dd = Math.min(Math.max(fight_time_dd, 10), 120);
 
         let sunder_armor_dd = parseInt(document.getElementById("sunder_armor_dd").value);
         if (isNaN(sunder_armor_dd)) {
@@ -1356,21 +1395,32 @@
         }
 
         let heroic_strike_rage_thresh = parseFloat(document.getElementById("heroic_strike_rage_thresh_dd").value);
+        let cleave_rage_thresh = parseFloat(document.getElementById("cleave_rage_thresh_dd").value);
         let whirlwind_rage_thresh = parseFloat(document.getElementById("whirlwind_rage_thresh_dd").value);
         let whirlwind_bt_cooldown_thresh = parseFloat(document.getElementById("whirlwind_bt_cooldown_thresh_dd").value);
 
+        let total_simulations = n_simulations_dd;
+        let need_to_add_for_ap = true;
         const stat_weight_vec = new Module.StringList();
         if (document.getElementById("stat_weight_crit").checked) {
             stat_weight_vec.push_back("crit");
+            total_simulations += n_simulations_dd * 2 + n_simulations_dd * 2 * need_to_add_for_ap;
+            need_to_add_for_ap = false;
         }
         if (document.getElementById("stat_weight_hit").checked) {
             stat_weight_vec.push_back("hit");
+            total_simulations += n_simulations_dd * 2 + n_simulations_dd * 2 * need_to_add_for_ap;
+            need_to_add_for_ap = false;
         }
         if (document.getElementById("stat_weight_haste").checked) {
             stat_weight_vec.push_back("haste");
+            total_simulations += n_simulations_dd * 2 + n_simulations_dd * 2 * need_to_add_for_ap;
+            need_to_add_for_ap = false;
         }
         if (document.getElementById("stat_weight_skill").checked) {
             stat_weight_vec.push_back("skill");
+            total_simulations += n_simulations_dd * 2 + n_simulations_dd * 2 * need_to_add_for_ap;
+            need_to_add_for_ap = false;
         }
 
         const race_vec = new Module.StringList();
@@ -1389,6 +1439,7 @@
             n_simulations: n_simulations_dd,
             sunder_armor: sunder_armor_dd,
             heroic_strike_rage_thresh: heroic_strike_rage_thresh,
+            cleave_rage_thresh: cleave_rage_thresh,
             whirlwind_rage_thresh: whirlwind_rage_thresh,
             whirlwind_bt_cooldown_thresh: whirlwind_bt_cooldown_thresh,
         };
@@ -1397,8 +1448,17 @@
 
         let result = obj.simulate(wow_input);
 
-        document.getElementById("output1").innerHTML = 'DPS: <b>' + result['mean_dps'].toFixed(2) + ' &plusmn ' +
-            result['std_dps'].toFixed(2) + '</b>, (95% confidence interval)';
+        let n_sim_status = 'DPS: <b>' + result['mean_dps'].toFixed(2) + ' &plusmn ' +
+            result['std_dps'].toFixed(2) + '</b>, (95% confidence interval)<br>';
+
+        n_sim_status += "Total simulations: <b>" + total_simulations + "</b><br/> " +
+            "Simulations for DPS = <b>" + n_simulations_dd + "</b><br>" +
+            "Simulations for stat weights = <b>" + (total_simulations - n_simulations_dd) + "</b><br>";
+        if (!document.getElementById("debug_on").checked) {
+            n_sim_status += "TIP! Interested in a combat log? It can be activated under the 'Open Simulation settings' dialog"
+        }
+
+        document.getElementById("output1").innerHTML = n_sim_status;
         document.getElementById("output3").innerHTML = result['messages'].get(0);
 
         let stat_weights = [];
@@ -1447,7 +1507,7 @@
         document.getElementById("combat_debug").innerHTML = result['extra_stats'].get(1);
 
         let sources = [];
-        let sources_names = ["Main hand", "Off hand", "Heroic Strike", "Blood Thirst", "Whirlwind", "Execute", "Item procs"];
+        let sources_names = ["Main hand", "Off hand", "Blood Thirst", "Execute", "Heroic Strike", "Cleave", "Whirlwind", "Item procs"];
         for (let i = 0; i < result['dmg_sources'].size(); i++) {
             sources.push(result['dmg_sources'].get(i));
         }
@@ -1492,16 +1552,17 @@
             proc_counter[k] = proc_list[k].counter;
         }
 
-        let colors = ["#3e95cd", "#8e5ea2", "#FFFF00", "#c45850", "#e8c3b9", "#145A32", "#FFFFFF"];
-        let damage_name = ["white_mh", "white_oh", "bloodthirst", "execute", "heroic_strike", "whirlwind", "item_hit_effects"];
+        let colors = ["#3e95cd", "#8e5ea2", "#FFFF00", "#c45850", "#e8c3b9", "#990099", "#145A32", "#FFFFFF"];
+        let damage_name = ["white_mh", "white_oh", "bloodthirst", "execute", "heroic_strike", "cleave", "whirlwind", "item_hit_effects"];
         let white_mh = [];
         let white_oh = [];
         let bloodthirst = [];
         let execute = [];
         let heroic_strike = [];
+        let cleave = [];
         let whirlwind = [];
         let item_hit_effects = [];
-        let damage_vec = [white_mh, white_oh, bloodthirst, execute, heroic_strike, whirlwind, item_hit_effects];
+        let damage_vec = [white_mh, white_oh, bloodthirst, execute, heroic_strike, cleave, whirlwind, item_hit_effects];
         for (let i = 0; i < damage_vec.length; i++) {
             if (i === 0) {
                 for (let j = 0; j < result[damage_name[i]].size(); j++) {
@@ -1519,10 +1580,11 @@
         let cumulative_bloodthirst = [];
         let cumulative_execute = [];
         let cumulative_heroic_strike = [];
+        let cumulative_cleave = [];
         let cumulative_whirlwind = [];
         let cumulative_item_hit_effects = [];
         let cumulative_vec = [cumulative_white_mh, cumulative_white_oh, cumulative_bloodthirst, cumulative_execute,
-            cumulative_heroic_strike, cumulative_whirlwind, cumulative_item_hit_effects];
+            cumulative_heroic_strike, cumulative_cleave, cumulative_whirlwind, cumulative_item_hit_effects];
         for (let i = 0; i < cumulative_vec.length; i++) {
             cumulative_vec[i][0] = damage_vec[i][0];
             for (let j = 1; j < damage_vec[i].length; j++) {
@@ -1645,6 +1707,14 @@
                     backgroundColor: colors[6],
                     pointRadius: 0.1,
                     fill: origin
+                }, {
+                    data: damage_vec[7],
+                    label: damage_name[7],
+                    borderWidth: 10,
+                    borderColor: colors[7],
+                    backgroundColor: colors[7],
+                    pointRadius: 0.1,
+                    fill: origin
                 },]
             },
             options: {
@@ -1746,6 +1816,15 @@
                     pointRadius: 0.1,
                     lineTension: 0,
                     fill: origin
+                }, {
+                    data: cumulative_vec[7],
+                    label: damage_name[7],
+                    borderWidth: 10,
+                    borderColor: colors[7],
+                    backgroundColor: colors[7],
+                    pointRadius: 0.1,
+                    lineTension: 0,
+                    fill: origin
                 },]
             },
             options: {
@@ -1786,7 +1865,7 @@
                 labels: sources_names,
                 datasets: [
                     {
-                        backgroundColor: [colors[0], colors[1], colors[4], colors[2], colors[5], colors[3], colors[6]],
+                        backgroundColor: [colors[0], colors[1], colors[2], colors[3], colors[4], colors[5], colors[6], colors[7]],
                         data: sources
                     }
                 ]

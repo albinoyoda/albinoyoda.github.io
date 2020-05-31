@@ -19,6 +19,7 @@ struct Sim_input
               double n_simulations,
               int sunder_armor,
               double heroic_strike_rage_thresh,
+              double cleave_rage_thresh,
               double whirlwind_rage_thresh,
               double whirlwind_bt_cooldown_thresh
              ) :
@@ -34,6 +35,7 @@ struct Sim_input
             n_simulations(n_simulations),
             sunder_armor(sunder_armor),
             heroic_strike_rage_thresh(heroic_strike_rage_thresh),
+            cleave_rage_thresh(cleave_rage_thresh),
             whirlwind_rage_thresh(whirlwind_rage_thresh),
             whirlwind_bt_cooldown_thresh(whirlwind_bt_cooldown_thresh) {}
 
@@ -49,6 +51,7 @@ struct Sim_input
     double n_simulations{};
     double sunder_armor{};
     double heroic_strike_rage_thresh{};
+    double cleave_rage_thresh{};
     double whirlwind_rage_thresh{};
     double whirlwind_bt_cooldown_thresh{};
 };

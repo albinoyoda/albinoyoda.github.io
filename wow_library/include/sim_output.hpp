@@ -16,6 +16,7 @@ struct Sim_output
             std::vector<double> bloodthirst,
             std::vector<double> execute,
             std::vector<double> heroic_strike,
+            std::vector<double> cleave,
             std::vector<double> whirlwind,
             std::vector<double> item_hit_effects,
             std::vector<std::string> aura_uptimes,
@@ -33,6 +34,7 @@ struct Sim_output
             bloodthirst(std::move(bloodthirst)),
             execute(std::move(execute)),
             heroic_strike(std::move(heroic_strike)),
+            cleave(std::move(cleave)),
             whirlwind(std::move(whirlwind)),
             item_hit_effects(std::move(item_hit_effects)),
             aura_uptimes(std::move(aura_uptimes)),
@@ -51,6 +53,7 @@ struct Sim_output
     std::vector<double> bloodthirst;
     std::vector<double> execute;
     std::vector<double> heroic_strike;
+    std::vector<double> cleave;
     std::vector<double> whirlwind;
     std::vector<double> item_hit_effects;
     std::vector<std::string> aura_uptimes;

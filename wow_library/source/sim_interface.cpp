@@ -55,10 +55,11 @@ std::vector<double> get_damage_sources(const std::vector<Damage_sources> &damage
     }
     return {total_damage_source.white_mh_damage / total_damage_source.sum_damage_sources(),
             total_damage_source.white_oh_damage / total_damage_source.sum_damage_sources(),
-            total_damage_source.heroic_strike_damage / total_damage_source.sum_damage_sources(),
             total_damage_source.bloodthirst_damage / total_damage_source.sum_damage_sources(),
-            total_damage_source.whirlwind_damage / total_damage_source.sum_damage_sources(),
             total_damage_source.execute_damage / total_damage_source.sum_damage_sources(),
+            total_damage_source.heroic_strike_damage / total_damage_source.sum_damage_sources(),
+            total_damage_source.cleave_damage / total_damage_source.sum_damage_sources(),
+            total_damage_source.whirlwind_damage / total_damage_source.sum_damage_sources(),
             total_damage_source.item_hit_effects_damage / total_damage_source.sum_damage_sources()};
 }
 
@@ -445,9 +446,21 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     {
         config.enable_recklessness = true;
     }
+    if (find_string(input.options, "sulfuron_harbinger"))
+    {
+        config.mode.sulfuron_harbinger = true;
+    }
+    if (find_string(input.options, "golemagg"))
+    {
+        config.mode.golemagg = true;
+    }
     if (find_string(input.options, "vaelastrasz"))
     {
         config.mode.vaelastrasz = true;
+    }
+    if (find_string(input.options, "chromaggus"))
+    {
+        config.mode.chromaggus = true;
     }
     if (find_string(input.options, "use_bt_in_exec_phase"))
     {
@@ -456,6 +469,10 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     if (find_string(input.options, "use_hs_in_exec_phase"))
     {
         config.combat.use_hs_in_exec_phase = true;
+    }
+    if (find_string(input.options, "cleave_if_adds"))
+    {
+        config.combat.cleave_if_adds = true;
     }
     config.n_sunder_armor_stacks = input.sunder_armor;
 
@@ -468,11 +485,11 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     config.talents.dual_wield_specialization = 5;
 
     config.combat.heroic_strike_rage_thresh = input.heroic_strike_rage_thresh;
+    config.combat.cleave_rage_thresh = input.cleave_rage_thresh;
     config.combat.whirlwind_rage_thresh = input.whirlwind_rage_thresh;
     config.combat.whirlwind_bt_cooldown_thresh = input.whirlwind_bt_cooldown_thresh;
 
     config.use_sim_time_ramp = true;
-    config.enable_spell_rotation = true;
     config.enable_bloodrage = true;
     config.use_seed = true;
     config.seed = 110000;
@@ -675,6 +692,7 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
         debug_topic += "DPS execute: " + std::to_string(dist.execute_damage / (config.sim_time - 2)) + "<br>";
         debug_topic += "DPS heroic strike: " + std::to_string(
                 dist.heroic_strike_damage / (config.sim_time - 2)) + "<br>";
+        debug_topic += "DPS heroic strike: " + std::to_string(dist.cleave_damage / (config.sim_time - 2)) + "<br>";
         debug_topic += "DPS whirlwind: " + std::to_string(dist.whirlwind_damage / (config.sim_time - 2)) + "<br>";
         debug_topic += "DPS item effects: " + std::to_string(
                 dist.item_hit_effects_damage / (config.sim_time - 2)) + "<br><br>";
@@ -685,11 +703,12 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
         debug_topic += "#Hits bloodthirst: " + std::to_string(dist.bloodthirst_count) + "<br>";
         debug_topic += "#Hits execute: " + std::to_string(dist.execute_count) + "<br>";
         debug_topic += "#Hits heroic strike: " + std::to_string(dist.heroic_strike_count) + "<br>";
+        debug_topic += "#Hits heroic strike: " + std::to_string(dist.cleave_count) + "<br>";
         debug_topic += "#Hits whirlwind: " + std::to_string(dist.whirlwind_count) + "<br>";
         debug_topic += "#Hits item effects: " + std::to_string(dist.item_hit_effects_count) + "<br>";
     }
 
-    return {hist_x, hist_y, dps_dist, a[0], a[1], a[2], a[3], a[4], a[5], a[6],
+    return {hist_x, hist_y, dps_dist, a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7],
             aura_uptimes, proc_statistics, stat_weights, {extra_info_string, debug_topic}, mean_init, sample_std_init,
             {get_character_stat(character)}};
 }

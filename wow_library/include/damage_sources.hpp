@@ -12,6 +12,7 @@ enum class Damage_source
     bloodthirst,
     execute,
     heroic_strike,
+    cleave,
     whirlwind,
     item_hit_effects
 };
@@ -19,8 +20,7 @@ enum class Damage_source
 struct Damage_instance
 {
     Damage_instance(Damage_source source, double damage, double time_stamp) : damage_source(source),
-            damage(damage), time_stamp(time_stamp) {};
-
+                                                                              damage(damage), time_stamp(time_stamp) {};
     Damage_source damage_source;
     double damage{};
     double time_stamp{};
@@ -30,7 +30,7 @@ struct Damage_sources
 {
     Damage_sources()
     {
-        damage_instances.reserve(300);
+        damage_instances.reserve(500);
     };
 
     Damage_sources &operator+(const Damage_sources &rhs)
@@ -41,6 +41,7 @@ struct Damage_sources
         white_mh_damage = white_mh_damage + rhs.white_mh_damage;
         white_oh_damage = white_oh_damage + rhs.white_oh_damage;
         heroic_strike_damage = heroic_strike_damage + rhs.heroic_strike_damage;
+        cleave_damage = cleave_damage + rhs.cleave_damage;
         item_hit_effects_damage = item_hit_effects_damage + rhs.item_hit_effects_damage;
 
         whirlwind_count = whirlwind_count + rhs.whirlwind_count;
@@ -49,18 +50,19 @@ struct Damage_sources
         white_mh_count = white_mh_count + rhs.white_mh_count;
         white_oh_count = white_oh_count + rhs.white_oh_count;
         heroic_strike_count = heroic_strike_count + rhs.heroic_strike_count;
+        cleave_count = cleave_count + rhs.cleave_count;
         item_hit_effects_count = item_hit_effects_count + rhs.item_hit_effects_count;
         return *(this);
     }
 
     constexpr double sum_damage_sources() const
     {
-        return white_mh_damage + white_oh_damage + bloodthirst_damage + heroic_strike_damage + whirlwind_damage + execute_damage + item_hit_effects_damage;
+        return white_mh_damage + white_oh_damage + bloodthirst_damage + heroic_strike_damage + cleave_damage + whirlwind_damage + execute_damage + item_hit_effects_damage;
     }
 
     constexpr double sum_counts() const
     {
-        return white_mh_count + white_oh_count + bloodthirst_count + heroic_strike_count + whirlwind_count + execute_count + item_hit_effects_count;
+        return white_mh_count + white_oh_count + bloodthirst_count + heroic_strike_count + cleave_count + whirlwind_count + execute_count + item_hit_effects_count;
     }
 
     void add_damage(Damage_source source, double damage, double time_stamp)
@@ -88,6 +90,10 @@ struct Damage_sources
                 heroic_strike_damage += damage;
                 heroic_strike_count++;
                 break;
+            case Damage_source::cleave:
+                cleave_damage += damage;
+                cleave_count++;
+                break;
             case Damage_source::whirlwind:
                 whirlwind_damage += damage;
                 whirlwind_count++;
@@ -104,6 +110,7 @@ struct Damage_sources
     double bloodthirst_damage{};
     double execute_damage{};
     double heroic_strike_damage{};
+    double cleave_damage{};
     double whirlwind_damage{};
     double item_hit_effects_damage{};
 
@@ -112,6 +119,7 @@ struct Damage_sources
     long int bloodthirst_count{};
     long int execute_count{};
     long int heroic_strike_count{};
+    long int cleave_count{};
     long int whirlwind_count{};
     long int item_hit_effects_count{};
 
