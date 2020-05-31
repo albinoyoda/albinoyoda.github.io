@@ -677,12 +677,20 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     {
         config.display_combat_debug = true;
         simulator = Combat_simulator(config);
-        auto debug_dps = simulator.simulate(character);
+        double dps;
+        for (int i = 0; i < 1000; i++)
+        {
+            dps = simulator.simulate(character)[0];
+            if (std::abs(dps - mean_init) < 5)
+            {
+                break;
+            }
+        }
         debug_topic = simulator.get_debug_topic();
 
         debug_topic += "<br><br>";
         debug_topic += "Fight statistics:<br>";
-        debug_topic += "DPS: " + std::to_string(debug_dps[0]) + "<br><br>";
+        debug_topic += "DPS: " + std::to_string(dps) + "<br><br>";
 
         auto dist = simulator.get_damage_distribution()[0];
         debug_topic += "DPS from sources:<br>";

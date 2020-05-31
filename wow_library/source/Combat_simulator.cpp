@@ -635,6 +635,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
     {
         n_damage_batches = 1;
     }
+    debug_topic_ = "";
     buff_manager_.aura_uptime.auras.clear();
     reset_damage_instances();
     batch_damage_.clear();

@@ -985,7 +985,7 @@
 
         <b>Debug:</b><br/>
         <input type="checkbox" id="debug_on">
-        <label for="debug_on"> Display combat debug information for a fight.</label><br>
+        <label for="debug_on"> Display combat debug information for the median fight.</label><br>
     </div>
 
     <p></p>
@@ -1455,7 +1455,7 @@
             "Simulations for DPS = <b>" + n_simulations_dd + "</b><br>" +
             "Simulations for stat weights = <b>" + (total_simulations - n_simulations_dd) + "</b><br>";
         if (!document.getElementById("debug_on").checked) {
-            n_sim_status += "TIP! Interested in a combat log? It can be activated under the 'Open Simulation settings' dialog"
+            n_sim_status += "TIP! Combat logs can be activated under the 'Open Simulation settings' dialog"
         }
 
         document.getElementById("output1").innerHTML = n_sim_status;
@@ -1499,7 +1499,7 @@
 
         if (document.getElementById("debug_on").checked) {
             document.getElementById("combat_debug").style.display = "block";
-            document.getElementById("combat_debug_title").innerHTML = "<b>Combat log from a random fight: </b>";
+            document.getElementById("combat_debug_title").innerHTML = "<b>Combat log from the median fight: </b>";
         } else {
             document.getElementById("combat_debug").style.display = "none";
             document.getElementById("combat_debug_title").innerHTML = "";
