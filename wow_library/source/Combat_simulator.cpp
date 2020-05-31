@@ -593,7 +593,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
     flurry_uptime_oh_.clear();
     flurry_uptime_oh_.reserve(n_damage_batches);
     const auto starting_special_stats = character.total_special_stats;
-    std::vector<Weapon_sim> weapons;
+    std::vector <Weapon_sim> weapons;
     for (const auto &wep : character.weapons)
     {
         weapons.emplace_back(wep.swing_speed, wep.min_damage, wep.max_damage, wep.socket, wep.type,
@@ -608,8 +608,8 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
     double execute_rage_cost = 15 - static_cast<int>(2.5 * config.talents.improved_execute);
     double armor_reduction_from_spells = 0.0;
     armor_reduction_from_spells += 640 * config.curse_of_recklessness_active;
-    armor_reduction_from_spells += config.sunder_armor_active * 450 * config.n_sunder_armor_stacks;
-    armor_reduction_from_spells += config.faerie_fire_feral_active * 505;
+    armor_reduction_from_spells += 450 * config.n_sunder_armor_stacks;
+    armor_reduction_from_spells += 505 * config.faerie_fire_feral_active;
 
     double boss_armor = 3731 - armor_reduction_from_spells; // Armor for Warrior class monsters
     double target_mitigation = armor_mitigation(boss_armor, 63);
@@ -622,7 +622,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
     }
 
     // Pick out the best use effect if there are several that shares cooldown
-    std::vector<Use_effect> use_effects_all = character.use_effects;
+    std::vector <Use_effect> use_effects_all = character.use_effects;
     std::vector<int> shared_items;
     size_t best_idx = 0;
     double best_value = 0;
@@ -641,7 +641,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
         }
     }
 
-    std::vector<Use_effect> use_effects;
+    std::vector <Use_effect> use_effects;
     for (size_t i = 0; i < use_effects_all.size(); i++)
     {
         if (!(std::find(shared_items.begin(), shared_items.end(), i) != shared_items.end()))// Add if item is not shared
@@ -702,7 +702,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
             double buff_dt = buff_manager_.get_dt();
             double dt = time_keeper_.get_dynamic_time_step(mh_dt, oh_dt, buff_dt, sim_time);
             time_keeper_.increment(dt);
-            std::vector<std::string> debug_msg;
+            std::vector <std::string> debug_msg;
             buff_manager_.increment(dt, sim_time - time_keeper_.time, rage, time_keeper_.global_cd, debug_msg,
                                     config.display_combat_debug);
             for (const auto &msg : debug_msg)

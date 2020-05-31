@@ -22,7 +22,6 @@ struct Combat_simulator_config
     int opponent_level{};
 
     bool curse_of_recklessness_active{false};
-    bool sunder_armor_active{false};
     bool faerie_fire_feral_active{false};
     int n_sunder_armor_stacks = 0;
 

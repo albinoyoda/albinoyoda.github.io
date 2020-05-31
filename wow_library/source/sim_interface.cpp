@@ -407,7 +407,7 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
 
     auto temp_buffs = input.buffs;
 
-    if (input.mighty_rage_potion)
+    if (find_string(input.options, "mighty_rage_potion"))
     {
         //temporary solution
         temp_buffs.emplace_back("mighty_rage_potion");
@@ -422,37 +422,63 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     config.sim_time = input.fight_time;
     config.opponent_level = input.target_level;
 
-    config.curse_of_recklessness_active = input.curse_of_recklessness;
-    config.faerie_fire_feral_active = input.faerie_fire;
-    config.sunder_armor_active = true;
+//    var sim_options = ["faerie_fire", "curse_of_recklessness", "death_wish",
+//            "recklessness", "mighty_rage_potion", "vaelastrasz", "debug_on",
+//            "use_bt_in_exec_phase", "use_hs_in_exec_phase"];
+    if (find_string(input.options, "curse_of_recklessness"))
+    {
+        config.curse_of_recklessness_active = true;
+    }
+    if (find_string(input.options, "faerie_fire"))
+    {
+        config.faerie_fire_feral_active = true;
+    }
+    if (find_string(input.options, "death_wish"))
+    {
+        config.talents.death_wish = true;
+    }
+    if (find_string(input.options, "recklessness"))
+    {
+        config.enable_recklessness = true;
+    }
+    if (find_string(input.options, "mighty_rage_potion"))
+    {
+        config.enable_recklessness = true;
+    }
+    if (find_string(input.options, "vaelastrasz"))
+    {
+        config.mode.vaelastrasz = true;
+    }
+    if (find_string(input.options, "use_bt_in_exec_phase"))
+    {
+        config.combat.use_bt_in_exec_phase = true;
+    }
+    if (find_string(input.options, "use_hs_in_exec_phase"))
+    {
+        config.combat.use_hs_in_exec_phase = true;
+    }
     config.n_sunder_armor_stacks = input.sunder_armor;
 
     config.talents.improved_heroic_strike = 2;
     config.talents.unbridled_wrath = 5;
     config.talents.flurry = 5;
     config.talents.anger_management = true;
-    config.talents.death_wish = input.death_wish;
     config.talents.impale = 2;
     config.talents.improved_execute = 2;
     config.talents.dual_wield_specialization = 5;
 
     config.combat.heroic_strike_rage_thresh = input.heroic_strike_rage_thresh;
-    config.combat.use_bt_in_exec_phase = input.use_bt_in_exec_phase;
-    config.combat.use_hs_in_exec_phase = input.use_hs_in_exec_phase;
     config.combat.whirlwind_rage_thresh = input.whirlwind_rage_thresh;
     config.combat.whirlwind_bt_cooldown_thresh = input.whirlwind_bt_cooldown_thresh;
 
     config.use_sim_time_ramp = true;
     config.enable_spell_rotation = true;
     config.enable_bloodrage = true;
-    config.enable_recklessness = input.recklessness;
-//    config.display_combat_debug = true;
     config.use_seed = true;
     config.seed = 110000;
     config.fuel_extra_rage = false;
     config.extra_rage_interval = 3;
     config.extra_rage_damage_amount = 150;
-    config.mode.vaelastrasz = input.vaelastrasz;
 
     Combat_simulator simulator(config);
 
@@ -630,9 +656,9 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     }
 
     std::string debug_topic{};
-    if (input.debug_on)
+    if (find_string(input.options, "debug_on"))
     {
-        config.display_combat_debug = input.debug_on;
+        config.display_combat_debug = true;
         simulator = Combat_simulator(config);
         auto debug_dps = simulator.simulate(character);
         debug_topic = simulator.get_debug_topic();

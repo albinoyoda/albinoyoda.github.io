@@ -898,20 +898,20 @@
     <button type="button" class="collapsible">Open combat settings</button>
     <div class="content">
         <b>Cooldowns:</b><br/>
-        <input type="checkbox" id="enable_death_wish" checked>
-        <label for="enable_death_wish"> Use death wish (used in the last 30sec)</label><br>
-        <input type="checkbox" id="use_mighty_rage_potion">
-        <label for="use_mighty_rage_potion"> Use mighty rage potion (used in the last 25sec)</label><br>
-        <input type="checkbox" id="enable_recklessness">
-        <label for="enable_recklessness"> Use recklessness (used in the last 20sec)</label><br><br/>
+        <input type="checkbox" id="death_wish" checked>
+        <label for="death_wish"> Use death wish (used in the last 30sec)</label><br>
+        <input type="checkbox" id="mighty_rage_potion">
+        <label for="mighty_rage_potion"> Use mighty rage potion (used in the last 25sec)</label><br>
+        <input type="checkbox" id="recklessness">
+        <label for="recklessness"> Use recklessness (used in the last 20sec)</label><br><br/>
 
         <b>Armor reduction:</b><br/>
         <label for="sunder_armor_dd">Sunder armor stacks: (0-5):</label>
         <input type="number" id="sunder_armor_dd" name="quantity" min="0" max="5" value="5"><br/>
-        <input type="checkbox" id="faerie_fire_feral_active" checked>
-        <label for="faerie_fire_feral_active"> Faerie fire feral active</label><br>
-        <input type="checkbox" id="curse_of_recklessness_active" checked>
-        <label for="curse_of_recklessness_active"> Curse of recklessness active</label><br><br/>
+        <input type="checkbox" id="faerie_fire" checked>
+        <label for="faerie_fire"> Faerie fire feral active</label><br>
+        <input type="checkbox" id="curse_of_recklessness" checked>
+        <label for="curse_of_recklessness"> Curse of recklessness active</label><br><br/>
 
         <b>Combat strategy:</b><br/>
         <input type="checkbox" id="use_bt_in_exec_phase">
@@ -1022,6 +1022,39 @@
         });
     }
 
+    var world_buffs = ["rallying_cry", "dire_maul", "songflower", "warchiefs_blessing", "spirit_of_zandalar", "sayges_fortune"];
+    var world_buffs_input = [];
+
+    var buffs = ["battle_shout", "blessing_of_kings", "blessing_of_might", "gift_of_the_wild", "leader_of_the_pack", "trueshot_aura",
+        "windfury_totem", "strength_of_earth_totem", "grace_of_air_totem"];
+    var buffs_input = [];
+
+    var consumables = ["elixir_mongoose", "blessed_sunfruit", "smoked_dessert_dumplings", "juju_power", "elixir_of_giants", "winterfall_firewater",
+        "juju_might", "roids", "dense_stone_main_hand", "elemental_stone_main_hand", "dense_stone_off_hand", "elemental_stone_off_hand"];
+    var consumables_input = [];
+
+    var armor = ["helmet_dd", "neck_dd", "shoulder_dd", "back_dd",
+        "chest_dd", "wrists_dd", "hands_dd", "belt_dd", "legs_dd",
+        "boots_dd", "ring1_dd", "ring2_dd", "trinket1_dd", "trinket2_dd", "ranged_dd"];
+    var armor_input = [];
+
+    var weapons = ["main_hand_dd", "off_hand_dd"];
+    var weapons_input = [];
+
+    var enchants = ["helmet_ench_dd", "shoulder_ench_dd", "back_ench_dd", "chest_ench_dd", "wrist_ench_dd",
+        "hands_ench_dd", "legs_ench_dd", "boots_ench_dd", "main_hand_ench_dd", "off_hand_ench_dd"];
+    var enchant_prefixes = ["e", "s", "b", "c", "w", "h", "l", "b", "m", "o"];
+    var enchants_input = [];
+
+    var sim_options = ["faerie_fire", "curse_of_recklessness", "death_wish",
+        "recklessness", "mighty_rage_potion", "vaelastrasz", "debug_on",
+        "use_bt_in_exec_phase", "use_hs_in_exec_phase"];
+
+    var stat_weigths = ["stat_weight_hit", "stat_weight_crit", "stat_weight_haste", "stat_weight_skill"]
+
+    var race;
+    var race_string;
+
     function load_file() {
         let file = document.getElementById("myFile");
         var myFile = file.files[0];
@@ -1035,6 +1068,12 @@
             document.getElementById(buff).checked = false;
         }
         for (let consumable of consumables) {
+            document.getElementById(consumable).checked = false;
+        }
+        for (let consumable of stat_weigths) {
+            document.getElementById(consumable).checked = false;
+        }
+        for (let consumable of sim_options) {
             document.getElementById(consumable).checked = false;
         }
 
@@ -1134,12 +1173,13 @@
             file_content += variable + " " + parseFloat(document.getElementById(variable).value) + "\n";
         }
 
-        let var_array2 = ["faerie_fire_feral_active", "curse_of_recklessness_active", "enable_death_wish",
-            "enable_recklessness", "enable_recklessness", "use_mighty_rage_potion", "vaelastrasz",
-            "use_bt_in_exec_phase", "use_hs_in_exec_phase", "debug_on", "stat_weight_hit", "stat_weight_crit",
-            "stat_weight_haste", "stat_weight_skill"];
+        for (let variable of stat_weigths) {
+            if (document.getElementById(variable).checked) {
+                file_content += variable + " " + variable + "\n";
+            }
+        }
 
-        for (let variable of var_array2) {
+        for (let variable of sim_options) {
             if (document.getElementById(variable).checked) {
                 file_content += variable + " " + variable + "\n";
             }
@@ -1176,33 +1216,6 @@
         }
         document.getElementById(cityName).style.display = "block";
     }
-
-    var world_buffs = ["rallying_cry", "dire_maul", "songflower", "warchiefs_blessing", "spirit_of_zandalar", "sayges_fortune"];
-    var world_buffs_input = [];
-
-    var buffs = ["battle_shout", "blessing_of_kings", "blessing_of_might", "gift_of_the_wild", "leader_of_the_pack", "trueshot_aura",
-        "windfury_totem", "strength_of_earth_totem", "grace_of_air_totem"];
-    var buffs_input = [];
-
-    var consumables = ["elixir_mongoose", "blessed_sunfruit", "smoked_dessert_dumplings", "juju_power", "elixir_of_giants", "winterfall_firewater",
-        "juju_might", "roids", "dense_stone_main_hand", "elemental_stone_main_hand", "dense_stone_off_hand", "elemental_stone_off_hand"];
-    var consumables_input = [];
-
-    var armor = ["helmet_dd", "neck_dd", "shoulder_dd", "back_dd",
-        "chest_dd", "wrists_dd", "hands_dd", "belt_dd", "legs_dd",
-        "boots_dd", "ring1_dd", "ring2_dd", "trinket1_dd", "trinket2_dd", "ranged_dd"];
-    var armor_input = [];
-
-    var weapons = ["main_hand_dd", "off_hand_dd"];
-    var weapons_input = [];
-
-    var enchants = ["helmet_ench_dd", "shoulder_ench_dd", "back_ench_dd", "chest_ench_dd", "wrist_ench_dd",
-        "hands_ench_dd", "legs_ench_dd", "boots_ench_dd", "main_hand_ench_dd", "off_hand_ench_dd"];
-    var enchant_prefixes = ["e", "s", "b", "c", "w", "h", "l", "b", "m", "o"];
-    var enchants_input = [];
-
-    var race;
-    var race_string;
 
     function read_inputs() {
         race = document.getElementById("race_dd");
@@ -1265,22 +1278,17 @@
 
     function show_loader() {
         $("#loader").addClass("loader");
-        //event.preventDefault();
     }
 
     function hide_loader() {
         $("#loader").removeClass("loader");
-        //event.preventDefault();
     }
 
     if ($(".button").length) {
         $(".button").click(function (event) {
             show_loader();
-            //load the ajax data
-            // wait(1);
             setTimeout(myFunction, 100);
             setTimeout(hide_loader, 100);
-            //hide_loader();
             event.preventDefault();
         });
     }
@@ -1340,16 +1348,13 @@
         }
         sunder_armor_dd = Math.min(Math.max(sunder_armor_dd, 0), 5);
 
-        let faerie_fire_feral_active = document.getElementById("faerie_fire_feral_active").checked;
-        let curse_of_recklessness_active = document.getElementById("curse_of_recklessness_active").checked;
-        let enable_death_wish = document.getElementById("enable_death_wish").checked;
-        let enable_recklessness = document.getElementById("enable_recklessness").checked;
-        let use_mighty_rage_potion = document.getElementById("use_mighty_rage_potion").checked;
-        let vaelastrasz = document.getElementById("vaelastrasz").checked;
-        let debug_on = document.getElementById("debug_on").checked;
+        const options = new Module.StringList();
+        for (let val of sim_options) {
+            if (document.getElementById(val).checked) {
+                options.push_back(val);
+            }
+        }
 
-        let use_bt_in_exec_phase = document.getElementById("use_bt_in_exec_phase").checked;
-        let use_hs_in_exec_phase = document.getElementById("use_hs_in_exec_phase").checked;
         let heroic_strike_rage_thresh = parseFloat(document.getElementById("heroic_strike_rage_thresh_dd").value);
         let whirlwind_rage_thresh = parseFloat(document.getElementById("whirlwind_rage_thresh_dd").value);
         let whirlwind_bt_cooldown_thresh = parseFloat(document.getElementById("whirlwind_bt_cooldown_thresh_dd").value);
@@ -1378,19 +1383,11 @@
             buffs: buff_vec,
             enchants: ench_vec,
             stat_weights: stat_weight_vec,
+            options: options,
             fight_time: fight_time_dd,
             target_level: opponent_level_dd,
             n_simulations: n_simulations_dd,
             sunder_armor: sunder_armor_dd,
-            faerie_fire: faerie_fire_feral_active,
-            curse_of_recklessness: curse_of_recklessness_active,
-            death_wish: enable_death_wish,
-            recklessness: enable_recklessness,
-            mighty_rage_potion: use_mighty_rage_potion,
-            vaelastrasz: vaelastrasz,
-            debug_on: debug_on,
-            use_bt_in_exec_phase: use_bt_in_exec_phase,
-            use_hs_in_exec_phase: use_hs_in_exec_phase,
             heroic_strike_rage_thresh: heroic_strike_rage_thresh,
             whirlwind_rage_thresh: whirlwind_rage_thresh,
             whirlwind_bt_cooldown_thresh: whirlwind_bt_cooldown_thresh,
@@ -1440,7 +1437,7 @@
         // Crit cap details:
         document.getElementById("output4").innerHTML = result['extra_stats'].get(0);
 
-        if (debug_on) {
+        if (document.getElementById("debug_on").checked) {
             document.getElementById("combat_debug").style.display = "block";
             document.getElementById("combat_debug_title").innerHTML = "<b>Combat log from a random fight: </b>";
         } else {
