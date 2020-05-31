@@ -67,17 +67,12 @@ public:
         use_effects = use_effects_input;
     };
 
-    double get_dt(double time_left)
+    double get_dt()
     {
         double dt = 1e10;
         for (const auto &gain : stat_gains)
         {
             dt = std::min(dt, gain.duration_left);
-        }
-        for (const auto &use_effect : use_effects)
-        {
-            dt = std::min(dt, time_left - use_effect.duration - 1.5);
-            dt = std::max(dt, 1e-5);
         }
         return dt;
     }
@@ -107,7 +102,7 @@ public:
         i = 0;
         while (i < use_effects.size())
         {
-            if (time_left - use_effects[i].duration - 1.5 < 0.0)
+            if (time_left - use_effects[i].duration - 1.5 < 0.0 && global_cooldown < 0.0)
             {
                 if (debug)
                 {

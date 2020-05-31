@@ -25,7 +25,7 @@ int main()
     armor_vec.emplace_back("blastershot");
 
     std::vector<std::string> weapons_vec;
-    weapons_vec.emplace_back("brutality_blade");
+    weapons_vec.emplace_back("thunderfury_blessed_blade");
     weapons_vec.emplace_back("dal_rends_tribal_guardian");
 
     std::vector<std::string> buff_vec;
@@ -48,7 +48,7 @@ int main()
 
     std::string race = "human";
 
-    Sim_input sim_input{{race}, armor_vec, weapons_vec, buff_vec, ench_vec, {""},
+    Sim_input sim_input{{race}, armor_vec, weapons_vec, buff_vec, ench_vec, {"hit", "crit"},
                         60, 63, 10000, 5, true, true,
                         true, true, true, false, true, false,
                         true, 60, 25, 1};

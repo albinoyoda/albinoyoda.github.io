@@ -371,7 +371,7 @@ void Combat_simulator::bloodthirst(Weapon_sim &main_hand_weapon, Special_stats &
     time_keeper_.global_cd = 1.5;
     manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges, true);
     damage_sources.add_damage(Damage_source::bloodthirst, hit_outcome.damage, time_keeper_.time);
-    simulator_cout(int(rage), " rage");
+    simulator_cout("Current rage: ", int(rage));
 }
 
 void Combat_simulator::whirlwind(Weapon_sim &main_hand_weapon, Special_stats &special_stats,
@@ -394,7 +394,7 @@ void Combat_simulator::whirlwind(Weapon_sim &main_hand_weapon, Special_stats &sp
     time_keeper_.global_cd = 1.5;
     manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges, true);
     damage_sources.add_damage(Damage_source::whirlwind, hit_outcome.damage, time_keeper_.time);
-    simulator_cout(int(rage), " rage");
+    simulator_cout("Current rage: ", int(rage));
 }
 
 void Combat_simulator::execute(Weapon_sim &main_hand_weapon, Special_stats &special_stats,
@@ -421,7 +421,7 @@ void Combat_simulator::execute(Weapon_sim &main_hand_weapon, Special_stats &spec
     }
     manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges, true);
     damage_sources.add_damage(Damage_source::execute, hit_outcome.damage, time_keeper_.time);
-    simulator_cout(int(rage), " rage");
+    simulator_cout("Current rage: ", int(rage));
 }
 
 void Combat_simulator::hit_effects(Weapon_sim &weapon, Weapon_sim &main_hand_weapon, Special_stats &special_stats,
@@ -443,20 +443,49 @@ void Combat_simulator::hit_effects(Weapon_sim &weapon, Weapon_sim &main_hand_wea
                                  recklessness_active, damage_sources, flurry_charges, hit_effect.attack_power_boost);
                     break;
                 case Hit_effect::Type::damage_magic:
-                    simulator_cout("PROC: damage from: ", hit_effect.name);
+                    damage_sources.add_damage(Damage_source::item_hit_effects, hit_effect.damage * 0.85,
+                                              time_keeper_.time);
+                    simulator_cout("PROC: ", hit_effect.name, " does ", hit_effect.damage * 0.85, " magic damage.");
+                    break;
+                case Hit_effect::Type::damage_magic_guaranteed:
+                    simulator_cout("Weapon swing with: ", hit_effect.name, " does ", hit_effect.damage * 0.85,
+                                   " magic damage.");
                     damage_sources.add_damage(Damage_source::item_hit_effects, hit_effect.damage * 0.85,
                                               time_keeper_.time);
                     break;
                 case Hit_effect::Type::damage_physical:
-                    simulator_cout("PROC: damage from: ", hit_effect.name);
-                    damage_sources.add_damage(Damage_source::item_hit_effects,
-                                              generate_hit(hit_effect.damage, Hit_type::yellow,
-                                                           Socket::main_hand, heroic_strike_active,
-                                                           special_stats, recklessness_active).damage,
-                                              time_keeper_.time);
+                {
+                    auto hit = generate_hit(hit_effect.damage, Hit_type::yellow,
+                                            Socket::main_hand, heroic_strike_active,
+                                            special_stats, recklessness_active);
+                    damage_sources.add_damage(Damage_source::item_hit_effects, hit.damage, time_keeper_.time);
+                    if (config.display_combat_debug)
+                    {
+                        std::string result;
+                        switch (hit.hit_result)
+                        {
+                            case Hit_result::hit:
+                                result = " hit";
+                                break;
+                            case Hit_result::crit:
+                                result = " crit";
+                                break;
+                            case Hit_result::dodge:
+                                result = " dodge";
+                                break;
+                            case Hit_result::miss:
+                                result = " miss";
+                                break;
+                            default:
+                                result = " bugs";
+                                break;
+                        }
+                        simulator_cout("PROC: ", hit_effect.name, result, " does ", hit.damage, " physical damage");
+                    }
+                }
                     break;
                 case Hit_effect::Type::stat_boost:
-                    simulator_cout("PROC: stats increased: ", hit_effect.name);
+                    simulator_cout("PROC: ", hit_effect.name, " stats increased for ", hit_effect.duration, "s");
                     buff_manager_.add(weapon.socket_name + "_" + hit_effect.name,
                                       hit_effect.get_special_stat_equivalent(special_stats),
                                       hit_effect.duration);
@@ -488,14 +517,14 @@ void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_we
         weapon.socket == Socket::main_hand &&
         rage >= heroic_strike_rage_cost)
     {
-        simulator_cout("Performing heroic strike");// Unbridled wrath
+        simulator_cout("Performing heroic strike");
         swing_damage += 138;
         hit_outcome = generate_hit(swing_damage, Hit_type::yellow, weapon.socket, heroic_strike_active,
                                    special_stats, recklessness_active);
         heroic_strike_active = false;
         rage -= heroic_strike_rage_cost;
         damage_sources.add_damage(Damage_source::heroic_strike, hit_outcome.damage, time_keeper_.time);
-        simulator_cout(int(rage), " rage");
+        simulator_cout("Current rage: ", int(rage));
     }
     else
     {
@@ -525,7 +554,7 @@ void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_we
         {
             damage_sources.add_damage(Damage_source::white_oh, hit_outcome.damage, time_keeper_.time);
         }
-        simulator_cout(int(rage), " rage");
+        simulator_cout("Current rage: ", int(rage));
     }
 
     manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges);
@@ -559,6 +588,10 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
     batch_damage_.reserve(n_damage_batches);
     damage_distribution_.clear();
     damage_distribution_.reserve(n_damage_batches);
+    flurry_uptime_mh_.clear();
+    flurry_uptime_mh_.reserve(n_damage_batches);
+    flurry_uptime_oh_.clear();
+    flurry_uptime_oh_.reserve(n_damage_batches);
     const auto starting_special_stats = character.total_special_stats;
     std::vector<Weapon_sim> weapons;
     for (const auto &wep : character.weapons)
@@ -666,7 +699,7 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
         {
             double mh_dt = weapons[0].internal_swing_timer;
             double oh_dt = (weapons.size() == 2) ? weapons[1].internal_swing_timer : 100.0;
-            double buff_dt = buff_manager_.get_dt(sim_time - time_keeper_.time);
+            double buff_dt = buff_manager_.get_dt();
             double dt = time_keeper_.get_dynamic_time_step(mh_dt, oh_dt, buff_dt, sim_time);
             time_keeper_.increment(dt);
             std::vector<std::string> debug_msg;

@@ -337,7 +337,6 @@
     <p>TPS calculator for tanking. </p>
     <p>More items! </p>
     <p>Configure use effect timings. </p>
-    <p>Combat log </p>
     <p>Talents </p>
     <p>2h fury support </p>
     <p>Ability to compare gear setups side-by-side </p>
@@ -896,15 +895,8 @@
     </div>
     <br/><br/>
 
-    <button type="button" class="collapsible">Open Advanced simulation settings</button>
+    <button type="button" class="collapsible">Open combat settings</button>
     <div class="content">
-        <label for="n_simulations_dd">Number of simulations: (100 - 30000):</label>
-        <input type="number" id="n_simulations_dd" name="quantity" min="100" max="30000" value="10000"><br/>
-        <label for="opponent_level_dd">Opponent level: (60-63):</label>
-        <input type="number" id="opponent_level_dd" name="quantity" min="60" max="63" value="63"><br/>
-        <label for="fight_time_dd">Fight duration: (10-200s):</label>
-        <input type="number" id="fight_time_dd" name="quantity" min="10" max="200" value="60"><br/><br/>
-
         <b>Cooldowns:</b><br/>
         <input type="checkbox" id="enable_death_wish" checked>
         <label for="enable_death_wish"> Use death wish (used in the last 30sec)</label><br>
@@ -937,6 +929,30 @@
         <input type="checkbox" id="vaelastrasz">
         <label for="vaelastrasz"> Fight against Vaelastrasz (essence of the red + initial boss HP =
             30%)</label><br><br/>
+    </div>
+    <br/><br/>
+
+    <button type="button" class="collapsible">Open simulation settings</button>
+    <div class="content">
+        <label for="n_simulations_dd">Number of simulations: (100 - 50000):</label>
+        <input type="number" id="n_simulations_dd" name="quantity" min="100" max="50000" value="20000"><br/>
+        <label for="opponent_level_dd">Opponent level: (60-63):</label>
+        <input type="number" id="opponent_level_dd" name="quantity" min="60" max="63" value="63"><br/>
+        <label for="fight_time_dd">Fight duration: (10-200s):</label>
+        <input type="number" id="fight_time_dd" name="quantity" min="10" max="200" value="60"><br/><br/>
+
+        <b>Stat weights:</b><br/>
+        <input type="checkbox" id="stat_weight_crit" checked>
+        <label for="stat_weight_crit"> Calculate stat weight for &plusmn1% crit.</label><br>
+
+        <input type="checkbox" id="stat_weight_hit" checked>
+        <label for="stat_weight_hit"> Calculate stat weight for &plusmn1% hit.</label><br>
+
+        <input type="checkbox" id="stat_weight_haste">
+        <label for="stat_weight_haste"> Calculate stat weight for &plusmn1% haste.</label><br>
+
+        <input type="checkbox" id="stat_weight_skill">
+        <label for="stat_weight_skill"> Calculate stat weight for &plusmn5 skill.</label><br>
 
         <b>Debug:</b><br/>
         <input type="checkbox" id="debug_on">
@@ -1120,7 +1136,8 @@
 
         let var_array2 = ["faerie_fire_feral_active", "curse_of_recklessness_active", "enable_death_wish",
             "enable_recklessness", "enable_recklessness", "use_mighty_rage_potion", "vaelastrasz",
-            "use_bt_in_exec_phase", "use_hs_in_exec_phase", "debug_on"];
+            "use_bt_in_exec_phase", "use_hs_in_exec_phase", "debug_on", "stat_weight_hit", "stat_weight_crit",
+            "stat_weight_haste", "stat_weight_skill"];
 
         for (let variable of var_array2) {
             if (document.getElementById(variable).checked) {
@@ -1303,7 +1320,7 @@
         if (isNaN(n_simulations_dd)) {
             n_simulations_dd = 5000;
         }
-        n_simulations_dd = Math.min(Math.max(n_simulations_dd, 100), 30000);
+        n_simulations_dd = Math.min(Math.max(n_simulations_dd, 100), 50000);
 
         let opponent_level_dd = parseFloat(document.getElementById("opponent_level_dd").value);
         if (isNaN(opponent_level_dd)) {
@@ -1338,10 +1355,18 @@
         let whirlwind_bt_cooldown_thresh = parseFloat(document.getElementById("whirlwind_bt_cooldown_thresh_dd").value);
 
         const stat_weight_vec = new Module.StringList();
-        stat_weight_vec.push_back("crit");
-        stat_weight_vec.push_back("hit");
-        stat_weight_vec.push_back("haste");
-        stat_weight_vec.push_back("skill");
+        if (document.getElementById("stat_weight_crit").checked) {
+            stat_weight_vec.push_back("crit");
+        }
+        if (document.getElementById("stat_weight_hit").checked) {
+            stat_weight_vec.push_back("hit");
+        }
+        if (document.getElementById("stat_weight_haste").checked) {
+            stat_weight_vec.push_back("haste");
+        }
+        if (document.getElementById("stat_weight_skill").checked) {
+            stat_weight_vec.push_back("skill");
+        }
 
         const race_vec = new Module.StringList();
         race_vec.push_back(race_string);
@@ -1404,10 +1429,10 @@
         let string = "Stat weights: <br />";
         if (result['stat_weights'].size() > 0) {
             for (let i = 0; i < stat_weights.length; i++) {
-                string += "+" + stat_weights[i]['name'] + " equivalates [<b>" + stat_weights[i]['value_min'].toFixed(2) +
-                    " &#8722 " + stat_weights[i]['value_max'].toFixed(2) + "</b>] attack power. <br />";
-                string += "-" + stat_weights[i]['name'] + " equivalates [<b>(-" + stat_weights[i]['negative_value_min'].toFixed(2) +
-                    ") &#8722 (-" + stat_weights[i]['negative_value_max'].toFixed(2) + ")</b>] attack power. <br /><br />";
+                string += "+" + stat_weights[i]['name'] + " equivalates: <b>" + stat_weights[i]['value_min'].toFixed(2) +
+                    " &#8722 " + stat_weights[i]['value_max'].toFixed(2) + "</b> attack power. <br />";
+                string += "-" + stat_weights[i]['name'] + " equivalates: <b>-" + stat_weights[i]['negative_value_min'].toFixed(2) +
+                    " &#8722 -" + stat_weights[i]['negative_value_max'].toFixed(2) + "</b> attack power. <br /><br />";
             }
         }
         document.getElementById("output2").innerHTML = string;

@@ -235,8 +235,8 @@ public:
     {
         if (config.display_combat_debug)
         {
-            debug_topic_ += "Time: " + std::to_string(time_keeper_.time) + "s. Loop idx:" + std::to_string(
-                    time_keeper_.step_index) += ". Event: ";
+//            s. Loop idx:" + std::to_string(                    time_keeper_.step_index) +=
+            debug_topic_ += "Time: " + std::to_string(time_keeper_.time) + "s. Event: ";
             __attribute__((unused)) int dummy[] = {0, ((void) print_statement(std::forward<Args>(args)), 0)...};
             debug_topic_ += "<br>";
         }

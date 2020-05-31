@@ -629,33 +629,39 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
         hist_y[bin_idx]++;
     }
 
-    config.display_combat_debug = input.debug_on;
-    simulator = Combat_simulator(config);
-    auto debug_dps = simulator.simulate(character);
-    std::string debug_topic = simulator.get_debug_topic();
+    std::string debug_topic{};
+    if (input.debug_on)
+    {
+        config.display_combat_debug = input.debug_on;
+        simulator = Combat_simulator(config);
+        auto debug_dps = simulator.simulate(character);
+        debug_topic = simulator.get_debug_topic();
 
-    debug_topic += "<br><br>";
-    debug_topic += "Fight statistics:<br>";
-    debug_topic += "DPS: " + std::to_string(debug_dps[0]) + "<br><br>";
+        debug_topic += "<br><br>";
+        debug_topic += "Fight statistics:<br>";
+        debug_topic += "DPS: " + std::to_string(debug_dps[0]) + "<br><br>";
 
-    auto dist = simulator.get_damage_distribution()[0];
-    debug_topic += "DPS from sources:<br>";
-    debug_topic += "DPS white MH: " + std::to_string(dist.white_mh_damage / (config.sim_time - 2)) + "<br>";
-    debug_topic += "DPS white OH: " + std::to_string(dist.white_oh_damage / (config.sim_time - 2)) + "<br>";
-    debug_topic += "DPS bloodthirst: " + std::to_string(dist.bloodthirst_damage / (config.sim_time - 2)) + "<br>";
-    debug_topic += "DPS execute: " + std::to_string(dist.execute_damage / (config.sim_time - 2)) + "<br>";
-    debug_topic += "DPS heroic strike: " + std::to_string(dist.heroic_strike_damage / (config.sim_time - 2)) + "<br>";
-    debug_topic += "DPS whirlwind: " + std::to_string(dist.whirlwind_damage / (config.sim_time - 2)) + "<br>";
-    debug_topic += "DPS item effects: " + std::to_string(dist.item_hit_effects_damage / (config.sim_time - 2)) + "<br><br>";
+        auto dist = simulator.get_damage_distribution()[0];
+        debug_topic += "DPS from sources:<br>";
+        debug_topic += "DPS white MH: " + std::to_string(dist.white_mh_damage / (config.sim_time - 2)) + "<br>";
+        debug_topic += "DPS white OH: " + std::to_string(dist.white_oh_damage / (config.sim_time - 2)) + "<br>";
+        debug_topic += "DPS bloodthirst: " + std::to_string(dist.bloodthirst_damage / (config.sim_time - 2)) + "<br>";
+        debug_topic += "DPS execute: " + std::to_string(dist.execute_damage / (config.sim_time - 2)) + "<br>";
+        debug_topic += "DPS heroic strike: " + std::to_string(
+                dist.heroic_strike_damage / (config.sim_time - 2)) + "<br>";
+        debug_topic += "DPS whirlwind: " + std::to_string(dist.whirlwind_damage / (config.sim_time - 2)) + "<br>";
+        debug_topic += "DPS item effects: " + std::to_string(
+                dist.item_hit_effects_damage / (config.sim_time - 2)) + "<br><br>";
 
-    debug_topic += "Casts:<br>";
-    debug_topic += "#Hits white MH: " + std::to_string(dist.white_mh_count) + "<br>";
-    debug_topic += "#Hits white OH: " + std::to_string(dist.white_oh_count) + "<br>";
-    debug_topic += "#Hits bloodthirst: " + std::to_string(dist.bloodthirst_count) + "<br>";
-    debug_topic += "#Hits execute: " + std::to_string(dist.execute_count) + "<br>";
-    debug_topic += "#Hits heroic strike: " + std::to_string(dist.heroic_strike_count) + "<br>";
-    debug_topic += "#Hits whirlwind: " + std::to_string(dist.whirlwind_count) + "<br>";
-    debug_topic += "#Hits item effects: " + std::to_string(dist.item_hit_effects_count) + "<br>";
+        debug_topic += "Casts:<br>";
+        debug_topic += "#Hits white MH: " + std::to_string(dist.white_mh_count) + "<br>";
+        debug_topic += "#Hits white OH: " + std::to_string(dist.white_oh_count) + "<br>";
+        debug_topic += "#Hits bloodthirst: " + std::to_string(dist.bloodthirst_count) + "<br>";
+        debug_topic += "#Hits execute: " + std::to_string(dist.execute_count) + "<br>";
+        debug_topic += "#Hits heroic strike: " + std::to_string(dist.heroic_strike_count) + "<br>";
+        debug_topic += "#Hits whirlwind: " + std::to_string(dist.whirlwind_count) + "<br>";
+        debug_topic += "#Hits item effects: " + std::to_string(dist.item_hit_effects_count) + "<br>";
+    }
 
     return {hist_x, hist_y, dps_dist, a[0], a[1], a[2], a[3], a[4], a[5], a[6],
             aura_uptimes, proc_statistics, stat_weights, {extra_info_string, debug_topic}, mean_init, sample_std_init,

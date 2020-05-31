@@ -109,7 +109,8 @@ public:
         extra_hit,
         stat_boost,
         damage_physical,
-        damage_magic
+        damage_magic,
+        damage_magic_guaranteed
     };
 
     Hit_effect() = default;

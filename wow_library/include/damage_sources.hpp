@@ -28,7 +28,10 @@ struct Damage_instance
 
 struct Damage_sources
 {
-    Damage_sources() = default;
+    Damage_sources()
+    {
+        damage_instances.reserve(300);
+    };
 
     Damage_sources &operator+(const Damage_sources &rhs)
     {
