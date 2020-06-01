@@ -235,6 +235,10 @@
         overflow-x: auto;
         text-align: justify;
     }
+
+    .tab_armor_type {
+        padding-left: 100px;
+    }
 </style>
 
 <head>
@@ -368,6 +372,7 @@
     <b> Select armor:</b><br/>
 
     <!--armor begin-->
+<!--    helmet:<span class="tab_armor_type"><b>neck:</b><br>-->
     <select id="helmet_dd">
         <option value="none" selected disabled>helmet</option>
         <option value="crown_of_destruction">Crown of destruction</option>
@@ -1484,7 +1489,7 @@
             }
         }
 
-        let string = "Stat weights: <br />";
+        let string = "<b>Stat weights:</b> <br />";
         if (result['stat_weights'].size() > 0) {
             for (let i = 0; i < stat_weights.length; i++) {
                 string += "+" + stat_weights[i]['name'] + " equivalates: <b>" + stat_weights[i]['value_min'].toFixed(2) +
@@ -1510,7 +1515,7 @@
         let sources = [];
         let sources_names = ["Main hand", "Off hand", "Blood Thirst", "Execute", "Heroic Strike", "Cleave", "Whirlwind", "Item procs"];
         for (let i = 0; i < result['dmg_sources'].size(); i++) {
-            sources.push(result['dmg_sources'].get(i));
+            sources.push(100 * result['dmg_sources'].get(i));
         }
 
         let aura_name = [];
@@ -1600,6 +1605,8 @@
         }
 
         Chart.defaults.global.defaultFontSize = 36;
+        Chart.defaults.global.defaultFontStyle = 'Bold';
+        Chart.defaults.scale.gridLines.color = "black";
 
         let hist_x = [];
         let hist_y = [];
@@ -1622,19 +1629,42 @@
                 }]
             },
             options: {
+                legend: {
+                    labels: {
+                        fontColor: "black",
+                    }
+                },
                 title: {
+                    fontSize: 60,
+                    fontColor: "black",
                     display: true,
                     text: 'Damage histogram'
                 },
                 scales: {
                     yAxes: [{
+                        gridLines: {
+                            color: "rgba(0, 0, 0, 0.5)",
+                        },
+                        ticks: {
+                            fontColor: "black",
+                        },
                         scaleLabel: {
                             display: true,
-                            labelString: 'Frequency'
+                            labelString: 'Frequency',
+                            fontColor: "black",
                         }
                     }],
                     xAxes: [{
+                        gridLines: {
+                            color: "rgba(0, 0, 0, 0.5)",
+                        },
+                        ticks: {
+                            fontColor: "black",
+                            maxTicksLimit: 30,
+                            maxRotation: 0
+                        },
                         scaleLabel: {
+                            fontColor: "black",
                             display: true,
                             labelString: 'DPS'
                         }
@@ -1644,9 +1674,9 @@
         });
 
         let canvas = document.getElementById("line-chart-hist");
-        canvas.maintainAspectRatio = false;
-        canvas.style.height = '400px';
-        canvas.style.width = '600px';
+        canvas.maintainAspectRatio = true;
+        canvas.style.height = '450px';
+        canvas.style.width = '675px';
 
         line_chart_fight = new Chart(document.getElementById("line-chart-fight"), {
             type: 'line',
@@ -1719,36 +1749,57 @@
                 },]
             },
             options: {
+                legend: {
+                    labels: {
+                        fontColor: "black",
+                    }
+                },
                 bezierCurve: false,
                 title: {
+                    fontSize: 60,
+                    fontColor: "black",
                     display: true,
                     text: 'Fight time lapse (DPS)'
                 },
                 scales: {
                     yAxes: [{
+                        gridLines: {
+                            color: "rgba(0, 0, 0, 0)",
+                        },
+                        ticks: {
+                            fontColor: "black",
+                        },
                         scaleLabel: {
+                            fontColor: "black",
                             display: true,
                             labelString: 'Average damage'
                         }
                     }],
                     xAxes: [{
+                        gridLines: {
+                            color: "rgba(0, 0, 0, 0)",
+                        },
                         ticks: {
                             autoSkip: true,
-                            maxTicksLimit: 30
+                            maxTicksLimit: 30,
+                            maxRotation: 0,
+                            fontColor: "black",
                         },
                         scaleLabel: {
+                            fontColor: "black",
                             display: true,
                             labelString: 'Time'
                         }
-                    }]
+                    }],
                 }
             }
         });
 
         canvas = document.getElementById("line-chart-fight");
-        canvas.maintainAspectRatio = false;
-        canvas.style.height = '400px';
-        canvas.style.width = '600px';
+        canvas.maintainAspectRatio = true;
+        canvas.responsive = false;
+        canvas.style.height = '450px';
+        canvas.style.width = '675px';
 
         line_chart_fight_cum = new Chart(document.getElementById("line-chart-fight-cumulative"), {
             type: 'line',
@@ -1829,23 +1880,42 @@
                 },]
             },
             options: {
+                legend: {
+                    labels: {
+                        fontColor: "black",
+                    }
+                },
                 title: {
+                    fontSize: 60,
+                    fontColor: "black",
                     display: true,
                     text: 'Fight time lapse'
                 },
                 scales: {
                     yAxes: [{
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Cumulative damage from source'
-                        }
-                    }],
-                    xAxes: [{
-                        ticks: {
-                            autoSkip: true,
-                            maxTicksLimit: 30
+                        gridLines: {
+                            color: "rgba(0, 0, 0, 0)",
                         },
                         scaleLabel: {
+                            fontColor: "black",
+                            display: true,
+                            labelString: 'Cumulative damage'
+                        },
+                        ticks: {
+                            fontColor: "black",
+                        },
+                    }],
+                    xAxes: [{
+                        gridLines: {
+                            color: "rgba(0, 0, 0, 0)",
+                        },
+                        ticks: {
+                            fontColor: "black",
+                            maxTicksLimit: 30,
+                            maxRotation: 0
+                        },
+                        scaleLabel: {
+                            fontColor: "black",
                             display: true,
                             labelString: 'Time'
                         }
@@ -1855,9 +1925,9 @@
         });
 
         canvas = document.getElementById("line-chart-fight-cumulative");
-        canvas.maintainAspectRatio = false;
-        canvas.style.height = '400px';
-        canvas.style.width = '600px';
+        canvas.maintainAspectRatio = true;
+        canvas.style.height = '450px';
+        canvas.style.width = '675px';
 
         // Bar chart
         bar_chart_damage = new Chart(document.getElementById("bar-chart-damage"), {
@@ -1866,7 +1936,7 @@
                 labels: sources_names,
                 datasets: [
                     {
-                        backgroundColor: [colors[0], colors[1], colors[2], colors[3], colors[4], colors[5], colors[6], colors[7]],
+                        backgroundColor: colors,
                         data: sources
                     }
                 ]
@@ -1874,20 +1944,43 @@
             options: {
                 legend: {display: false},
                 title: {
+                    fontSize: 60,
+                    fontColor: "black",
                     display: true,
                     text: 'DPS (%) from different sources'
                 },
                 scales: {
                     yAxes: [{
+                        fontColor: "black",
+                        gridLines: {
+                            color: "rgba(0, 0, 0, 0)",
+                        },
                         scaleLabel: {
+                            fontColor: "black",
                             display: true,
                             labelString: 'Percentage'
                         },
                         ticks:
                             {
+                                fontColor: "black",
                                 beginAtZero: true,
                                 suggestedMin: 0,
-                                suggestedMax: 1
+                            }
+                    }],
+                    xAxes: [{
+                        fontColor: "black",
+                        gridLines: {
+                            color: "rgba(0, 0, 0, 0)",
+                        },
+                        scaleLabel: {
+                            fontColor: "black",
+                            display: false,
+                        },
+                        ticks:
+                            {
+                                fontColor: "black",
+                                beginAtZero: true,
+                                suggestedMin: 0,
                             }
                     }]
                 }
@@ -1895,9 +1988,9 @@
         });
 
         canvas = document.getElementById("bar-chart-damage");
-        canvas.maintainAspectRatio = false;
-        canvas.style.height = '400px';
-        canvas.style.width = '600px';
+        canvas.maintainAspectRatio = true;
+        canvas.style.height = '450px';
+        canvas.style.width = '675px';
 
         // Bar chart
         bar_chart_auras = new Chart(document.getElementById("bar-chart-auras"), {
@@ -1914,30 +2007,46 @@
             options: {
                 legend: {display: false},
                 title: {
+                    fontColor: "black",
+                    fontSize: 60,
                     display: true,
-                    text: 'Uptime of different auras'
+                    text: 'Aura uptime'
                 },
                 scales: {
                     yAxes: [{
+                        gridLines: {
+                            color: "rgba(0, 0, 0, 0)",
+                        },
                         scaleLabel: {
+                            fontColor: "black",
                             display: true,
                             labelString: '%',
                         },
                         ticks:
                             {
+                                fontColor: "black",
                                 beginAtZero: true,
                                 suggestedMin: 0,
-                                suggestedMax: 100
                             }
-                    }]
+                    }],
+                    xAxes: [{
+                        gridLines: {
+                            color: "rgba(0, 0, 0, 0)",
+                        },
+                        ticks:
+                            {
+                                fontColor: "black",
+                                beginAtZero: true,
+                            }
+                    }],
                 }
             }
         });
 
         canvas = document.getElementById("bar-chart-auras");
-        canvas.maintainAspectRatio = false;
-        canvas.style.height = '400px';
-        canvas.style.width = '600px';
+        canvas.maintainAspectRatio = true;
+        canvas.style.height = '450px';
+        canvas.style.width = '675px';
 
         // Bar chart
         bar_chart_proc = new Chart(document.getElementById("bar-chart-proc"), {
@@ -1954,27 +2063,46 @@
             options: {
                 legend: {display: false},
                 title: {
+                    fontColor: "black",
+                    fontSize: 60,
                     display: true,
-                    text: 'Average # of procs of different sources'
+                    text: 'Average # of procs'
                 },
                 scales: {
                     yAxes: [{
+                        gridLines: {
+                            color: "rgba(0, 0, 0, 0)",
+                        },
                         scaleLabel: {
+                            fontColor: "black",
                             display: true,
                         },
                         ticks:
                             {
+                                fontColor: "black",
                                 beginAtZero: true,
                             }
-                    }]
+                    }],
+                    xAxes: [{
+                        gridLines: {
+                            fontColor: "black",
+                            color: "rgba(0, 0, 0, 0)",
+                        },
+                        ticks:
+                            {
+                                fontColor: "black",
+                                beginAtZero: true,
+                            }
+                    }],
                 }
             }
         });
 
         canvas = document.getElementById("bar-chart-proc");
-        canvas.maintainAspectRatio = false;
-        canvas.style.height = '400px';
-        canvas.style.width = '600px';
+        canvas.maintainAspectRatio = true;
+        canvas.responsive = false;
+        canvas.style.height = '450px';
+        canvas.style.width = '675px';
     }
 </script>
 

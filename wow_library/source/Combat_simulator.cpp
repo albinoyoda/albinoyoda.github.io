@@ -199,19 +199,34 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit_oh(double damage, b
 Combat_simulator::Hit_outcome Combat_simulator::generate_hit(double damage, Combat_simulator::Hit_type hit_type,
                                                              Socket weapon_hand,
                                                              const Special_stats &special_stats,
-                                                             bool recklessness_active)
+                                                             bool recklessness_active,
+                                                             bool boss_target)
 {
     if (weapon_hand == Socket::main_hand)
     {
         auto hit_outcome = generate_hit_mh(damage, hit_type, recklessness_active);
-        hit_outcome.damage *= armor_reduction_factor_ * (1 + special_stats.damage_multiplier);
+        if (boss_target)
+        {
+            hit_outcome.damage *= armor_reduction_factor_ * (1 + special_stats.damage_multiplier);
+        }
+        else
+        {
+            hit_outcome.damage *= armor_reduction_factor_add * (1 + special_stats.damage_multiplier);
+        }
         cout_damage_parse(hit_type, weapon_hand, hit_outcome);
         return hit_outcome;
     }
     else
     {
         auto hit_outcome = generate_hit_oh(damage, recklessness_active);
-        hit_outcome.damage *= armor_reduction_factor_ * (1 + special_stats.damage_multiplier);
+        if (boss_target)
+        {
+            hit_outcome.damage *= armor_reduction_factor_ * (1 + special_stats.damage_multiplier);
+        }
+        else
+        {
+            hit_outcome.damage *= armor_reduction_factor_add * (1 + special_stats.damage_multiplier);
+        }
         cout_damage_parse(hit_type, weapon_hand, hit_outcome);
         return hit_outcome;
     }
@@ -384,7 +399,7 @@ void Combat_simulator::whirlwind(Weapon_sim &main_hand_weapon, Special_stats &sp
     for (int i = 0; i < std::min(adds_in_melee_range + 1, 4); i++)
     {
         hit_outcomes.emplace_back(generate_hit(damage, Hit_type::yellow, Socket::main_hand,
-                                               special_stats, recklessness_active));
+                                               special_stats, recklessness_active, i == 0));
     }
     rage -= 25;
     if (hit_outcomes[0].hit_result != Hit_result::dodge &&
@@ -463,7 +478,7 @@ void Combat_simulator::hit_effects(Weapon_sim &weapon, Weapon_sim &main_hand_wea
                     simulator_cout("Weapon swing with: ", hit_effect.name, " does ", hit_effect.damage * 0.85,
                                    " magic damage.");
                     damage_sources.add_damage(Damage_source::item_hit_effects, hit_effect.damage * 0.85,
-                                              time_keeper_.time);
+                                              time_keeper_.time, false);
                     break;
                 case Hit_effect::Type::damage_physical:
                 {
@@ -549,7 +564,7 @@ void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_we
         for (int i = 0; i < std::min(adds_in_melee_range + 1, 2); i++)
         {
             hit_outcomes.emplace_back(generate_hit(swing_damage, Hit_type::yellow, weapon.socket,
-                                                   special_stats, recklessness_active));
+                                                   special_stats, recklessness_active, i == 0));
         }
         ability_queue_manager.cleave_queued = false;
         rage -= 20;
@@ -667,7 +682,9 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
 
     double boss_armor = 3731 - armor_reduction_from_spells; // Armor for Warrior class monsters
     double target_mitigation = armor_mitigation(boss_armor, 63);
+    double add_mitigation = armor_mitigation(3000, 62);
     armor_reduction_factor_ = 1 - target_mitigation;
+    armor_reduction_factor_add = 1 - add_mitigation;
 
     double sim_time = config.sim_time;
     if (config.use_sim_time_ramp)

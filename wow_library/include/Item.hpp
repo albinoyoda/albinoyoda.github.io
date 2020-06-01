@@ -52,7 +52,8 @@ enum class Set
     rare_pvp_set,
     epic_pvp_set,
     dal_rends,
-    warblade_of_the_hakkari
+    warblade_of_the_hakkari,
+    major_mojo_infusion
 };
 
 class Use_effect

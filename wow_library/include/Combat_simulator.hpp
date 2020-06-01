@@ -211,7 +211,8 @@ public:
     }
 
     Combat_simulator::Hit_outcome generate_hit(double damage, Hit_type hit_type, Socket weapon_hand,
-                                               const Special_stats &special_stats, bool recklessness_active);
+                                               const Special_stats &special_stats, bool recklessness_active,
+                                               bool boss_target = true);
 
     Combat_simulator::Hit_outcome generate_hit_oh(double damage, bool recklessness_active);
 
@@ -293,6 +294,7 @@ private:
     double glancing_factor_mh_{};
     double glancing_factor_oh_{};
     double armor_reduction_factor_{};
+    double armor_reduction_factor_add{};
     Time_keeper time_keeper_{};
     Buff_manager buff_manager_{};
     Ability_queue_manager ability_queue_manager{};

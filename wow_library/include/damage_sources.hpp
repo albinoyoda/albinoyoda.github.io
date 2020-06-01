@@ -65,7 +65,7 @@ struct Damage_sources
         return white_mh_count + white_oh_count + bloodthirst_count + heroic_strike_count + cleave_count + whirlwind_count + execute_count + item_hit_effects_count;
     }
 
-    void add_damage(Damage_source source, double damage, double time_stamp)
+    void add_damage(Damage_source source, double damage, double time_stamp, bool increment_counter = true)
     {
         damage_instances.emplace_back(source, damage, time_stamp);
         switch (source)
@@ -100,7 +100,10 @@ struct Damage_sources
                 break;
             case Damage_source::item_hit_effects:
                 item_hit_effects_damage += damage;
-                item_hit_effects_count++;
+                if (increment_counter)
+                {
+                    item_hit_effects_count++;
+                }
                 break;
         }
     }

@@ -48,27 +48,29 @@ struct Armory
 {
     std::vector<Armor> helmet_t
             {
-                    {"lionheart_helm",            Attributes{18, 0},  Special_stats{2, 2, 0}, Socket::head},
-                    {"expert_goldminers_head",    Attributes{0, 5},   Special_stats{0, 0, 0, 0, 0, 0,
-                                                                                    7},       Socket::head},
-                    {"mask_of_the_unforgiven",    Attributes{0, 0},   Special_stats{1, 2,
-                                                                                    0},       Socket::head},
-                    {"crown_of_destruction",      Attributes{0, 0},   Special_stats{2, 0,
-                                                                                    44},      Socket::head},
-                    {"helm_of_endless_rage",      Attributes{26, 26}, Special_stats{0, 0,
-                                                                                    0},       Socket::head},
-                    {"r13_plate_helm",            Attributes{20, 0},  Special_stats{1, 0,
-                                                                                    0},       Socket::head, Set::epic_pvp_set},
-                    {"eye_of_rend",               Attributes{13, 0},  Special_stats{2, 0,
-                                                                                    0},       Socket::head},
-                    {"fury_visor",                Attributes{18, 0},  Special_stats{1, 1,
-                                                                                    0},       Socket::head},
-                    {"helm_of_the_executioner",   Attributes{14, 0},  Special_stats{0, 2,
-                                                                                    0},       Socket::head},
-                    {"helm_of_valor",             Attributes{15, 9},  Special_stats{0, 0,
-                                                                                    0},       Socket::head, Set::valor},
-                    {"r10_commanders_plate_helm", Attributes{24, 0},  Special_stats{1, 1,
-                                                                                    0},       Socket::head, Set::rare_pvp_set},
+                    {"lionheart_helm",             Attributes{18, 0},  Special_stats{2, 2, 0}, Socket::head},
+                    {"expert_goldminers_head",     Attributes{0, 5},   Special_stats{0, 0, 0, 0, 0, 0,
+                                                                                     7},       Socket::head},
+                    {"mask_of_the_unforgiven",     Attributes{0, 0},   Special_stats{1, 2,
+                                                                                     0},       Socket::head},
+                    {"crown_of_destruction",       Attributes{0, 0},   Special_stats{2, 0,
+                                                                                     44},      Socket::head},
+                    {"helm_of_endless_rage",       Attributes{26, 26}, Special_stats{0, 0,
+                                                                                     0},       Socket::head},
+                    {"r13_plate_helm",             Attributes{20, 0},  Special_stats{1, 0,
+                                                                                     0},       Socket::head, Set::epic_pvp_set},
+                    {"eye_of_rend",                Attributes{13, 0},  Special_stats{2, 0,
+                                                                                     0},       Socket::head},
+                    {"fury_visor",                 Attributes{18, 0},  Special_stats{1, 1,
+                                                                                     0},       Socket::head},
+                    {"helm_of_the_executioner",    Attributes{14, 0},  Special_stats{0, 2,
+                                                                                     0},       Socket::head},
+                    {"helm_of_valor",              Attributes{15, 9},  Special_stats{0, 0,
+                                                                                     0},       Socket::head, Set::valor},
+                    {"r10_commanders_plate_helm",  Attributes{24, 0},  Special_stats{1, 1,
+                                                                                     0},       Socket::head, Set::rare_pvp_set},
+                    {"circlet_of_restless_dreams", Attributes{0, 21},  Special_stats{0, 0, 0, 0, 0, 0,
+                                                                                     0, 6},    Socket::head},
             };
 
     std::vector<Armor> neck_t
@@ -110,6 +112,8 @@ struct Armory
                                                                                          0},  Socket::shoulder},
                     {"abyssal_plate_epaulets",         Attributes{13, 13}, Special_stats{0, 1,
                                                                                          0},  Socket::shoulder},
+                    {"bloadsoaked_pauldrons",          Attributes{16, 11}, Special_stats{0, 0,
+                                                                                         0},  Socket::shoulder},
             };
 
     std::vector<Armor> back_t
@@ -123,6 +127,8 @@ struct Armory
                     {"cloak_of_the_shrouded_mists", Attributes{0, 22},  Special_stats{0, 0, 0},  Socket::back},
                     {"stoneskin_gargoyle_cape",     Attributes{7, 8},   Special_stats{0, 0, 0},  Socket::back},
                     {"deathguards_cloak",           Attributes{0, 5},   Special_stats{0, 0, 34}, Socket::back},
+                    {"windshear_cape",              Attributes{8, 15},  Special_stats{0, 0, 0},  Socket::back},
+                    {"zulian_tigerhide_cloak",      Attributes{0, 13},  Special_stats{0, 1, 0},  Socket::back},
             };
 
     std::vector<Armor> chest_t
@@ -147,6 +153,10 @@ struct Armory
                                                                                               0},        Socket::chest, Set::valor},
                     {"r13_plate_armor",                     Attributes{16, 14}, Special_stats{1, 0,
                                                                                               0},        Socket::chest, Set::epic_pvp_set},
+                    {"bloodsoul_breastplate",               Attributes{0, 9},   Special_stats{2, 0,
+                                                                                              0},        Socket::chest},
+                    {"zandalar_vindicators_breastplate",    Attributes{23, 15}, Special_stats{0, 0,
+                                                                                              0},        Socket::chest},
             };
 
     std::vector<Armor> wrists_t
@@ -161,6 +171,7 @@ struct Armory
                     {"hive_defiler_wristguards",   Attributes{23, 18}, Special_stats{0, 0, 0}, Socket::wrist},
                     {"quiraji_execution_bracers",  Attributes{15, 16}, Special_stats{0, 1, 0}, Socket::wrist},
                     {"berserker_bracers",          Attributes{19, 8},  Special_stats{0, 0, 0}, Socket::wrist},
+                    {"abyssal_plate_vambraces",    Attributes{11, 11}, Special_stats{0, 0, 0}, Socket::wrist},
             };
 
     std::vector<Armor> hands_t
@@ -241,6 +252,7 @@ struct Armory
                     {"blademaster_leggings",             Attributes{5, 0},   Special_stats{1, 1, 0},  Socket::legs},
                     {"legplates_of_valor",               Attributes{23, 11}, Special_stats{0, 0, 0},  Socket::legs},
                     {"abyssal_plate_legplates",          Attributes{15, 15}, Special_stats{1, 0, 0},  Socket::legs},
+                    {"dark_heart_pants",                 Attributes{0, 0},   Special_stats{2, 0, 48}, Socket::legs},
             };
 
     std::vector<Armor> boots_t
@@ -273,7 +285,10 @@ struct Armory
                     {"band_of_accuria",                 Attributes{0, 16},  Special_stats{0, 2, 0},  Socket::ring},
                     {"band_of_the_ogre_king",           Attributes{14, 0},  Special_stats{0, 0, 0},  Socket::ring},
                     {"painweaver_band",                 Attributes{0, 0},   Special_stats{1, 0, 16}, Socket::ring},
-
+                    {"band_of_jin",                     Attributes{0, 14},  Special_stats{0, 1,
+                                                                                          0},        Socket::ring, Set::major_mojo_infusion},
+                    {"seal_of_jin",                     Attributes{0, 0},   Special_stats{1, 0,
+                                                                                          20},       Socket::ring, Set::major_mojo_infusion},
             };
 
     std::vector<Armor> trinket_t
@@ -303,7 +318,7 @@ struct Armory
                     {"larvae_of_the_great_worm",       Attributes{0, 0},  Special_stats{1, 0, 18}, Socket::ranged},
                     {"bloodseeker",                    Attributes{8, 7},  Special_stats{0, 0, 0},  Socket::ranged},
                     {"riphook",                        Attributes{0, 0},  Special_stats{0, 0, 22}, Socket::ranged},
-                    {"gurubashi_dwarf_cannon",         Attributes{0, 0},  Special_stats{0, 0, 30}, Socket::ranged},
+                    {"gurubashi_dwarf_destroyer",      Attributes{0, 0},  Special_stats{0, 0, 30}, Socket::ranged},
             };
 
     std::vector<Weapon> swords_t
@@ -346,6 +361,10 @@ struct Armory
                                                                                            0},   2.9, 96,    178,   Weapon_socket::main_hand, Weapon_type::sword, {{"teebus_blazing_longsword",  Hit_effect::Type::damage_magic,            {}, {}, 150, 0, 0.048}}},
                     {"protectors_sword",             Attributes{13, 0},      Special_stats{0, 0,
                                                                                            0},   2.7, 78,    146,   Weapon_socket::one_hand,  Weapon_type::sword},
+                    {"nightmare_blade",              Attributes{0, 0},       Special_stats{0, 0,
+                                                                                           32},  2.7, 99,    185,   Weapon_socket::one_hand,  Weapon_type::sword},
+                    {"zulian_slicer",                Attributes{0, 0},       Special_stats{0, 0,
+                                                                                           12},  2.5, 78,    146,   Weapon_socket::one_hand,  Weapon_type::sword, {{"zulian_slicer",             Hit_effect::Type::damage_magic,            {}, {}, 84,  0, .041}}},
             };
 
 //    std::vector<Weapon> two_handed_swords_t
@@ -357,23 +376,29 @@ struct Armory
     std::vector<Weapon> axes_t
             {
                     {"deathbringer",               Attributes{0, 0},      Special_stats{0, 0,
-                                                                                        0},    2.9, 114,   213,   Weapon_socket::one_hand, Weapon_type::axe, {{"deathbringer",              Hit_effect::Type::damage_magic, {}, {}, 125, 0, 0.08}}},
+                                                                                        0},             2.9, 114,   213,   Weapon_socket::one_hand, Weapon_type::axe, {{"deathbringer",              Hit_effect::Type::damage_magic, {}, {}, 125, 0, 0.08}}},
                     {"crul_shorukh_edge_of_chaos", Attributes{0.0, 0.0},  Special_stats{0.0, 0.0,
-                                                                                        36.0}, 2.3, 101.0, 188.0, Weapon_socket::one_hand, Weapon_type::axe},
+                                                                                        36.0},          2.3, 101.0, 188.0, Weapon_socket::one_hand, Weapon_type::axe},
                     {"dooms_edge",                 Attributes{9.0, 16.0}, Special_stats{0.0, 0.0,
-                                                                                        0.0},  2.3, 83.0,  154.0, Weapon_socket::one_hand, Weapon_type::axe},
+                                                                                        0.0},           2.3, 83.0,  154.0, Weapon_socket::one_hand, Weapon_type::axe},
                     {"axe_of_the_deep_woods",      Attributes{0.0, 0.0},  Special_stats{0.0, 0.0,
-                                                                                        0.0},  2.7, 78.0,  146.0, Weapon_socket::one_hand, Weapon_type::axe, {{"axe_of_the_deep_woods",     Hit_effect::Type::damage_magic, {}, {}, 108, 0, 0.036}}},
+                                                                                        0.0},           2.7, 78.0,  146.0, Weapon_socket::one_hand, Weapon_type::axe, {{"axe_of_the_deep_woods",     Hit_effect::Type::damage_magic, {}, {}, 108, 0, 0.036}}},
                     {"ancient_hakkari_manslayer",  Attributes{0.0, 0.0},  Special_stats{0.0, 0.0,
-                                                                                        0.0},  2.0, 69.0,  130.0, Weapon_socket::one_hand, Weapon_type::axe, {{"ancient_hakkari_manslayer", Hit_effect::Type::damage_magic, {}, {}, 51,  0, 0.036}}},
+                                                                                        0.0},           2.0, 69.0,  130.0, Weapon_socket::one_hand, Weapon_type::axe, {{"ancient_hakkari_manslayer", Hit_effect::Type::damage_magic, {}, {}, 51,  0, 0.036}}},
                     {"r14_handaxe",                Attributes{0, 0},      Special_stats{1, 0,
-                                                                                        28},   2.9, 138,   207,   Weapon_socket::one_hand, Weapon_type::axe},
+                                                                                        28},            2.9, 138,   207,   Weapon_socket::one_hand, Weapon_type::axe},
                     {"frostbite",                  Attributes{15, 0},     Special_stats{0, 0,
-                                                                                        0},    2.7, 80,    150,   Weapon_socket::one_hand, Weapon_type::axe},
+                                                                                        0},             2.7, 80,    150,   Weapon_socket::one_hand, Weapon_type::axe},
                     {"flurry_axe",                 Attributes{0, 0},      Special_stats{0, 0,
-                                                                                        0},    1.5, 37,    69,    Weapon_socket::one_hand, Weapon_type::axe, {{"flurry_axe",                Hit_effect::Type::extra_hit,    {}, {}, 0,   0, 0.04625}}},
+                                                                                        0},             1.5, 37,    69,    Weapon_socket::one_hand, Weapon_type::axe, {{"flurry_axe",                Hit_effect::Type::extra_hit,    {}, {}, 0,   0, 0.04625}}},
                     {"bone_slicing_hatchet",       Attributes{0, 13},     Special_stats{0, 0,
-                                                                                        0},    1.7, 48,    90,    Weapon_socket::one_hand, Weapon_type::axe},
+                                                                                        0},             1.7, 48,    90,    Weapon_socket::one_hand, Weapon_type::axe},
+                    {"zulian_hacker_of_strength",  Attributes{12, 0},     Special_stats{0, 0,
+                                                                                        0, 0, 0, 0,
+                                                                                        2},             2.4, 71,    134,   Weapon_socket::one_hand, Weapon_type::axe},
+                    {"zulian_hacker_of_the_tiger", Attributes{8, 8},      Special_stats{0, 0,
+                                                                                        0, 0, 0, 0,
+                                                                                        2},             2.4, 71,    134,   Weapon_socket::one_hand, Weapon_type::axe},
             };
 
     std::vector<Weapon> daggers_t
@@ -398,33 +423,36 @@ struct Armory
 
     std::vector<Weapon> maces_t
             {
-                    {"ebon_hand",            Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, 2.3, 83.0, 154.0,
-                                                                                                                 Weapon_socket::one_hand,  Weapon_type::mace,
+                    {"ebon_hand",            Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0},       2.3, 83.0, 154.0,
+                                                                                                                       Weapon_socket::one_hand,  Weapon_type::mace,
                             {{"ebon_hand",           Hit_effect::Type::damage_magic, {},     {},                200, 0,  0.08}}},
                     {"spineshatter",         Attributes{9.0, 0.0}, Special_stats{0.0, 0.0,
-                                                                                 0.0},           2.5, 99.0, 184.0,
-                                                                                                                 Weapon_socket::main_hand, Weapon_type::mace},
+                                                                                 0.0},                 2.5, 99.0, 184.0,
+                                                                                                                       Weapon_socket::main_hand, Weapon_type::mace},
                     {"stormstike_hammer",    Attributes{15, 0},    Special_stats{0, 0,
-                                                                                 0},             2.7, 80,   150,
-                                                                                                                 Weapon_socket::one_hand,  Weapon_type::mace},
+                                                                                 0},                   2.7, 80,   150,
+                                                                                                                       Weapon_socket::one_hand,  Weapon_type::mace},
                     {"sand_polished_hammer", Attributes{0, 0},     Special_stats{1, 0,
-                                                                                 20},            2.6, 97,   181,
-                                                                                                                 Weapon_socket::one_hand,  Weapon_type::mace},
+                                                                                 20},                  2.6, 97,   181,
+                                                                                                                       Weapon_socket::one_hand,  Weapon_type::mace},
                     {"empyrean_demolisher",  Attributes{0, 0},     Special_stats{0, 0,
-                                                                                 0},             2.8, 94,   175,
-                                                                                                                 Weapon_socket::one_hand,  Weapon_type::mace,
+                                                                                 0},                   2.8, 94,   175,
+                                                                                                                       Weapon_socket::one_hand,  Weapon_type::mace,
                             {{"empyrean_demolisher", Hit_effect::Type::stat_boost,   {0, 0}, Special_stats{0, 0, 0, 0,
                                                                                                            .2}, 0,   10, 2.8 / 60}}},
                     {"anubisath_warhammer",  Attributes{0, 0},     Special_stats{0, 0, 32, 0, 0, 0, 0, 0,
-                                                                                 4},             1.8, 66,
-                                                                                                            123, Weapon_socket::one_hand,  Weapon_type::mace},
+                                                                                 4},                   1.8, 66,
+                                                                                                                  123, Weapon_socket::one_hand,  Weapon_type::mace},
                     {"r14_mace",             Attributes{0, 0},     Special_stats{1, 0,
-                                                                                 28},            2.9, 138,  207, Weapon_socket::one_hand,  Weapon_type::mace},
+                                                                                 28},                  2.9, 138,  207, Weapon_socket::one_hand,  Weapon_type::mace},
                     {"ironfoe",              Attributes{0, 0},     Special_stats{0, 0,
-                                                                                 0},             2.4, 73,   136, Weapon_socket::main_hand, Weapon_type::mace,
+                                                                                 0},                   2.4, 73,   136, Weapon_socket::main_hand, Weapon_type::mace,
                             {{"ironfoe",             Hit_effect::Type::extra_hit,    {},     {},                0,   0,  0.064}}},
                     {"mass_of_mcgowan",      Attributes{10, 0},    Special_stats{0, 0,
-                                                                                 0},             2.8, 80,   150, Weapon_socket::one_hand,  Weapon_type::mace},
+                                                                                 0},                   2.8, 80,   150, Weapon_socket::one_hand,  Weapon_type::mace},
+                    {"sceptre_of_smiting",   Attributes{10, 0},    Special_stats{0, 0,
+                                                                                 0, 0, 0, 0, 0, 0,
+                                                                                 2},                   2.6, 77,   145, Weapon_socket::one_hand,  Weapon_type::mace},
             };
 
     std::vector<Weapon> fists_t
@@ -443,6 +471,7 @@ struct Armory
             {"warblade_of_the_hakkari", Attributes{0, 0}, Special_stats{0, 0, 0, 0, 0,
                                                                         6},        2, Set::warblade_of_the_hakkari},
             {"valor",                   Attributes{0, 0}, Special_stats{0, 0, 40}, 4, Set::valor},
+            {"major_mojo_infusion",     Attributes{0, 0}, Special_stats{0, 0, 30}, 2, Set::major_mojo_infusion},
     };
 
     Armor find_armor(Socket socket, const std::string &name) const;

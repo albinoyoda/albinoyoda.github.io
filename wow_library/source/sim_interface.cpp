@@ -101,7 +101,7 @@ std::string print_stat(const std::string &stat_name, double amount)
 
 std::string get_character_stat(const Character &character)
 {
-    std::string out_string = "Character stats: <br />";
+    std::string out_string = "<b>Character stats:</b> <br />";
     out_string += print_stat("Strength: ", character.total_attributes.strength);
     out_string += print_stat("Agility: ", character.total_attributes.agility);
     out_string += print_stat("Hit: ", character.total_special_stats.hit);
