@@ -460,7 +460,10 @@ void Combat_simulator::hit_effects(Weapon_sim &weapon, Weapon_sim &main_hand_wea
         double r = get_uniform_random(1);
         if (r < hit_effect.probability)
         {
-            buff_manager_.increment_proc(hit_effect.name);
+            if (hit_effect.type != Hit_effect::Type::damage_magic_guaranteed)
+            {
+                buff_manager_.increment_proc(hit_effect.name);
+            }
             switch (hit_effect.type)
             {
                 case Hit_effect::Type::extra_hit:

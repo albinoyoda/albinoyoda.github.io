@@ -67,7 +67,10 @@ struct Damage_sources
 
     void add_damage(Damage_source source, double damage, double time_stamp, bool increment_counter = true)
     {
-        damage_instances.emplace_back(source, damage, time_stamp);
+        if (increment_counter)
+        {
+            damage_instances.emplace_back(source, damage, time_stamp);
+        }
         switch (source)
         {
             case Damage_source::white_mh:
