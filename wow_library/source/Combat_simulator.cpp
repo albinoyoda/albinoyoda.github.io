@@ -646,24 +646,23 @@ void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_we
     }
 }
 
-std::vector<double> &Combat_simulator::simulate(const Character &character)
+void Combat_simulator::simulate(const Character &character, bool compute_time_lapse, bool compute_histogram)
 {
     int n_damage_batches = config.n_batches;
     if (config.display_combat_debug)
     {
+        debug_topic_ = "";
         n_damage_batches = 1;
     }
-    debug_topic_ = "";
+    if (compute_histogram)
+    {
+        init_histogram();
+    }
     buff_manager_.aura_uptime.auras.clear();
-    reset_damage_instances();
-    batch_damage_.clear();
-    batch_damage_.reserve(n_damage_batches);
-    damage_distribution_.clear();
-    damage_distribution_.reserve(n_damage_batches);
-    flurry_uptime_mh_.clear();
-    flurry_uptime_mh_.reserve(n_damage_batches);
-    flurry_uptime_oh_.clear();
-    flurry_uptime_oh_.reserve(n_damage_batches);
+    reset_time_lapse();
+    damage_distribution_ = Damage_sources{};
+    flurry_uptime_mh_ = 0;
+    flurry_uptime_oh_ = 0;
     const auto starting_special_stats = character.total_special_stats;
     std::vector<Weapon_sim> weapons;
     for (const auto &wep : character.weapons)
@@ -997,21 +996,90 @@ std::vector<double> &Combat_simulator::simulate(const Character &character)
                     }
                 }
             }
-
         }
-        batch_damage_.push_back(damage_sources.sum_damage_sources() / sim_time);
-        damage_distribution_.emplace_back(damage_sources);
-        add_damage_source_to_time_lapse(damage_sources.damage_instances, n_damage_batches);
-        flurry_uptime_mh_.emplace_back(mh_hits_w_flurry / mh_hits);
-        flurry_uptime_oh_.emplace_back(oh_hits_w_flurry / oh_hits);
+        double new_sample = damage_sources.sum_damage_sources() / sim_time;
+        dps_mean_ = Statistics::update_mean(dps_mean_, iter + 1, new_sample);
+        dps_variance_ = Statistics::update_variance(dps_variance_, dps_mean_, iter + 1, new_sample);
+        damage_distribution_ = damage_distribution_ + damage_sources;
+        flurry_uptime_mh_ = Statistics::update_mean(flurry_uptime_mh_, iter + 1, mh_hits_w_flurry / mh_hits);
+        flurry_uptime_oh_ = Statistics::update_mean(flurry_uptime_oh_, iter + 1, oh_hits_w_flurry / oh_hits);
+        if (compute_time_lapse)
+        {
+            add_damage_source_to_time_lapse(damage_sources.damage_instances);
+        }
+        if (compute_histogram)
+        {
+            hist_y[new_sample / 10.0]++;
+        }
     }
-    return batch_damage_;
+    if (compute_time_lapse)
+    {
+        normalize_timelapse();
+    }
+    if (compute_histogram)
+    {
+        prune_histogram();
+    }
 }
 
-std::vector<double> &Combat_simulator::simulate(const Character &character, int n_batches)
+void Combat_simulator::init_histogram()
+{
+    double res = 10.0;
+    for (int i = 0; i < 500; i++)
+    {
+        hist_x.push_back(i * res);
+        hist_y.push_back(0);
+    }
+}
+
+void Combat_simulator::normalize_timelapse()
+{
+    for (size_t i = 0; i < 8; i++)
+    {
+        for (auto &singe_damage_instance : damage_time_lapse[i])
+        {
+            singe_damage_instance /= config.n_batches;
+        }
+    }
+}
+
+void Combat_simulator::prune_histogram()
+{
+    int start_idx{};
+    int end_idx{};
+    for (size_t i = 0; i < hist_x.size(); i++)
+    {
+        if (hist_y[i] != 0 && !start_idx)
+        {
+            start_idx = i;
+            break;
+        }
+    }
+    for (size_t i = hist_x.size() - 1; i > 0; i--)
+    {
+        if (hist_y[i] != 0 && !end_idx)
+        {
+            end_idx = i;
+            break;
+        }
+    }
+    {
+        auto first = hist_x.begin() + start_idx;
+        auto last = hist_x.begin() + end_idx + 1;
+        hist_x = std::vector<double>(first, last);
+    }
+    {
+        auto first = hist_y.begin() + start_idx;
+        auto last = hist_y.begin() + end_idx + 1;
+        hist_y = std::vector<int>(first, last);
+    }
+}
+
+void
+Combat_simulator::simulate(const Character &character, int n_batches, bool compute_time_lapse, bool compute_histogram)
 {
     config.n_batches = n_batches;
-    return simulate(character);
+    return simulate(character, compute_time_lapse, compute_histogram);
 }
 
 const std::vector<double> &Combat_simulator::get_hit_probabilities_white_mh() const
@@ -1039,16 +1107,6 @@ double Combat_simulator::get_glancing_penalty_oh() const
     return glancing_factor_oh_;
 }
 
-void Combat_simulator::print_damage_distribution() const
-{
-    print_damage_source_vector(damage_distribution_);
-}
-
-std::vector<Damage_sources> Combat_simulator::get_damage_distribution() const
-{
-    return damage_distribution_;
-}
-
 std::vector<std::string> Combat_simulator::get_aura_uptimes() const
 {
     std::vector<std::string> aura_uptimes;
@@ -1059,8 +1117,8 @@ std::vector<std::string> Combat_simulator::get_aura_uptimes() const
         double uptime = aura.duration / total_sim_time;
         aura_uptimes.emplace_back(aura.id + " " + std::to_string(100 * uptime));
     }
-    aura_uptimes.emplace_back("Flurry_main_hand " + std::to_string(100 * Statistics::average(flurry_uptime_mh_)));
-    aura_uptimes.emplace_back("Flurry_off_hand " + std::to_string(100 * Statistics::average(flurry_uptime_oh_)));
+    aura_uptimes.emplace_back("Flurry_main_hand " + std::to_string(100 * flurry_uptime_mh_));
+    aura_uptimes.emplace_back("Flurry_off_hand " + std::to_string(100 * flurry_uptime_oh_));
     return aura_uptimes;
 }
 
@@ -1076,7 +1134,7 @@ std::vector<std::string> Combat_simulator::get_proc_statistics() const
     return proc_counter;
 }
 
-void Combat_simulator::reset_damage_instances()
+void Combat_simulator::reset_time_lapse()
 {
     double resolution = .50;
     std::vector<double> history;
@@ -1095,14 +1153,14 @@ void Combat_simulator::reset_damage_instances()
     }
 }
 
-void Combat_simulator::add_damage_source_to_time_lapse(std::vector<Damage_instance> &damage_instances, int n_iter)
+void Combat_simulator::add_damage_source_to_time_lapse(std::vector<Damage_instance> &damage_instances)
 {
     double resolution = .50;
     for (const auto &damage_instance : damage_instances)
     {
         size_t first_idx = source_map.at(damage_instance.damage_source);
         size_t second_idx = damage_instance.time_stamp / resolution; // automatically floored
-        damage_time_lapse[first_idx][second_idx] += damage_instance.damage / n_iter;
+        damage_time_lapse[first_idx][second_idx] += damage_instance.damage;
     }
 }
 

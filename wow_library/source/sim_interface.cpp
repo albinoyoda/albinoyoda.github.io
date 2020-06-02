@@ -30,37 +30,31 @@ Stat_weight compute_stat_weight(Combat_simulator &combat_simulator, Character &c
                                 const std::string &permuted_stat, double permute_amount, double mean_init,
                                 double sample_std_init)
 {
-    auto dmg_plus = combat_simulator.simulate(char_plus);
-    double mean_plus = Statistics::average(dmg_plus);
-    double std_plus = Statistics::standard_deviation(dmg_plus, mean_plus);
-    double sample_std_plus = Statistics::sample_deviation(std_plus, dmg_plus.size());
+    combat_simulator.simulate(char_plus);
+    double mean_plus = combat_simulator.get_dps_mean();
+    double std_plus = std::sqrt(combat_simulator.get_dps_variance());
+    double sample_std_plus = Statistics::sample_deviation(std_plus, combat_simulator.get_n_simulations());
 
-    auto dmg_minus = combat_simulator.simulate(char_minus);
-    double mean_minus = Statistics::average(dmg_minus);
-    double std_minus = Statistics::standard_deviation(dmg_minus, mean_minus);
-    double sample_std_minus = Statistics::sample_deviation(std_minus, dmg_plus.size());
+    combat_simulator.simulate(char_minus);
+    double mean_minus = combat_simulator.get_dps_mean();
+    double std_minus = std::sqrt(combat_simulator.get_dps_variance());
+    double sample_std_minus = Statistics::sample_deviation(std_minus, combat_simulator.get_n_simulations());
 
     return {mean_plus - mean_init, Statistics::add_standard_deviations(sample_std_init, sample_std_plus),
             mean_minus - mean_init, Statistics::add_standard_deviations(sample_std_init, sample_std_minus),
             permute_amount, permuted_stat};
 }
 
-std::vector<double> get_damage_sources(const std::vector<Damage_sources> &damage_sources_vector)
+std::vector<double> get_damage_sources(Damage_sources damage_sources_vector)
 {
-    Damage_sources total_damage_source{};
-
-    for (const auto &damage_source: damage_sources_vector)
-    {
-        total_damage_source = total_damage_source + damage_source;
-    }
-    return {total_damage_source.white_mh_damage / total_damage_source.sum_damage_sources(),
-            total_damage_source.white_oh_damage / total_damage_source.sum_damage_sources(),
-            total_damage_source.bloodthirst_damage / total_damage_source.sum_damage_sources(),
-            total_damage_source.execute_damage / total_damage_source.sum_damage_sources(),
-            total_damage_source.heroic_strike_damage / total_damage_source.sum_damage_sources(),
-            total_damage_source.cleave_damage / total_damage_source.sum_damage_sources(),
-            total_damage_source.whirlwind_damage / total_damage_source.sum_damage_sources(),
-            total_damage_source.item_hit_effects_damage / total_damage_source.sum_damage_sources()};
+    return {damage_sources_vector.white_mh_damage / damage_sources_vector.sum_damage_sources(),
+            damage_sources_vector.white_oh_damage / damage_sources_vector.sum_damage_sources(),
+            damage_sources_vector.bloodthirst_damage / damage_sources_vector.sum_damage_sources(),
+            damage_sources_vector.execute_damage / damage_sources_vector.sum_damage_sources(),
+            damage_sources_vector.heroic_strike_damage / damage_sources_vector.sum_damage_sources(),
+            damage_sources_vector.cleave_damage / damage_sources_vector.sum_damage_sources(),
+            damage_sources_vector.whirlwind_damage / damage_sources_vector.sum_damage_sources(),
+            damage_sources_vector.item_hit_effects_damage / damage_sources_vector.sum_damage_sources()};
 }
 
 bool find_string(const std::vector<std::string> &string_vec, const std::string &match_string)
@@ -499,10 +493,14 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
 
     Combat_simulator simulator(config);
 
-    std::vector<double> dps_vec = simulator.simulate(character);
+    simulator.simulate(character, true, true);
+
+    auto hist_x = simulator.get_hist_x();
+    auto hist_y = simulator.get_hist_y();
+
     std::vector<double> dps_dist = get_damage_sources(simulator.get_damage_distribution());
-    double mean_init = Statistics::average(dps_vec);
-    double std_init = Statistics::standard_deviation(dps_vec, mean_init);
+    double mean_init = simulator.get_dps_mean();
+    double std_init = std::sqrt(simulator.get_dps_variance());
     double sample_std_init = Statistics::sample_deviation(std_init, config.n_batches);
 
     std::vector<std::string> aura_uptimes = simulator.get_aura_uptimes();
@@ -650,28 +648,6 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
         }
     }
 
-    sort(dps_vec.begin(), dps_vec.end());
-    int n_bins = std::min(input.n_simulations, 20.0);
-    std::vector<double> hist_x{};
-    std::vector<int> hist_y{};
-    double dps_per_bin = (dps_vec.back() - dps_vec[0]) / n_bins;
-    double start_dps = dps_vec[0];
-    for (double dps_val = start_dps; dps_val <= dps_vec.back() + .01; dps_val += dps_per_bin)
-    {
-        hist_x.push_back(dps_val);
-        hist_y.push_back(0);
-    }
-
-    int bin_idx = 0;
-    for (double i : dps_vec)
-    {
-        while (i > hist_x[bin_idx] + dps_per_bin / 2)
-        {
-            bin_idx++;
-        }
-        hist_y[bin_idx]++;
-    }
-
     std::string debug_topic{};
     if (find_string(input.options, "debug_on"))
     {
@@ -680,7 +656,8 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
         double dps;
         for (int i = 0; i < 1000; i++)
         {
-            dps = simulator.simulate(character)[0];
+            simulator.simulate(character);
+            dps = simulator.get_dps_mean();
             if (std::abs(dps - mean_init) < 5)
             {
                 break;
@@ -692,7 +669,7 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
         debug_topic += "Fight statistics:<br>";
         debug_topic += "DPS: " + std::to_string(dps) + "<br><br>";
 
-        auto dist = simulator.get_damage_distribution()[0];
+        auto dist = simulator.get_damage_distribution();
         debug_topic += "DPS from sources:<br>";
         debug_topic += "DPS white MH: " + std::to_string(dist.white_mh_damage / (config.sim_time - 2)) + "<br>";
         debug_topic += "DPS white OH: " + std::to_string(dist.white_oh_damage / (config.sim_time - 2)) + "<br>";

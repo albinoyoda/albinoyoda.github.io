@@ -59,13 +59,6 @@ enum class Set
 class Use_effect
 {
 public:
-    enum class Type
-    {
-        stat_boost,
-        special_stat_boost,
-        rage_boost,
-    };
-
     enum class Effect_socket
     {
         shared,

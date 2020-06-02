@@ -995,8 +995,8 @@
 
     <button type="button" class="collapsible">Open simulation settings</button>
     <div class="content">
-        <label for="n_simulations_dd">Number of simulations: (100 - 50000):</label>
-        <input type="number" id="n_simulations_dd" name="quantity" min="100" max="50000" value="20000"><br/>
+        <label for="n_simulations_dd">Number of simulations: (1 - 1.000.000):</label>
+        <input type="number" id="n_simulations_dd" name="quantity" min="1" max="1000000" value="25000"><br/>
         <label for="opponent_level_dd">Opponent level: (60-63):</label>
         <input type="number" id="opponent_level_dd" name="quantity" min="60" max="63" value="63"><br/>
         <label for="fight_time_dd">Fight duration: (10-120s):</label>
@@ -1397,9 +1397,9 @@
 
         let n_simulations_dd = parseFloat(document.getElementById("n_simulations_dd").value);
         if (isNaN(n_simulations_dd)) {
-            n_simulations_dd = 5000;
+            n_simulations_dd = 20000;
         }
-        n_simulations_dd = Math.min(Math.max(n_simulations_dd, 100), 50000);
+        n_simulations_dd = Math.min(Math.max(n_simulations_dd, 1), 1000000);
 
         let opponent_level_dd = parseFloat(document.getElementById("opponent_level_dd").value);
         if (isNaN(opponent_level_dd)) {

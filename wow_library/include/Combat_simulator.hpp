@@ -201,9 +201,10 @@ public:
                  double execute_cost);
 
 
-    std::vector<double> &simulate(const Character &character, int n_batches);
+    void
+    simulate(const Character &character, int n_batches, bool compute_time_lape = false, bool compute_histogram = false);
 
-    std::vector<double> &simulate(const Character &character);
+    void simulate(const Character &character, bool compute_time_lape = false, bool compute_histogram = false);
 
     static double get_uniform_random(double r_max)
     {
@@ -234,21 +235,53 @@ public:
     void cout_damage_parse(Combat_simulator::Hit_type hit_type, Socket weapon_hand,
                            Combat_simulator::Hit_outcome hit_outcome);
 
-    void add_damage_source_to_time_lapse(std::vector<Damage_instance> &damage_instances, int n_iter);
+    void add_damage_source_to_time_lapse(std::vector<Damage_instance> &damage_instances);
 
-    void print_damage_distribution() const;
-
-    std::vector<Damage_sources> get_damage_distribution() const;
+    Damage_sources get_damage_distribution()
+    {
+        return damage_distribution_;
+    }
 
     std::vector<std::string> get_aura_uptimes() const;
 
     std::vector<std::string> get_proc_statistics() const;
 
-    void reset_damage_instances();
+    void reset_time_lapse();
 
     std::vector<std::vector<double>> get_damage_time_lapse() const;
 
     std::string get_debug_topic() const;
+
+    constexpr double get_dps_mean() const
+    {
+        return dps_mean_;
+    }
+
+    constexpr double get_dps_variance() const
+    {
+        return dps_variance_;
+    }
+
+    constexpr int get_n_simulations() const
+    {
+        return config.n_batches;
+    }
+
+    std::vector<double> &get_hist_x()
+    {
+        return hist_x;
+    }
+
+    std::vector<int> &get_hist_y()
+    {
+        return hist_y;
+    }
+
+    void init_histogram();
+
+    void prune_histogram();
+
+    void normalize_timelapse();
 
     void print_statement(std::string t)
     {
@@ -289,8 +322,11 @@ private:
     std::vector<double> hit_probabilities_recklessness_yellow_;
     std::vector<double> hit_probabilities_two_hand_;
     std::vector<double> hit_probabilities_recklessness_two_hand_;
-    std::vector<double> batch_damage_{};
-    std::vector<Damage_sources> damage_distribution_{};
+    Damage_sources damage_distribution_{};
+    double dps_mean_;
+    double dps_variance_;
+    std::vector<double> hist_x{};
+    std::vector<int> hist_y{};
     double glancing_factor_mh_{};
     double glancing_factor_oh_{};
     double armor_reduction_factor_{};
@@ -298,8 +334,8 @@ private:
     Time_keeper time_keeper_{};
     Buff_manager buff_manager_{};
     Ability_queue_manager ability_queue_manager{};
-    std::vector<double> flurry_uptime_mh_{};
-    std::vector<double> flurry_uptime_oh_{};
+    double flurry_uptime_mh_{};
+    double flurry_uptime_oh_{};
     std::string debug_topic_{};
     int adds_in_melee_range{};
     double remove_adds_timer{};
