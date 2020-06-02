@@ -53,7 +53,8 @@ enum class Set
     epic_pvp_set,
     dal_rends,
     warblade_of_the_hakkari,
-    major_mojo_infusion
+    major_mojo_infusion,
+    battlegear_of_heroism
 };
 
 class Use_effect

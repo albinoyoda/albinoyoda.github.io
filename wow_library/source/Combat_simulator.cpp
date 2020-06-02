@@ -669,7 +669,7 @@ void Combat_simulator::simulate(const Character &character, bool compute_time_la
     {
         weapons.emplace_back(wep.swing_speed, wep.min_damage, wep.max_damage, wep.socket, wep.type,
                              wep.weapon_socket, wep.hit_effects);
-        weapons.back().compute_weapon_damage(wep.buff.bonus_damage);
+        weapons.back().compute_weapon_damage(wep.buff.bonus_damage + starting_special_stats.bonus_damage);
         compute_hit_table(config.opponent_level - character.level,
                           get_weapon_skill(character.total_special_stats, wep.type),
                           starting_special_stats, wep.socket);

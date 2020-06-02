@@ -18,7 +18,7 @@ int main()
     armor_vec.emplace_back("onslaught_girdle");
     armor_vec.emplace_back("cloudkeeper_legplates");
     armor_vec.emplace_back("chromatic_boots");
-    armor_vec.emplace_back("don_julios_band");
+    armor_vec.emplace_back("might_of_cenarius");
     armor_vec.emplace_back("master_dragonslayers_ring");
     armor_vec.emplace_back("hand_of_justice");
     armor_vec.emplace_back("diamond_flask");
