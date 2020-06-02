@@ -520,6 +520,26 @@ void Combat_simulator::hit_effects(Weapon_sim &weapon, Weapon_sim &main_hand_wea
                                       hit_effect.get_special_stat_equivalent(special_stats),
                                       hit_effect.duration);
                     break;
+                case Hit_effect::Type::reduce_armor:
+                {
+                    if (current_armor_red_stacks_ < hit_effect.max_stacks)
+                    {
+                        target_armor_ -= hit_effect.armor_reduction;
+                        target_armor_ = std::max(target_armor_, 0.0);
+                        current_armor_red_stacks_++;
+                        double target_mitigation = armor_mitigation(target_armor_, 63);
+                        armor_reduction_factor_ = 1 - target_mitigation;
+                        simulator_cout("PROC: ", hit_effect.name, " armor reduced by ", int(hit_effect.armor_reduction),
+                                       ". Target armor: ", int(target_armor_), ". New mitigation factor: ",
+                                       target_mitigation, ". Current stacks: ", int(current_armor_red_stacks_));
+                    }
+                    else
+                    {
+                        simulator_cout("PROC: ", hit_effect.name, ". Cant add more stacks. Current stacks: ",
+                                       int(current_armor_red_stacks_));
+                    }
+                }
+                    break;
                 default:
                     std::cout << ":::::::::::FAULTY HIT EFFECT IN SIMULATION!!!:::::::::";
                     break;
@@ -675,18 +695,15 @@ void Combat_simulator::simulate(const Character &character, bool compute_time_la
                           starting_special_stats, wep.socket);
     }
 
+    auto hit_effects_mh = weapons[0].hit_effects;
+    auto hit_effects_oh = weapons[1].hit_effects;
+
     heroic_strike_rage_cost = 15.0 - config.talents.improved_heroic_strike;
     double execute_rage_cost = 15 - static_cast<int>(2.5 * config.talents.improved_execute);
     double armor_reduction_from_spells = 0.0;
     armor_reduction_from_spells += 640 * config.curse_of_recklessness_active;
     armor_reduction_from_spells += 450 * config.n_sunder_armor_stacks;
     armor_reduction_from_spells += 505 * config.faerie_fire_feral_active;
-
-    double boss_armor = 3731 - armor_reduction_from_spells; // Armor for Warrior class monsters
-    double target_mitigation = armor_mitigation(boss_armor, 63);
-    double add_mitigation = armor_mitigation(3000, 62);
-    armor_reduction_factor_ = 1 - target_mitigation;
-    armor_reduction_factor_add = 1 - add_mitigation;
 
     double sim_time = config.sim_time;
     if (config.use_sim_time_ramp)
@@ -733,12 +750,23 @@ void Combat_simulator::simulate(const Character &character, bool compute_time_la
     for (int iter = 0; iter < n_damage_batches; iter++)
     {
         time_keeper_.reset(); // Class variable that keeps track of the time spent, cooldowns, iteration number
+        ability_queue_manager.reset();
         auto special_stats = starting_special_stats;
-        // TODO better haste fix?
         Damage_sources damage_sources{};
         double rage = 0;
-        buff_manager_.set_target(special_stats, use_effects);
-        ability_queue_manager.reset();
+
+        // Reset hit effects
+        weapons[0].hit_effects = hit_effects_mh;
+        weapons[1].hit_effects = hit_effects_oh;
+        buff_manager_.set_target(special_stats, use_effects, weapons[0].hit_effects, weapons[1].hit_effects);
+
+        // Reset, since these might change
+        target_armor_ = 3731 - armor_reduction_from_spells; // Armor for Warrior class monsters
+        double target_mitigation = armor_mitigation(target_armor_, 63);
+        double add_mitigation = armor_mitigation(3000, 62);
+        armor_reduction_factor_ = 1 - target_mitigation;
+        armor_reduction_factor_add = 1 - add_mitigation;
+        current_armor_red_stacks_ = 0;
 
         int flurry_charges = 0;
         bool deathwish_used{false};

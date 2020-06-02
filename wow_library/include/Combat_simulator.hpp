@@ -330,7 +330,9 @@ private:
     double glancing_factor_mh_{};
     double glancing_factor_oh_{};
     double armor_reduction_factor_{};
+    double target_armor_{};
     double armor_reduction_factor_add{};
+    double current_armor_red_stacks_{};
     Time_keeper time_keeper_{};
     Buff_manager buff_manager_{};
     Ability_queue_manager ability_queue_manager{};

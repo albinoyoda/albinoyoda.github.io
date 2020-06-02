@@ -20,7 +20,8 @@ int main()
     armor_vec.emplace_back("chromatic_boots");
     armor_vec.emplace_back("might_of_cenarius");
     armor_vec.emplace_back("master_dragonslayers_ring");
-    armor_vec.emplace_back("hand_of_justice");
+    armor_vec.emplace_back("badge_of_the_swarmguard");
+//    armor_vec.emplace_back("badge_of_the_swarmguard");
     armor_vec.emplace_back("diamond_flask");
     armor_vec.emplace_back("blastershot");
 

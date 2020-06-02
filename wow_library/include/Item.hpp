@@ -57,44 +57,6 @@ enum class Set
     battlegear_of_heroism
 };
 
-class Use_effect
-{
-public:
-    enum class Effect_socket
-    {
-        shared,
-        unique,
-    };
-
-    Use_effect() = default;
-
-    Use_effect(std::string name, Effect_socket effect_socket, Attributes attribute_boost,
-               Special_stats special_stats_boost, double rage_boost, double duration, double cooldown,
-               bool triggers_gcd) :
-            name(std::move(name)),
-            effect_socket(effect_socket),
-            attribute_boost(attribute_boost),
-            special_stats_boost(special_stats_boost),
-            rage_boost(rage_boost),
-            duration(duration),
-            cooldown(cooldown),
-            triggers_gcd(triggers_gcd) {};
-
-    inline Special_stats get_special_stat_equivalent(const Special_stats &special_stats) const
-    {
-        return attribute_boost.convert_to_special_stats(special_stats) + special_stats_boost;
-    }
-
-    std::string name;
-    Effect_socket effect_socket;
-    Attributes attribute_boost;
-    Special_stats special_stats_boost;
-    double rage_boost{};
-    double duration{};
-    double cooldown{};
-    double triggers_gcd{false};
-};
-
 class Hit_effect
 {
 public:
@@ -105,13 +67,15 @@ public:
         stat_boost,
         damage_physical,
         damage_magic,
-        damage_magic_guaranteed
+        damage_magic_guaranteed,
+        reduce_armor
     };
 
     Hit_effect() = default;
 
     Hit_effect(std::string name, Type type, Attributes attribute_boost, Special_stats special_stats_boost,
-               double damage, double duration, double probability, double attack_power_boost = 0, int n_targets = 1) :
+               double damage, double duration, double probability, double attack_power_boost = 0, int n_targets = 1,
+               double armor_reduction = 0, int max_stacks = 0) :
             name(std::move(name)),
             type(type),
             attribute_boost(attribute_boost),
@@ -120,7 +84,9 @@ public:
             duration(duration),
             probability(probability),
             attack_power_boost(attack_power_boost),
-            n_targets(n_targets) {};
+            n_targets(n_targets),
+            armor_reduction(armor_reduction),
+            max_stacks(max_stacks) {};
 
     inline Special_stats get_special_stat_equivalent(const Special_stats &special_stats) const
     {
@@ -136,6 +102,48 @@ public:
     double probability;
     double attack_power_boost;
     int n_targets;
+    double armor_reduction;
+    int max_stacks;
+};
+
+class Use_effect
+{
+public:
+    enum class Effect_socket
+    {
+        shared,
+        unique,
+    };
+
+    Use_effect() = default;
+
+    Use_effect(std::string name, Effect_socket effect_socket, Attributes attribute_boost,
+               Special_stats special_stats_boost, double rage_boost, double duration, double cooldown,
+               bool triggers_gcd, Hit_effect hit_effect = Hit_effect()) :
+            name(std::move(name)),
+            effect_socket(effect_socket),
+            attribute_boost(attribute_boost),
+            special_stats_boost(special_stats_boost),
+            rage_boost(rage_boost),
+            duration(duration),
+            cooldown(cooldown),
+            triggers_gcd(triggers_gcd),
+            hit_effect(hit_effect) {};
+
+    inline Special_stats get_special_stat_equivalent(const Special_stats &special_stats) const
+    {
+        return attribute_boost.convert_to_special_stats(special_stats) + special_stats_boost;
+    }
+
+    std::string name;
+    Effect_socket effect_socket;
+    Attributes attribute_boost;
+    Special_stats special_stats_boost;
+    double rage_boost{};
+    double duration{};
+    double cooldown{};
+    double triggers_gcd{false};
+    Hit_effect hit_effect{};
 };
 
 struct Enchant

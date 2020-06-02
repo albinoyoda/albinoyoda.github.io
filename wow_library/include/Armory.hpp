@@ -154,7 +154,7 @@ struct Armory
                     {"tombstone_breastplate",               Attributes{10, 0},  Special_stats{2, 0, 0},  Socket::chest},
                     {"deathdealer_breastplate",             Attributes{8, 0},   Special_stats{2, 0, 0},  Socket::chest},
                     {"cadaverous_armor",                    Attributes{8, 8},   Special_stats{0, 0, 60}, Socket::chest},
-                    {"breatplate_of_annihilation",          Attributes{37, 0},  Special_stats{1, 1, 0},  Socket::chest},
+                    {"breastplate_of_annihilation",         Attributes{37, 0},  Special_stats{1, 1, 0},  Socket::chest},
                     {"vest_of_swift_execution",             Attributes{21, 41}, Special_stats{0, 0, 0},  Socket::chest},
                     {"conquerors_breastplate",              Attributes{34, 24}, Special_stats{0, 0, 0},  Socket::chest},
                     {"black_dragonscale_chest",             Attributes{0, 0},   Special_stats{0, 0,
@@ -334,7 +334,7 @@ struct Armory
                     {"hand_of_justice",           Attributes{0, 0}, Special_stats{0, 0,
                                                                                   20},       Socket::trinket, Set::none, {{"hand_of_justice",         Hit_effect::Type::extra_hit,    {}, {}, 0,   0, 0.02}}},
                     {"diamond_flask",             Attributes{0, 0}, Special_stats{0, 0,
-                                                                                  0},        Socket::trinket, Set::none, {}, {{"diamond_flask", Use_effect::Effect_socket::shared, {75, 0}, {},          0, 60, 360, true}}},
+                                                                                  0},        Socket::trinket, Set::none, {}, {{"diamond_flask",           Use_effect::Effect_socket::shared, {75, 0}, {},          0, 60, 360, true}}},
                     {"blackhands_breadth",        Attributes{0, 0}, Special_stats{2, 0, 0},  Socket::trinket},
                     {"drake_fang_talisman",       Attributes{0, 0}, Special_stats{0, 2, 56}, Socket::trinket},
                     {"counterattack_lodestone",   Attributes{0, 0}, Special_stats{0, 0, 22}, Socket::trinket},
@@ -342,11 +342,11 @@ struct Armory
                                                                                   0},        Socket::trinket, Set::none, {{"darkmoon_card_maelstrom", Hit_effect::Type::damage_magic, {}, {}, 250, 0, 0.02}}},
                     {"rune_of_the_guard_captain", Attributes{0, 0}, Special_stats{0, 1, 20}, Socket::trinket},
                     {"jom_gabbar",                Attributes{0, 0}, Special_stats{0, 0,
-                                                                                  0},        Socket::trinket, Set::none, {}, {{"jom_gabbar",    Use_effect::Effect_socket::shared, {0,  0}, {0, 0, 358}, 0, 20, 120, true}}},
+                                                                                  0},        Socket::trinket, Set::none, {}, {{"jom_gabbar",              Use_effect::Effect_socket::shared, {0,  0}, {0, 0, 358}, 0, 20, 120, true}}},
                     {"earthstrike",               Attributes{0, 0}, Special_stats{0, 0,
-                                                                                  0},        Socket::trinket, Set::none, {}, {{"earthstrike",   Use_effect::Effect_socket::shared, {0,  0}, {0, 0, 280}, 0, 20, 120, true}}},
-//                    {"badge_of_the_swarmguard",   Attributes{0, 0}, Special_stats{0, 0,
-//                                                                                  0},        Socket::trinket, Set::none, {}, {{"earthstrike",   Use_effect::Effect_socket::shared, {0,  0}, {0, 0, 280}, 0, 20, 120, true}}},
+                                                                                  0},        Socket::trinket, Set::none, {}, {{"earthstrike",             Use_effect::Effect_socket::shared, {0,  0}, {0, 0, 280}, 0, 20, 120, true}}},
+                    {"badge_of_the_swarmguard",   Attributes{0, 0}, Special_stats{0, 0,
+                                                                                  0},        Socket::trinket, Set::none, {}, {{"badge_of_the_swarmguard", Use_effect::Effect_socket::unique, {},      {},          0, 30, 180, true, {"badge_of_the_swarmguard", Hit_effect::Type::reduce_armor, {}, {}, 0, 0, 0.5, 0, 1, 200, 6}}}},
             };
 
     std::vector<Armor> ranged_t
