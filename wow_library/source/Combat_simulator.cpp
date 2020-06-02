@@ -452,8 +452,8 @@ void Combat_simulator::execute(Weapon_sim &main_hand_weapon, Special_stats &spec
 }
 
 void Combat_simulator::hit_effects(Weapon_sim &weapon, Weapon_sim &main_hand_weapon, Special_stats &special_stats,
-                                   double &rage,
-                                   bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges)
+                                   double &rage, bool &recklessness_active, Damage_sources &damage_sources,
+                                   int &flurry_charges, bool is_extra_attack)
 {
     for (const auto &hit_effect : weapon.hit_effects)
     {
@@ -467,10 +467,13 @@ void Combat_simulator::hit_effects(Weapon_sim &weapon, Weapon_sim &main_hand_wea
             switch (hit_effect.type)
             {
                 case Hit_effect::Type::extra_hit:
-                    simulator_cout("PROC: extra hit from: ", hit_effect.name);
-                    swing_weapon(main_hand_weapon, main_hand_weapon, special_stats,
-                                 rage,
-                                 recklessness_active, damage_sources, flurry_charges, hit_effect.attack_power_boost);
+                    if (!is_extra_attack)
+                    {
+                        simulator_cout("PROC: extra hit from: ", hit_effect.name);
+                        swing_weapon(main_hand_weapon, main_hand_weapon, special_stats,
+                                     rage, recklessness_active, damage_sources, flurry_charges,
+                                     hit_effect.attack_power_boost, true);
+                    }
                     break;
                 case Hit_effect::Type::damage_magic:
                     damage_sources.add_damage(Damage_source::item_hit_effects, hit_effect.damage * 0.85,
@@ -549,9 +552,8 @@ void Combat_simulator::hit_effects(Weapon_sim &weapon, Weapon_sim &main_hand_wea
 }
 
 void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_weapon, Special_stats &special_stats,
-                                    double &rage,
-                                    bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges,
-                                    double attack_power_bonus)
+                                    double &rage, bool &recklessness_active, Damage_sources &damage_sources,
+                                    int &flurry_charges, double attack_power_bonus, bool is_extra_attack)
 {
     std::vector<Hit_outcome> hit_outcomes{};
     hit_outcomes.reserve(2);
@@ -654,8 +656,7 @@ void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_we
         hit_outcomes[0].hit_result != Hit_result::dodge)
     {
         hit_effects(weapon, main_hand_weapon, special_stats,
-                    rage,
-                    recklessness_active, damage_sources, flurry_charges);
+                    rage, recklessness_active, damage_sources, flurry_charges, is_extra_attack);
 
         // Unbridled wrath
         if (get_uniform_random(1) < config.talents.unbridled_wrath * 0.08)

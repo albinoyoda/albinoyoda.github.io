@@ -185,10 +185,11 @@ public:
 
     void swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_weapon, Special_stats &special_stats,
                       double &rage, bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges,
-                      double attack_power_bonus = 0);
+                      double attack_power_bonus = 0, bool is_extra_attack = false);
 
     void hit_effects(Weapon_sim &weapon, Weapon_sim &main_hand_weapon, Special_stats &special_stats,
-                     double &rage, bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges);
+                     double &rage, bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges,
+                     bool is_extra_attack = false);
 
     void bloodthirst(Weapon_sim &main_hand_weapon, Special_stats &special_stats,
                      double &rage, bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges);
