@@ -125,6 +125,8 @@ struct Armory
                                                                                          0},  Socket::shoulder},
                     {"spaulders_of_heroism",           Attributes{12, 12}, Special_stats{0, 0,
                                                                                          0},  Socket::shoulder, Set::battlegear_of_heroism},
+                    {"defilers_plate_spaulders",       Attributes{18, 17}, Special_stats{0, 0,
+                                                                                         0},  Socket::shoulder, Set::the_defilers_resolution},
             };
 
     std::vector<Armor> back_t
@@ -238,7 +240,8 @@ struct Armory
                     {"zandalar_vindicators_belt",     Attributes{25, 0},  Special_stats{1, 0, 0},  Socket::belt},
                     {"therazanes_link",               Attributes{0, 0},   Special_stats{1, 0, 44}, Socket::belt},
                     {"girdle_of_the_fallen_crusader", Attributes{20, 10}, Special_stats{0, 0, 0},  Socket::belt},
-                    {"defilers_plate_girdle",         Attributes{17, 0},  Special_stats{1, 0, 0},  Socket::belt},
+                    {"defilers_plate_girdle",         Attributes{17, 0},  Special_stats{1, 0,
+                                                                                        0},        Socket::belt, Set::the_defilers_resolution},
                     {"frostwolf_plate_belt",          Attributes{18, 7},  Special_stats{0, 0, 0},  Socket::belt},
                     {"belt_of_heroism",               Attributes{15, 9},  Special_stats{0, 0,
                                                                                         0},        Socket::belt, Set::battlegear_of_heroism},
@@ -286,7 +289,7 @@ struct Armory
                     {"black_dragonscale_boots",   Attributes{0, 0},   Special_stats{0, 0,
                                                                                     28},       Socket::boots, Set::black_dragonscale},
                     {"r7_greaves",                Attributes{10, 9},  Special_stats{0, 0,
-                                                                                    40},       Socket::boots, Set::rare_pvp_set},
+                                                                                    0},        Socket::boots, Set::rare_pvp_set},
                     {"battlechasers_greaves",     Attributes{14, 13}, Special_stats{0, 0, 0},  Socket::boots},
                     {"chromatic_boots",           Attributes{20, 20}, Special_stats{0, 1, 0},  Socket::boots},
                     {"boots_of_the_shadow_flame", Attributes{0, 0},   Special_stats{0, 2, 44}, Socket::boots},
@@ -300,7 +303,9 @@ struct Armory
                     {"boots_of_the_vanguard",     Attributes{22, 22}, Special_stats{0, 0, 0},  Socket::boots},
                     {"conquerors_greaves",        Attributes{21, 17}, Special_stats{0, 0, 0},  Socket::boots},
                     {"slime_kickers",             Attributes{18, 12}, Special_stats{0, 1, 0},  Socket::boots},
-
+                    {"blooddrenched_footpads",    Attributes{0, 21},  Special_stats{0, 1, 0},  Socket::boots},
+                    {"defilers_plate_greaves",    Attributes{14, 12}, Special_stats{0, 0,
+                                                                                    0},        Socket::boots, Set::the_defilers_resolution},
             };
 
     std::vector<Armor> ring_t
@@ -346,7 +351,7 @@ struct Armory
                     {"earthstrike",               Attributes{0, 0}, Special_stats{0, 0,
                                                                                   0},        Socket::trinket, Set::none, {}, {{"earthstrike",             Use_effect::Effect_socket::shared, {0,  0}, {0, 0, 280}, 0, 20, 120, true}}},
                     {"badge_of_the_swarmguard",   Attributes{0, 0}, Special_stats{0, 0,
-                                                                                  0},        Socket::trinket, Set::none, {}, {{"badge_of_the_swarmguard", Use_effect::Effect_socket::unique, {},      {},          0, 30, 180, true, {"badge_of_the_swarmguard", Hit_effect::Type::reduce_armor, {}, {}, 0, 0, 0.5, 0, 1, 200, 6}}}},
+                                                                                  0},        Socket::trinket, Set::none, {}, {{"badge_of_the_swarmguard", Use_effect::Effect_socket::unique, {},      {},          0, 30, 180, false, {"badge_of_the_swarmguard", Hit_effect::Type::reduce_armor, {}, {}, 0, 0, 0.5, 0, 1, 200, 6}}}},
             };
 
     std::vector<Armor> ranged_t
@@ -414,6 +419,8 @@ struct Armory
                                                                                            32},  2.1, 84,    157,   Weapon_socket::one_hand,  Weapon_type::sword},
                     {"ravenholdt_slicer",            Attributes{0, 0},       Special_stats{0, 0,
                                                                                            26},  2.8, 83,    156,   Weapon_socket::one_hand,  Weapon_type::sword},
+                    {"blackguard",                   Attributes{0, 0},       Special_stats{0, 0,
+                                                                                           0},   1.8, 65,    121,   Weapon_socket::one_hand,  Weapon_type::sword},
             };
 
 //    std::vector<Weapon> two_handed_swords_t
@@ -474,6 +481,8 @@ struct Armory
                                                                               0},  1.3, 37, 70,  Weapon_socket::main_hand, Weapon_type::dagger},
                     {"blessed_qiraji_pugio", Attributes{0, 0},  Special_stats{1, 1,
                                                                               18}, 1.7, 72, 134, Weapon_socket::one_hand,  Weapon_type::dagger},
+                    {"fang_of_the_faceless", Attributes{0, 0},  Special_stats{1, 0,
+                                                                              28}, 1.9, 66, 123, Weapon_socket::one_hand,  Weapon_type::dagger},
             };
 
     std::vector<Weapon> maces_t
@@ -482,7 +491,7 @@ struct Armory
                                                                                                                       Weapon_socket::one_hand,  Weapon_type::mace,
                             {{"ebon_hand",           Hit_effect::Type::damage_magic, {},     {},                200, 0,  0.08}}},
                     {"spineshatter",              Attributes{9.0, 0.0}, Special_stats{0.0, 0.0,
-                                                                                      0.0},           2.5, 99.0, 184.0,
+                                                                                      0.0},           2.6, 99.0, 184.0,
                                                                                                                       Weapon_socket::main_hand, Weapon_type::mace},
                     {"stormstike_hammer",         Attributes{15, 0},    Special_stats{0, 0,
                                                                                       0},             2.7, 80,   150,
@@ -492,7 +501,7 @@ struct Armory
                                                                                                                       Weapon_socket::one_hand,  Weapon_type::mace},
                     {"empyrean_demolisher",       Attributes{0, 0},     Special_stats{0, 0,
                                                                                       0},             2.8, 94,   175,
-                                                                                                                      Weapon_socket::one_hand,  Weapon_type::mace,
+                                                                                                                      Weapon_socket::main_hand, Weapon_type::mace,
                             {{"empyrean_demolisher", Hit_effect::Type::stat_boost,   {0, 0}, Special_stats{0, 0, 0, 0,
                                                                                                            .2}, 0,   10, 2.8 / 60}}},
                     {"anubisath_warhammer",       Attributes{0, 0},     Special_stats{0, 0, 32, 0, 0, 0, 0, 0,
@@ -535,6 +544,7 @@ struct Armory
             {"valor",                   Attributes{0, 0}, Special_stats{0, 0, 40}, 4, Set::valor},
             {"major_mojo_infusion",     Attributes{0, 0}, Special_stats{0, 0, 30}, 2, Set::major_mojo_infusion},
             {"battlegear_of_heroism",   Attributes{0, 0}, Special_stats{0, 0, 40}, 6, Set::battlegear_of_heroism},
+            {"the_defilers_resolution", Attributes{0, 0}, Special_stats{1, 0, 0},  3, Set::the_defilers_resolution},
     };
 
     Armor find_armor(Socket socket, const std::string &name) const;

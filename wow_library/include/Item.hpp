@@ -54,7 +54,8 @@ enum class Set
     dal_rends,
     warblade_of_the_hakkari,
     major_mojo_infusion,
-    battlegear_of_heroism
+    battlegear_of_heroism,
+    the_defilers_resolution
 };
 
 class Hit_effect
@@ -155,6 +156,7 @@ struct Enchant
         strength7,
         strength9,
         agility,
+        greater_agility,
         haste,
         crusader,
         minor_stats,

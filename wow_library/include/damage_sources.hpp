@@ -14,6 +14,7 @@ enum class Damage_source
     heroic_strike,
     cleave,
     whirlwind,
+    hamstring,
     item_hit_effects
 };
 
@@ -42,6 +43,7 @@ struct Damage_sources
         white_oh_damage = white_oh_damage + rhs.white_oh_damage;
         heroic_strike_damage = heroic_strike_damage + rhs.heroic_strike_damage;
         cleave_damage = cleave_damage + rhs.cleave_damage;
+        hamstring_damage = hamstring_damage + rhs.hamstring_damage;
         item_hit_effects_damage = item_hit_effects_damage + rhs.item_hit_effects_damage;
 
         whirlwind_count = whirlwind_count + rhs.whirlwind_count;
@@ -51,18 +53,19 @@ struct Damage_sources
         white_oh_count = white_oh_count + rhs.white_oh_count;
         heroic_strike_count = heroic_strike_count + rhs.heroic_strike_count;
         cleave_count = cleave_count + rhs.cleave_count;
+        hamstring_count = hamstring_count + rhs.hamstring_count;
         item_hit_effects_count = item_hit_effects_count + rhs.item_hit_effects_count;
         return *(this);
     }
 
     constexpr double sum_damage_sources() const
     {
-        return white_mh_damage + white_oh_damage + bloodthirst_damage + heroic_strike_damage + cleave_damage + whirlwind_damage + execute_damage + item_hit_effects_damage;
+        return white_mh_damage + white_oh_damage + bloodthirst_damage + heroic_strike_damage + cleave_damage + whirlwind_damage + hamstring_damage + execute_damage + item_hit_effects_damage;
     }
 
     constexpr double sum_counts() const
     {
-        return white_mh_count + white_oh_count + bloodthirst_count + heroic_strike_count + cleave_count + whirlwind_count + execute_count + item_hit_effects_count;
+        return white_mh_count + white_oh_count + bloodthirst_count + heroic_strike_count + cleave_count + whirlwind_count + hamstring_count + execute_count + item_hit_effects_count;
     }
 
     void add_damage(Damage_source source, double damage, double time_stamp, bool increment_counter = true)
@@ -101,6 +104,10 @@ struct Damage_sources
                 whirlwind_damage += damage;
                 whirlwind_count++;
                 break;
+            case Damage_source::hamstring:
+                hamstring_damage += damage;
+                hamstring_count++;
+                break;
             case Damage_source::item_hit_effects:
                 item_hit_effects_damage += damage;
                 if (increment_counter)
@@ -118,6 +125,7 @@ struct Damage_sources
     double heroic_strike_damage{};
     double cleave_damage{};
     double whirlwind_damage{};
+    double hamstring_damage{};
     double item_hit_effects_damage{};
 
     long int white_mh_count{};
@@ -127,6 +135,7 @@ struct Damage_sources
     long int heroic_strike_count{};
     long int cleave_count{};
     long int whirlwind_count{};
+    long int hamstring_count{};
     long int item_hit_effects_count{};
 
     std::vector<Damage_instance> damage_instances;

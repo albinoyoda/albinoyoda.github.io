@@ -18,6 +18,7 @@ struct Combat_simulator_config
 {
     // Combat settings
     int n_batches{};
+    int n_batches_statweights{};
     double sim_time{};
     int opponent_level{};
 
@@ -47,6 +48,10 @@ struct Combat_simulator_config
         double heroic_strike_rage_thresh;
         double cleave_rage_thresh;
         bool cleave_if_adds;
+        bool use_hamstring;
+        double hamstring_cd_thresh;
+        double hamstring_thresh_dd;
+        double initial_rage;
     } combat;
 
     struct talents_t
@@ -79,6 +84,11 @@ public:
         {
             srand(config.seed);
         }
+    }
+
+    void set_config(Combat_simulator_config &new_config)
+    {
+        config = new_config;
     }
 
     enum class Hit_result
@@ -201,9 +211,8 @@ public:
                  double &rage, bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges,
                  double execute_cost);
 
-
-    void
-    simulate(const Character &character, int n_batches, bool compute_time_lape = false, bool compute_histogram = false);
+    void hamstring(Weapon_sim &main_hand_weapon, Special_stats &special_stats,
+                   double &rage, bool &recklessness_active, Damage_sources &damage_sources, int &flurry_charges);
 
     void simulate(const Character &character, bool compute_time_lape = false, bool compute_histogram = false);
 
@@ -339,6 +348,7 @@ private:
     Ability_queue_manager ability_queue_manager{};
     double flurry_uptime_mh_{};
     double flurry_uptime_oh_{};
+    double heroic_strike_uptime_{};
     std::string debug_topic_{};
     int adds_in_melee_range{};
     double remove_adds_timer{};
@@ -352,7 +362,8 @@ private:
                                             {Damage_source::heroic_strike,    4},
                                             {Damage_source::cleave,           5},
                                             {Damage_source::whirlwind,        6},
-                                            {Damage_source::item_hit_effects, 7}
+                                            {Damage_source::hamstring,        7},
+                                            {Damage_source::item_hit_effects, 8}
     };
 };
 

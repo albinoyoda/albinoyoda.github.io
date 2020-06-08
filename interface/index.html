@@ -354,6 +354,15 @@
         does no longer scale with the number of simulations. (Max number of runs now are increased to 1.000.000.)<br/>
         - Fixed the "proc counter" for items with elemental damage, e.g., Thunder fury.<br/>
     </p>
+    <p><b>2020-06-08:</b></p>
+    <p>
+        - Comparison functionality, which computes the stat/DPS difference of selected items vs. a load file.<br/>
+        - Added more items: Defiler set, fang of the faceless, blackguard, and some more.<br/>
+        - Hamstring can now be configured in the simulation settings.<br/>
+        - Initial rage is now a variable.<br/>
+        - Added a tracker for the number of off-hand hits which got benefits from the "heroic strike bug", also <br/>
+        works on cleave ofc. <br/>
+    </p>
 
 </div>
 
@@ -429,6 +438,7 @@
         <option value="bloadsoaked_pauldrons">Bloadsoaked pauldrons</option>
         <option value="chitinous_shoulderguards">Chitinous shoulderguards</option>
         <option value="conquerors_spaulders">Conquerors spaulders</option>
+        <option value="defilers_plate_spaulders">Defilers plate spaulders</option>
         <option value="drake_talon_pauldrons">Drake talon pauldrons</option>
         <option value="flamescarred_shoulders">Flamescarred shoulders</option>
         <option value="mantle_of_wicked_revenge">Mantle of wicked revenge</option>
@@ -568,6 +578,7 @@
         <option value="none" selected disabled>boots</option>
         <option value="battlechasers_greaves">Battlechasers greaves</option>
         <option value="black_dragonscale_boots">Black dragonscale boots</option>
+        <option value="blooddrenched_footpads">Blooddrenched footpads</option>
         <option value="bloodmail_boots">Bloodmail boots</option>
         <option value="boots_of_heroism">Boots of heroism</option>
         <option value="boots_of_the_fallen_hero">Boots of the fallen hero</option>
@@ -575,6 +586,7 @@
         <option value="boots_of_the_vanguard">Boots of the vanguard</option>
         <option value="chromatic_boots">Chromatic boots</option>
         <option value="conquerors_greaves">Conquerors greaves</option>
+        <option value="defilers_plate_greaves">Defilers plate greaves</option>
         <option value="r12_plate_boots">R12 plate boots</option>
         <option value="r7_greaves">R7 greaves</option>
         <option value="sapphirons_scale_boots">Sapphirons scale boots</option>
@@ -682,6 +694,7 @@
         <option value="none" disabled> --- SWORDS ---</option>
         <option value="ancient_quiraji_ripper">Ancient quiraji ripper</option>
         <option value="assassination_blade">Assassination blade</option>
+        <option value="blackguard">Blackguard</option>
         <option value="brutality_blade">Brutality blade</option>
         <option value="chromatically_tempered_sword">Chromatically tempered sword</option>
         <option value="dal_rends_sacred_charge">Dal rends sacred charge</option>
@@ -720,6 +733,7 @@
         <option value="core_hound_tooth">Core hound tooth</option>
         <option value="deaths_sting">Deaths sting</option>
         <option value="dragonfang_blade">Dragonfang blade</option>
+        <option value="fang_of_the_faceless">Fang of the faceless</option>
         <option value="finkles_skinner">Finkles skinner</option>
         <option value="perditions_blade">Perditions blade</option>
         <option value="r14_dagger">R14 dagger</option>
@@ -746,6 +760,7 @@
         <option value="none" disabled> --- SWORDS ---</option>
         <option value="ancient_quiraji_ripper">Ancient quiraji ripper</option>
         <option value="assassination_blade">Assassination blade</option>
+        <option value="blackguard">Blackguard</option>
         <option value="brutality_blade">Brutality blade</option>
         <option value="chromatically_tempered_sword">Chromatically tempered sword</option>
         <option value="dal_rends_tribal_guardian">Dal rends tribal guardian</option>
@@ -782,13 +797,13 @@
         <option value="core_hound_tooth">Core hound tooth</option>
         <option value="deaths_sting">Deaths sting</option>
         <option value="dragonfang_blade">Dragonfang blade</option>
+        <option value="fang_of_the_faceless">Fang of the faceless</option>
         <option value="perditions_blade">Perditions blade</option>
         <option value="r14_dagger">R14 dagger</option>
         <option value="none" disabled> --- MACES ---</option>
         <option value="anubisath_warhammer">Anubisath warhammer</option>
         <option value="blessed_quiraji_warhammer">Blessed quiraji warhammer</option>
         <option value="ebon_hand">Ebon hand</option>
-        <option value="empyrean_demolisher">Empyrean demolisher</option>
         <option value="mass_of_mcgowan">Mass of mcgowan</option>
         <option value="r14_mace">R14 mace</option>
         <option value="sand_polished_hammer">Sand polished hammer</option>
@@ -800,7 +815,7 @@
     <!--armor stop-->
 
     <br/><br/><b> Select enchants:</b><br/>
-
+    <!--    Helmet <span style="padding-left:20px">-->
     <select id="helmet_ench_dd">
         <option value="helmet">helmet</option>
         <option value="+8 strength">+8 strength</option>
@@ -834,6 +849,7 @@
     <select id="hands_ench_dd">
         <option value="hands">hands</option>
         <option value="+7 agility">+7 agility</option>
+        <option value="+15 agility">+15 agility</option>
         <option value="+7 strength">+7 strength</option>
         <option value="+1 haste">+1 haste</option>
     </select>
@@ -847,6 +863,7 @@
     <select id="boots_ench_dd">
         <option value="boots">boots</option>
         <option value="+7 agility">+7 agility</option>
+        <option value="minor speed">minor speed</option>
     </select>
 
     <p></p>
@@ -1027,16 +1044,26 @@
         <label for="use_bt_in_exec_phase"> Use bloodthirst in execute phase</label><br>
         <input type="checkbox" id="use_hs_in_exec_phase" checked>
         <label for="use_hs_in_exec_phase"> Use heroic strike in execute phase</label><br>
-        <input type="checkbox" id="cleave_if_adds" checked>
-        <label for="cleave_if_adds"> Use cleave if there are more than one target.</label><br>
+        <label for="initial_rage">Initial rage when fight starts:</label>
+        <input type="number" id="initial_rage" name="quantity" min="0" max="100" value="0.0"><br/>
         <label for="heroic_strike_rage_thresh_dd">Heroic strike when rage is above:</label>
         <input type="number" id="heroic_strike_rage_thresh_dd" name="quantity" min="0" max="100" value="50"><br>
-        <label for="cleave_rage_thresh_dd">Cleave when rage is above:</label>
-        <input type="number" id="cleave_rage_thresh_dd" name="quantity" min="0" max="100" value="50"><br>
         <label for="whirlwind_rage_thresh_dd">Whirlwind when rage is above:</label>
         <input type="number" id="whirlwind_rage_thresh_dd" name="quantity" min="0" max="100" value="0"><br>
         <label for="whirlwind_bt_cooldown_thresh_dd">Whirlwind when bloodthirst CD is above:</label>
-        <input type="number" id="whirlwind_bt_cooldown_thresh_dd" name="quantity" min="0" max="6" value="1.5"><br/><br/>
+        <input type="number" id="whirlwind_bt_cooldown_thresh_dd" name="quantity" min="0" max="6" value="1.5"><br>
+
+        <input type="checkbox" id="cleave_if_adds" checked>
+        <label for="cleave_if_adds"> Use cleave if there are more than one target.</label><br>
+        <label for="cleave_rage_thresh_dd">Cleave when rage is above:</label>
+        <input type="number" id="cleave_rage_thresh_dd" name="quantity" min="0" max="100" value="50"><br>
+
+        <input type="checkbox" id="use_hamstring">
+        <label for="use_hamstring"> Use hamstring</label><br>
+        <label for="hamstring_cd_thresh_dd">Hamstring when bloodthirst/Whirlwind CD is above:</label>
+        <input type="number" id="hamstring_cd_thresh_dd" name="quantity" min="0" max="6" value="2.0"><br>
+        <label for="hamstring_thresh_dd">Hamstring when rage is above:</label>
+        <input type="number" id="hamstring_thresh_dd" name="quantity" min="0" max="100" value="70"><br><br>
 
         <b>Boss settings:</b><br/>
         <b>Default:</b><br/>
@@ -1065,8 +1092,10 @@
 
     <button type="button" class="collapsible">Open simulation settings</button>
     <div class="content">
-        <label for="n_simulations_dd">Number of simulations: (1 - 1.000.000):</label>
-        <input type="number" id="n_simulations_dd" name="quantity" min="1" max="1000000" value="25000"><br/>
+        <label for="n_simulations_dd">Number of simulations (DPS): (1 - 1.000.000):</label>
+        <input type="number" id="n_simulations_dd" name="quantity" min="1" max="1000000" value="50000"><br/>
+        <label for="n_simulations_stat_dd">Number of simulations (per stat weight): (1 - 50.000):</label>
+        <input type="number" id="n_simulations_stat_dd" name="quantity" min="1" max="1000000" value="20000"><br/>
         <label for="opponent_level_dd">Opponent level: (60-63):</label>
         <input type="number" id="opponent_level_dd" name="quantity" min="60" max="63" value="63"><br/>
         <label for="fight_time_dd">Fight duration: (10-120s):</label>
@@ -1083,7 +1112,17 @@
         <label for="stat_weight_haste"> Calculate stat weight for &plusmn1% haste.</label><br>
 
         <input type="checkbox" id="stat_weight_skill">
-        <label for="stat_weight_skill"> Calculate stat weight for &plusmn5 skill.</label><br>
+        <label for="stat_weight_skill"> Calculate stat weight for &plusmn5 skill.</label><br><br>
+
+        <input type="checkbox" id="do_comparison" onclick="show_div('compare_div')">
+        <label for="do_comparison"><b>Gear comparison:</b></label><br>
+        <div style="display:none" id="compare_div">
+            <b>Load configuration to compare against (press submit):</b><br/>
+            (To generate a config file press "Save config to file" at the top of the page)<br/>
+            <input type="file" id="myCompareFile" name="filename" accept=".txt" onclick="show_div('compare_div')">
+            <input type="submit" onclick="load_compare_data()">
+        </div>
+        <br/>
 
         <b>Debug:</b><br/>
         <input type="checkbox" id="debug_on">
@@ -1099,9 +1138,13 @@
         <div>
         </div>
     </div>
+
     <p id="output1"></p>
+
     <p id="output2"></p>
+
     <p id="output3"></p>
+
     <p id="output4"></p>
 
     <p id="combat_debug_title"></p>
@@ -1138,6 +1181,14 @@
 <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/picnic">-->
 
 <script>
+    function show_div(box) {
+        let vis = "none";
+        if (document.getElementById("do_comparison").checked) {
+            vis = "block";
+        }
+        document.getElementById(box).style.display = vis;
+    }
+
     function unique_checkboxed(clicked_box, list_of_boxes) {
         for (let box of list_of_boxes) {
             if (document.getElementById(box).checked) {
@@ -1188,12 +1239,58 @@
 
     var sim_options = ["faerie_fire", "curse_of_recklessness", "death_wish",
         "recklessness", "mighty_rage_potion", "default_boss", "sulfuron_harbinger", "golemagg", "vaelastrasz",
-        "chromaggus", "debug_on", "use_bt_in_exec_phase", "use_hs_in_exec_phase", "cleave_if_adds"];
+        "chromaggus", "debug_on", "use_bt_in_exec_phase", "use_hs_in_exec_phase", "cleave_if_adds",
+        "hamstring_cd_thresh_dd", "hamstring_thresh_dd", "initial_rage", "use_hamstring"];
 
     var stat_weigths = ["stat_weight_hit", "stat_weight_crit", "stat_weight_haste", "stat_weight_skill"];
 
     var race;
     var race_string;
+
+    function string_is_armor(string) {
+        for (let armor_string of armor) {
+            if (string === armor_string) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function string_is_weapon(string) {
+        for (let weapon_string of weapons) {
+            if (string === weapon_string) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    var compare_armor_input = [];
+    var compare_weapons_input = [];
+
+    function load_compare_data() {
+        let file = document.getElementById("myCompareFile");
+        let myFile = file.files[0];
+        if (myFile !== undefined) {
+            let reader = new FileReader();
+            reader.readAsText(myFile);
+            reader.onload = function () {
+                compare_armor_input = [];
+                compare_weapons_input = [];
+                let rawLog = reader.result;
+                let splitlog = rawLog.split("\n");
+                for (let item of splitlog) {
+                    let dd_name = item.split(" ");
+                    if (string_is_armor(dd_name[0])) {
+                        compare_armor_input.push(dd_name[1]);
+                    } else if (string_is_weapon(dd_name[0])) {
+                        compare_weapons_input.push(dd_name[1]);
+                    }
+                }
+                // console.log(compare_armor_input);
+            }
+        }
+    }
 
     function load_file() {
         let file = document.getElementById("myFile");
@@ -1223,12 +1320,12 @@
             let splitlog = rawLog.split("\n");
             for (let item of splitlog) {
                 let dd_name = item.split(" ");
-                console.log(dd_name[0]);
+                // console.log(dd_name[0]);
                 if (dd_name.length === 2) {
-                    console.log(dd_name[1]);
+                    // console.log(dd_name[1]);
                     selectElement(dd_name[0], dd_name[1])
                 } else {
-                    console.log(dd_name[1] + " " + dd_name[2]);
+                    // console.log(dd_name[1] + " " + dd_name[2]);
                     selectElement(dd_name[0], dd_name[1] + " " + dd_name[2])
                 }
             }
@@ -1270,7 +1367,7 @@
 
         var armor_ench = ["helmet_ench_dd", "shoulder_ench_dd", "back_ench_dd", "chest_ench_dd", "wrist_ench_dd",
             "hands_ench_dd", "legs_ench_dd", "boots_ench_dd", "main_hand_ench_dd", "off_hand_ench_dd"];
-        var enchants = ["+8 strength", "+30 attack_power", "+3 agility", "+3 stats", "+9 strength",
+        var enchants = ["+8 strength", "+30 attack_power", "+3 agility", "+4 stats", "+9 strength",
             "+7 strength", "+8 strength", "+7 agility", "crusader", "crusader"];
 
         for (let i = 0; i < armor.length; i++) {
@@ -1299,7 +1396,7 @@
 
         var armor_ench = ["helmet_ench_dd", "shoulder_ench_dd", "back_ench_dd", "chest_ench_dd", "wrist_ench_dd",
             "hands_ench_dd", "legs_ench_dd", "boots_ench_dd", "main_hand_ench_dd", "off_hand_ench_dd"];
-        var enchants = ["+8 strength", "+30 attack_power", "+3 agility", "+3 stats", "+9 strength",
+        var enchants = ["+8 strength", "+30 attack_power", "+3 agility", "+4 stats", "+9 strength",
             "+7 strength", "+8 strength", "+7 agility", "crusader", "crusader"];
 
         for (let i = 0; i < armor.length; i++) {
@@ -1328,7 +1425,7 @@
 
         var armor_ench = ["helmet_ench_dd", "shoulder_ench_dd", "back_ench_dd", "chest_ench_dd", "wrist_ench_dd",
             "hands_ench_dd", "legs_ench_dd", "boots_ench_dd", "main_hand_ench_dd", "off_hand_ench_dd"];
-        var enchants = ["+8 strength", "shoulder", "+3 agility", "+3 stats", "+9 strength",
+        var enchants = ["+8 strength", "shoulder", "+3 agility", "+4 stats", "+9 strength",
             "+7 strength", "+8 strength", "+7 agility", "crusader", "crusader"];
 
         for (let i = 0; i < armor.length; i++) {
@@ -1357,7 +1454,7 @@
 
         var armor_ench = ["helmet_ench_dd", "shoulder_ench_dd", "back_ench_dd", "chest_ench_dd", "wrist_ench_dd",
             "hands_ench_dd", "legs_ench_dd", "boots_ench_dd", "main_hand_ench_dd", "off_hand_ench_dd"];
-        var enchants = ["+8 strength", "shoulder", "+3 agility", "+3 stats", "+9 strength",
+        var enchants = ["+8 strength", "shoulder", "+3 agility", "+4 stats", "+9 strength",
             "+7 strength", "+8 strength", "boots", "crusader", "crusader"];
 
         for (let i = 0; i < armor.length; i++) {
@@ -1394,8 +1491,8 @@
             file_content += consumables[i] + " " + consumables_input[i] + "\n";
         }
 
-        let var_array = ["n_simulations_dd", "opponent_level_dd", "fight_time_dd", "sunder_armor_dd",
-            "heroic_strike_rage_thresh_dd", "cleave_rage_thresh_dd", "whirlwind_rage_thresh_dd",
+        let var_array = ["n_simulations_dd", "n_simulations_stat_dd", "opponent_level_dd", "fight_time_dd",
+            "sunder_armor_dd", "heroic_strike_rage_thresh_dd", "cleave_rage_thresh_dd", "whirlwind_rage_thresh_dd",
             "whirlwind_bt_cooldown_thresh_dd"];
         for (let variable of var_array) {
             file_content += variable + " " + parseFloat(document.getElementById(variable).value) + "\n";
@@ -1501,7 +1598,6 @@
             line_chart_fight.destroy();
             line_chart_fight_cum.destroy();
         }
-        needs_cleanup = true;
     }
 
     function show_loader() {
@@ -1527,13 +1623,27 @@
         read_inputs();
 
         const armor_vec = new Module.StringList();
-        for (armor_piece of armor_input) {
+        for (let armor_piece of armor_input) {
             armor_vec.push_back(armor_piece);
         }
 
         const weapons_vec = new Module.StringList();
-        for (wep of weapons_input) {
+        for (let wep of weapons_input) {
             weapons_vec.push_back(wep);
+        }
+
+        const compare_armor_vec = new Module.StringList();
+        if (compare_armor_input.length === 15) {
+            for (let armor_piece of compare_armor_input) {
+                compare_armor_vec.push_back(armor_piece);
+            }
+        }
+
+        const compare_weapons_vec = new Module.StringList();
+        if (compare_weapons_input.length === 2) {
+            for (let wep of compare_weapons_input) {
+                compare_weapons_vec.push_back(wep);
+            }
         }
 
         const buff_vec = new Module.StringList();
@@ -1557,6 +1667,12 @@
             n_simulations_dd = 20000;
         }
         n_simulations_dd = Math.min(Math.max(n_simulations_dd, 1), 1000000);
+
+        let n_simulations_stat_dd = parseFloat(document.getElementById("n_simulations_stat_dd").value);
+        if (isNaN(n_simulations_stat_dd)) {
+            n_simulations_stat_dd = 20000;
+        }
+        n_simulations_stat_dd = Math.min(Math.max(n_simulations_stat_dd, 1), 50000);
 
         let opponent_level_dd = parseFloat(document.getElementById("opponent_level_dd").value);
         if (isNaN(opponent_level_dd)) {
@@ -1587,29 +1703,31 @@
         let cleave_rage_thresh = parseFloat(document.getElementById("cleave_rage_thresh_dd").value);
         let whirlwind_rage_thresh = parseFloat(document.getElementById("whirlwind_rage_thresh_dd").value);
         let whirlwind_bt_cooldown_thresh = parseFloat(document.getElementById("whirlwind_bt_cooldown_thresh_dd").value);
+        let hamstring_cd_thresh = parseFloat(document.getElementById("hamstring_cd_thresh_dd").value);
+        let hamstring_thresh = parseFloat(document.getElementById("hamstring_thresh_dd").value);
+        let initial_rage = parseFloat(document.getElementById("initial_rage").value);
 
         let total_simulations = n_simulations_dd;
         let need_to_add_for_ap = true;
         const stat_weight_vec = new Module.StringList();
         if (document.getElementById("stat_weight_crit").checked) {
             stat_weight_vec.push_back("crit");
-            total_simulations += n_simulations_dd * 2 + n_simulations_dd * 2 * need_to_add_for_ap;
+            total_simulations += n_simulations_stat_dd * 2 + n_simulations_stat_dd * 2 * need_to_add_for_ap;
             need_to_add_for_ap = false;
         }
         if (document.getElementById("stat_weight_hit").checked) {
             stat_weight_vec.push_back("hit");
-            total_simulations += n_simulations_dd * 2 + n_simulations_dd * 2 * need_to_add_for_ap;
+            total_simulations += n_simulations_stat_dd * 2 + n_simulations_stat_dd * 2 * need_to_add_for_ap;
             need_to_add_for_ap = false;
         }
         if (document.getElementById("stat_weight_haste").checked) {
             stat_weight_vec.push_back("haste");
-            total_simulations += n_simulations_dd * 2 + n_simulations_dd * 2 * need_to_add_for_ap;
+            total_simulations += n_simulations_stat_dd * 2 + n_simulations_stat_dd * 2 * need_to_add_for_ap;
             need_to_add_for_ap = false;
         }
         if (document.getElementById("stat_weight_skill").checked) {
             stat_weight_vec.push_back("skill");
-            total_simulations += n_simulations_dd * 2 + n_simulations_dd * 2 * need_to_add_for_ap;
-            need_to_add_for_ap = false;
+            total_simulations += n_simulations_stat_dd * 2 + n_simulations_stat_dd * 2 * need_to_add_for_ap;
         }
 
         const race_vec = new Module.StringList();
@@ -1623,26 +1741,53 @@
             enchants: ench_vec,
             stat_weights: stat_weight_vec,
             options: options,
-            fight_time: fight_time_dd,
+            compare_armor: compare_armor_vec,
+            compare_weapons: compare_weapons_vec,
             target_level: opponent_level_dd,
+            fight_time: fight_time_dd,
             n_simulations: n_simulations_dd,
+            n_simulations_stat_weights: n_simulations_stat_dd,
             sunder_armor: sunder_armor_dd,
             heroic_strike_rage_thresh: heroic_strike_rage_thresh,
             cleave_rage_thresh: cleave_rage_thresh,
             whirlwind_rage_thresh: whirlwind_rage_thresh,
             whirlwind_bt_cooldown_thresh: whirlwind_bt_cooldown_thresh,
+            hamstring_cd_thresh: hamstring_cd_thresh,
+            hamstring_thresh_dd: hamstring_thresh,
+            initial_rage: initial_rage,
         };
 
         let obj = new Module['Sim_interface']();
 
         let result = obj.simulate(wow_input);
 
-        let n_sim_status = 'DPS: <b>' + result['mean_dps'].toFixed(2) + ' &plusmn ' +
-            result['std_dps'].toFixed(2) + '</b>, (95% confidence interval)<br>';
+        let mean_dps = [];
+        let std_dps = [];
+        for (let i = 0; i < result['mean_dps'].size(); i++) {
+            mean_dps.push(result['mean_dps'].get(i).toFixed(2));
+            std_dps.push(result['std_dps'].get(i).toFixed(2));
+        }
 
-        n_sim_status += "Total simulations: <b>" + total_simulations + "</b><br/> " +
-            "Simulations for DPS = <b>" + n_simulations_dd + "</b><br>" +
-            "Simulations for stat weights = <b>" + (total_simulations - n_simulations_dd) + "</b><br>";
+        let n_sim_status = "";
+        if (mean_dps.length === 1) {
+            let conf_interval = 1.96 * std_dps[0];
+            n_sim_status += 'DPS: <b>' + mean_dps[0] + ' &plusmn ' + conf_interval.toPrecision(3) + '</b> (95% confidence interval)<br>';
+        } else {
+            for (let i = 0; i < mean_dps.length; i++) {
+                let j = i + 1;
+                let conf_interval = 1.96 * std_dps[i];
+                n_sim_status += 'DPS setup' + j + ': <b>' + mean_dps[i] + ' &plusmn ' +
+                    conf_interval.toPrecision(3) + '</b> (95% confidence interval)<br>';
+            }
+        }
+
+        let tot_sims = total_simulations;
+        if (document.getElementById("do_comparison").checked) {
+            tot_sims *= 2;
+        }
+        n_sim_status += "Simulations for DPS = <b>" + n_simulations_dd + "</b><br>" +
+            "Simulations for stat weights = <b>" + (total_simulations - n_simulations_dd) +
+            "</b><br/>Total simulations: <b>" + tot_sims + "</b><br/> ";
         if (!document.getElementById("debug_on").checked) {
             n_sim_status += "TIP! Combat logs can be activated under the 'Open Simulation settings' dialog"
         }
@@ -1673,6 +1818,9 @@
         }
 
         let string = "<b>Stat weights:</b> <br />";
+        if (document.getElementById("do_comparison").checked) {
+            string = "<b>Stat weights (Setup 1):</b> <br />";
+        }
         if (result['stat_weights'].size() > 0) {
             for (let i = 0; i < stat_weights.length; i++) {
                 string += "+" + stat_weights[i]['name'] + " equivalates: <b>" + stat_weights[i]['value_min'].toFixed(2) +
@@ -1696,7 +1844,7 @@
         document.getElementById("combat_debug").innerHTML = result['extra_stats'].get(1);
 
         let sources = [];
-        let sources_names = ["Main hand", "Off hand", "Blood Thirst", "Execute", "Heroic Strike", "Cleave", "Whirlwind", "Item procs"];
+        let sources_names = ["Main hand", "Off hand", "Blood Thirst", "Execute", "Heroic Strike", "Cleave", "Whirlwind", "Hamstring", "Item procs"];
         for (let i = 0; i < result['dmg_sources'].size(); i++) {
             sources.push(100 * result['dmg_sources'].get(i));
         }
@@ -1741,8 +1889,8 @@
             proc_counter[k] = proc_list[k].counter;
         }
 
-        let colors = ["#3e95cd", "#8e5ea2", "#FFFF00", "#c45850", "#e8c3b9", "#990099", "#145A32", "#FFFFFF"];
-        let damage_name = ["white_mh", "white_oh", "bloodthirst", "execute", "heroic_strike", "cleave", "whirlwind", "item_hit_effects"];
+        let colors = ["#3e95cd", "#8e5ea2", "#FFFF00", "#c45850", "#e8c3b9", "#990099", "#145A32", "#3333cc", "#FFFFFF"];
+        let damage_name = ["white_mh", "white_oh", "bloodthirst", "execute", "heroic_strike", "cleave", "whirlwind", "hamstring", "item_hit_effects"];
         let white_mh = [];
         let white_oh = [];
         let bloodthirst = [];
@@ -1750,8 +1898,9 @@
         let heroic_strike = [];
         let cleave = [];
         let whirlwind = [];
+        let hamstring = [];
         let item_hit_effects = [];
-        let damage_vec = [white_mh, white_oh, bloodthirst, execute, heroic_strike, cleave, whirlwind, item_hit_effects];
+        let damage_vec = [white_mh, white_oh, bloodthirst, execute, heroic_strike, cleave, whirlwind, hamstring, item_hit_effects];
         for (let i = 0; i < damage_vec.length; i++) {
             if (i === 0) {
                 for (let j = 0; j < result[damage_name[i]].size(); j++) {
@@ -1771,9 +1920,10 @@
         let cumulative_heroic_strike = [];
         let cumulative_cleave = [];
         let cumulative_whirlwind = [];
+        let cumulative_hamstring = [];
         let cumulative_item_hit_effects = [];
         let cumulative_vec = [cumulative_white_mh, cumulative_white_oh, cumulative_bloodthirst, cumulative_execute,
-            cumulative_heroic_strike, cumulative_cleave, cumulative_whirlwind, cumulative_item_hit_effects];
+            cumulative_heroic_strike, cumulative_cleave, cumulative_whirlwind, cumulative_hamstring, cumulative_item_hit_effects];
         for (let i = 0; i < cumulative_vec.length; i++) {
             cumulative_vec[i][0] = damage_vec[i][0];
             for (let j = 1; j < damage_vec[i].length; j++) {
@@ -1927,6 +2077,14 @@
                     borderWidth: 10,
                     borderColor: colors[7],
                     backgroundColor: colors[7],
+                    pointRadius: 0.1,
+                    fill: origin
+                }, {
+                    data: damage_vec[8],
+                    label: damage_name[8],
+                    borderWidth: 10,
+                    borderColor: colors[8],
+                    backgroundColor: colors[8],
                     pointRadius: 0.1,
                     fill: origin
                 },]
@@ -2286,6 +2444,8 @@
         canvas.responsive = false;
         canvas.style.height = '450px';
         canvas.style.width = '675px';
+
+        needs_cleanup = true;
     }
 </script>
 

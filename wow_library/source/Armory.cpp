@@ -56,6 +56,8 @@ Attributes Armory::get_enchant_attributes(Socket socket, Enchant::Type type) con
             {
                 case Enchant::Type::agility:
                     return {0, 7};
+                case Enchant::Type::greater_agility:
+                    return {0, 15};
                 case Enchant::Type::strength:
                     return {7, 0};
                 default:

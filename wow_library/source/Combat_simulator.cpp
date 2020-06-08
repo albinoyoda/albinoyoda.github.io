@@ -451,6 +451,31 @@ void Combat_simulator::execute(Weapon_sim &main_hand_weapon, Special_stats &spec
     simulator_cout("Current rage: ", int(rage));
 }
 
+void Combat_simulator::hamstring(Weapon_sim &main_hand_weapon, Special_stats &special_stats,
+                                 double &rage, bool &recklessness_active, Damage_sources &damage_sources,
+                                 int &flurry_charges)
+{
+    simulator_cout("Hamstring!");
+    double damage = 45;
+    auto hit_outcome = generate_hit(damage, Hit_type::yellow, Socket::main_hand,
+                                    special_stats, recklessness_active);
+    time_keeper_.global_cd = 1.5;
+    if (hit_outcome.hit_result == Hit_result::dodge ||
+        hit_outcome.hit_result == Hit_result::miss)
+    {
+        rage -= 2;
+    }
+    else
+    {
+        rage -= 10;
+        hit_effects(main_hand_weapon, main_hand_weapon, special_stats,
+                    rage, recklessness_active, damage_sources, flurry_charges);
+    }
+    manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges, true);
+    damage_sources.add_damage(Damage_source::hamstring, hit_outcome.damage, time_keeper_.time);
+    simulator_cout("Current rage: ", int(rage));
+}
+
 void Combat_simulator::hit_effects(Weapon_sim &weapon, Weapon_sim &main_hand_weapon, Special_stats &special_stats,
                                    double &rage, bool &recklessness_active, Damage_sources &damage_sources,
                                    int &flurry_charges, bool is_extra_attack)
@@ -684,6 +709,7 @@ void Combat_simulator::simulate(const Character &character, bool compute_time_la
     damage_distribution_ = Damage_sources{};
     flurry_uptime_mh_ = 0;
     flurry_uptime_oh_ = 0;
+    heroic_strike_uptime_ = 0;
     const auto starting_special_stats = character.total_special_stats;
     std::vector<Weapon_sim> weapons;
     for (const auto &wep : character.weapons)
@@ -723,7 +749,7 @@ void Combat_simulator::simulate(const Character &character, bool compute_time_la
         {
             shared_items.push_back(i);
             double value = use_effects_all[i].get_special_stat_equivalent(starting_special_stats).attack_power *
-                           use_effects_all[i].duration;
+                           std::min(use_effects_all[i].duration, config.sim_time);
             if (value > best_value)
             {
                 best_idx = i;
@@ -754,7 +780,7 @@ void Combat_simulator::simulate(const Character &character, bool compute_time_la
         ability_queue_manager.reset();
         auto special_stats = starting_special_stats;
         Damage_sources damage_sources{};
-        double rage = 0;
+        double rage = config.combat.initial_rage;
 
         // Reset hit effects
         weapons[0].hit_effects = hit_effects_mh;
@@ -785,6 +811,7 @@ void Combat_simulator::simulate(const Character &character, bool compute_time_la
         double mh_hits_w_flurry = 0;
         double oh_hits = 0;
         double oh_hits_w_flurry = 0;
+        double oh_hits_w_heroic = 0;
 
         for (auto &wep : weapons)
         {
@@ -794,7 +821,7 @@ void Combat_simulator::simulate(const Character &character, bool compute_time_la
         // To avoid local max/min results from running a specific run time
         if (config.use_sim_time_ramp)
         {
-            sim_time += 2.0 / config.n_batches;
+            sim_time += 2.0 / n_damage_batches;
         }
 
         // Combat configuration
@@ -859,6 +886,8 @@ void Combat_simulator::simulate(const Character &character, bool compute_time_la
             {
                 oh_hits++;
                 if (flurry_charges > 0) { oh_hits_w_flurry++; }
+                if (ability_queue_manager.heroic_strike_queued ||
+                    ability_queue_manager.cleave_queued) { oh_hits_w_heroic++; }
                 swing_weapon(weapons[1], weapons[0], special_stats, rage,
                              recklessness_active, damage_sources, flurry_charges);
             }
@@ -1006,6 +1035,19 @@ void Combat_simulator::simulate(const Character &character, bool compute_time_la
                     whirlwind(weapons[0], special_stats, rage,
                               recklessness_active, damage_sources, flurry_charges);
                 }
+
+                if (config.combat.use_hamstring)
+                {
+                    if (time_keeper_.whirlwind_cd > config.combat.hamstring_cd_thresh &&
+                        time_keeper_.blood_thirst_cd > config.combat.hamstring_cd_thresh &&
+                        rage > config.combat.hamstring_thresh_dd &&
+                        time_keeper_.global_cd < 0)
+                    {
+                        hamstring(weapons[0], special_stats, rage,
+                                  recklessness_active, damage_sources, flurry_charges);
+                    }
+                }
+
                 if (adds_in_melee_range > 0 && config.combat.cleave_if_adds)
                 {
                     if (rage > config.combat.cleave_rage_thresh &&
@@ -1032,6 +1074,7 @@ void Combat_simulator::simulate(const Character &character, bool compute_time_la
         damage_distribution_ = damage_distribution_ + damage_sources;
         flurry_uptime_mh_ = Statistics::update_mean(flurry_uptime_mh_, iter + 1, mh_hits_w_flurry / mh_hits);
         flurry_uptime_oh_ = Statistics::update_mean(flurry_uptime_oh_, iter + 1, oh_hits_w_flurry / oh_hits);
+        heroic_strike_uptime_ = Statistics::update_mean(heroic_strike_uptime_, iter + 1, oh_hits_w_heroic / oh_hits);
         if (compute_time_lapse)
         {
             add_damage_source_to_time_lapse(damage_sources.damage_instances);
@@ -1104,13 +1147,6 @@ void Combat_simulator::prune_histogram()
     }
 }
 
-void
-Combat_simulator::simulate(const Character &character, int n_batches, bool compute_time_lapse, bool compute_histogram)
-{
-    config.n_batches = n_batches;
-    return simulate(character, compute_time_lapse, compute_histogram);
-}
-
 const std::vector<double> &Combat_simulator::get_hit_probabilities_white_mh() const
 {
     return hit_probabilities_white_mh_;
@@ -1148,6 +1184,7 @@ std::vector<std::string> Combat_simulator::get_aura_uptimes() const
     }
     aura_uptimes.emplace_back("Flurry_main_hand " + std::to_string(100 * flurry_uptime_mh_));
     aura_uptimes.emplace_back("Flurry_off_hand " + std::to_string(100 * flurry_uptime_oh_));
+    aura_uptimes.emplace_back("'Heroic_strike_bug' " + std::to_string(100 * heroic_strike_uptime_));
     return aura_uptimes;
 }
 
@@ -1176,7 +1213,7 @@ void Combat_simulator::reset_time_lapse()
     {
         damage_time_lapse.clear();
     }
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < 9; i++)
     {
         damage_time_lapse.push_back(history);
     }

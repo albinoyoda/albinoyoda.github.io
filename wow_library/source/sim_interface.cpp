@@ -54,6 +54,7 @@ std::vector<double> get_damage_sources(Damage_sources damage_sources_vector)
             damage_sources_vector.heroic_strike_damage / damage_sources_vector.sum_damage_sources(),
             damage_sources_vector.cleave_damage / damage_sources_vector.sum_damage_sources(),
             damage_sources_vector.whirlwind_damage / damage_sources_vector.sum_damage_sources(),
+            damage_sources_vector.hamstring_damage / damage_sources_vector.sum_damage_sources(),
             damage_sources_vector.item_hit_effects_damage / damage_sources_vector.sum_damage_sources()};
 }
 
@@ -89,8 +90,69 @@ std::string percent_to_str(const std::string &stat_name, double value1, const st
 std::string print_stat(const std::string &stat_name, double amount)
 {
     std::ostringstream stream;
-    stream << stat_name << std::setprecision(4) << "<b>" << amount << "</b><br />";
+    stream << stat_name << std::setprecision(4) << "<b>" << amount << "</b><br>";
     return stream.str();
+}
+
+std::string print_stat(const std::string &stat_name, double amount1, double amount2)
+{
+    std::ostringstream stream;
+    stream << stat_name << std::setprecision(4) << "<b>" << amount1 << " &#8594 " << amount2 << "</b><br>";
+    return stream.str();
+}
+
+std::string get_character_stat(const Character &char1, const Character &char2)
+{
+    std::string out_string = "<b>Setup 1 &#8594 Setup 2</b> <br>";
+    out_string += print_stat("Strength: ", char1.total_attributes.strength, char2.total_attributes.strength);
+    out_string += print_stat("Agility: ", char1.total_attributes.agility, char2.total_attributes.agility);
+    out_string += print_stat("Hit: ", char1.total_special_stats.hit, char2.total_special_stats.hit);
+    out_string += print_stat("Crit (spellbook):", char1.total_special_stats.critical_strike,
+                             char2.total_special_stats.critical_strike);
+    out_string += print_stat("Attack Power: ", char1.total_special_stats.attack_power,
+                             char2.total_special_stats.attack_power);
+    out_string += print_stat("Haste factor: ", 1 + char1.total_special_stats.haste,
+                             1 + char2.total_special_stats.haste);
+
+    out_string += "<br><b>Armor:</b><br>";
+    for (size_t i = 0; i < char1.armor.size(); i++)
+    {
+        if (char1.armor[i].name != char2.armor[i].name)
+        {
+            out_string += char1.armor[i].name + " &#8594 " + char2.armor[i].name + "<br>";
+        }
+    }
+
+    out_string += "<br><b>Weapons:</b><br>";
+    for (size_t i = 0; i < char1.weapons.size(); i++)
+    {
+        if (char1.weapons[i].name != char2.weapons[i].name)
+        {
+            if (i == 0)
+            {
+                out_string += "Mainhand: ";
+            }
+            else
+            {
+                out_string += "Offhand: ";
+            }
+            out_string += char1.weapons[i].name + " &#8594 " + char2.weapons[i].name + "<br><br>";
+        }
+    }
+
+    out_string += "Set bonuses setup 1:<br>";
+    for (const auto &bonus: char1.set_bonuses)
+    {
+        out_string += "<b>" + bonus.name + "-" + std::to_string(bonus.pieces) + "-pieces</b><br>";
+    }
+
+    out_string += "<br>Set bonuses setup 2:<br>";
+    for (const auto &bonus: char1.set_bonuses)
+    {
+        out_string += "<b>" + bonus.name + "-" + std::to_string(bonus.pieces) + "-pieces</b><br>";
+    }
+
+    return out_string;
 }
 
 std::string get_character_stat(const Character &character)
@@ -99,7 +161,7 @@ std::string get_character_stat(const Character &character)
     out_string += print_stat("Strength: ", character.total_attributes.strength);
     out_string += print_stat("Agility: ", character.total_attributes.agility);
     out_string += print_stat("Hit: ", character.total_special_stats.hit);
-    out_string += print_stat("Crit (spellbook):", character.total_special_stats.critical_strike);
+    out_string += print_stat("Crit (spellbook): ", character.total_special_stats.critical_strike);
     out_string += print_stat("Attack Power: ", character.total_special_stats.attack_power);
     out_string += print_stat("Haste factor: ", 1 + character.total_special_stats.haste);
     if (character.weapons[0].type == Weapon_type::sword || character.weapons[1].type == Weapon_type::sword)
@@ -244,6 +306,10 @@ character_setup(const Armory &armory, const Buffs &buffs, const std::string &rac
     else if (find_string(ench_vec, "h+7 agility"))
     {
         character.add_enchant(Socket::hands, Enchant::Type::agility);
+    }
+    else if (find_string(ench_vec, "h+15 agility"))
+    {
+        character.add_enchant(Socket::hands, Enchant::Type::greater_agility);
     }
     else if (find_string(ench_vec, "h+1 haste"))
     {
@@ -414,12 +480,10 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     // Simulator & Combat settings
     Combat_simulator_config config{};
     config.n_batches = input.n_simulations;
+    config.n_batches_statweights = input.n_simulations_stat_weights;
     config.sim_time = input.fight_time;
     config.opponent_level = input.target_level;
 
-//    var sim_options = ["faerie_fire", "curse_of_recklessness", "death_wish",
-//            "recklessness", "mighty_rage_potion", "vaelastrasz", "debug_on",
-//            "use_bt_in_exec_phase", "use_hs_in_exec_phase"];
     if (find_string(input.options, "curse_of_recklessness"))
     {
         config.curse_of_recklessness_active = true;
@@ -468,6 +532,10 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     {
         config.combat.cleave_if_adds = true;
     }
+    if (find_string(input.options, "use_hamstring"))
+    {
+        config.combat.use_hamstring = true;
+    }
     config.n_sunder_armor_stacks = input.sunder_armor;
 
     config.talents.improved_heroic_strike = 2;
@@ -481,7 +549,9 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     config.combat.heroic_strike_rage_thresh = input.heroic_strike_rage_thresh;
     config.combat.cleave_rage_thresh = input.cleave_rage_thresh;
     config.combat.whirlwind_rage_thresh = input.whirlwind_rage_thresh;
-    config.combat.whirlwind_bt_cooldown_thresh = input.whirlwind_bt_cooldown_thresh;
+    config.combat.hamstring_cd_thresh = input.hamstring_cd_thresh;
+    config.combat.hamstring_thresh_dd = input.hamstring_thresh_dd;
+    config.combat.initial_rage = input.initial_rage;
 
     config.use_sim_time_ramp = true;
     config.enable_bloodrage = true;
@@ -495,6 +565,10 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
 
     simulator.simulate(character, true, true);
 
+    std::string character_stats;
+    std::vector<double> mean_dps_vec;
+    std::vector<double> sample_std_dps_vec;
+
     auto hist_x = simulator.get_hist_x();
     auto hist_y = simulator.get_hist_y();
 
@@ -502,6 +576,27 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     double mean_init = simulator.get_dps_mean();
     double std_init = std::sqrt(simulator.get_dps_variance());
     double sample_std_init = Statistics::sample_deviation(std_init, config.n_batches);
+
+    mean_dps_vec.push_back(mean_init);
+    sample_std_dps_vec.push_back(sample_std_init);
+    character_stats = get_character_stat(character);
+    if (input.compare_armor.size() == 15 && input.compare_weapons.size() == 2)
+    {
+        Combat_simulator simulator_compare(config);
+        Character character2 = character_setup(armory, buffs, input.race[0], input.compare_armor,
+                                               input.compare_weapons, temp_buffs, input.enchants);
+
+        simulator_compare.simulate(character2);
+
+        double mean_init_2 = simulator_compare.get_dps_mean();
+        double std_init_2 = std::sqrt(simulator_compare.get_dps_variance());
+        double sample_std_init_2 = Statistics::sample_deviation(std_init_2, config.n_batches);
+
+        character_stats = get_character_stat(character, character2);
+
+        mean_dps_vec.push_back(mean_init_2);
+        sample_std_dps_vec.push_back(sample_std_init_2);
+    }
 
     std::vector<std::string> aura_uptimes = simulator.get_aura_uptimes();
     std::vector<std::string> proc_statistics = simulator.get_proc_statistics();
@@ -546,6 +641,8 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     double dodge_chance = yellow_ht[1] - yellow_ht[0];
     extra_info_string += percent_to_str("Target dodge chance", dodge_chance, "(based on skill difference)");
 
+    config.n_batches = input.n_simulations_stat_weights;
+    simulator.set_config(config);
     std::vector<std::string> stat_weights;
     if (!input.stat_weights.empty())
     {
@@ -671,16 +768,16 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
 
         auto dist = simulator.get_damage_distribution();
         debug_topic += "DPS from sources:<br>";
-        debug_topic += "DPS white MH: " + std::to_string(dist.white_mh_damage / (config.sim_time - 2)) + "<br>";
-        debug_topic += "DPS white OH: " + std::to_string(dist.white_oh_damage / (config.sim_time - 2)) + "<br>";
-        debug_topic += "DPS bloodthirst: " + std::to_string(dist.bloodthirst_damage / (config.sim_time - 2)) + "<br>";
-        debug_topic += "DPS execute: " + std::to_string(dist.execute_damage / (config.sim_time - 2)) + "<br>";
-        debug_topic += "DPS heroic strike: " + std::to_string(
-                dist.heroic_strike_damage / (config.sim_time - 2)) + "<br>";
-        debug_topic += "DPS heroic strike: " + std::to_string(dist.cleave_damage / (config.sim_time - 2)) + "<br>";
-        debug_topic += "DPS whirlwind: " + std::to_string(dist.whirlwind_damage / (config.sim_time - 2)) + "<br>";
+        debug_topic += "DPS white MH: " + std::to_string(dist.white_mh_damage / config.sim_time) + "<br>";
+        debug_topic += "DPS white OH: " + std::to_string(dist.white_oh_damage / config.sim_time) + "<br>";
+        debug_topic += "DPS bloodthirst: " + std::to_string(dist.bloodthirst_damage / config.sim_time) + "<br>";
+        debug_topic += "DPS execute: " + std::to_string(dist.execute_damage / config.sim_time) + "<br>";
+        debug_topic += "DPS heroic strike: " + std::to_string(dist.heroic_strike_damage / config.sim_time) + "<br>";
+        debug_topic += "DPS heroic strike: " + std::to_string(dist.cleave_damage / config.sim_time) + "<br>";
+        debug_topic += "DPS whirlwind: " + std::to_string(dist.whirlwind_damage / config.sim_time) + "<br>";
+        debug_topic += "DPS hamstring: " + std::to_string(dist.hamstring_damage / config.sim_time) + "<br>";
         debug_topic += "DPS item effects: " + std::to_string(
-                dist.item_hit_effects_damage / (config.sim_time - 2)) + "<br><br>";
+                dist.item_hit_effects_damage / config.sim_time) + "<br><br>";
 
         debug_topic += "Casts:<br>";
         debug_topic += "#Hits white MH: " + std::to_string(dist.white_mh_count) + "<br>";
@@ -690,11 +787,12 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
         debug_topic += "#Hits heroic strike: " + std::to_string(dist.heroic_strike_count) + "<br>";
         debug_topic += "#Hits heroic strike: " + std::to_string(dist.cleave_count) + "<br>";
         debug_topic += "#Hits whirlwind: " + std::to_string(dist.whirlwind_count) + "<br>";
+        debug_topic += "#Hits hamstring: " + std::to_string(dist.hamstring_count) + "<br>";
         debug_topic += "#Hits item effects: " + std::to_string(dist.item_hit_effects_count) + "<br>";
     }
 
-    return {hist_x, hist_y, dps_dist, a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7],
-            aura_uptimes, proc_statistics, stat_weights, {extra_info_string, debug_topic}, mean_init, sample_std_init,
-            {get_character_stat(character)}};
+    return {hist_x, hist_y, dps_dist, a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8],
+            aura_uptimes, proc_statistics, stat_weights, {extra_info_string, debug_topic}, mean_dps_vec,
+            sample_std_dps_vec, {character_stats}};
 }
 

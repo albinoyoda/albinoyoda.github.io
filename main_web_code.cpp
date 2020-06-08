@@ -21,13 +21,33 @@ int main()
     armor_vec.emplace_back("might_of_cenarius");
     armor_vec.emplace_back("master_dragonslayers_ring");
     armor_vec.emplace_back("badge_of_the_swarmguard");
-//    armor_vec.emplace_back("badge_of_the_swarmguard");
     armor_vec.emplace_back("diamond_flask");
     armor_vec.emplace_back("blastershot");
 
     std::vector<std::string> weapons_vec;
     weapons_vec.emplace_back("thunderfury_blessed_blade");
     weapons_vec.emplace_back("dal_rends_tribal_guardian");
+
+    std::vector<std::string> compare_armor_vec;
+    compare_armor_vec.emplace_back("lionheart_helm");
+    compare_armor_vec.emplace_back("onyxia_tooth_pendant");
+    compare_armor_vec.emplace_back("truestrike_shoulders");
+    compare_armor_vec.emplace_back("cape_of_the_black_baron");
+    compare_armor_vec.emplace_back("savage_gladiator_chain");
+    compare_armor_vec.emplace_back("wristguards_of_stability");
+    compare_armor_vec.emplace_back("flameguard_gauntlets");
+    compare_armor_vec.emplace_back("onslaught_girdle");
+    compare_armor_vec.emplace_back("cloudkeeper_legplates");
+    compare_armor_vec.emplace_back("chromatic_boots");
+    compare_armor_vec.emplace_back("might_of_cenarius");
+    compare_armor_vec.emplace_back("master_dragonslayers_ring");
+    compare_armor_vec.emplace_back("badge_of_the_swarmguard");
+    compare_armor_vec.emplace_back("diamond_flask");
+    compare_armor_vec.emplace_back("blastershot");
+
+    std::vector<std::string> compare_weapons_vec;
+    compare_weapons_vec.emplace_back("dal_rends_tribal_guardian");
+    compare_weapons_vec.emplace_back("thunderfury_blessed_blade");
 
     std::vector<std::string> buff_vec;
     buff_vec.emplace_back("rallying_cry");
@@ -51,14 +71,18 @@ int main()
 
     std::vector<std::string> sim_options = {"faerie_fire", "curse_of_recklessness", "death_wish",
                                             "mighty_rage_potion", "sulfuron_harbinger",
-                                            "debug_on", "use_bt_in_exec_phase", "use_hs_in_exec_phase", "cleave_if_adds"};
+                                            "debug_on", "use_bt_in_exec_phase", "use_hs_in_exec_phase",
+                                            "cleave_if_adds", "use_hamstring"};
+
 
 //    var sim_options = ["faerie_fire", "curse_of_recklessness", "death_wish",
 //            "recklessness", "mighty_rage_potion", "sulfuron_harbinger", "golemagg", "vaelastrasz", "chromaggus", "debug_on",
 //            "use_bt_in_exec_phase", "use_hs_in_exec_phase"];
 
     Sim_input sim_input{{race}, armor_vec, weapons_vec, buff_vec, ench_vec, {"hit", "crit"}, sim_options,
-                        60, 63, 10000, 5, 60, 60, 25, 1};
+                        compare_armor_vec, compare_weapons_vec, 60, 63,
+                        10000, 1000, 5, 60, 60,
+                        25, 1, 2.0, 80, 45};
 
     auto sim_output = sim_interface.simulate(sim_input);
 
@@ -78,7 +102,11 @@ int main()
         std::cout << message << "\n";
     }
 
-    std::cout << "DPS = " << sim_output.mean_dps << "\n";
+    for (const auto &dps : sim_output.mean_dps)
+    {
+        std::cout << "DPS = " << dps << "\n";
+    }
+
     for (const auto &message : sim_output.messages)
     {
         std::cout << message << "\n";
