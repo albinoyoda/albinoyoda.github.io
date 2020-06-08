@@ -1633,16 +1633,17 @@
         }
 
         const compare_armor_vec = new Module.StringList();
-        if (compare_armor_input.length === 15) {
-            for (let armor_piece of compare_armor_input) {
-                compare_armor_vec.push_back(armor_piece);
-            }
-        }
-
         const compare_weapons_vec = new Module.StringList();
-        if (compare_weapons_input.length === 2) {
-            for (let wep of compare_weapons_input) {
-                compare_weapons_vec.push_back(wep);
+        if (document.getElementById("do_comparison").checked) {
+            if (compare_armor_input.length === 15) {
+                for (let armor_piece of compare_armor_input) {
+                    compare_armor_vec.push_back(armor_piece);
+                }
+            }
+            if (compare_weapons_input.length === 2) {
+                for (let wep of compare_weapons_input) {
+                    compare_weapons_vec.push_back(wep);
+                }
             }
         }
 
