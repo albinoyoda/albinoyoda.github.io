@@ -500,10 +500,6 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     {
         config.enable_recklessness = true;
     }
-    if (find_string(input.options, "mighty_rage_potion"))
-    {
-        config.enable_recklessness = true;
-    }
     if (find_string(input.options, "sulfuron_harbinger"))
     {
         config.mode.sulfuron_harbinger = true;
