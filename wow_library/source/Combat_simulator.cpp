@@ -970,6 +970,7 @@ void Combat_simulator::simulate(const Character &character, bool compute_time_la
                     recklessness_active = true;
                     time_keeper_.global_cd = 1.5;
                     simulator_cout("------------ Recklessness activated! ------------");
+                    buff_manager_.add("Recklessness", Special_stats{0, 0, 0}, 15);
                 }
             }
 
