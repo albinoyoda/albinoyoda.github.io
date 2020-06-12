@@ -42,122 +42,22 @@
         border-top: none;
     }
 
-    #helmet_dd {
-        width: 150px;
-    }
-
-    #neck_dd {
-        width: 150px;
-    }
-
-    #shoulder_dd {
-        width: 150px;
-    }
-
-    #back_dd {
-        width: 150px;
-    }
-
-    #chest_dd {
-        width: 150px;
-    }
-
-    #wrists_dd {
-        width: 150px;
-    }
-
-    #hands_dd {
-        width: 150px;
-    }
-
-    #belt_dd {
-        width: 150px;
-    }
-
-    #legs_dd {
-        width: 150px;
-    }
-
-    #boots_dd {
-        width: 150px;
-    }
-
-    #ring1_dd {
-        width: 150px;
-    }
-
-    #ring2_dd {
-        width: 150px;
-    }
-
-    #trinket1_dd {
-        width: 150px;
-    }
-
-    #trinket2_dd {
-        width: 150px;
-    }
-
-    #ranged_dd {
-        width: 150px;
-    }
-
-    #main_hand_dd {
-        width: 150px;
-    }
-
-    #off_hand_dd {
-        width: 150px;
-    }
-
-    /*ENCHANTS*/
-
-    #helmet_ench_dd {
-        width: 100px;
-    }
-
-    #shoulder_ench_dd {
-        width: 100px;
-    }
-
-    #back_ench_dd {
-        width: 100px;
-    }
-
-    #chest_ench_dd {
-        width: 100px;
-    }
-
-    #wrist_ench_dd {
-        width: 100px;
-    }
-
-    #hands_ench_dd {
-        width: 100px;
-    }
-
-    #legs_ench_dd {
-        width: 100px;
-    }
-
-    #boots_ench_dd {
-        width: 100px;
-    }
-
-    #main_hand_ench_dd {
-        width: 100px;
-    }
-
-    #off_hand_ench_dd {
-        width: 100px;
-    }
-
     select {
         color: black;
     }
 
-    option:disabled {
-        color: #cc0000;
+    select.item-select {
+        width: 150px;
+        background-color: #ccccff;
+    }
+
+    option:checked {
+        color: #000066;
+        background-color: #b3c6ff;
+    }
+
+    select.enchant-select {
+        width: 100px;
     }
 
     .button {
@@ -206,6 +106,12 @@
         animation: spin 2s linear infinite;
     }
 
+    p.select-title {
+        display: inline;
+        font-size: 22px;
+        font-weight: bold;
+    }
+
     @keyframes spin {
         0% {
             transform: rotate(0deg);
@@ -234,10 +140,6 @@
         overflow-x: hidden;
         overflow-x: auto;
         text-align: justify;
-    }
-
-    .tab_armor_type {
-        padding-left: 100px;
     }
 </style>
 
@@ -380,25 +282,25 @@
 
 <div id="Simulator" class="tabcontent">
 
-    <b>Load config from file:</b><br/>
+    <p class="select-title">Load config from file:</p><br>
     <input type="file" id="myFile" name="filename" accept=".txt">
-    <input type="submit" onclick="load_file()"><br/><br/>
+    <input type="submit" onclick="load_file()"><br><br>
 
-    <b>Save config to file:</b><br/>
+    <p class="select-title">Save config to file:</p><br>
     <button onclick="save_button()">Save current config</button>
-    <br/><br/>
+    <br><br>
 
-    <b> Quick-select:</b><br/>
+    <p class="select-title">Quick-select:</p><br>
     <button onclick="load_p1prebis()">Phase 1 "pre-BiS"</button>
     <button onclick="load_p3pvebis()">Phase 3 PvE-BiS</button>
     <button onclick="load_p4pvebis()">Phase 4 PvE-BiS</button>
     <button onclick="load_p5pvebis()">Phase 5 PvE-BiS</button>
-    <br/><br/>
+    <br><br>
 
-    <b> Select armor:</b><br/>
+    <p class="select-title">Select armor:</p><br>
 
     <!--armor begin-->
-    <select id="helmet_dd">
+    <select id="helmet_dd" size="10" class="item-select" multiple>
         <option value="none" selected disabled>helmet</option>
         <option value="circlet_of_restless_dreams">Circlet of restless dreams</option>
         <option value="conquerors_crown">Conquerors crown</option>
@@ -417,7 +319,7 @@
         <option value="r13_plate_helm">R13 plate helm</option>
     </select>
 
-    <select id="neck_dd">
+    <select id="neck_dd" size="10" class="item-select" multiple>
         <option value="none" selected disabled>neck</option>
         <option value="amulet_of_the_darkmoon">Amulet of the darkmoon</option>
         <option value="barbed_choker">Barbed choker</option>
@@ -431,7 +333,7 @@
         <option value="the_eye_of_hakkar">The eye of hakkar</option>
     </select>
 
-    <select id="shoulder_dd">
+    <select id="shoulder_dd" size="10" class="item-select" multiple>
         <option value="none" selected disabled>shoulder</option>
         <option value="abyssal_plate_epaulets">Abyssal plate epaulets</option>
         <option value="black_dragonscale_shoulders">Black dragonscale shoulders</option>
@@ -454,7 +356,7 @@
 
     <p></p>
 
-    <select id="back_dd">
+    <select id="back_dd" size="10" class="item-select" multiple>
         <option value="none" selected disabled>back</option>
         <option value="blackveil_cloak">Blackveil cloak</option>
         <option value="cape_of_the_black_baron">Cape of the black baron</option>
@@ -472,7 +374,7 @@
         <option value="zulian_tigerhide_cloak">Zulian tigerhide cloak</option>
     </select>
 
-    <select id="chest_dd">
+    <select id="chest_dd" size="10" class="item-select" multiple>
         <option value="none" selected disabled>chest</option>
         <option value="black_dragonscale_chest">Black dragonscale chest</option>
         <option value="bloodsoul_breastplate">Bloodsoul breastplate</option>
@@ -496,7 +398,7 @@
         <option value="zandalar_vindicators_breastplate">Zandalar vindicators breastplate</option>
     </select>
 
-    <select id="wrists_dd">
+    <select id="wrists_dd" size="10" class="item-select" multiple>
         <option value="none" selected disabled>wrists</option>
         <option value="abyssal_plate_vambraces">Abyssal plate vambraces</option>
         <option value="battleborn_armbraces">Battleborn armbraces</option>
@@ -515,7 +417,7 @@
 
     <p></p>
 
-    <select id="hands_dd">
+    <select id="hands_dd" size="10" class="item-select" multiple>
         <option value="none" selected disabled>hands</option>
         <option value="aged_core_leather_gloves">Aged core leather gloves</option>
         <option value="bloodmail_gauntlets">Bloodmail gauntlets</option>
@@ -533,7 +435,7 @@
         <option value="sacrificial_gauntlets">Sacrificial gauntlets</option>
     </select>
 
-    <select id="belt_dd">
+    <select id="belt_dd" size="10" class="item-select" multiple>
         <option value="none" selected disabled>belt</option>
         <option value="belt_of_heroism">Belt of heroism</option>
         <option value="belt_of_never_ending_agony">Belt of never ending agony</option>
@@ -549,7 +451,7 @@
         <option value="zandalar_vindicators_belt">Zandalar vindicators belt</option>
     </select>
 
-    <select id="legs_dd">
+    <select id="legs_dd" size="10" class="item-select" multiple>
         <option value="none" selected disabled>legs</option>
         <option value="abyssal_plate_legplates">Abyssal plate legplates</option>
         <option value="black_dragonscale_leggings">Black dragonscale leggings</option>
@@ -574,7 +476,7 @@
 
     <p></p>
 
-    <select id="boots_dd">
+    <select id="boots_dd" size="10" class="item-select" multiple>
         <option value="none" selected disabled>boots</option>
         <option value="battlechasers_greaves">Battlechasers greaves</option>
         <option value="black_dragonscale_boots">Black dragonscale boots</option>
@@ -594,7 +496,7 @@
         <option value="windreaver_greaves">Windreaver greaves</option>
     </select>
 
-    <select id="ring1_dd">
+    <select id="ring1_dd" size="10" class="item-select" multiple>
         <option value="none" selected disabled>ring1</option>
         <option value="band_of_accuria">Band of accuria</option>
         <option value="band_of_earthen_might">Band of earthen might</option>
@@ -617,7 +519,7 @@
         <option value="tarnished_elven_ring">Tarnished elven ring</option>
     </select>
 
-    <select id="ring2_dd">
+    <select id="ring2_dd" size="10" class="item-select" multiple>
         <option value="none" selected disabled>ring2</option>
         <option value="band_of_accuria">Band of accuria</option>
         <option value="band_of_earthen_might">Band of earthen might</option>
@@ -642,7 +544,7 @@
 
     <p></p>
 
-    <select id="trinket1_dd">
+    <select id="trinket1_dd" size="10" class="item-select" multiple>
         <option value="none" selected disabled>trinket1</option>
         <option value="badge_of_the_swarmguard">Badge of the swarmguard</option>
         <option value="blackhands_breadth">Blackhands breadth</option>
@@ -656,7 +558,7 @@
         <option value="rune_of_the_guard_captain">Rune of the guard captain</option>
     </select>
 
-    <select id="trinket2_dd">
+    <select id="trinket2_dd" size="10" class="item-select" multiple>
         <option value="none" selected disabled>trinket2</option>
         <option value="badge_of_the_swarmguard">Badge of the swarmguard</option>
         <option value="blackhands_breadth">Blackhands breadth</option>
@@ -670,7 +572,7 @@
         <option value="rune_of_the_guard_captain">Rune of the guard captain</option>
     </select>
 
-    <select id="ranged_dd">
+    <select id="ranged_dd" size="10" class="item-select" multiple>
         <option value="none" selected disabled>ranged</option>
         <option value="blastershot">Blastershot</option>
         <option value="bloodseeker">Bloodseeker</option>

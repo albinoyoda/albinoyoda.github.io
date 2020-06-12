@@ -132,6 +132,7 @@ for index, line in enumerate(lines):
         copy_line = True
 
 dropdowns_in_a_row = 0
+extra_stuff = ' size="10" class="item-select" multiple'
 if found_start and found_stop:
     first_part = washed_lines[0:armor_index + 1]
     second_part = washed_lines[armor_index + 1:]
@@ -141,7 +142,7 @@ if found_start and found_stop:
     for armor_type in armor_types:
         if armor_type.category == 'ring' or armor_type.category == 'trinket':
             for i in range(2):
-                generated_1.append('<select id="' + armor_type.category + str(i + 1) + '_dd"' + '>\n')
+                generated_1.append('<select id="' + armor_type.category + str(i + 1) + '_dd"' + extra_stuff + '>\n')
                 generated_1.append(
                     '    <option value="none" selected disabled>' + armor_type.category + str(i + 1) + '</option>\n')
                 for item in armor_type.items:
@@ -151,7 +152,7 @@ if found_start and found_stop:
                 generated_1.append('\n')
                 dropdowns_in_a_row = dropdowns_in_a_row + 1
         else:
-            generated_1.append('<select id="' + armor_type.category + '_dd" >\n')
+            generated_1.append('<select id="' + armor_type.category + '_dd"' + extra_stuff + '>\n')
             generated_1.append('    <option value="none" selected disabled>' + armor_type.category + '</option>\n')
             for item in armor_type.items:
                 item_name = remove_underscores_and_capitalize(item)
