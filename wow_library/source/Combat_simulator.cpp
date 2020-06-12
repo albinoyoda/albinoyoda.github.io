@@ -1107,9 +1107,9 @@ void Combat_simulator::init_histogram()
 
 void Combat_simulator::normalize_timelapse()
 {
-    for (size_t i = 0; i < 8; i++)
+    for (auto &damage_time_lapse_i : damage_time_lapse)
     {
-        for (auto &singe_damage_instance : damage_time_lapse[i])
+        for (auto &singe_damage_instance : damage_time_lapse_i)
         {
             singe_damage_instance /= config.n_batches;
         }

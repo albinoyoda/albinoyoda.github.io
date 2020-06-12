@@ -573,6 +573,13 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     double std_init = std::sqrt(simulator.get_dps_variance());
     double sample_std_init = Statistics::sample_deviation(std_init, config.n_batches);
 
+    std::vector<std::string> aura_uptimes = simulator.get_aura_uptimes();
+    std::vector<std::string> proc_statistics = simulator.get_proc_statistics();
+    auto a = simulator.get_damage_time_lapse();
+    auto yellow_ht = simulator.get_hit_probabilities_yellow();
+    auto white_mh_ht = simulator.get_hit_probabilities_white_mh();
+    auto white_oh_ht = simulator.get_hit_probabilities_white_oh();
+
     mean_dps_vec.push_back(mean_init);
     sample_std_dps_vec.push_back(sample_std_init);
     character_stats = get_character_stat(character);
@@ -593,13 +600,6 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
         mean_dps_vec.push_back(mean_init_2);
         sample_std_dps_vec.push_back(sample_std_init_2);
     }
-
-    std::vector<std::string> aura_uptimes = simulator.get_aura_uptimes();
-    std::vector<std::string> proc_statistics = simulator.get_proc_statistics();
-    auto a = simulator.get_damage_time_lapse();
-    auto yellow_ht = simulator.get_hit_probabilities_yellow();
-    auto white_mh_ht = simulator.get_hit_probabilities_white_mh();
-    auto white_oh_ht = simulator.get_hit_probabilities_white_oh();
 
     std::string extra_info_string = "<b>Fight stats vs. target:</b> <br/>";
     extra_info_string += "<b>Hit:</b> <br/>";
