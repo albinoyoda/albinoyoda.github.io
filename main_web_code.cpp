@@ -74,11 +74,6 @@ int main()
                                             "debug_on", "use_bt_in_exec_phase", "use_hs_in_exec_phase",
                                             "cleave_if_adds", "use_hamstring"};
 
-
-//    var sim_options = ["faerie_fire", "curse_of_recklessness", "death_wish",
-//            "recklessness", "mighty_rage_potion", "sulfuron_harbinger", "golemagg", "vaelastrasz", "chromaggus", "debug_on",
-//            "use_bt_in_exec_phase", "use_hs_in_exec_phase"];
-
     Sim_input sim_input{{race}, armor_vec, weapons_vec, buff_vec, ench_vec, {"hit", "crit"}, sim_options,
                         compare_armor_vec, compare_weapons_vec, 60, 63,
                         10000, 1000, 5, 60, 60,
