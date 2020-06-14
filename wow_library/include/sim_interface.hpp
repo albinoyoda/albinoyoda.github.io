@@ -8,6 +8,7 @@ class Sim_interface
 {
 public:
     Sim_output simulate(const Sim_input& input);
+    Sim_output simulate_mult(const Sim_input& input);
 };
 
 #endif // INTERFACE_HPP

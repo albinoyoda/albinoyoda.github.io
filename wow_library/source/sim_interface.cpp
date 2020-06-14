@@ -792,3 +792,108 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
             sample_std_dps_vec, {character_stats}};
 }
 
+Sim_output Sim_interface::simulate_mult(const Sim_input &input)
+{
+    Armory armory{};
+    Buffs buffs{};
+
+    auto temp_buffs = input.buffs;
+
+    if (find_string(input.options, "mighty_rage_potion"))
+    {
+        //temporary solution
+        temp_buffs.emplace_back("mighty_rage_potion");
+    }
+
+    Character character = character_setup(armory, buffs, input.race[0], input.armor, input.weapons, temp_buffs,
+            input.enchants);
+
+    // Simulator & Combat settings
+    Combat_simulator_config config{};
+    config.n_batches = input.n_simulations;
+    config.n_batches_statweights = input.n_simulations_stat_weights;
+    config.sim_time = input.fight_time;
+    config.opponent_level = input.target_level;
+
+    if (find_string(input.options, "curse_of_recklessness"))
+    {
+        config.curse_of_recklessness_active = true;
+    }
+    if (find_string(input.options, "faerie_fire"))
+    {
+        config.faerie_fire_feral_active = true;
+    }
+    if (find_string(input.options, "death_wish"))
+    {
+        config.talents.death_wish = true;
+    }
+    if (find_string(input.options, "recklessness"))
+    {
+        config.enable_recklessness = true;
+    }
+    if (find_string(input.options, "sulfuron_harbinger"))
+    {
+        config.mode.sulfuron_harbinger = true;
+    }
+    if (find_string(input.options, "golemagg"))
+    {
+        config.mode.golemagg = true;
+    }
+    if (find_string(input.options, "vaelastrasz"))
+    {
+        config.mode.vaelastrasz = true;
+    }
+    if (find_string(input.options, "chromaggus"))
+    {
+        config.mode.chromaggus = true;
+    }
+    if (find_string(input.options, "use_bt_in_exec_phase"))
+    {
+        config.combat.use_bt_in_exec_phase = true;
+    }
+    if (find_string(input.options, "use_hs_in_exec_phase"))
+    {
+        config.combat.use_hs_in_exec_phase = true;
+    }
+    if (find_string(input.options, "cleave_if_adds"))
+    {
+        config.combat.cleave_if_adds = true;
+    }
+    if (find_string(input.options, "use_hamstring"))
+    {
+        config.combat.use_hamstring = true;
+    }
+    config.n_sunder_armor_stacks = input.sunder_armor;
+
+    config.talents.improved_heroic_strike = 2;
+    config.talents.unbridled_wrath = 5;
+    config.talents.flurry = 5;
+    config.talents.anger_management = true;
+    config.talents.impale = 2;
+    config.talents.improved_execute = 2;
+    config.talents.dual_wield_specialization = 5;
+
+    config.combat.heroic_strike_rage_thresh = input.heroic_strike_rage_thresh;
+    config.combat.cleave_rage_thresh = input.cleave_rage_thresh;
+    config.combat.whirlwind_rage_thresh = input.whirlwind_rage_thresh;
+    config.combat.hamstring_cd_thresh = input.hamstring_cd_thresh;
+    config.combat.hamstring_thresh_dd = input.hamstring_thresh_dd;
+    config.combat.initial_rage = input.initial_rage;
+
+    config.use_sim_time_ramp = true;
+    config.enable_bloodrage = true;
+    config.use_seed = true;
+    config.seed = 110000;
+    config.fuel_extra_rage = false;
+    config.extra_rage_interval = 3;
+    config.extra_rage_damage_amount = 150;
+
+    Combat_simulator simulator(config);
+
+    simulator.simulate(character, true, true);
+
+    return {hist_x, hist_y, dps_dist, a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8],
+            aura_uptimes, proc_statistics, stat_weights, {extra_info_string, debug_topic}, mean_dps_vec,
+            sample_std_dps_vec, {character_stats}};
+}
+

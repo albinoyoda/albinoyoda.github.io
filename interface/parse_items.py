@@ -146,6 +146,18 @@ for index, line in enumerate(lines):
 dropdowns_in_a_row = 0
 extra_stuff_armor = ['" class="item-select"', '_mult" size="10" class="item-select" multiple']
 extra_stuff_weapon = ['" class="weapon-select"', '_mult" size="10" class="item-select" multiple']
+
+div_title_string = \
+    '<span class="left_select">{}</span><span class="middle_select">{}</span><span class="right_select">{}</span><br>\n'
+
+armor_names = []
+for armor_type in armor_types:
+    if armor_type.category == 'ring' or armor_type.category == 'trinket':
+        armor_names.append(armor_type.category+"1")
+        armor_names.append(armor_type.category+"2")
+    else:
+        armor_names.append(armor_type.category)
+
 if found_start and found_stop and found_start2 and found_stop2:
     first_part = washed_lines[0:armor_index + 1]
     second_part = washed_lines[armor_index + 1:armor_index + (armor_index2 - stop_index) + 2]
@@ -155,13 +167,19 @@ if found_start and found_stop and found_start2 and found_stop2:
     tot_generated = []
     for idx in range(2):
         generated = []
+        index = 0
         for armor_type in armor_types:
+            if index % 3 == 0:
+                generated.append(div_title_string.format(armor_names[index], armor_names[index + 1],
+                                                         armor_names[index + 2]))
+            index = index + 1
             if armor_type.category == 'ring' or armor_type.category == 'trinket':
+                index = index + 1
                 for i in range(2):
                     generated.append(
                         '<select id="' + armor_type.category + str(i + 1) + '_dd' + extra_stuff_armor[idx] + '>\n')
                     generated.append(
-                        '    <option value="none" selected disabled>' + armor_type.category + str(i + 1) + '</option>\n')
+                        '    <option value="none" selected disabled></option>\n')
                     for item in armor_type.items:
                         item_name = remove_underscores_and_capitalize(item)
                         generated.append('    <option value="' + item + '">' + item_name + '</option>\n')
@@ -170,7 +188,7 @@ if found_start and found_stop and found_start2 and found_stop2:
                     dropdowns_in_a_row = dropdowns_in_a_row + 1
             else:
                 generated.append('<select id="' + armor_type.category + '_dd' + extra_stuff_armor[idx] + '>\n')
-                generated.append('    <option value="none" selected disabled>' + armor_type.category + '</option>\n')
+                generated.append('    <option value="none" selected disabled></option>\n')
                 for item in armor_type.items:
                     item_name = remove_underscores_and_capitalize(item)
                     generated.append('    <option value="' + item + '">' + item_name + '</option>\n')
@@ -189,7 +207,7 @@ if found_start and found_stop and found_start2 and found_stop2:
         generated = ['<p class="select-title">Select weapons:</p><br>\n']
         for i in range(2):
             generated.append('<select id="' + alternatives[i] + '_dd' + extra_stuff_weapon[idx] + '>\n')
-            generated.append('    <option value="none" selected disabled>' + alternatives[i] + '</option>\n')
+            generated.append('    <option value="none" selected disabled></option>\n')
             for wep_type in weapons:
                 generated.append(
                     '    <option value="none" disabled> --- ' + wep_type.category.upper() + ' --- </option>\n')

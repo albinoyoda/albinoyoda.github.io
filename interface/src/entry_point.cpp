@@ -10,6 +10,7 @@ EMSCRIPTEN_BINDINGS(module)
     class_<Sim_interface>("Sim_interface")
         .constructor<>()
         .function("simulate", &Sim_interface::simulate);
+        .function("simulate_mult", &Sim_interface::simulate_mult);
 
     register_vector<double>("vector<double>");
     register_vector<int>("vector<int>");
@@ -26,6 +27,8 @@ EMSCRIPTEN_BINDINGS(module)
         .field("options", &Sim_input::options)
         .field("compare_armor", &Sim_input::compare_armor)
         .field("compare_weapons", &Sim_input::compare_weapons)
+        .field("mult_armor", &Sim_input::mult_armor)
+        .field("mult_weapons", &Sim_input::mult_weapons)
         .field("target_level", &Sim_input::target_level)
         .field("fight_time", &Sim_input::fight_time)
         .field("n_simulations", &Sim_input::n_simulations)
