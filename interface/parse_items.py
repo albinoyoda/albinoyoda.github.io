@@ -178,8 +178,9 @@ if found_start and found_stop and found_start2 and found_stop2:
                 for i in range(2):
                     generated.append(
                         '<select id="' + armor_type.category + str(i + 1) + '_dd' + extra_stuff_armor[idx] + '>\n')
-                    generated.append(
-                        '    <option value="none" selected disabled></option>\n')
+                    if idx == 0:
+                        generated.append(
+                            '    <option value="none" selected disabled></option>\n')
                     for item in armor_type.items:
                         item_name = remove_underscores_and_capitalize(item)
                         generated.append('    <option value="' + item + '">' + item_name + '</option>\n')
@@ -188,7 +189,8 @@ if found_start and found_stop and found_start2 and found_stop2:
                     dropdowns_in_a_row = dropdowns_in_a_row + 1
             else:
                 generated.append('<select id="' + armor_type.category + '_dd' + extra_stuff_armor[idx] + '>\n')
-                generated.append('    <option value="none" selected disabled></option>\n')
+                if idx == 0:
+                    generated.append('    <option value="none" selected disabled></option>\n')
                 for item in armor_type.items:
                     item_name = remove_underscores_and_capitalize(item)
                     generated.append('    <option value="' + item + '">' + item_name + '</option>\n')
@@ -207,10 +209,12 @@ if found_start and found_stop and found_start2 and found_stop2:
         generated = ['<p class="select-title">Select weapons:</p><br>\n']
         for i in range(2):
             generated.append('<select id="' + alternatives[i] + '_dd' + extra_stuff_weapon[idx] + '>\n')
-            generated.append('    <option value="none" selected disabled></option>\n')
+            if idx == 0:
+                generated.append('    <option value="none" selected disabled></option>\n')
             for wep_type in weapons:
-                generated.append(
-                    '    <option value="none" disabled> --- ' + wep_type.category.upper() + ' --- </option>\n')
+                if idx == 0:
+                    generated.append(
+                        '    <option value="none" disabled> --- ' + wep_type.category.upper() + ' --- </option>\n')
                 for item in wep_type.items:
                     split_item = item.split("*")
                     if i == 0:

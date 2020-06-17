@@ -379,6 +379,33 @@ wow_library/source/sim_interface.cpp.s:
 	$(MAKE) -f CMakeFiles/wow_lib.dir/build.make CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.s
 .PHONY : wow_library/source/sim_interface.cpp.s
 
+wow_library/source/sim_interface_mult.o: wow_library/source/sim_interface_mult.cpp.o
+
+.PHONY : wow_library/source/sim_interface_mult.o
+
+# target to build an object file
+wow_library/source/sim_interface_mult.cpp.o:
+	$(MAKE) -f CMakeFiles/wow_lib.dir/build.make CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o
+.PHONY : wow_library/source/sim_interface_mult.cpp.o
+
+wow_library/source/sim_interface_mult.i: wow_library/source/sim_interface_mult.cpp.i
+
+.PHONY : wow_library/source/sim_interface_mult.i
+
+# target to preprocess a source file
+wow_library/source/sim_interface_mult.cpp.i:
+	$(MAKE) -f CMakeFiles/wow_lib.dir/build.make CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.i
+.PHONY : wow_library/source/sim_interface_mult.cpp.i
+
+wow_library/source/sim_interface_mult.s: wow_library/source/sim_interface_mult.cpp.s
+
+.PHONY : wow_library/source/sim_interface_mult.s
+
+# target to generate assembly for a file
+wow_library/source/sim_interface_mult.cpp.s:
+	$(MAKE) -f CMakeFiles/wow_lib.dir/build.make CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.s
+.PHONY : wow_library/source/sim_interface_mult.cpp.s
+
 wow_library/source/weapon_sim.o: wow_library/source/weapon_sim.cpp.o
 
 .PHONY : wow_library/source/weapon_sim.o
@@ -443,6 +470,9 @@ help:
 	@echo "... wow_library/source/sim_interface.o"
 	@echo "... wow_library/source/sim_interface.i"
 	@echo "... wow_library/source/sim_interface.s"
+	@echo "... wow_library/source/sim_interface_mult.o"
+	@echo "... wow_library/source/sim_interface_mult.i"
+	@echo "... wow_library/source/sim_interface_mult.s"
 	@echo "... wow_library/source/weapon_sim.o"
 	@echo "... wow_library/source/weapon_sim.i"
 	@echo "... wow_library/source/weapon_sim.s"

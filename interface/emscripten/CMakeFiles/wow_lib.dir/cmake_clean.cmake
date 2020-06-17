@@ -6,6 +6,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/wow_lib.dir/wow_library/source/Attributes.cpp.o"
   "CMakeFiles/wow_lib.dir/wow_library/source/Armory.cpp.o"
   "CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o"
+  "CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o"
   "CMakeFiles/wow_lib.dir/wow_library/source/Statistics.cpp.o"
   "CMakeFiles/wow_lib.dir/wow_library/source/damage_sources.cpp.o"
   "libwow_lib.pdb"

@@ -46,8 +46,50 @@ int main()
     compare_armor_vec.emplace_back("blastershot");
 
     std::vector<std::string> compare_weapons_vec;
-    compare_weapons_vec.emplace_back("dal_rends_tribal_guardian");
-    compare_weapons_vec.emplace_back("thunderfury_blessed_blade");
+    compare_weapons_vec.emplace_back("thrash_blade");
+    compare_weapons_vec.emplace_back("assassination_blade");
+
+    std::vector<std::string> mult_armor_vec;
+    mult_armor_vec.emplace_back("lionheart_helm");
+    mult_armor_vec.emplace_back("onyxia_tooth_pendant");
+    mult_armor_vec.emplace_back("truestrike_shoulders");
+    mult_armor_vec.emplace_back("cape_of_the_black_baron");
+    mult_armor_vec.emplace_back("savage_gladiator_chain");
+    mult_armor_vec.emplace_back("wristguards_of_stability");
+    mult_armor_vec.emplace_back("flameguard_gauntlets");
+    mult_armor_vec.emplace_back("onslaught_girdle");
+    mult_armor_vec.emplace_back("cloudkeeper_legplates");
+    mult_armor_vec.emplace_back("chromatic_boots");
+    mult_armor_vec.emplace_back("might_of_cenarius");
+    mult_armor_vec.emplace_back("master_dragonslayers_ring");
+    mult_armor_vec.emplace_back("badge_of_the_swarmguard");
+    mult_armor_vec.emplace_back("diamond_flask");
+    mult_armor_vec.emplace_back("blastershot");
+    mult_armor_vec.emplace_back("hand_of_justice");
+    mult_armor_vec.emplace_back("darkmoon_card_maelstrom");
+//    mult_armor_vec.emplace_back("rune_of_the_guard_captain");
+//    mult_armor_vec.emplace_back("jom_gabbar");
+//    mult_armor_vec.emplace_back("earthstrike");
+//    mult_armor_vec.emplace_back("magnis_will");
+//    mult_armor_vec.emplace_back("quick_strike_ring");
+//    mult_armor_vec.emplace_back("master_dragonslayers_ring");
+//    mult_armor_vec.emplace_back("circle_of_applied_force");
+//    mult_armor_vec.emplace_back("blackstone_ring");
+//    mult_armor_vec.emplace_back("might_of_cenarius");
+//    mult_armor_vec.emplace_back("master_dragonslayers_ring");
+//    mult_armor_vec.emplace_back("windreaver_greaves");
+//    mult_armor_vec.emplace_back("black_dragonscale_boots");
+//    mult_armor_vec.emplace_back("conquerors_legguards");
+
+    std::vector<std::string> mult_weapons_vec;
+    mult_weapons_vec.emplace_back("dal_rends_tribal_guardian");
+    mult_weapons_vec.emplace_back("thunderfury_blessed_blade");
+    mult_weapons_vec.emplace_back("thrash_blade");
+    mult_weapons_vec.emplace_back("assassination_blade");
+    mult_weapons_vec.emplace_back("mirahs_song");
+    mult_weapons_vec.emplace_back("viskag");
+    mult_weapons_vec.emplace_back("quel_serrar");
+    mult_weapons_vec.emplace_back("ancient_quiraji_ripper");
 
     std::vector<std::string> buff_vec;
     buff_vec.emplace_back("rallying_cry");
@@ -75,32 +117,33 @@ int main()
                                             "cleave_if_adds", "use_hamstring"};
 
     Sim_input sim_input{{race}, armor_vec, weapons_vec, buff_vec, ench_vec, {"hit", "crit"}, sim_options,
-                        compare_armor_vec, compare_weapons_vec, 60, 63,
+                        compare_armor_vec, compare_weapons_vec, mult_armor_vec, mult_weapons_vec, 60, 60,
                         10000, 1000, 5, 60, 60,
                         25, 1, 2.0, 80, 45};
 
-    auto sim_output = sim_interface.simulate(sim_input);
+    auto sim_output = sim_interface.simulate_mult(sim_input);
+//    sim_output = sim_interface.simulate(sim_input);
 
-    for (const auto &dmg_batch : sim_output.stat_weights)
-    {
-        std::cout << dmg_batch << "\n";
-    }
-
-    for (double dmg_source : sim_output.dmg_sources)
-    {
-        std::cout << "source = " << dmg_source << "\n";
-    }
-
-    std::cout << "extra = " << "\n";
-    for (const auto &message : sim_output.extra_stats)
-    {
-        std::cout << message << "\n";
-    }
-
-    for (const auto &dps : sim_output.mean_dps)
-    {
-        std::cout << "DPS = " << dps << "\n";
-    }
+//    for (const auto &dmg_batch : sim_output.stat_weights)
+//    {
+//        std::cout << dmg_batch << "\n";
+//    }
+//
+//    for (double dmg_source : sim_output.dmg_sources)
+//    {
+//        std::cout << "source = " << dmg_source << "\n";
+//    }
+//
+//    std::cout << "extra = " << "\n";
+//    for (const auto &message : sim_output.extra_stats)
+//    {
+//        std::cout << message << "\n";
+//    }
+//
+//    for (const auto &dps : sim_output.mean_dps)
+//    {
+//        std::cout << "DPS = " << dps << "\n";
+//    }
 
     for (const auto &message : sim_output.messages)
     {

@@ -692,6 +692,12 @@ void Combat_simulator::swing_weapon(Weapon_sim &weapon, Weapon_sim &main_hand_we
     }
 }
 
+void Combat_simulator::simulate(const Character &character, size_t n_simulations)
+{
+    config.n_batches = n_simulations;
+    simulate(character, false, false);
+}
+
 void Combat_simulator::simulate(const Character &character, bool compute_time_lapse, bool compute_histogram)
 {
     int n_damage_batches = config.n_batches;

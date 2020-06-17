@@ -15,8 +15,14 @@ sim_input.hpp
 ../../wow_library/include/sim_input.hpp
 sim_output.hpp
 ../../wow_library/include/sim_output.hpp
+sim_output_mult.hpp
+../../wow_library/include/sim_output_mult.hpp
 
 ../../wow_library/include/sim_output.hpp
+utility
+-
+
+../../wow_library/include/sim_output_mult.hpp
 utility
 -
 

@@ -470,7 +470,6 @@ Armor Armory::find_armor(const Socket socket, const std::string &name) const
             return item;
         }
     }
-    std::cout << "ERROR: Could not find item: " << name << "\n";
     return {"item_not_found: " + name, {}, {}, socket};
 }
 
@@ -511,7 +510,24 @@ Weapon Armory::find_weapon(const std::string &name) const
             return item;
         }
     }
-    std::cout << "ERROR: Could not find item: " << name << "\n";
     return {"item_not_found: " + name, {}, {}, 1.0, 0, 0, Weapon_socket::one_hand, Weapon_type::dagger};
 }
+
+//std::vector<Armor> Armory::get_all_armors() const
+//{
+//    std::vector<Armor> armors;
+//    armors.insert( armors.end(), helmet_t.begin(), helmet_t.end() );
+//    armors.insert( armors.end(), neck_t.begin(), neck_t.end() );
+//    armors.insert( armors.end(), shoulder_t.begin(), shoulder_t.end() );
+//    armors.insert( armors.end(), back_t.begin(), back_t.end() );
+//    armors.insert( armors.end(), chest_t.begin(), chest_t.end() );
+//    armors.insert( armors.end(), wrists_t.begin(), wrists_t.end() );
+//    armors.insert( armors.end(), hands_t.begin(), hands_t.end() );
+//    armors.insert( armors.end(), belt_t.begin(), belt_t.end() );
+//    armors.insert( armors.end(), legs_t.begin(), legs_t.end() );
+//    armors.insert( armors.end(), boots_t.begin(), boots_t.end() );
+//    armors.insert( armors.end(), ring_t.begin(), ring_t.end() );
+//    armors.insert( armors.end(), trinket_t.begin(), trinket_t.end() );
+//    armors.insert( armors.end(), ranged_t.begin(), ranged_t.end() );
+//}
 

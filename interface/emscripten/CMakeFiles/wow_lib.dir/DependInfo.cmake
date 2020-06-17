@@ -12,6 +12,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/src/wow_library/source/Statistics.cpp" "/src/interface/emscripten/CMakeFiles/wow_lib.dir/wow_library/source/Statistics.cpp.o"
   "/src/wow_library/source/damage_sources.cpp" "/src/interface/emscripten/CMakeFiles/wow_lib.dir/wow_library/source/damage_sources.cpp.o"
   "/src/wow_library/source/sim_interface.cpp" "/src/interface/emscripten/CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o"
+  "/src/wow_library/source/sim_interface_mult.cpp" "/src/interface/emscripten/CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o"
   "/src/wow_library/source/weapon_sim.cpp" "/src/interface/emscripten/CMakeFiles/wow_lib.dir/wow_library/source/weapon_sim.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "Clang")

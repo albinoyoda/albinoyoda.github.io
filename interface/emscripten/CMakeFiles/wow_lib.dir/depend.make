@@ -53,9 +53,28 @@ CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o: ../../wow_library
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o: ../../wow_library/include/sim_input.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o: ../../wow_library/include/sim_interface.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o: ../../wow_library/include/sim_output.hpp
+CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o: ../../wow_library/include/sim_output_mult.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o: ../../wow_library/include/time_keeper.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o: ../../wow_library/include/weapon_sim.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o: ../../wow_library/source/sim_interface.cpp
+
+CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/Armory.hpp
+CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/Attributes.hpp
+CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/Buff_manager.hpp
+CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/Character.hpp
+CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/Combat_simulator.hpp
+CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/Combat_simulator.tcc
+CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/Item.hpp
+CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/Statistics.hpp
+CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/damage_sources.hpp
+CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/damage_sources.tcc
+CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/sim_input.hpp
+CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/sim_interface.hpp
+CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/sim_output.hpp
+CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/sim_output_mult.hpp
+CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/time_keeper.hpp
+CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/weapon_sim.hpp
+CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/source/sim_interface_mult.cpp
 
 CMakeFiles/wow_lib.dir/wow_library/source/weapon_sim.cpp.o: ../../wow_library/include/Attributes.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/weapon_sim.cpp.o: ../../wow_library/include/Item.hpp

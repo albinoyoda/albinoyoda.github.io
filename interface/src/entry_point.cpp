@@ -6,10 +6,9 @@ using namespace emscripten;
 
 EMSCRIPTEN_BINDINGS(module)
 {
-
     class_<Sim_interface>("Sim_interface")
         .constructor<>()
-        .function("simulate", &Sim_interface::simulate);
+        .function("simulate", &Sim_interface::simulate)
         .function("simulate_mult", &Sim_interface::simulate_mult);
 
     register_vector<double>("vector<double>");
@@ -62,4 +61,8 @@ EMSCRIPTEN_BINDINGS(module)
         .field("mean_dps", &Sim_output::mean_dps)
         .field("std_dps", &Sim_output::std_dps)
         .field("messages", &Sim_output::messages);
+
+    value_object<Sim_output_mult>("Sim_output_mult")
+        .field("messages", &Sim_output_mult::messages);
+
 };

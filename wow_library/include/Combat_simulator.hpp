@@ -216,6 +216,8 @@ public:
 
     void simulate(const Character &character, bool compute_time_lape = false, bool compute_histogram = false);
 
+    void simulate(const Character &character, size_t n_simulations);
+
     static double get_uniform_random(double r_max)
     {
         return rand() * r_max / RAND_MAX;
