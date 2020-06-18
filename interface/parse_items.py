@@ -173,7 +173,7 @@ if found_start and found_stop and found_start2 and found_stop2:
                 generated.append(div_title_string.format(armor_names[index], armor_names[index + 1],
                                                          armor_names[index + 2]))
             index = index + 1
-            if armor_type.category == 'ring' or armor_type.category == 'trinket':
+            if (armor_type.category == 'ring' or armor_type.category == 'trinket') and idx == 0:
                 index = index + 1
                 for i in range(2):
                     generated.append(
