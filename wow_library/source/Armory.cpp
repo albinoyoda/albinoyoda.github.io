@@ -510,7 +510,7 @@ Weapon Armory::find_weapon(const std::string &name) const
             return item;
         }
     }
-    return {"item_not_found: " + name, {}, {}, 1.0, 0, 0, Weapon_socket::one_hand, Weapon_type::dagger};
+    return {"item_not_found: " + name, {}, {}, 2.0, 0, 0, Weapon_socket::one_hand, Weapon_type::unarmed};
 }
 
 //std::vector<Armor> Armory::get_all_armors() const

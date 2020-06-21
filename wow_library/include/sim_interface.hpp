@@ -5,12 +5,11 @@
 #include "sim_output.hpp"
 #include "sim_output_mult.hpp"
 
-class Sim_interface
-{
+class Sim_interface {
 public:
-    Sim_output simulate(const Sim_input &input);
+    static Sim_output simulate(const Sim_input& input);
 
-    Sim_output_mult simulate_mult(const Sim_input &input);
+    static Sim_output_mult simulate_mult(const Sim_input& input);
 };
 
 #endif // INTERFACE_HPP
