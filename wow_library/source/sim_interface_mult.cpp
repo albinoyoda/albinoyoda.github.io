@@ -46,17 +46,18 @@ constexpr int get_skill_of_type(const Special_stats& special_stats, Weapon_type 
     case Weapon_type::mace:return special_stats.mace_skill;
     case Weapon_type::unarmed:return special_stats.fist_skill;
     }
+    return 300;
 }
 
-std::vector<double> find_cdf_quantile(const std::vector<double>& target_quantiles, double precision)
-{
-    std::vector<double> x_values;
-    x_values.reserve(target_quantiles.size());
-    for (const auto& quantile : target_quantiles) {
-        x_values.emplace_back(find_cdf_quantile(quantile, precision));
-    }
-    return x_values;
-}
+//std::vector<double> find_cdf_quantile(const std::vector<double>& target_quantiles, double precision)
+//{
+//    std::vector<double> x_values;
+//    x_values.reserve(target_quantiles.size());
+//    for (const auto& quantile : target_quantiles) {
+//        x_values.emplace_back(find_cdf_quantile(quantile, precision));
+//    }
+//    return x_values;
+//}
 
 Race get_race(const std::string& race)
 {
@@ -105,31 +106,6 @@ constexpr double skill_w = 195.0/5;
 constexpr double skill_w_soft = 60.0/5;
 constexpr double skill_w_hard = 20.0/5;
 constexpr double ap_per_coh = 20/6.2;
-
-bool can_estimate_hit_effect(const Weapon& wep)
-{
-    for (const auto& hit_effect : wep.hit_effects) {
-        if (hit_effect.name==wep.name) {
-            if (hit_effect.type==Hit_effect::Type::stat_boost ||
-                    hit_effect.type==Hit_effect::Type::reduce_armor) {
-                return false;
-            }
-        }
-    }
-    return true;
-}
-
-bool can_estimate_use_effects(const std::vector<Use_effect>& use_effects)
-{
-    for (const auto& use_effect : use_effects) {
-        if (use_effect.name!="badge_of_the_swarmguard") {
-            if (use_effect.get_special_stat_equivalent({}).attack_power==0) {
-                return false;
-            }
-        }
-    }
-    return true;
-}
 
 double get_ap_equivalent(const Special_stats& special_stats, int relevant_skill, double swing_speed,
         double weapon_damage)
@@ -212,7 +188,7 @@ double get_total_qp_equivalent(const Special_stats& special_stats, const Weapon&
         double use_effect_ap = effect.get_special_stat_equivalent(special_stats).attack_power*
                 std::min(effect.duration/sim_time, 1.0);
         if (effect.name=="badge_of_the_swarmguard") {
-            use_effect_ap = 350*std::min(effect.duration/sim_time, 1.0);
+            use_effect_ap = 300*std::min(effect.duration/sim_time, 1.0);
         }
         if (effect.effect_socket==Use_effect::Effect_socket::unique) {
             use_effects_ap += use_effect_ap;
@@ -233,6 +209,10 @@ double get_total_qp_equivalent(const Special_stats& special_stats, const Weapon&
         else if (effect.type==Hit_effect::Type::extra_hit) {
             hit_effects_ap += effect.probability*hit_w;
         }
+        else if (effect.type==Hit_effect::Type::stat_boost) {
+            // Estimate empyrean demolisher as 10 DPS increase (okay since its only the filtering step)
+            hit_effects_ap += 140;
+        }
     }
     for (const auto& effect : wep2.hit_effects) {
         if (effect.type==Hit_effect::Type::damage_magic_guaranteed ||
@@ -242,6 +222,10 @@ double get_total_qp_equivalent(const Special_stats& special_stats, const Weapon&
         }
         else if (effect.type==Hit_effect::Type::extra_hit) {
             hit_effects_ap += effect.probability*hit_w*0.5;
+        }
+        else if (effect.type==Hit_effect::Type::stat_boost) {
+            // Estimate empyrean demolisher as 10 DPS increase (okay since its only the filtering step)
+            hit_effects_ap += 140*0.5;
         }
     }
     return attack_power+(main_hand_ap+0.625*off_hand_ap)/1.625+use_effects_ap+best_use_effects_shared_ap
@@ -277,15 +261,15 @@ public:
     struct Sim_result_t {
       Sim_result_t() = default;
 
-      Sim_result_t(size_t index, double mean_dps, double sample_std_dps)
+      Sim_result_t(size_t index, double mean_dps, double variance)
               :
               index{index},
               mean_dps{mean_dps},
-              sample_std_dps{sample_std_dps} { }
+              variance{variance} { }
 
       size_t index{};
       double mean_dps{};
-      double sample_std_dps{};
+      double variance{};
       double ap_equivalent{};
     };
 
@@ -573,7 +557,7 @@ void Item_optimizer::item_setup(const std::vector<std::string>& armor_vec, const
     cum_combination_vector.clear();
     total_combinations = combination_vector[0];
     cum_combination_vector.push_back(combination_vector[0]);
-    for (int i = 1; i<combination_vector.size(); i++) {
+    for (size_t i = 1; i<combination_vector.size(); i++) {
         cum_combination_vector.push_back(cum_combination_vector.back()*combination_vector[i]);
         total_combinations *= combination_vector[i];
     }
@@ -782,6 +766,14 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input& input)
     item_optimizer.buffs_vec = input.buffs;
     item_optimizer.ench_vec = input.enchants;
     item_optimizer.item_setup(input.mult_armor, input.mult_weapons);
+
+    if (item_optimizer.total_combinations>5000000) {
+        std::string msg = "To many items selected, please deselect some items. Current total number of possible combinations: \n";
+        msg += std::to_string(item_optimizer.total_combinations);
+        msg += "\nMaximum number of combinations: "+std::to_string(5000000);
+        return {{msg}};
+    }
+
     // Combat settings
     auto temp_buffs = input.buffs;
 
@@ -854,6 +846,7 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input& input)
     config.enable_bloodrage = true;
     config.use_seed = true;
     config.seed = clock();
+//    config.seed = 10000;
     config.fuel_extra_rage = false;
     config.extra_rage_interval = 3;
     config.extra_rage_damage_amount = 150;
@@ -866,64 +859,86 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input& input)
         keepers.emplace_back(j, 0, 0);
     }
 
-    std::cout << "Total combinations: " << keepers.size() << "\n";
-    std::cout << "Heuristic filter computing... " << keepers.size() << "\n";
-    clock_t start_filter = clock();
-    double best_attack_power = 0;
-    for (auto& keeper : keepers) {
-        Character character = item_optimizer.construct(keeper.index);
-        if (can_estimate_hit_effect(character.weapons[0]) &&
-                can_estimate_hit_effect(character.weapons[1]) &&
-                can_estimate_use_effects(character.use_effects)) {
+    std::cout << "Total item combinations: " << keepers.size() << "\n\n";
+    if (item_optimizer.total_combinations>5000) {
+        std::cout << "More than 5000 combinations. Applying a heuristic filter. Computing... " << "\n";
+        clock_t start_filter = clock();
+        double highest_attack_power = 0;
+        double lowest_attack_power = 1e12;
+        for (auto& keeper : keepers) {
+            Character character = item_optimizer.construct(keeper.index);
             keeper.ap_equivalent = get_total_qp_equivalent(character.total_special_stats, character.weapons[0],
                     character.weapons[1], character.use_effects, config.sim_time);
-            if (keeper.ap_equivalent>best_attack_power) {
-                best_attack_power = keeper.ap_equivalent;
+            if (keeper.ap_equivalent>highest_attack_power) {
+                highest_attack_power = keeper.ap_equivalent;
+            }
+            if (keeper.ap_equivalent<lowest_attack_power) {
+                lowest_attack_power = keeper.ap_equivalent;
             }
         }
-    }
 
-    std::cout << "Best equivalent attack power: " << best_attack_power << "\n";
-    std::cout << "Filtering sets below attack power: " << 0.95*best_attack_power << "\n";
+        std::cout << "Equivalent attack power range: [" << lowest_attack_power << ", " << highest_attack_power << "]\n";
+        double filtering_value = 0.25*lowest_attack_power+0.75*highest_attack_power;
+        std::cout << "Removing bottom 75% sets. AP < " << filtering_value << "\n";
 
-    std::vector<Item_optimizer::Sim_result_t> temp_keepers;
-    temp_keepers.reserve(keepers.size());
-    for (const auto& keeper : keepers) {
-        if (keeper.ap_equivalent>0.0) {
-            if (keeper.ap_equivalent>0.95*best_attack_power) {
-                temp_keepers.push_back(keeper);
+        {
+            std::vector<Item_optimizer::Sim_result_t> temp_keepers;
+            temp_keepers.reserve(keepers.size());
+            for (const auto& keeper : keepers) {
+                if (keeper.ap_equivalent>filtering_value) {
+                    temp_keepers.push_back(keeper);
+                }
+            }
+            keepers = temp_keepers;
+        }
+
+        if (keepers.size()>50000) {
+            filtering_value = 0.20*lowest_attack_power+0.80*highest_attack_power;
+            std::cout << "Large item pool. Filtering again...\n";
+            std::cout << "Removing bottom 80% sets. AP < " << filtering_value << "\n";
+            {
+                std::vector<Item_optimizer::Sim_result_t> temp_keepers;
+                temp_keepers.reserve(keepers.size());
+                for (const auto& keeper : keepers) {
+                    if (keeper.ap_equivalent>filtering_value) {
+                        temp_keepers.push_back(keeper);
+                    }
+                }
+                keepers = temp_keepers;
             }
         }
-        else {
-            temp_keepers.push_back(keeper);
-        }
+        double time_spent_filter = double(clock()-start_filter)/(double) CLOCKS_PER_SEC;
+        std::cout << "Combinations after filtering: " << keepers.size() << "\n";
+        std::cout << "Time spent filtering: " << time_spent_filter << "s.\n\n";
     }
-    keepers = temp_keepers;
 
-    double time_spent_filter = double(clock()-start_filter)/(double) CLOCKS_PER_SEC;
-    std::cout << "Combinations after filtering: " << keepers.size() << "\n";
-    std::cout << "Time spent filtering: " << time_spent_filter << "\n";
-    std::cout << "Starting optimizer: " << keepers.size() << "\n";
-
-    std::vector<size_t> batches_per_iteration = {20, 50, 100, 1000, 10000};
+    std::cout << "Starting optimizer! Current combinations:" << keepers.size() << "\n";
+    std::vector<size_t> batches_per_iteration = {20};
+    std::vector<size_t> cumulative_simulations = {0};
+    for (int i = 0; i<30; i++) {
+        batches_per_iteration.push_back(batches_per_iteration.back()*1.2);
+        cumulative_simulations.push_back(cumulative_simulations.back()+batches_per_iteration[i]);
+    }
+    cumulative_simulations.push_back(cumulative_simulations.back()+batches_per_iteration.back());
     size_t n_sim{};
+    size_t performed_iterations{};
     for (size_t i = 0; i<batches_per_iteration.size(); i++) {
         clock_t startTime = clock();
         std::cout << "Iteration " << i+1 << " of " << batches_per_iteration.size() << "\n";
-        std::cout << "total_keepers: " << keepers.size() << "\n";
+        std::cout << "Total keepers: " << keepers.size() << "\n";
 
         double best_dps = 0;
-        double best_dps_std = 0;
+        double best_dps_variance = 0;
         size_t iter = 0;
         for (auto& keeper : keepers) {
             Character character = item_optimizer.construct(keeper.index);
-            simulator.simulate(character, batches_per_iteration[i]);
+            simulator.simulate(character, batches_per_iteration[i], keeper.mean_dps,
+                    keeper.variance, cumulative_simulations[i]);
             keeper.mean_dps = simulator.get_dps_mean();
-            auto std_dps = std::sqrt(simulator.get_dps_variance());
-            keeper.sample_std_dps = Statistics::sample_deviation(std_dps, batches_per_iteration[i]);
+            keeper.variance = simulator.get_dps_variance();
             if (keeper.mean_dps>best_dps) {
                 best_dps = keeper.mean_dps;
-                best_dps_std = keeper.sample_std_dps;
+                best_dps_variance = keeper.variance;
             }
 
             // Time taken
@@ -945,28 +960,33 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input& input)
             }
         }
 
-        double quantile = find_cdf_quantile(1-1/static_cast<double>(keepers.size()*sqrt(keepers.size())), 0.01);
-        double filter_value = best_dps-quantile*best_dps_std;
+        double quantile = find_cdf_quantile(1-1/static_cast<double>(keepers.size()), 0.01);
+        double best_dps_sample_std = Statistics::sample_deviation(std::sqrt(best_dps_variance),
+                cumulative_simulations[i+1]);
+        double filter_value = best_dps-quantile*best_dps_sample_std;
         std::cout << "Best combination DPS: " << best_dps << ", removing sets below: "
-                  << best_dps-quantile*best_dps_std << "\n";
+                  << best_dps-quantile*best_dps_sample_std << "\n";
 
         std::vector<Item_optimizer::Sim_result_t> temp_keepers;
         temp_keepers.reserve(keepers.size());
         for (const auto& keeper : keepers) {
-            if (keeper.mean_dps>=filter_value) {
+            double keeper_sample_std = Statistics::sample_deviation(std::sqrt(keeper.variance),
+                    cumulative_simulations[i+1]);
+            if (keeper.mean_dps+keeper_sample_std*quantile>=filter_value) {
                 temp_keepers.emplace_back(keeper);
             }
         }
         keepers = temp_keepers;
-        if (keepers.size()==1) {
+        performed_iterations = i;
+        if (keepers.size()<=1) {
             break;
         }
     }
 
-    std::string message = +"<b>Total number of simulations performed: </b>"+std::to_string(n_sim)+"<br>";
-    message += "<b>Best item set/sets <u>sorted</u> by DPS:</b><br>";
-    message += "<b>Item formatting</b>: <br>[Item uccurances / total sets] - socket - item_name<br>";
-    message += "(higher uccurance = 'Better' item)<br><br>";
+    std::string message = +"<b>Total number of simulations performed: </b>"+std::to_string(n_sim)+"\n";
+    message += "<b>Best item set/sets <u>sorted</u> by DPS:</b>\n";
+    message += "<b>Item formatting</b>: \n[Item occurances / total sets] - socket - item_name\n";
+    message += "(higher occurance = 'Better' item)\n\n";
 
     std::sort(keepers.begin(), keepers.end());
     std::reverse(keepers.begin(), keepers.end());
@@ -1019,15 +1039,29 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input& input)
         }
     }
 
-    std::vector<std::string> socket_names = {"Helmet", "Neck", "Shoulder", "Back", "Chest", "Bracers", "Hands", "Belt",
+    std::vector<std::string> socket_names = {"Helmet", "Neck", "Shoulder", "Back", "Chest", "Wrists", "Hands", "Belt",
                                              "Legs", "Boots", "Ranged", "Ring 1", "Ring 2", "Trinket 1", "Trinket 2"};
 
+    std::vector<size_t> socket_combinations = {item_optimizer.helmets.size(), item_optimizer.necks.size(),
+                                               item_optimizer.shoulders.size(),
+                                               item_optimizer.backs.size(), item_optimizer.chests.size(),
+                                               item_optimizer.wrists.size(), item_optimizer.hands.size(),
+                                               item_optimizer.belts.size(), item_optimizer.legs.size(),
+                                               item_optimizer.boots.size(), item_optimizer.ranged.size(),
+                                               item_optimizer.ring_combinations.size(),
+                                               item_optimizer.ring_combinations.size(),
+                                               item_optimizer.trinket_combinations.size(),
+                                               item_optimizer.trinket_combinations.size()};
+
     std::vector<std::string> weapon_names = {"Main-hand", "Off-hand"};
+    size_t weapon_combinations = item_optimizer.weapon_combinations.size();
 
     for (size_t i = 0; i<best_characters.size(); i++) {
         message += "<b>Set "+std::to_string(i+1)+":</b>\n";
         message += "DPS: "+string_with_precision(keepers[i].mean_dps, 5)+"\n";
-        message += "Error margin: "+string_with_precision(keepers[i].sample_std_dps, 3)+"\n";
+        double error_margin = Statistics::sample_deviation(keepers[i].variance,
+                cumulative_simulations[performed_iterations+1]);
+        message += "Error margin: "+string_with_precision(error_margin, 3)+"\n";
         message += "<b>Stats:</b>\n";
         message += "Hit: "+string_with_precision(best_characters[i].total_special_stats.hit, 3)+" %\n";
         message += "Crit: "+string_with_precision(best_characters[i].total_special_stats.critical_strike,
@@ -1041,6 +1075,7 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input& input)
             auto item_pop = (*std::find(item_popularity[j].begin(), item_popularity[j].end(),
                     best_characters[i].armor[j].name));
             message += "["+std::to_string(item_pop.counter)+"/"+std::to_string(best_characters.size())+"] ";
+            message += "("+std::to_string(socket_combinations[j])+") ";
             message += "<b>"+socket_names[j]+"</b>"+" - "+best_characters[i].armor[j].name+"\n";
         }
         message += "<b>Weapons:</b>\n";
@@ -1048,6 +1083,7 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input& input)
             auto item_pop = (*std::find(weapon_popularity[j].begin(), weapon_popularity[j].end(),
                     best_characters[i].weapons[j].name));
             message += "["+std::to_string(item_pop.counter)+"/"+std::to_string(best_characters.size())+"] ";
+            message += "("+std::to_string(weapon_combinations)+") ";
             message += "<b>"+weapon_names[j]+"</b>"+" - "+best_characters[i].weapons[j].name+"\n";
         }
         message += "\n";
@@ -1055,48 +1091,3 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input& input)
 
     return {{message}};
 }
-
-////    std::vector<Item_optimizer::Sim_result_t> keepers;
-////    keepers.reserve(item_optimizer.total_combinations);
-////    for (size_t j = 0; j<item_optimizer.total_combinations; ++j) {
-////        keepers.emplace_back(j, 0, 0);
-////    }
-//
-//std::cout << "Total combinations: " << item_optimizer.total_combinations << "\n";
-//std::cout << "Heuristic filter computing... " << "\n";
-//clock_t start_filter = clock();
-//double best_attack_power = 0;
-//for (size_t i = 0; i<item_optimizer.total_combinations; i++) {
-//Character character = item_optimizer.construct(i);
-//if (can_estimate_hiteffect(character.weapons[0]) &&
-//can_estimate_hiteffect(character.weapons[1]) &&
-//can_estimate_use_effects(character.use_effects)) {
-//double ap_equivalent = get_total_qp_equivalent(character.total_special_stats, character.weapons[0],
-//        character.weapons[1], character.use_effects, config.sim_time);
-//if (ap_equivalent>best_attack_power) {
-//best_attack_power = ap_equivalent;
-//}
-//}
-//}
-//
-//std::cout << "Best equivalent attack power: " << best_attack_power << "\n";
-//std::cout << "Filtering sets below attack power: " << 0.95*best_attack_power << "\n";
-//
-//std::vector<Item_optimizer::Sim_result_t> keepers;
-//keepers.reserve(item_optimizer.total_combinations/10);
-//for (size_t i = 0; i<item_optimizer.total_combinations; i++) {
-//Character character = item_optimizer.construct(i);
-//if (can_estimate_hiteffect(character.weapons[0]) &&
-//can_estimate_hiteffect(character.weapons[1]) &&
-//can_estimate_use_effects(character.use_effects)) {
-//double ap_equivalent = get_total_qp_equivalent(character.total_special_stats, character.weapons[0],
-//        character.weapons[1], character.use_effects, config.sim_time);
-//if (ap_equivalent>0.95*best_attack_power) {
-//keepers.emplace_back(i, 0, 0);
-//}
-//}
-//else {
-//keepers.emplace_back(i, 0, 0);
-//}
-//}
-////    keepers = temp_keepers;
