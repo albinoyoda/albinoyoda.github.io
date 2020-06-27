@@ -108,7 +108,7 @@
         padding: 18px;
         display: none;
         overflow-y: scroll;
-        max-height: 450px;
+        max-height: 480px;
         width: 600px;
         background-color: #d9d9d9;
     }
@@ -235,6 +235,17 @@
         the <a href="https://github.com/magey/classic-warrior/wiki/Attack-table">Attack table</a> github.<br/>
         Their models have been verified on classic servers, and I can strongly recommend to check it out.<br/>
     </p>
+    <p><b>Q: The DPS in the simulator is much higher than what I usually get when I raid. What is wrong?</b></p>
+    <p>A: The bot "playing" in the simulator follows the a the specified ability rotation with perfect execution,<br>
+        meaning it does 0 misstakes, 0 missclicks and has near perfect timing with all of its cooldowns.<br>
+        Furthermore, so does all of it's "raid members", where fearie fire, curse of recklessness,<br>
+        and sunder armor are assumed to be applied instantly as the fight begins and have no downtime. The bot also<br>
+        does not wait for the tank to build threat, but, rather, it starts to DPS as soon as the timer starts.<br>
+        In the future there will be more modes added where these factors can be set more realistically, with<br>
+        latency added to abilities and downtime to armor reduction etc. While this will reduce the DPS in the<br>
+        simulations, it wont affect what items that are superior to others, since all items can be assumed to<br>
+        be affected by this in the same way (except for perhaps badge of the swarmguard and other use effects.)<br>
+    </p>
     <p><b>Q: Wow, I really love the webdesign from the 90's! </b></p>
     <p>A: Said no one ever...<br/>
         The reason why this page looks to have a target audience in their 50's is that I have very limited<br/>
@@ -299,6 +310,15 @@
         - Added a tracker for the number of off-hand hits which got benefits from the "heroic strike bug", also <br/>
         works on cleave. <br/>
     </p>
+    <p><b>2020-06-27:</b></p>
+    <p>
+        - Multi-select! When this is selected its possible to enter multiple items from the same slot. This is<br/>
+        usefull if you have alot of different promising items and want some help with finding the best<br/>
+        possible configuration of these. It uses a probabilistic framework, so results from run to run may vary.<br/>
+        If it produces weird/scattered results for a specified set of items try increasing the maximum allowed<br/>
+        simulation time for the optimizer, which will increase the performance.<br/>
+        - Some small appearance changes and bugfixes.
+    </p>
 
 </div>
 
@@ -310,8 +330,6 @@
     <p>Configure use effect timings. </p>
     <p>Talents </p>
     <p>2h fury support </p>
-    <p>Ability to compare gear setups side-by-side </p>
-    <!--    <p>Ability to find the best combination of gear given a  </p>-->
 </div>
 
 <div id="Simulator" class="tabcontent">
@@ -759,14 +777,15 @@
         <div id="armor_multiple" style="display:none">
 
             <p class="select-title">Quick-select:</p><br>
-            <button onclick="load_p1vp5prebis()">Phase 5 PvE-BiS vs phase 1 "pre-BiS"</button>
+            <button onclick="load_p1prebisitems()">Example where phase 1 "pre-BiS" items are examined</button>
+            <button onclick="load_p5pvebismult()">Load Phase 5 PvE-BiS</button>
             <br>
             Add/remove items by ctrl + left-click.<br>
             Add all items in a slot by clicking somewhere in the item-container and pressing "ctrl + a".
             <br><br>
 
             <!--armor begin2-->
-            <span class="left_select">helmet</span><span class="middle_select">neck</span><span class="right_select">shoulder</span><br>
+            <span class="left_select">Helmet</span><span class="middle_select">Neck</span><span class="right_select">Shoulder</span><br>
             <select id="helmet_dd_mult" size="10" class="item-select" multiple>
                 <option value="circlet_of_restless_dreams">Circlet of restless dreams</option>
                 <option value="conquerors_crown">Conquerors crown</option>
@@ -820,7 +839,7 @@
 
             <p></p>
 
-            <span class="left_select">back</span><span class="middle_select">chest</span><span class="right_select">wrists</span><br>
+            <span class="left_select">Back</span><span class="middle_select">Chest</span><span class="right_select">Wrists</span><br>
             <select id="back_dd_mult" size="10" class="item-select" multiple>
                 <option value="blackveil_cloak">Blackveil cloak</option>
                 <option value="cape_of_the_black_baron">Cape of the black baron</option>
@@ -879,8 +898,8 @@
 
             <p></p>
 
-            <span class="left_select">hands</span><span class="middle_select">belt</span><span
-                class="right_select">legs</span><br>
+            <span class="left_select">Hands</span><span class="middle_select">Belt</span><span
+                class="right_select">Legs</span><br>
             <select id="hands_dd_mult" size="10" class="item-select" multiple>
                 <option value="aged_core_leather_gloves">Aged core leather gloves</option>
                 <option value="bloodmail_gauntlets">Bloodmail gauntlets</option>
@@ -937,7 +956,7 @@
 
             <p></p>
 
-            <span class="left_select">boots</span><span class="middle_select">ring1</span><span class="right_select">ring2</span><br>
+            <span class="left_select">Boots</span><span class="middle_select">Rings</span><span class="right_select">Trinkets</span><br>
             <select id="boots_dd_mult" size="10" class="item-select" multiple>
                 <option value="battlechasers_greaves">Battlechasers greaves</option>
                 <option value="black_dragonscale_boots">Black dragonscale boots</option>
@@ -957,7 +976,7 @@
                 <option value="windreaver_greaves">Windreaver greaves</option>
             </select>
 
-            <select id="ring1_dd_mult" size="10" class="item-select" multiple>
+            <select id="ring_dd_mult" size="10" class="item-select" multiple>
                 <option value="band_of_accuria">Band of accuria</option>
                 <option value="band_of_earthen_might">Band of earthen might</option>
                 <option value="band_of_jin">Band of jin</option>
@@ -979,58 +998,22 @@
                 <option value="tarnished_elven_ring">Tarnished elven ring</option>
             </select>
 
-            <select id="ring2_dd_mult" size="10" class="item-select" multiple>
-                <option value="band_of_accuria">Band of accuria</option>
-                <option value="band_of_earthen_might">Band of earthen might</option>
-                <option value="band_of_jin">Band of jin</option>
-                <option value="band_of_the_ogre_king">Band of the ogre king</option>
-                <option value="blackstone_ring">Blackstone ring</option>
-                <option value="circle_of_applied_force">Circle of applied force</option>
-                <option value="don_julios_band">Don julios band</option>
-                <option value="magnis_will">Magnis will</option>
-                <option value="master_dragonslayers_ring">Master dragonslayers ring</option>
-                <option value="might_of_cenarius">Might of cenarius</option>
-                <option value="painweaver_band">Painweaver band</option>
-                <option value="quick_strike_ring">Quick strike ring</option>
-                <option value="ring_of_the_god_slayer">Ring of the god slayer</option>
-                <option value="ring_of_the_qiraji_fury">Ring of the qiraji fury</option>
-                <option value="seal_of_jin">Seal of jin</option>
-                <option value="seal_of_the_gurubashi_berserker">Seal of the gurubashi berserker</option>
-                <option value="signet_of_the_bronze_dragonflight">Signet of the bronze dragonflight</option>
-                <option value="signet_of_unyielding_strength">Signet of unyielding strength</option>
-                <option value="tarnished_elven_ring">Tarnished elven ring</option>
+            <select id="trinket_dd_mult" size="10" class="item-select" multiple>
+                <option value="badge_of_the_swarmguard">Badge of the swarmguard</option>
+                <option value="blackhands_breadth">Blackhands breadth</option>
+                <option value="counterattack_lodestone">Counterattack lodestone</option>
+                <option value="darkmoon_card_maelstrom">Darkmoon card maelstrom</option>
+                <option value="diamond_flask">Diamond flask</option>
+                <option value="drake_fang_talisman">Drake fang talisman</option>
+                <option value="earthstrike">Earthstrike</option>
+                <option value="hand_of_justice">Hand of justice</option>
+                <option value="jom_gabbar">Jom gabbar</option>
+                <option value="rune_of_the_guard_captain">Rune of the guard captain</option>
             </select>
 
             <p></p>
 
-            <span class="left_select">trinket1</span><span class="middle_select">trinket2</span><span
-                class="right_select">ranged</span><br>
-            <select id="trinket1_dd_mult" size="10" class="item-select" multiple>
-                <option value="badge_of_the_swarmguard">Badge of the swarmguard</option>
-                <option value="blackhands_breadth">Blackhands breadth</option>
-                <option value="counterattack_lodestone">Counterattack lodestone</option>
-                <option value="darkmoon_card_maelstrom">Darkmoon card maelstrom</option>
-                <option value="diamond_flask">Diamond flask</option>
-                <option value="drake_fang_talisman">Drake fang talisman</option>
-                <option value="earthstrike">Earthstrike</option>
-                <option value="hand_of_justice">Hand of justice</option>
-                <option value="jom_gabbar">Jom gabbar</option>
-                <option value="rune_of_the_guard_captain">Rune of the guard captain</option>
-            </select>
-
-            <select id="trinket2_dd_mult" size="10" class="item-select" multiple>
-                <option value="badge_of_the_swarmguard">Badge of the swarmguard</option>
-                <option value="blackhands_breadth">Blackhands breadth</option>
-                <option value="counterattack_lodestone">Counterattack lodestone</option>
-                <option value="darkmoon_card_maelstrom">Darkmoon card maelstrom</option>
-                <option value="diamond_flask">Diamond flask</option>
-                <option value="drake_fang_talisman">Drake fang talisman</option>
-                <option value="earthstrike">Earthstrike</option>
-                <option value="hand_of_justice">Hand of justice</option>
-                <option value="jom_gabbar">Jom gabbar</option>
-                <option value="rune_of_the_guard_captain">Rune of the guard captain</option>
-            </select>
-
+            <span class="left_select">Ranged</span><span class="middle_select">Weapons</span><br>
             <select id="ranged_dd_mult" size="10" class="item-select" multiple>
                 <option value="blastershot">Blastershot</option>
                 <option value="bloodseeker">Bloodseeker</option>
@@ -1046,16 +1029,15 @@
                 <option value="strikers_mark">Strikers mark</option>
             </select>
 
-            <p></p>
-
-            <p class="select-title">Select weapons:</p><br>
-            <select id="main_hand_dd_mult" size="10" class="item-select" multiple>
+            <select id="weapons_dd_mult" size="10" class="item-select" multiple>
+                <option value="none" disabled> --- SWORDS ---</option>
                 <option value="ancient_quiraji_ripper">Ancient quiraji ripper</option>
                 <option value="assassination_blade">Assassination blade</option>
                 <option value="blackguard">Blackguard</option>
                 <option value="brutality_blade">Brutality blade</option>
                 <option value="chromatically_tempered_sword">Chromatically tempered sword</option>
                 <option value="dal_rends_sacred_charge">Dal rends sacred charge</option>
+                <option value="dal_rends_tribal_guardian">Dal rends tribal guardian</option>
                 <option value="maladath">Maladath</option>
                 <option value="mirahs_song">Mirahs song</option>
                 <option value="nightmare_blade">Nightmare blade</option>
@@ -1070,7 +1052,9 @@
                 <option value="thunderfury_blessed_blade">Thunderfury blessed blade</option>
                 <option value="viskag">Viskag</option>
                 <option value="warblade_hakkari_mh">Warblade hakkari mh</option>
+                <option value="warblade_hakkari_oh">Warblade hakkari oh</option>
                 <option value="zulian_slicer">Zulian slicer</option>
+                <option value="none" disabled> --- AXES ---</option>
                 <option value="ancient_hakkari_manslayer">Ancient hakkari manslayer</option>
                 <option value="axe_of_the_deep_woods">Axe of the deep woods</option>
                 <option value="blessed_qiraji_war_axe">Blessed qiraji war axe</option>
@@ -1084,6 +1068,7 @@
                 <option value="sickle_on_unyielding_strength">Sickle on unyielding strength</option>
                 <option value="zulian_hacker_of_strength">Zulian hacker of strength</option>
                 <option value="zulian_hacker_of_the_tiger">Zulian hacker of the tiger</option>
+                <option value="none" disabled> --- DAGGERS ---</option>
                 <option value="alcors_sunrazor">Alcors sunrazor</option>
                 <option value="blessed_qiraji_pugio">Blessed qiraji pugio</option>
                 <option value="core_hound_tooth">Core hound tooth</option>
@@ -1093,6 +1078,7 @@
                 <option value="finkles_skinner">Finkles skinner</option>
                 <option value="perditions_blade">Perditions blade</option>
                 <option value="r14_dagger">R14 dagger</option>
+                <option value="none" disabled> --- MACES ---</option>
                 <option value="anubisath_warhammer">Anubisath warhammer</option>
                 <option value="blessed_quiraji_warhammer">Blessed quiraji warhammer</option>
                 <option value="ebon_hand">Ebon hand</option>
@@ -1105,58 +1091,9 @@
                 <option value="sceptre_of_smiting">Sceptre of smiting</option>
                 <option value="spineshatter">Spineshatter</option>
                 <option value="stormstike_hammer">Stormstike hammer</option>
+                <option value="none" disabled> --- FISTS ---</option>
                 <option value="claw_of_the_black_drake">Claw of the black drake</option>
                 <option value="silithid_claw">Silithid claw</option>
-            </select>
-            <select id="off_hand_dd_mult" size="10" class="item-select" multiple>
-                <option value="ancient_quiraji_ripper">Ancient quiraji ripper</option>
-                <option value="assassination_blade">Assassination blade</option>
-                <option value="blackguard">Blackguard</option>
-                <option value="brutality_blade">Brutality blade</option>
-                <option value="chromatically_tempered_sword">Chromatically tempered sword</option>
-                <option value="dal_rends_tribal_guardian">Dal rends tribal guardian</option>
-                <option value="maladath">Maladath</option>
-                <option value="mirahs_song">Mirahs song</option>
-                <option value="nightmare_blade">Nightmare blade</option>
-                <option value="protectors_sword">Protectors sword</option>
-                <option value="r14_longsword">R14 longsword</option>
-                <option value="r14_swiftblade">R14 swiftblade</option>
-                <option value="ravencrests_legacy">Ravencrests legacy</option>
-                <option value="ravenholdt_slicer">Ravenholdt slicer</option>
-                <option value="thrash_blade">Thrash blade</option>
-                <option value="thunderfury_blessed_blade">Thunderfury blessed blade</option>
-                <option value="viskag">Viskag</option>
-                <option value="warblade_hakkari_oh">Warblade hakkari oh</option>
-                <option value="zulian_slicer">Zulian slicer</option>
-                <option value="ancient_hakkari_manslayer">Ancient hakkari manslayer</option>
-                <option value="axe_of_the_deep_woods">Axe of the deep woods</option>
-                <option value="blessed_qiraji_war_axe">Blessed qiraji war axe</option>
-                <option value="bone_slicing_hatchet">Bone slicing hatchet</option>
-                <option value="crul_shorukh_edge_of_chaos">Crul shorukh edge of chaos</option>
-                <option value="deathbringer">Deathbringer</option>
-                <option value="dooms_edge">Dooms edge</option>
-                <option value="flurry_axe">Flurry axe</option>
-                <option value="frostbite">Frostbite</option>
-                <option value="r14_handaxe">R14 handaxe</option>
-                <option value="sickle_on_unyielding_strength">Sickle on unyielding strength</option>
-                <option value="zulian_hacker_of_strength">Zulian hacker of strength</option>
-                <option value="zulian_hacker_of_the_tiger">Zulian hacker of the tiger</option>
-                <option value="alcors_sunrazor">Alcors sunrazor</option>
-                <option value="blessed_qiraji_pugio">Blessed qiraji pugio</option>
-                <option value="core_hound_tooth">Core hound tooth</option>
-                <option value="deaths_sting">Deaths sting</option>
-                <option value="dragonfang_blade">Dragonfang blade</option>
-                <option value="fang_of_the_faceless">Fang of the faceless</option>
-                <option value="perditions_blade">Perditions blade</option>
-                <option value="r14_dagger">R14 dagger</option>
-                <option value="anubisath_warhammer">Anubisath warhammer</option>
-                <option value="blessed_quiraji_warhammer">Blessed quiraji warhammer</option>
-                <option value="ebon_hand">Ebon hand</option>
-                <option value="mass_of_mcgowan">Mass of mcgowan</option>
-                <option value="r14_mace">R14 mace</option>
-                <option value="sand_polished_hammer">Sand polished hammer</option>
-                <option value="sceptre_of_smiting">Sceptre of smiting</option>
-                <option value="stormstike_hammer">Stormstike hammer</option>
             </select>
             <!--armor stop2-->
 
@@ -1166,21 +1103,29 @@
         <p class="select-title">Select mode:</p><br>
         <input type="checkbox" id="normal_mode" checked
                onclick="unique_checkboxes('normal_mode', ['multiple_mode', 'do_comparison']);
-                        unique_div(['armor_single'],['armor_multiple', 'compare_div'])">
-        <label for="normal_mode"> Standard: Simulate an item configuration </label><br>
+                        unique_div(['armor_single'],['armor_multiple', 'compare_div', 'multi_description_div'])">
+        <label for="normal_mode"> <b>Standard</b>: Simulate an item configuration </label><br>
 
         <input type="checkbox" id="multiple_mode"
                onclick="unique_checkboxes('multiple_mode', ['normal_mode', 'do_comparison']);
-                        unique_div(['armor_multiple'],['armor_single', 'compare_div'])">
-        <label for="multiple_mode">Multi-mode: Select multiple items from the same slot to find the best</label><br>
-
+                        unique_div(['armor_multiple', 'multi_description_div'],['armor_single', 'compare_div'])">
+        <label for="multiple_mode"><b>Multi-mode</b>: Enable selection of multiple items from the same slot.</label><br>
+        <div style="display:none" id="multi_description_div">
+            <b>Description:</b> More items selected means that the optimizer will run for a longer time. It will break
+            automatically when it has found the best set <b>OR</b> when the max optimization timer is reached.<br>
+            <label for="max_optimize_time">Max optimization time: (60-120s):</label>
+            <input type="number" id="max_optimize_time" name="quantity" min="60" max="120" value="90"> seconds.<br/>
+            <input type="checkbox" id="display_multi_debug">
+            <label for="display_multi_debug">Output debug information from the optimizer (shown at the
+                bottom)</label><br>
+        </div>
         <input type="checkbox" id="do_comparison"
                onclick="unique_checkboxes('do_comparison', ['multiple_mode', 'normal_mode']);
-                        unique_div(['compare_div', 'armor_single'],['armor_multiple'])">
-        <label for="do_comparison">Comparison: Add a configuration file to compare against</label>
+                        unique_div(['compare_div', 'armor_single'],['armor_multiple', 'multi_description_div'])">
+        <label for="do_comparison"><b>Comparison</b>: Add a configuration file to compare against</label>
 
         <div style="display:none" id="compare_div">
-            <b>Load config (dont forget to press submit):</b><br/>
+            <b>Description:</b> Select an item config and press submit.<br/>
             (To generate a config file press "Save config to file" at the top of the page)<br/>
             <input type="file" id="myCompareFile" name="filename" accept=".txt" onclick="show_div('compare_div')">
             <input type="submit" onclick="load_compare_data()">
@@ -1628,13 +1573,12 @@
     var weapons = ["main_hand_dd", "off_hand_dd"];
     var weapons_input = [];
 
-    var armor_mult = [];
-    for (let armor_name of armor) {
-        armor_mult.push(armor_name + "_mult")
-    }
+    var armor_mult = ["helmet_dd_mult", "neck_dd_mult", "shoulder_dd_mult", "back_dd_mult",
+        "chest_dd_mult", "wrists_dd_mult", "hands_dd_mult", "belt_dd_mult", "legs_dd_mult",
+        "boots_dd_mult", "ring_dd_mult", "trinket_dd_mult", "ranged_dd_mult"];
     var armor_input_mult = [];
 
-    var weapons_mult = ["main_hand_dd_mult", "off_hand_dd_mult"];
+    var weapons_mult = ["weapons_dd_mult"];
     var weapons_input_mult = [];
 
     var enchants = ["helmet_ench_dd", "shoulder_ench_dd", "back_ench_dd", "chest_ench_dd", "wrist_ench_dd",
@@ -1773,26 +1717,31 @@
         }
     }
 
-    function select_prebis_mult(selected_items1, selected_items2, selected_weapons1, selected_weapons2, selected_enchants) {
-        for (let i = 0; i < armor_mult.length; i++) {
-            let select_option = document.getElementById(armor_mult[i]);
-            let item1 = selected_items1[i];
-            let item2 = selected_items2[i];
-            for (let j = 0; j < select_option.options.length; j++) {
-                let option_j = select_option.options[j];
-                if (option_j.value === item1 || option_j.value === item2) {
-                    option_j.selected = true;
+    function select_prebis_mult(selected_items, selected_weapons, selected_enchants) {
+        for (let option_name of armor_mult) {
+            console.log(option_name);
+            let select_option = document.getElementById(option_name);
+            for (let option of select_option.options) {
+                for (let item of selected_items) {
+                    if (option.value === item) {
+                        option.selected = true;
+                        break;
+                    } else {
+                        option.selected = false;
+                    }
                 }
             }
         }
-        for (let i = 0; i < weapons_mult.length; i++) {
-            let select_option = document.getElementById(weapons_mult[i]);
-            let item1 = selected_weapons1[i];
-            let item2 = selected_weapons2[i];
-            for (let j = 0; j < select_option.options.length; j++) {
-                let option_j = select_option.options[j];
-                if (option_j.value === item1 || option_j.value === item2) {
-                    option_j.selected = true;
+
+        let select_option = document.getElementById(weapons_mult[0]);
+        console.log(select_option.options.length);
+        for (let option of select_option.options) {
+            for (let item of selected_weapons) {
+                if (option.value === item) {
+                    option.selected = true;
+                    break;
+                } else {
+                    option.selected = false;
                 }
             }
         }
@@ -1801,22 +1750,31 @@
         }
     }
 
-    function load_p1vp5prebis() {
-        let selected_items1 = ["lionheart_helm", "barbed_choker", "mantle_of_wicked_revenge",
+    function load_p1prebisitems() {
+        let selected_items = ["lionheart_helm", "eye_of_rend", "helm_of_valor", "mark_of_fordring", "imperial_jewel",
+            "spaulders_of_valor", "truestrike_shoulders", "black_dragonscale_shoulders", "cape_of_the_black_baron", "blackveil_cloak",
+            "black_dragonscale_chest", "savage_gladiator_chain", "vambraces_of_the_sadist", "battleborn_armbraces",
+            "reiver_claws", "devilsaur_gauntlets", "brigam_girdle", "omokks_girth_restrainer", "eldritch_legplates",
+            "devilsaur_leggings", "cloudkeeper_legplates", "black_dragonscale_leggings",
+            "battlechasers_greaves", "black_dragonscale_boots", "painweaver_band",
+            "blackstone_ring", "magnis_will", "tarnished_elven_ring",
+            "blackhands_breadth", "hand_of_justice", "satyrs_bow"];
+        let selected_weapons = ["dal_rends_sacred_charge", "dal_rends_tribal_guardian", "ironfoe", "thrash_blade", "mirahs_song"];
+        let selected_enchants = ["+8 strength", "+30 attack_power", "+3 agility", "+4 stats", "+9 strength",
+            "+7 strength", "+8 strength", "+7 agility", "crusader", "crusader"];
+        select_prebis_mult(selected_items, selected_weapons, selected_enchants);
+    }
+
+    function load_p5pvebismult() {
+        let selected_items = ["lionheart_helm", "barbed_choker", "mantle_of_wicked_revenge",
             "cloak_of_the_fallen_god", "breastplate_of_annihilation", "hive_defiler_wristguards",
             "gauntlets_of_annihilation", "onslaught_girdle", "conquerors_legguards",
             "chromatic_boots", "quick_strike_ring", "circle_of_applied_force",
             "jom_gabbar", "badge_of_the_swarmguard", "crossbow_of_imminent_doom"];
-        let selected_items2 = ["lionheart_helm", "mark_of_fordring", "truestrike_shoulders",
-            "cape_of_the_black_baron", "savage_gladiator_chain", "battleborn_armbraces",
-            "devilsaur_gauntlets", "omokks_girth_restrainer", "devilsaur_leggings",
-            "battlechasers_greaves", "magnis_will", "blackstone_ring",
-            "blackhands_breadth", "hand_of_justice", "satyrs_bow"];
-        let selected_weapons1 = ["chromatically_tempered_sword", "maladath"];
-        let selected_weapons2 = ["dal_rends_sacred_charge", "dal_rends_tribal_guardian"];
+        let selected_weapons = ["chromatically_tempered_sword", "maladath"];
         let selected_enchants = ["+8 strength", "+30 attack_power", "+3 agility", "+4 stats", "+9 strength",
             "+7 strength", "+8 strength", "+7 agility", "crusader", "crusader"];
-        select_prebis_mult(selected_items1, selected_items2, selected_weapons1, selected_weapons2, selected_enchants);
+        select_prebis_mult(selected_items, selected_weapons, selected_enchants);
     }
 
     function load_p5pvebis() {
@@ -2127,6 +2085,12 @@
         }
         sunder_armor_dd = Math.min(Math.max(sunder_armor_dd, 0), 5);
 
+        let max_optimize_time = parseInt(document.getElementById("max_optimize_time").value);
+        if (isNaN(max_optimize_time)) {
+            max_optimize_time = 90;
+        }
+        max_optimize_time = Math.min(Math.max(max_optimize_time, 60), 120);
+
         let options = new Module.StringList();
         for (let val of sim_options) {
             if (document.getElementById(val).checked) {
@@ -2171,42 +2135,67 @@
         let race_vec = new Module.StringList();
         race_vec.push_back(race_string);
 
-        let wow_input = {
-            race: race_vec,
-            armor: armor_vec,
-            weapons: weapons_vec,
-            buffs: buff_vec,
-            enchants: ench_vec,
-            stat_weights: stat_weight_vec,
-            options: options,
-            compare_armor: compare_armor_vec,
-            compare_weapons: compare_weapons_vec,
-            mult_armor: mult_armor_vec,
-            mult_weapons: mult_weapons_vec,
-            target_level: opponent_level_dd,
-            fight_time: fight_time_dd,
-            n_simulations: n_simulations_dd,
-            n_simulations_stat_weights: n_simulations_stat_dd,
-            sunder_armor: sunder_armor_dd,
-            heroic_strike_rage_thresh: heroic_strike_rage_thresh,
-            cleave_rage_thresh: cleave_rage_thresh,
-            whirlwind_rage_thresh: whirlwind_rage_thresh,
-            whirlwind_bt_cooldown_thresh: whirlwind_bt_cooldown_thresh,
-            hamstring_cd_thresh: hamstring_cd_thresh,
-            hamstring_thresh_dd: hamstring_thresh,
-            initial_rage: initial_rage,
-        };
-
         let obj = new Module['Sim_interface']();
 
         if (document.getElementById("multiple_mode").checked) {
+            let wow_input = {
+                race: race_vec,
+                armor: mult_armor_vec,
+                weapons: mult_weapons_vec,
+                buffs: buff_vec,
+                enchants: ench_vec,
+                options: options,
+                target_level: opponent_level_dd,
+                fight_time: fight_time_dd,
+                n_simulations: n_simulations_dd,
+                n_simulations_stat_weights: n_simulations_stat_dd,
+                sunder_armor: sunder_armor_dd,
+                heroic_strike_rage_thresh: heroic_strike_rage_thresh,
+                cleave_rage_thresh: cleave_rage_thresh,
+                whirlwind_rage_thresh: whirlwind_rage_thresh,
+                whirlwind_bt_cooldown_thresh: whirlwind_bt_cooldown_thresh,
+                hamstring_cd_thresh: hamstring_cd_thresh,
+                hamstring_thresh_dd: hamstring_thresh,
+                initial_rage: initial_rage,
+                max_optimize_time: max_optimize_time,
+            };
+
             let result = obj.simulate_mult(wow_input);
             document.getElementById("output1").innerHTML = result['messages'].get(0);
             document.getElementById("output2").innerHTML = "";
+            if (document.getElementById("display_multi_debug").checked) {
+                document.getElementById("output2").innerHTML = result['messages'].get(1);
+            }
             document.getElementById("output3").innerHTML = "";
             document.getElementById("output4").innerHTML = "";
 
         } else {
+            let wow_input = {
+                race: race_vec,
+                armor: armor_vec,
+                weapons: weapons_vec,
+                buffs: buff_vec,
+                enchants: ench_vec,
+                stat_weights: stat_weight_vec,
+                options: options,
+                compare_armor: compare_armor_vec,
+                compare_weapons: compare_weapons_vec,
+                mult_armor: mult_armor_vec,
+                mult_weapons: mult_weapons_vec,
+                target_level: opponent_level_dd,
+                fight_time: fight_time_dd,
+                n_simulations: n_simulations_dd,
+                n_simulations_stat_weights: n_simulations_stat_dd,
+                sunder_armor: sunder_armor_dd,
+                heroic_strike_rage_thresh: heroic_strike_rage_thresh,
+                cleave_rage_thresh: cleave_rage_thresh,
+                whirlwind_rage_thresh: whirlwind_rage_thresh,
+                whirlwind_bt_cooldown_thresh: whirlwind_bt_cooldown_thresh,
+                hamstring_cd_thresh: hamstring_cd_thresh,
+                hamstring_thresh_dd: hamstring_thresh,
+                initial_rage: initial_rage,
+            };
+
             let result = obj.simulate(wow_input);
 
             let mean_dps = [];

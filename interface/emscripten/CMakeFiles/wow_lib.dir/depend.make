@@ -51,6 +51,7 @@ CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o: ../../wow_library
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o: ../../wow_library/include/damage_sources.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o: ../../wow_library/include/damage_sources.tcc
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o: ../../wow_library/include/sim_input.hpp
+CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o: ../../wow_library/include/sim_input_mult.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o: ../../wow_library/include/sim_interface.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o: ../../wow_library/include/sim_output.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o: ../../wow_library/include/sim_output_mult.hpp
@@ -69,6 +70,7 @@ CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_li
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/damage_sources.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/damage_sources.tcc
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/sim_input.hpp
+CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/sim_input_mult.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/sim_interface.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/sim_output.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/sim_output_mult.hpp

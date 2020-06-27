@@ -10,6 +10,10 @@
 vector
 -
 
+../../wow_library/include/sim_input_mult.hpp
+vector
+-
+
 ../../wow_library/include/sim_interface.hpp
 sim_input.hpp
 ../../wow_library/include/sim_input.hpp
@@ -17,6 +21,8 @@ sim_output.hpp
 ../../wow_library/include/sim_output.hpp
 sim_output_mult.hpp
 ../../wow_library/include/sim_output_mult.hpp
+sim_input_mult.hpp
+../../wow_library/include/sim_input_mult.hpp
 
 ../../wow_library/include/sim_output.hpp
 utility

@@ -1,5 +1,5 @@
-#ifndef COVID_INPUT_HPP
-#define COVID_INPUT_HPP
+#ifndef SIM_INPUT_HPP
+#define SIM_INPUT_HPP
 
 #include <vector>
 
@@ -16,8 +16,6 @@ struct Sim_input
               std::vector<std::string> options,
               std::vector<std::string> compare_armor,
               std::vector<std::string> compare_weapons,
-              std::vector<std::string> mult_armor,
-              std::vector<std::string> mult_weapons,
               double fight_time,
               double target_level,
               double n_simulations,
@@ -40,8 +38,6 @@ struct Sim_input
             options(std::move(options)),
             compare_armor(std::move(compare_armor)),
             compare_weapons(std::move(compare_weapons)),
-            mult_armor(std::move(mult_armor)),
-            mult_weapons(std::move(mult_weapons)),
             fight_time(fight_time),
             target_level(target_level),
             n_simulations(n_simulations),
@@ -64,8 +60,6 @@ struct Sim_input
     std::vector<std::string> options;
     std::vector<std::string> compare_armor;
     std::vector<std::string> compare_weapons;
-    std::vector<std::string> mult_armor;
-    std::vector<std::string> mult_weapons;
     double fight_time{};
     double target_level{};
     double n_simulations{};
@@ -80,4 +74,4 @@ struct Sim_input
     double initial_rage{};
 };
 
-#endif // COVID_INPUT_HPP
+#endif // SIM_INPUT_HPP

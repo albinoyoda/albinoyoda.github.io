@@ -559,7 +559,7 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
 
     Combat_simulator simulator(config);
 
-    simulator.simulate(character, true, true);
+    simulator.simulate(character, 0, true, true);
 
     std::string character_stats;
     std::vector<double> mean_dps_vec;

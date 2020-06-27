@@ -50,26 +50,26 @@ int main()
     compare_weapons_vec.emplace_back("assassination_blade");
 
     std::vector<std::string> mult_armor_vec;
-    mult_armor_vec.emplace_back("lionheart_helm");
-    mult_armor_vec.emplace_back("onyxia_tooth_pendant");
-    mult_armor_vec.emplace_back("truestrike_shoulders");
-    mult_armor_vec.emplace_back("black_dragonscale_shoulders");
-    mult_armor_vec.emplace_back("cape_of_the_black_baron");
-    mult_armor_vec.emplace_back("savage_gladiator_chain");
-    mult_armor_vec.emplace_back("black_dragonscale_chest");
-    mult_armor_vec.emplace_back("wristguards_of_stability");
-    mult_armor_vec.emplace_back("flameguard_gauntlets");
-    mult_armor_vec.emplace_back("onslaught_girdle");
-    mult_armor_vec.emplace_back("eldritch_legplates");
-    mult_armor_vec.emplace_back("cloudkeeper_legplates");
-    mult_armor_vec.emplace_back("black_dragonscale_leggings");
-    mult_armor_vec.emplace_back("chromatic_boots");
-    mult_armor_vec.emplace_back("might_of_cenarius");
-    mult_armor_vec.emplace_back("master_dragonslayers_ring");
-    mult_armor_vec.emplace_back("badge_of_the_swarmguard");
-    mult_armor_vec.emplace_back("diamond_flask");
-    mult_armor_vec.emplace_back("blastershot");
-    mult_armor_vec.emplace_back("hand_of_justice");
+//    mult_armor_vec.emplace_back("lionheart_helm");
+//    mult_armor_vec.emplace_back("onyxia_tooth_pendant");
+//    mult_armor_vec.emplace_back("truestrike_shoulders");
+//    mult_armor_vec.emplace_back("black_dragonscale_shoulders");
+//    mult_armor_vec.emplace_back("cape_of_the_black_baron");
+//    mult_armor_vec.emplace_back("savage_gladiator_chain");
+//    mult_armor_vec.emplace_back("black_dragonscale_chest");
+//    mult_armor_vec.emplace_back("wristguards_of_stability");
+//    mult_armor_vec.emplace_back("flameguard_gauntlets");
+//    mult_armor_vec.emplace_back("onslaught_girdle");
+//    mult_armor_vec.emplace_back("eldritch_legplates");
+//    mult_armor_vec.emplace_back("cloudkeeper_legplates");
+//    mult_armor_vec.emplace_back("black_dragonscale_leggings");
+//    mult_armor_vec.emplace_back("chromatic_boots");
+//    mult_armor_vec.emplace_back("might_of_cenarius");
+//    mult_armor_vec.emplace_back("master_dragonslayers_ring");
+//    mult_armor_vec.emplace_back("badge_of_the_swarmguard");
+//    mult_armor_vec.emplace_back("diamond_flask");
+//    mult_armor_vec.emplace_back("blastershot");
+//    mult_armor_vec.emplace_back("hand_of_justice");
 //    mult_armor_vec.emplace_back("darkmoon_card_maelstrom");
 //    mult_armor_vec.emplace_back("rune_of_the_guard_captain");
 //    mult_armor_vec.emplace_back("jom_gabbar");
@@ -81,23 +81,62 @@ int main()
 //    mult_armor_vec.emplace_back("blackstone_ring");
 //    mult_armor_vec.emplace_back("might_of_cenarius");
 //    mult_armor_vec.emplace_back("windreaver_greaves");
-    mult_armor_vec.emplace_back("blooddrenched_footpads");
-    mult_armor_vec.emplace_back("black_dragonscale_boots");
+//    mult_armor_vec.emplace_back("blooddrenched_footpads");
+//    mult_armor_vec.emplace_back("black_dragonscale_boots");
 //    mult_armor_vec.emplace_back("conquerors_legguards");
+//    mult_armor_vec.emplace_back("lionheart_helm");
+    mult_armor_vec.emplace_back("eye_of_rend");
+    mult_armor_vec.emplace_back("helm_of_valor");
+    mult_armor_vec.emplace_back("mark_of_fordring");
+//    mult_armor_vec.emplace_back("imperial_jewel");
+//    mult_armor_vec.emplace_back("spaulders_of_valor");
+    mult_armor_vec.emplace_back("truestrike_shoulders");
+    mult_armor_vec.emplace_back("black_dragonscale_shoulders");
+//    mult_armor_vec.emplace_back("cape_of_the_black_baron");
+    mult_armor_vec.emplace_back("blackveil_cloak");
+//    mult_armor_vec.emplace_back("black_dragonscale_chest");
+    mult_armor_vec.emplace_back("savage_gladiator_chain");
+    mult_armor_vec.emplace_back("vambraces_of_the_sadist");
+//    mult_armor_vec.emplace_back("battleborn_armbraces");
+//    mult_armor_vec.emplace_back("reiver_claws");
+    mult_armor_vec.emplace_back("devilsaur_gauntlets");
+    mult_armor_vec.emplace_back("brigam_girdle");
+    mult_armor_vec.emplace_back("omokks_girth_restrainer");
+//    mult_armor_vec.emplace_back("eldritch_legplates");
+    mult_armor_vec.emplace_back("devilsaur_leggings");
+    mult_armor_vec.emplace_back("cloudkeeper_legplates");
+    mult_armor_vec.emplace_back("black_dragonscale_leggings");
+    mult_armor_vec.emplace_back("battlechasers_greaves");
+    mult_armor_vec.emplace_back("black_dragonscale_boots");
+    mult_armor_vec.emplace_back("painweaver_band");
+    mult_armor_vec.emplace_back("blackstone_ring");
+//    mult_armor_vec.emplace_back("magnis_will");
+    mult_armor_vec.emplace_back("tarnished_elven_ring");
+    mult_armor_vec.emplace_back("blackhands_breadth");
+    mult_armor_vec.emplace_back("hand_of_justice");
+    mult_armor_vec.emplace_back("satyrs_bow");
+
 
     std::vector<std::string> mult_weapons_vec;
+//    mult_weapons_vec.emplace_back("dal_rends_tribal_guardian");
+//    mult_weapons_vec.emplace_back("thunderfury_blessed_blade");
+//    mult_weapons_vec.emplace_back("thrash_blade");
+//    mult_weapons_vec.emplace_back("brutality_blade");
+//    mult_weapons_vec.emplace_back("maladath");
+//    mult_weapons_vec.emplace_back("chromatically_tempered_sword");
+//    mult_weapons_vec.emplace_back("assassination_blade");
+//    mult_weapons_vec.emplace_back("mirahs_song");
+//    mult_weapons_vec.emplace_back("viskag");
+//    mult_weapons_vec.emplace_back("quel_serrar");
+//    mult_weapons_vec.emplace_back("ancient_quiraji_ripper");
+//    mult_weapons_vec.emplace_back("empyrean_demolisher");
+    mult_weapons_vec.emplace_back("dal_rends_sacred_charge");
     mult_weapons_vec.emplace_back("dal_rends_tribal_guardian");
-    mult_weapons_vec.emplace_back("thunderfury_blessed_blade");
-    mult_weapons_vec.emplace_back("thrash_blade");
-    mult_weapons_vec.emplace_back("brutality_blade");
-    mult_weapons_vec.emplace_back("maladath");
-    mult_weapons_vec.emplace_back("chromatically_tempered_sword");
-    mult_weapons_vec.emplace_back("assassination_blade");
-    mult_weapons_vec.emplace_back("mirahs_song");
-    mult_weapons_vec.emplace_back("viskag");
-    mult_weapons_vec.emplace_back("quel_serrar");
-    mult_weapons_vec.emplace_back("ancient_quiraji_ripper");
-    mult_weapons_vec.emplace_back("empyrean_demolisher");
+    mult_weapons_vec.emplace_back("ironfoe");
+//    mult_weapons_vec.emplace_back("thrash_blade");
+//    mult_weapons_vec.emplace_back("mirahs_song");
+
+//    ["dal_rends_sacred_charge", "dal_rends_tribal_guardian", "ironfoe", "thrash_blade", "mirahs_song"];
 
     std::vector<std::string> buff_vec;
     buff_vec.emplace_back("rallying_cry");
@@ -125,12 +164,16 @@ int main()
                                             "cleave_if_adds", "use_hamstring"};
 
     Sim_input sim_input{{race}, armor_vec, weapons_vec, buff_vec, ench_vec, {"hit", "crit"}, sim_options,
-                        compare_armor_vec, compare_weapons_vec, mult_armor_vec, mult_weapons_vec, 30, 60,
+                        compare_armor_vec, compare_weapons_vec, 30, 60,
                         10000, 1000, 5, 60, 60,
                         25, 1, 2.0, 80, 45};
 
-    auto sim_output = sim_interface.simulate_mult(sim_input);
-//    sim_output = sim_interface.simulate(sim_input);
+    Sim_input_mult sim_input_mult{{race}, mult_armor_vec, mult_weapons_vec, buff_vec, ench_vec, sim_options,
+                                  30, 60, 5, 60, 60,
+                                  25, 1, 2.0, 80, 45};
+
+//    auto sim_output = sim_interface.simulate(sim_input);
+    auto sim_output = sim_interface.simulate_mult(sim_input_mult);
 
 //    for (const auto &dmg_batch : sim_output.stat_weights)
 //    {
