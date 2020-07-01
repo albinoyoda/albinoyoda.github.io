@@ -1015,8 +1015,7 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult &input)
     config.seed = clock();
 //    config.seed = 10000;
     config.fuel_extra_rage = false;
-    config.extra_rage_interval = 3;
-    config.extra_rage_damage_amount = 150;
+    config.performance_mode = true;
 
     Combat_simulator simulator(config);
 

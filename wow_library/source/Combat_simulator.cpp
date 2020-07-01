@@ -688,7 +688,8 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         // Reset hit effects
         weapons[0].hit_effects = hit_effects_mh;
         weapons[1].hit_effects = hit_effects_oh;
-        buff_manager_.set_target(special_stats, use_effects, weapons[0].hit_effects, weapons[1].hit_effects);
+        buff_manager_.initialize(special_stats, use_effects, weapons[0].hit_effects, weapons[1].hit_effects,
+                config.performance_mode);
 
         // Reset, since these might change
         target_armor_ = 3731-armor_reduction_from_spells; // Armor for Warrior class monsters

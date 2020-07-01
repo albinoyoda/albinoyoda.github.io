@@ -556,6 +556,7 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     config.fuel_extra_rage = false;
     config.extra_rage_interval = 3;
     config.extra_rage_damage_amount = 150;
+    config.performance_mode = true;
 
     Combat_simulator simulator(config);
 

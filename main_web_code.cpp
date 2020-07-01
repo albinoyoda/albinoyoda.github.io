@@ -86,12 +86,12 @@ int main()
 //    mult_armor_vec.emplace_back("conquerors_legguards");
 //    mult_armor_vec.emplace_back("lionheart_helm");
     mult_armor_vec.emplace_back("eye_of_rend");
-    mult_armor_vec.emplace_back("helm_of_valor");
+//    mult_armor_vec.emplace_back("helm_of_valor");
     mult_armor_vec.emplace_back("mark_of_fordring");
 //    mult_armor_vec.emplace_back("imperial_jewel");
 //    mult_armor_vec.emplace_back("spaulders_of_valor");
     mult_armor_vec.emplace_back("truestrike_shoulders");
-    mult_armor_vec.emplace_back("black_dragonscale_shoulders");
+//    mult_armor_vec.emplace_back("black_dragonscale_shoulders");
 //    mult_armor_vec.emplace_back("cape_of_the_black_baron");
     mult_armor_vec.emplace_back("blackveil_cloak");
 //    mult_armor_vec.emplace_back("black_dragonscale_chest");
@@ -101,11 +101,11 @@ int main()
 //    mult_armor_vec.emplace_back("reiver_claws");
     mult_armor_vec.emplace_back("devilsaur_gauntlets");
     mult_armor_vec.emplace_back("brigam_girdle");
-    mult_armor_vec.emplace_back("omokks_girth_restrainer");
+//    mult_armor_vec.emplace_back("omokks_girth_restrainer");
 //    mult_armor_vec.emplace_back("eldritch_legplates");
     mult_armor_vec.emplace_back("devilsaur_leggings");
-    mult_armor_vec.emplace_back("cloudkeeper_legplates");
-    mult_armor_vec.emplace_back("black_dragonscale_leggings");
+//    mult_armor_vec.emplace_back("cloudkeeper_legplates");
+//    mult_armor_vec.emplace_back("black_dragonscale_leggings");
     mult_armor_vec.emplace_back("battlechasers_greaves");
     mult_armor_vec.emplace_back("black_dragonscale_boots");
     mult_armor_vec.emplace_back("painweaver_band");
@@ -163,17 +163,17 @@ int main()
                                             "debug_on", "use_bt_in_exec_phase", "use_hs_in_exec_phase",
                                             "cleave_if_adds", "use_hamstring"};
 
-    Sim_input sim_input{{race}, armor_vec, weapons_vec, buff_vec, ench_vec, {"hit", "crit"}, sim_options,
+    Sim_input sim_input{{race}, armor_vec, weapons_vec, buff_vec, ench_vec, {""}, sim_options,
                         compare_armor_vec, compare_weapons_vec, 30, 60,
-                        10000, 1000, 5, 60, 60,
+                        50000, 1000, 5, 60, 60,
                         25, 1, 2.0, 80, 45};
 
     Sim_input_mult sim_input_mult{{race}, mult_armor_vec, mult_weapons_vec, buff_vec, ench_vec, sim_options,
-                                  30, 60, 5, 60, 60,
-                                  25, 1, 2.0, 80, 45};
+                                  30, 63, 5, 60, 60,
+                                  25, 1, 2.0, 80, 45, 40};
 
-//    auto sim_output = sim_interface.simulate(sim_input);
-    auto sim_output = sim_interface.simulate_mult(sim_input_mult);
+    auto sim_output = sim_interface.simulate(sim_input);
+//    auto sim_output = sim_interface.simulate_mult(sim_input_mult);
 
 //    for (const auto &dmg_batch : sim_output.stat_weights)
 //    {

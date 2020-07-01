@@ -35,6 +35,7 @@ struct Combat_simulator_config {
   int extra_rage_damage_amount{};
 
   bool display_combat_debug{false};
+  bool performance_mode{false};
   bool use_seed{false};
   int seed{};
 
