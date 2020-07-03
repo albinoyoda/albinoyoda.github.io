@@ -100,7 +100,7 @@
         font-size: 15px;
     }
 
-    .active, .collapsible:hover {
+    .collapsible:hover {
         background-color: #555;
     }
 
@@ -780,9 +780,10 @@
             <button onclick="load_p1prebisitems()">Example where phase 1 "pre-BiS" items are examined</button>
             <button onclick="load_p5pvebismult()">Load Phase 5 PvE-BiS</button>
             <br>
-            Add/remove items by ctrl + left-click.<br>
-            Add all items in a slot by clicking somewhere in the item-container and pressing "ctrl + a".
-            <br><br>
+            Add/remove items: <b>ctrl + left-click</b>.<br>
+            Add all items in a slot: Select an item box then press <b> ctrl + a</b>.<br><br>
+            The optimization takes between: 1-"Max optimization time" seconds. <br>
+            If you selected a lot of items leave it running in another tab<br><br>
 
             <!--armor begin2-->
             <span class="left_select">Helmet</span><span class="middle_select">Neck</span><span class="right_select">Shoulder</span><br>
@@ -1104,26 +1105,27 @@
         <input type="checkbox" id="normal_mode" checked
                onclick="unique_checkboxes('normal_mode', ['multiple_mode', 'do_comparison']);
                         unique_div(['armor_single'],['armor_multiple', 'compare_div', 'multi_description_div'])">
-        <label for="normal_mode"> <b>Standard</b>: Simulate an item configuration </label><br>
+        <label for="normal_mode"> <b>Standard</b>: Simulate an item configuration </label><br><br>
 
         <input type="checkbox" id="multiple_mode"
                onclick="unique_checkboxes('multiple_mode', ['normal_mode', 'do_comparison']);
                         unique_div(['armor_multiple', 'multi_description_div'],['armor_single', 'compare_div'])">
         <label for="multiple_mode"><b>Multi-mode</b>: Enable selection of multiple items from the same slot.</label><br>
         <div style="display:none" id="multi_description_div">
-            <b>Description:</b> More items selected means that the optimizer will run for a longer time. It will break
+            <b>Information:</b> More items selected means that the optimizer will run for a longer time. It will break
             automatically when it has found the best set <b>OR</b> when the max optimization timer is reached.<br>
             <label for="max_optimize_time">Max optimization time: (60-120s):</label>
-            <input type="number" id="max_optimize_time" name="quantity" min="60" max="120" value="90"> seconds.<br/>
+            <input type="number" id="max_optimize_time" name="quantity" min="60" max="180" value="90"> seconds.<br/>
             <input type="checkbox" id="display_multi_debug">
             <label for="display_multi_debug">Output debug information from the optimizer (shown at the
-                bottom)</label><br>
-        </div>
+                bottom)</label>
+        </div><br>
+
+
         <input type="checkbox" id="do_comparison"
                onclick="unique_checkboxes('do_comparison', ['multiple_mode', 'normal_mode']);
                         unique_div(['compare_div', 'armor_single'],['armor_multiple', 'multi_description_div'])">
         <label for="do_comparison"><b>Comparison</b>: Add a configuration file to compare against</label>
-
         <div style="display:none" id="compare_div">
             <b>Description:</b> Select an item config and press submit.<br/>
             (To generate a config file press "Save config to file" at the top of the page)<br/>

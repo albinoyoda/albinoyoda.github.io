@@ -31,8 +31,8 @@ add_library(wow_lib SHARED
 #target_link_libraries(wow_optimizer wow_lib)
 #ADD_EXECUTABLE(wow_stat_weights main_stat_weights.cpp)
 #target_link_libraries(wow_stat_weights wow_lib)
-ADD_EXECUTABLE(wow_web main_web_code.cpp)
-target_link_libraries(wow_web wow_lib)
+#ADD_EXECUTABLE(wow_web main_web_code.cpp)
+#target_link_libraries(wow_web wow_lib)
 
 IF (EMSCRIPTEN)
     add_executable(wow_interface
@@ -40,7 +40,7 @@ IF (EMSCRIPTEN)
             )
 
     target_link_libraries(wow_interface wow_lib)
-    set_target_properties(wow_interface PROPERTIES LINK_FLAGS "-s ERROR_ON_UNDEFINED_SYMBOLS=0 -s DEMANGLE_SUPPORT=1 -s TOTAL_MEMORY=320MB -s ASSERTIONS=1 --bind") #
+    set_target_properties(wow_interface PROPERTIES LINK_FLAGS "-s ERROR_ON_UNDEFINED_SYMBOLS=0 -s DEMANGLE_SUPPORT=1 -s TOTAL_MEMORY=640MB -s ASSERTIONS=1 --bind") #
 
 
 ENDIF ()

@@ -124,10 +124,10 @@ namespace
         return stream.str();
     }
 
-    constexpr double crit_w = 30;
-    constexpr double crit_w_cap = 20;
+    constexpr double crit_w = 35;
+    constexpr double crit_w_cap = 25;
     constexpr double hit_w = 40;
-    constexpr double hit_w_cap = 10;
+    constexpr double hit_w_cap = 15;
     constexpr double skill_w = 195.0 / 5;
     constexpr double skill_w_soft = 60.0 / 5;
     constexpr double skill_w_hard = 20.0 / 5;
@@ -281,6 +281,54 @@ namespace
                + hit_effects_ap;
     }
 
+    bool is_strictly_weaker(Special_stats special_stats1, Special_stats special_stats2)
+    {
+        bool geq = (special_stats2.hit >= special_stats1.hit) &&
+                   (special_stats2.critical_strike >= special_stats1.critical_strike) &&
+                   (special_stats2.attack_power >= special_stats1.attack_power) &&
+                   (special_stats2.axe_skill >= special_stats1.axe_skill) &&
+                   (special_stats2.sword_skill >= special_stats1.sword_skill) &&
+                   (special_stats2.mace_skill >= special_stats1.mace_skill) &&
+                   (special_stats2.dagger_skill >= special_stats1.dagger_skill);
+        bool gre = (special_stats2.hit > special_stats1.hit) ||
+                   (special_stats2.critical_strike > special_stats1.critical_strike) ||
+                   (special_stats2.attack_power > special_stats1.attack_power) ||
+                   (special_stats2.axe_skill > special_stats1.axe_skill) ||
+                   (special_stats2.sword_skill > special_stats1.sword_skill) ||
+                   (special_stats2.mace_skill > special_stats1.mace_skill) ||
+                   (special_stats2.dagger_skill > special_stats1.dagger_skill);
+        return geq && gre;
+    }
+
+    double estimate_special_stats_high(const Special_stats &special_stats)
+    {
+        int max_skill = std::max(special_stats.axe_skill, 0);
+        max_skill = std::max(special_stats.sword_skill, max_skill);
+        max_skill = std::max(special_stats.mace_skill, max_skill);
+        max_skill = std::max(special_stats.dagger_skill, max_skill);
+
+        double high_estimation = special_stats.attack_power + special_stats.hit * hit_w +
+                                 special_stats.critical_strike * crit_w + max_skill * skill_w;
+        return high_estimation;
+    }
+
+    double estimate_special_stats_low(const Special_stats &special_stats)
+    {
+        int max_skill = std::max(special_stats.axe_skill, 0);
+        max_skill = std::max(special_stats.sword_skill, max_skill);
+        max_skill = std::max(special_stats.mace_skill, max_skill);
+        max_skill = std::max(special_stats.dagger_skill, max_skill);
+        double low_estimation = special_stats.attack_power + special_stats.hit * hit_w_cap +
+                                special_stats.critical_strike * crit_w_cap + max_skill * skill_w_hard;
+        return low_estimation;
+    }
+
+    bool estimated_weaker(Special_stats special_stats1, Special_stats special_stats2)
+    {
+        double item_1_overest = estimate_special_stats_high(special_stats1);
+        double item_2_underest = estimate_special_stats_low(special_stats2);
+        return item_1_overest < item_2_underest;
+    }
 }
 
 struct Item_popularity
@@ -323,11 +371,12 @@ public:
     {
         Sim_result_t() = default;
 
-        Sim_result_t(size_t index, double mean_dps, double variance)
+        Sim_result_t(size_t index, double mean_dps, double variance, double ap_equivalent)
                 :
                 index{index},
                 mean_dps{mean_dps},
-                variance{variance} {}
+                variance{variance},
+                ap_equivalent{ap_equivalent} {}
 
         size_t index{};
         double mean_dps{};
@@ -341,6 +390,8 @@ public:
 
     void item_setup(const std::vector<std::string> &armor_vec, const std::vector<std::string> &weapons_vec);
 
+    void compute_combinations();
+
     void extract_armors(const std::vector<std::string> &armor_vec);
 
     void extract_weapons(const std::vector<std::string> &weapon_vec);
@@ -350,6 +401,12 @@ public:
     Character generate_character(const std::vector<size_t> &item_ids);
 
     Character construct(size_t index);
+
+    std::vector<Armor>
+    remove_strictly_weaker_items(const std::vector<Armor> &armors, const Special_stats &special_stats,
+                                 std::string &debug_message);
+
+    void filter_weaker_items(const Special_stats &special_stats, std::string &debug_message);
 
     void fill_empty_armor();
 
@@ -588,6 +645,136 @@ void Item_optimizer::fill(std::vector<Armor> &vec, Socket socket, std::string na
     }
 }
 
+std::vector<Armor>
+Item_optimizer::remove_strictly_weaker_items(const std::vector<Armor> &armors, const Special_stats &special_stats,
+                                             std::string &debug_message)
+{
+    struct Armor_equivalent_stats
+    {
+        Armor_equivalent_stats() = default;
+
+        Armor_equivalent_stats(size_t index, Special_stats special_stats,
+                               std::string name) : index(index),
+                                                   special_stats(special_stats),
+                                                   name(std::move(name)) {}
+
+        size_t index{};
+        Special_stats special_stats;
+        Special_stats set_special_stats;
+        std::string name;
+        bool can_be_estimated{false};
+        bool remove{false};
+    };
+
+    std::vector<Armor_equivalent_stats> armors_special_stats;
+    for (size_t i = 0; i < armors.size(); ++i)
+    {
+        Special_stats armor_special_stats = armors[i].special_stats;
+        armor_special_stats += armors[i].attributes.convert_to_special_stats(special_stats);
+        Armor_equivalent_stats armor_equiv{i, armor_special_stats, armors[i].name};
+        if (armors[i].set_name != Set::none)
+        {
+            double ap_equiv_max = 0;
+            Special_stats best_special_stats;
+            for (const auto &set_bonus : armory.set_bonuses)
+            {
+                if (armors[i].set_name == set_bonus.set)
+                {
+                    Special_stats set_special_stats = set_bonus.special_stats;
+                    set_special_stats += set_bonus.attributes.convert_to_special_stats(special_stats);
+                    double ap_equiv = estimate_special_stats_high(set_special_stats);
+                    if (ap_equiv > ap_equiv_max)
+                    {
+                        ap_equiv_max = ap_equiv;
+                        best_special_stats = set_special_stats;
+                    }
+                }
+            }
+            armor_equiv.set_special_stats = best_special_stats;
+        }
+        if (armors[i].use_effects.empty() && armors[i].hit_effects.empty())
+        {
+            armor_equiv.can_be_estimated = true;
+        }
+        armors_special_stats.push_back(armor_equiv);
+    }
+
+    for (auto &armor1 : armors_special_stats)
+    {
+        if (armor1.can_be_estimated)
+        {
+            for (const auto &armor2 : armors_special_stats)
+            {
+                if (armor1.index != armor2.index)
+                {
+                    if (is_strictly_weaker(armor1.special_stats + armor1.set_special_stats, armor2.special_stats))
+                    {
+                        armor1.remove = true;
+                        debug_message += "<b>REMOVED: " + armor1.name + "</b>." + armor2.name
+                                         + " is strictly better.<br>";
+                        break;
+                    }
+                    if (estimated_weaker(armor1.special_stats + armor1.set_special_stats, armor2.special_stats))
+                    {
+                        armor1.remove = true;
+                        debug_message += "<b>REMOVED: " + armor1.name + "</b>. High-est as: " +
+                                         string_with_precision(estimate_special_stats_high(armor1.special_stats) +
+                                                               estimate_special_stats_high(armor1.set_special_stats), 3)
+                                         + "AP. Eliminated by: ";
+                        debug_message += "<b>" + armor2.name + "</b> low-est as: " +
+                                         string_with_precision(estimate_special_stats_low(armor2.special_stats), 3)
+                                         + "AP.<br>";
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    debug_message += "Armors left:<br>";
+    std::vector<Armor> filtered_armors;
+    for (size_t i = 0; i < armors.size(); ++i)
+    {
+        if (!armors_special_stats[i].remove)
+        {
+            filtered_armors.push_back(armors[i]);
+            debug_message += "<b>" + armors[i].name + "</b><br>";
+        }
+    }
+    return filtered_armors;
+}
+
+void Item_optimizer::filter_weaker_items(const Special_stats &special_stats, std::string &debug_message)
+{
+    debug_message += "<br>Filtering <b> Helmets: </b><br>";
+    helmets = remove_strictly_weaker_items(helmets, special_stats, debug_message);
+    debug_message += "<br>Filtering <b> necks: </b><br>";
+    necks = remove_strictly_weaker_items(necks, special_stats, debug_message);
+    debug_message += "<br>Filtering <b> shoulders: </b><br>";
+    shoulders = remove_strictly_weaker_items(shoulders, special_stats, debug_message);
+    debug_message += "<br>Filtering <b> backs: </b><br>";
+    backs = remove_strictly_weaker_items(backs, special_stats, debug_message);
+    debug_message += "<br>Filtering <b> chests: </b><br>";
+    chests = remove_strictly_weaker_items(chests, special_stats, debug_message);
+    debug_message += "<br>Filtering <b> wrists: </b><br>";
+    wrists = remove_strictly_weaker_items(wrists, special_stats, debug_message);
+    debug_message += "<br>Filtering <b> hands: </b><br>";
+    hands = remove_strictly_weaker_items(hands, special_stats, debug_message);
+    debug_message += "<br>Filtering <b> belts: </b><br>";
+    belts = remove_strictly_weaker_items(belts, special_stats, debug_message);
+    debug_message += "<br>Filtering <b> legs: </b><br>";
+    legs = remove_strictly_weaker_items(legs, special_stats, debug_message);
+    debug_message += "<br>Filtering <b> boots: </b><br>";
+    boots = remove_strictly_weaker_items(boots, special_stats, debug_message);
+    debug_message += "<br>Filtering <b> ranged: </b><br>";
+    ranged = remove_strictly_weaker_items(ranged, special_stats, debug_message);
+    debug_message += "<br>Filtering <b> rings: </b><br>";
+    rings = remove_strictly_weaker_items(rings, special_stats, debug_message);
+    debug_message += "<br>Filtering <b> trinkets: </b><br>";
+    trinkets = remove_strictly_weaker_items(trinkets, special_stats, debug_message);
+
+}
+
 void Item_optimizer::fill_empty_armor()
 {
     fill(helmets, Socket::head, "helmet");
@@ -642,10 +829,15 @@ void Item_optimizer::item_setup(const std::vector<std::string> &armor_vec, const
     fill_empty_armor();
     extract_weapons(weapons_vec);
     fill_empty_weapons();
+}
+
+void Item_optimizer::compute_combinations()
+{
     weapon_combinations = get_weapon_combinations(weapons);
     ring_combinations = get_combinations(rings);
     trinket_combinations = get_combinations(trinkets);
 
+    combination_vector.clear();
     combination_vector.push_back(helmets.size());
     combination_vector.push_back(necks.size());
     combination_vector.push_back(shoulders.size());
@@ -922,14 +1114,6 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult &input)
     item_optimizer.ench_vec = input.enchants;
     item_optimizer.item_setup(input.armor, input.weapons);
 
-    if (item_optimizer.total_combinations > 1000000)
-    {
-        std::string msg = "To many items selected, please deselect some items. Current total number of possible combinations: <br>";
-        msg += std::to_string(item_optimizer.total_combinations);
-        msg += "<br>Maximum number of combinations: " + std::to_string(1000000);
-        return {{msg, ""}};
-    }
-
     // Combat settings
     auto temp_buffs = input.buffs;
 
@@ -1019,82 +1203,116 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult &input)
 
     Combat_simulator simulator(config);
 
-    std::vector<Item_optimizer::Sim_result_t> keepers;
-    keepers.reserve(item_optimizer.total_combinations);
-    for (size_t j = 0; j < item_optimizer.total_combinations; ++j)
+    std::string debug_message;
+    item_optimizer.compute_combinations();
+
+    std::cout << "init. Combinations: " << std::to_string(item_optimizer.total_combinations) << "\n";
+    debug_message += "Total item combinations: " + std::to_string(item_optimizer.total_combinations) + "<br>";
+    debug_message += "Filtering weaker items.<br>";
+
     {
-        keepers.emplace_back(j, 0, 0);
+        auto character = item_optimizer.construct(0);
+        item_optimizer.filter_weaker_items(character.total_special_stats, debug_message);
     }
 
-    std::string debug_message;
-    debug_message += "Total item combinations: " + std::to_string(keepers.size()) + "<br><br>";
-    if (item_optimizer.total_combinations > 5000)
+    item_optimizer.compute_combinations();
+    debug_message += "Item filter done. Combinations: " + std::to_string(item_optimizer.total_combinations) + "<br>";
+    std::cout << "Item filter done. Combinations: " << std::to_string(item_optimizer.total_combinations) << "\n";
+
+//    std::vector<Item_optimizer::Sim_result_t> keepers;
+//    keepers.reserve(item_optimizer.total_combinations);
+//    for (size_t j = 0; j < item_optimizer.total_combinations; ++j)
+//    {
+//        keepers.emplace_back(j, 0, 0);
+//    }
+
+//    if (item_optimizer.total_combinations > 5000)
+//    {
+    debug_message += "Applying a heuristic filter. Computing...<br>";
+    clock_t start_filter = clock();
+    double highest_attack_power = 0;
+    double lowest_attack_power = 1e12;
+    for (size_t i = 0; i < item_optimizer.total_combinations; ++i)
     {
-        debug_message += "More than 5000 combinations. Applying a heuristic filter. Computing...<br>";
-        clock_t start_filter = clock();
-        double highest_attack_power = 0;
-        double lowest_attack_power = 1e12;
-        for (auto &keeper : keepers)
+        Character character = item_optimizer.construct(i);
+        double ap_equivalent = get_total_qp_equivalent(character.total_special_stats, character.weapons[0],
+                                                       character.weapons[1], character.use_effects,
+                                                       config.sim_time);
+        if (ap_equivalent > highest_attack_power)
         {
-            Character character = item_optimizer.construct(keeper.index);
-            keeper.ap_equivalent = get_total_qp_equivalent(character.total_special_stats, character.weapons[0],
-                                                           character.weapons[1], character.use_effects,
-                                                           config.sim_time);
-            if (keeper.ap_equivalent > highest_attack_power)
-            {
-                highest_attack_power = keeper.ap_equivalent;
-            }
-            if (keeper.ap_equivalent < lowest_attack_power)
-            {
-                lowest_attack_power = keeper.ap_equivalent;
-            }
+            highest_attack_power = ap_equivalent;
         }
-
-        debug_message += "Equivalent attack power range: [" + std::to_string(lowest_attack_power) + ", " +
-                         std::to_string(highest_attack_power) + "]<br>";
-        double filtering_value = 0.5 * lowest_attack_power + 0.5 * highest_attack_power;
-        debug_message += "Removing bottom 50% sets. AP < " + std::to_string(filtering_value) + "<br>";
-
+        if (ap_equivalent < lowest_attack_power)
         {
+            lowest_attack_power = ap_equivalent;
+        }
+    }
+
+    debug_message += "Equivalent attack power range: [" + std::to_string(lowest_attack_power) + ", " +
+                     std::to_string(highest_attack_power) + "]<br>";
+    double filter_value = .6;
+    double filtering_ap = (1 - filter_value) * lowest_attack_power + filter_value * highest_attack_power;
+    debug_message += "Removing bottom " + string_with_precision(filter_value * 100, 2)
+                     + "% sets. AP < " + string_with_precision(filtering_ap, 4) + "<br>";
+
+    std::vector<Item_optimizer::Sim_result_t> keepers;
+    keepers.reserve(item_optimizer.total_combinations / 2);
+    for (size_t i = 0; i < item_optimizer.total_combinations; ++i)
+    {
+        Character character = item_optimizer.construct(i);
+        double ap_equivalent = get_total_qp_equivalent(character.total_special_stats, character.weapons[0],
+                                                       character.weapons[1], character.use_effects,
+                                                       config.sim_time);
+        if (ap_equivalent > filtering_ap)
+        {
+            keepers.emplace_back(i, 0, 0, ap_equivalent);
+        }
+    }
+    debug_message += "Set filter done. Combinations: " + std::to_string(keepers.size()) + "<br>";
+    std::cout << "Set filter done. Combinations: " << std::to_string(keepers.size()) << "\n";
+
+    if (keepers.size() > 12000)
+    {
+        debug_message += "To many combinations. Combinations: " + std::to_string(keepers.size()) + "<br>";
+        debug_message += "Increasing filter value until 20.000 sets remaining.<br>";
+        std::cout << "Set filter done. Combinations: " << std::to_string(keepers.size()) << "\n";
+        std::cout << "Increasing filter value until 20.000 sets remaining.<br>\n";
+        while (keepers.size() > 12000)
+        {
+            filter_value += .02;
+            filtering_ap = (1 - filter_value) * lowest_attack_power + filter_value * highest_attack_power;
+            debug_message += "Removing bottom " + string_with_precision(filter_value * 100, 2)
+                             + "% sets. AP < " + string_with_precision(filtering_ap, 4) + "<br>";
+            std::cout << "Removing bottom " << string_with_precision(filter_value * 100, 2) << "%\n";
             std::vector<Item_optimizer::Sim_result_t> temp_keepers;
             temp_keepers.reserve(keepers.size());
             for (const auto &keeper : keepers)
             {
-                if (keeper.ap_equivalent > filtering_value)
+                if (keeper.ap_equivalent > filtering_ap)
                 {
-                    temp_keepers.push_back(keeper);
+                    temp_keepers.emplace_back(keeper);
                 }
             }
             keepers = temp_keepers;
+            debug_message += "Sets remaining: " + std::to_string(keepers.size()) + "<br>";
+            std::cout << "Sets remaining: " << std::to_string(keepers.size()) << "\n";
         }
-
-        if (keepers.size() > 5000)
-        {
-            filtering_value = 0.30 * lowest_attack_power + 0.70 * highest_attack_power;
-            debug_message += "Large item pool. Filtering again...<br>";
-            debug_message += "Removing bottom 70% sets. AP < " + std::to_string(filtering_value) + "<br>";
-            {
-                std::vector<Item_optimizer::Sim_result_t> temp_keepers;
-                temp_keepers.reserve(keepers.size());
-                for (const auto &keeper : keepers)
-                {
-                    if (keeper.ap_equivalent > filtering_value)
-                    {
-                        temp_keepers.push_back(keeper);
-                    }
-                }
-                keepers = temp_keepers;
-            }
-        }
-        double time_spent_filter = double(clock() - start_filter) / (double) CLOCKS_PER_SEC;
-        debug_message += "Combinations after filtering: " + std::to_string(keepers.size()) + "<br>";
-        debug_message += "Time spent filtering: " + std::to_string(time_spent_filter) + "s.<br><br>";
     }
+    double time_spent_filter = double(clock() - start_filter) / (double) CLOCKS_PER_SEC;
+    debug_message += "Set filter done. Combinations: " + std::to_string(keepers.size()) + "<br>";
+    if (filter_value > 0.8)
+    {
+        debug_message += "WARNING! Pushed the heuristic filter to: " + string_with_precision(filter_value * 100, 2) +
+                         "%. Might have filtered away good sets. <br>";
+        std::cout << "WARNING! Pushed the heuristic filter to: " << string_with_precision(filter_value * 100, 2)
+                  << "\n";
+    }
+    debug_message += "Time spent filtering: " + std::to_string(time_spent_filter) + "s.<br><br>";
 
     debug_message += "Starting optimizer! Current combinations:" + std::to_string(keepers.size()) + "<br>";
     std::vector<size_t> batches_per_iteration = {20};
     std::vector<size_t> cumulative_simulations = {0};
-    for (int i = 0; i < 25; i++)
+    for (int i = 0; i < 40; i++)
     {
         batches_per_iteration.push_back(batches_per_iteration.back() * 1.2);
         cumulative_simulations.push_back(cumulative_simulations.back() + batches_per_iteration[i]);
@@ -1108,6 +1326,8 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult &input)
         debug_message += "Iteration " + std::to_string(i + 1) + " of " + std::to_string(
                 batches_per_iteration.size()) + "<br>";
         debug_message += "Total keepers: " + std::to_string(keepers.size()) + "<br>";
+
+        std::cout << "Iter: " + std::to_string(i) + ". Total keepers: " + std::to_string(keepers.size()) << "\n";
 
         double best_dps = 0;
         double best_dps_variance = 0;
@@ -1158,12 +1378,12 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult &input)
         }
 
         // If there are more than 10 item sets: remove weak sets
-        if (keepers.size() > 10)
+        if (keepers.size() > 5)
         {
             double quantile = find_cdf_quantile(1 - 1 / static_cast<double>(keepers.size()), 0.01);
             double best_dps_sample_std = Statistics::sample_deviation(std::sqrt(best_dps_variance),
                                                                       cumulative_simulations[i + 1]);
-            double filter_value = best_dps - quantile * best_dps_sample_std;
+            filter_value = best_dps - quantile * best_dps_sample_std;
             debug_message += "Best combination DPS: " + std::to_string(best_dps) + ", removing sets below: " +
                              std::to_string(best_dps - quantile * best_dps_sample_std) + "<br>";
             std::vector<Item_optimizer::Sim_result_t> temp_keepers;
@@ -1177,12 +1397,35 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult &input)
                     temp_keepers.emplace_back(keeper);
                 }
             }
+            // Removed to many sets
+            if (temp_keepers.size() < 5)
+            {
+                size_t attempts = 0;
+                while (temp_keepers.size() < 5)
+                {
+                    std::cout << "removed to many sets. Adding them back again" << "\n";
+                    quantile *= 1.01;
+                    for (const auto &keeper : keepers)
+                    {
+                        double keeper_sample_std = Statistics::sample_deviation(std::sqrt(keeper.variance),
+                                                                                cumulative_simulations[i + 1]);
+                        if (keeper.mean_dps + keeper_sample_std * quantile >= filter_value)
+                        {
+                            temp_keepers.emplace_back(keeper);
+                        }
+                    }
+                    if (attempts > 200)
+                    {
+                        break;
+                    }
+                }
+            }
             keepers = temp_keepers;
         }
 
-        if (keepers.size() <= 10 && time > 20)
+        if (keepers.size() <= 5 && time > 20)
         {
-            debug_message = +"<b>: 20 seconds passed with 10 or less combinations remaining. breaking! </b><br>";
+            debug_message += +"<b>: 20 seconds passed with 5 or less combinations remaining. breaking! </b><br>";
             break;
         }
         performed_iterations = i;
@@ -1281,36 +1524,39 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult &input)
     size_t weapon_combinations = item_optimizer.weapon_combinations.size();
 
     std::string message = +"<b>Total number of simulations performed: </b>" + std::to_string(n_sim) + "<br>";
-    message += "<b>Item presence:</b><br>";
-    for (size_t j = 0; j < best_characters[0].armor.size(); j++)
+    if (keepers.size() > 5)
     {
-        message += "<b>" + socket_names[j] + "</b>" + ": ";
-        for (const auto &item : item_popularity[j])
+        message += "Optimizer did not converge! Item presence in the remaining sets:</b><br>";
+        for (size_t j = 0; j < best_characters[0].armor.size(); j++)
         {
-            if (item.name != "none")
+            message += "<b>" + socket_names[j] + "</b>" + ": ";
+            for (const auto &item : item_popularity[j])
             {
-                message += item.name + " - (" +
-                           percent_to_str(100.0 * item.counter / best_characters.size()) + "), ";
+                if (item.name != "none")
+                {
+                    message += item.name + " - (" +
+                               percent_to_str(100.0 * item.counter / best_characters.size()) + "), ";
+                }
             }
+            message += "<br>";
+        }
+        for (size_t j = 0; j < 2; j++)
+        {
+            message += "<b>" + weapon_names[j] + "</b>" + ": ";
+            for (const auto &item : weapon_popularity[j])
+            {
+                if (item.name != "none")
+                {
+                    message += item.name + " - (" +
+                               percent_to_str(100.0 * item.counter / best_characters.size()) + "), ";
+                }
+            }
+            message += "<br>";
         }
         message += "<br>";
     }
-    for (size_t j = 0; j < 2; j++)
-    {
-        message += "<b>" + weapon_names[j] + "</b>" + ": ";
-        for (const auto &item : weapon_popularity[j])
-        {
-            if (item.name != "none")
-            {
-                message += item.name + " - (" +
-                           percent_to_str(100.0 * item.counter / best_characters.size()) + "), ";
-            }
-        }
-        message += "<br>";
-    }
-    message += "<br>";
 
-    size_t max_number = 10;
+    size_t max_number = 5;
     max_number = std::min(best_characters.size(), max_number);
 
     message += "<b>Showing the " + std::to_string(
