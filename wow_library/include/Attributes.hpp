@@ -45,7 +45,7 @@ struct Special_stats
         stat_multiplier = 0;
     }
 
-    Special_stats operator+(const Special_stats &rhs)
+    Special_stats operator+(const Special_stats &rhs) const
     {
         return {critical_strike + rhs.critical_strike,
                 hit + rhs.hit,
@@ -63,7 +63,7 @@ struct Special_stats
         };
     }
 
-    Special_stats operator-(const Special_stats &rhs)
+    Special_stats operator-(const Special_stats &rhs) const
     {
         return {critical_strike - rhs.critical_strike,
                 hit - rhs.hit,

@@ -43,8 +43,8 @@ void Combat_simulator::cout_damage_parse(Combat_simulator::Hit_type hit_type, So
             case Hit_result::miss:simulator_cout("Mainhand hit missed");
                 break;
             case Hit_result::TBD:
-                // Should never happen!!
-                simulator_cout("BUUUUUUUUUUGGGGGGGGG");
+                // Should never happen
+                simulator_cout("BUG");
                 break;
             }
         }

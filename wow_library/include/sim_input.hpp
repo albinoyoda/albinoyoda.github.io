@@ -2,6 +2,7 @@
 #define SIM_INPUT_HPP
 
 #include <vector>
+#include <string>
 
 struct Sim_input
 {
