@@ -845,7 +845,8 @@ void Item_optimizer::remove_weaker_weapons(const Weapon_socket weapon_socket, co
                 case Hit_effect::Type::damage_physical:
                     wep_struct.hit_special_stats.attack_power += effect.probability * effect.damage * ap_per_coh;
                     break;
-                case Hit_effect::Type::extra_hit: {
+                case Hit_effect::Type::extra_hit:
+                {
                     double factor = weapon_socket == Weapon_socket::main_hand ? 1.0 : 0.5;
                     wep_struct.hit_special_stats.critical_strike += effect.probability * factor;
                     break;
@@ -858,10 +859,12 @@ void Item_optimizer::remove_weaker_weapons(const Weapon_socket weapon_socket, co
         weapon_struct_vec.push_back(wep_struct);
     }
 
+    std::string wep_socket = weapon_socket == Weapon_socket::main_hand ? "main-hands" : "off-hands";
     for (auto& wep1 : weapon_struct_vec)
     {
         if (wep1.can_be_estimated)
         {
+            bool found_one_stronger = false;
             for (const auto& wep2 : weapon_struct_vec)
             {
                 if (wep1.index != wep2.index)
@@ -870,32 +873,37 @@ void Item_optimizer::remove_weaker_weapons(const Weapon_socket weapon_socket, co
                     {
                         if (is_strictly_weaker_wep(wep1, wep2, weapon_socket))
                         {
-                            wep1.remove = true;
-                            std::string wep_socket =
-                                weapon_socket == Weapon_socket::main_hand ? "main-hands" : "off-hands";
-                            debug_message += "<b>REMOVED: " + wep1.name + "</b> from" + wep_socket + " since " +
-                                             wep2.name + " is strictly better.<br>";
-                            std::cout << "<b>REMOVED: " + wep1.name + "</b> from " + wep_socket + " since " +
-                                             wep2.name + " is strictly better.\n";
-                            break;
+                            if (found_one_stronger)
+                            {
+                                wep1.remove = true;
+                                debug_message += "<b>REMOVED: " + wep1.name + "</b> from" + wep_socket + " since " +
+                                                 wep2.name + " is strictly better.<br>";
+                                std::cout << "<b>REMOVED: " + wep1.name + "</b> from " + wep_socket + " since " +
+                                                 wep2.name + " is strictly better.\n";
+                                break;
+                            }
+                            found_one_stronger = true;
+                            debug_message += "1/2: " + wep1.name + " from" + wep_socket + " since " + wep2.name +
+                                             " is strictly better.<br>";
+                            continue;
                         }
-                    }
-                    if (estimated_wep_weaker(wep1, wep2, weapon_socket == Weapon_socket::main_hand))
-                    {
-                        wep1.remove = true;
-                        std::string wep_socket = weapon_socket == Weapon_socket::main_hand ? "main-hands" : "off-hands";
-                        debug_message += "<b>REMOVED: " + wep1.name + "</b> from " + wep_socket + ". High-est as: " +
-                                         string_with_precision(estimate_wep_high(wep1, wep1.type != wep2.type), 3) +
-                                         "AP. Eliminated by: ";
-                        debug_message += "<b>" + wep2.name +
-                                         "</b> low-est as: " + string_with_precision(estimate_wep_low(wep2), 3) +
-                                         "AP.<br>";
-                        std::cout << "<b>REMOVED: " + wep1.name + "</b> from " + wep_socket + ". High-est as: " +
-                                         string_with_precision(estimate_wep_high(wep1, wep1.type != wep2.type), 3) +
-                                         "AP. Eliminated by: " + "<b>" + wep2.name +
-                                         "</b> low-est as: " + string_with_precision(estimate_wep_low(wep2), 3) +
-                                         "AP.\n";
-                        break;
+                        if (estimated_wep_weaker(wep1, wep2, weapon_socket == Weapon_socket::main_hand))
+                        {
+                            if (found_one_stronger)
+                            {
+                                wep1.remove = true;
+                                debug_message +=
+                                    "<b>REMOVED: " + wep1.name + "</b> from " + wep_socket + ". High-est as: " +
+                                    string_with_precision(estimate_wep_high(wep1, wep1.type != wep2.type), 3) +
+                                    "AP. Eliminated by: ";
+                                debug_message += "<b>" + wep2.name + "</b> low-est as: " +
+                                                 string_with_precision(estimate_wep_low(wep2), 3) + "AP.<br>";
+                                break;
+                            }
+                            found_one_stronger = true;
+                            debug_message += "1/2: " + wep1.name + " from" + wep_socket + " since " + wep2.name +
+                                             " is strictly better.<br>";
+                        }
                     }
                 }
             }
@@ -913,26 +921,26 @@ void Item_optimizer::remove_weaker_weapons(const Weapon_socket weapon_socket, co
         }
     }
 
-    if (filtered_weapons.size() == 1)
-    {
-        debug_message += "Removed to many main-hand weapons, need atleast 2! Adding back the second best one<br>";
-        std::cout << "Removed to many main-hand weapons, need atleast 2! Adding back the second best one<br>\n";
-        double best_ap = -1;
-        size_t best_index = 0;
-        for (size_t i = 0; i < weapon_vec.size(); ++i)
-        {
-            if (weapon_struct_vec[i].remove)
-            {
-                double ap = estimate_special_stats_high(weapon_struct_vec[i].special_stats);
-                if (ap > best_ap)
-                {
-                    best_ap = ap;
-                    best_index = i;
-                }
-            }
-        }
-        filtered_weapons.push_back(weapon_vec[best_index]);
-    }
+//    if (filtered_weapons.size() == 1)
+//    {
+//        debug_message += "Removed to many main-hand weapons, need atleast 2! Adding back the second best one<br>";
+//        std::cout << "Removed to many main-hand weapons, need atleast 2! Adding back the second best one<br>\n";
+//        double best_ap = -1;
+//        size_t best_index = 0;
+//        for (size_t i = 0; i < weapon_vec.size(); ++i)
+//        {
+//            if (weapon_struct_vec[i].remove)
+//            {
+//                double ap = estimate_special_stats_high(weapon_struct_vec[i].special_stats);
+//                if (ap > best_ap)
+//                {
+//                    best_ap = ap;
+//                    best_index = i;
+//                }
+//            }
+//        }
+//        filtered_weapons.push_back(weapon_vec[best_index]);
+//    }
 
     weapon_vec = filtered_weapons;
 }
@@ -1617,13 +1625,13 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult& input)
     debug_message += "Set filter done. Combinations: " + std::to_string(keepers.size()) + "<br>";
     std::cout << "Set filter done. Combinations: " << std::to_string(keepers.size()) << "\n";
 
-    if (keepers.size() > 12000)
+    if (keepers.size() > 10000)
     {
         debug_message += "To many combinations. Combinations: " + std::to_string(keepers.size()) + "<br>";
-        debug_message += "Increasing filter value until <12.000 sets remaining.<br>";
+        debug_message += "Increasing filter value until <10.000 sets remaining.<br>";
         std::cout << "To many combinations. Combinations: " << std::to_string(keepers.size()) << "\n";
-        std::cout << "Increasing filter value until 12.000 sets remaining.<br>\n";
-        while (keepers.size() > 12000)
+        std::cout << "Increasing filter value until 10.000 sets remaining.<br>\n";
+        while (keepers.size() > 10000)
         {
             filter_value += .02;
             filtering_ap = (1 - filter_value) * lowest_attack_power + filter_value * highest_attack_power;

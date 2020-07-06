@@ -87,6 +87,8 @@ damage_sources.tcc
 ../../wow_library/include/sim_input.hpp
 vector
 -
+string
+-
 
 ../../wow_library/include/sim_input_mult.hpp
 vector
@@ -255,21 +257,21 @@ sstream
 -
 
 /src/wow_library/source/sim_interface_mult.cpp
+sim_interface.hpp
+/src/wow_library/source/sim_interface.hpp
 Armory.hpp
 -
 Character.hpp
 -
 Combat_simulator.hpp
 -
-sim_interface.hpp
-/src/wow_library/source/sim_interface.hpp
-sstream
--
-iostream
+algorithm
 -
 ctime
 -
-algorithm
+iostream
+-
+sstream
 -
 
 /src/wow_library/source/weapon_sim.cpp

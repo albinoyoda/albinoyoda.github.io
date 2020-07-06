@@ -57,7 +57,7 @@ struct Armory
                                                                                      44},      Socket::head},
                     {"helm_of_endless_rage",       Attributes{26, 26}, Special_stats{0, 0,
                                                                                      0},       Socket::head},
-                    {"r13_plate_helm",             Attributes{20, 0},  Special_stats{1, 0,
+                    {"r13_plate_helm",             Attributes{28, 0},  Special_stats{1, 0,
                                                                                      0},       Socket::head, Set::epic_pvp_set},
                     {"eye_of_rend",                Attributes{13, 0},  Special_stats{2, 0,
                                                                                      0},       Socket::head},
