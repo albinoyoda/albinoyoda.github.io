@@ -21,6 +21,7 @@ struct Combat_simulator_config {
   double sim_time{};
   int opponent_level{};
 
+  bool exposed_armor{false};
   bool curse_of_recklessness_active{false};
   bool faerie_fire_feral_active{false};
   int n_sunder_armor_stacks = 0;

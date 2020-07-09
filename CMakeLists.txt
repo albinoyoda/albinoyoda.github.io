@@ -33,6 +33,8 @@ add_library(wow_lib SHARED
 #target_link_libraries(wow_stat_weights wow_lib)
 #ADD_EXECUTABLE(wow_web main_web_code.cpp)
 #target_link_libraries(wow_web wow_lib)
+#ADD_EXECUTABLE(wow_marrow main_marrow.cpp)
+#target_link_libraries(wow_marrow wow_lib)
 
 IF (EMSCRIPTEN)
     add_executable(wow_interface

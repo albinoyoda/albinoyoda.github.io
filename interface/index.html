@@ -1359,6 +1359,8 @@
         The target is a "warrior" type monster with 3731 armor. <br/>
         <label for="sunder_armor_dd">Sunder armor stacks: (0-5):</label>
         <input type="number" id="sunder_armor_dd" name="quantity" min="0" max="5" value="5"><br/>
+        <input type="checkbox" id="exposed_armor">
+        <label for="exposed_armor"> Improved exposed armor applied after 6-7 seconds (replaces sunder armor)</label><br>
         <input type="checkbox" id="faerie_fire" checked>
         <label for="faerie_fire"> Faerie fire feral active</label><br>
         <input type="checkbox" id="curse_of_recklessness" checked>
@@ -1588,7 +1590,7 @@
     var enchant_prefixes = ["e", "s", "b", "c", "w", "h", "l", "b", "m", "o"];
     var enchants_input = [];
 
-    var sim_options = ["faerie_fire", "curse_of_recklessness", "death_wish",
+    var sim_options = ["faerie_fire", "exposed_armor", "curse_of_recklessness", "death_wish",
         "recklessness", "mighty_rage_potion", "default_boss", "sulfuron_harbinger", "golemagg", "vaelastrasz",
         "chromaggus", "debug_on", "use_bt_in_exec_phase", "use_hs_in_exec_phase", "cleave_if_adds",
         "hamstring_cd_thresh_dd", "hamstring_thresh_dd", "initial_rage", "use_hamstring"];

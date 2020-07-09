@@ -484,6 +484,10 @@ Sim_output Sim_interface::simulate(const Sim_input &input)
     config.sim_time = input.fight_time;
     config.opponent_level = input.target_level;
 
+    if (find_string(input.options, "exposed_armor"))
+    {
+        config.exposed_armor = true;
+    }
     if (find_string(input.options, "curse_of_recklessness"))
     {
         config.curse_of_recklessness_active = true;
