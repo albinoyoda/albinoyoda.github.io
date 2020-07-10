@@ -342,7 +342,7 @@ int main()
     buff_vec.emplace_back("warchiefs_blessing");
     buff_vec.emplace_back("spirit_of_zandalar");
     buff_vec.emplace_back("sayges_fortune");
-    //    buff_vec.emplace_back("windfury_totem");
+        buff_vec.emplace_back("windfury_totem");
     buff_vec.emplace_back("blessing_of_kings");
     //    buff_vec.emplace_back("strength_of_earth_totem");
     //    buff_vec.emplace_back("grace_of_air_totem");

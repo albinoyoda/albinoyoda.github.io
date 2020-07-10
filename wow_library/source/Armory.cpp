@@ -286,9 +286,16 @@ void Armory::compute_total_stats(Character &character) const
 
         for (const auto &hit_effect : buff.hit_effects)
         {
-            for (Weapon &weapon : character.weapons)
+            if (hit_effect.name != "windfury_totem")
             {
-                weapon.hit_effects.emplace_back(hit_effect);
+                for (Weapon& weapon : character.weapons)
+                {
+                    weapon.hit_effects.emplace_back(hit_effect);
+                }
+            }
+            else
+            {
+                character.weapons[0].hit_effects.emplace_back(hit_effect);
             }
         }
     }
