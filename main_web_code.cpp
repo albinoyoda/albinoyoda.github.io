@@ -30,25 +30,25 @@ int main()
     weapons_vec.emplace_back("dal_rends_tribal_guardian");
 
     std::vector<std::string> compare_armor_vec;
-    compare_armor_vec.emplace_back("lionheart_helm");
-    compare_armor_vec.emplace_back("onyxia_tooth_pendant");
-    compare_armor_vec.emplace_back("truestrike_shoulders");
-    compare_armor_vec.emplace_back("cape_of_the_black_baron");
-    compare_armor_vec.emplace_back("savage_gladiator_chain");
-    compare_armor_vec.emplace_back("wristguards_of_stability");
-    compare_armor_vec.emplace_back("flameguard_gauntlets");
-    compare_armor_vec.emplace_back("onslaught_girdle");
-    compare_armor_vec.emplace_back("cloudkeeper_legplates");
-    compare_armor_vec.emplace_back("chromatic_boots");
-    compare_armor_vec.emplace_back("might_of_cenarius");
-    compare_armor_vec.emplace_back("master_dragonslayers_ring");
-    compare_armor_vec.emplace_back("badge_of_the_swarmguard");
-    compare_armor_vec.emplace_back("diamond_flask");
-    compare_armor_vec.emplace_back("blastershot");
+//    compare_armor_vec.emplace_back("lionheart_helm");
+//    compare_armor_vec.emplace_back("onyxia_tooth_pendant");
+//    compare_armor_vec.emplace_back("truestrike_shoulders");
+//    compare_armor_vec.emplace_back("cape_of_the_black_baron");
+//    compare_armor_vec.emplace_back("savage_gladiator_chain");
+//    compare_armor_vec.emplace_back("wristguards_of_stability");
+//    compare_armor_vec.emplace_back("flameguard_gauntlets");
+//    compare_armor_vec.emplace_back("onslaught_girdle");
+//    compare_armor_vec.emplace_back("cloudkeeper_legplates");
+//    compare_armor_vec.emplace_back("chromatic_boots");
+//    compare_armor_vec.emplace_back("might_of_cenarius");
+//    compare_armor_vec.emplace_back("master_dragonslayers_ring");
+//    compare_armor_vec.emplace_back("badge_of_the_swarmguard");
+//    compare_armor_vec.emplace_back("diamond_flask");
+//    compare_armor_vec.emplace_back("blastershot");
 
     std::vector<std::string> compare_weapons_vec;
-    compare_weapons_vec.emplace_back("thrash_blade");
-    compare_weapons_vec.emplace_back("assassination_blade");
+//    compare_weapons_vec.emplace_back("thrash_blade");
+//    compare_weapons_vec.emplace_back("assassination_blade");
 
     std::vector<std::string> mult_armor_vec;
     //    mult_armor_vec.emplace_back("lionheart_helm");
@@ -368,8 +368,8 @@ int main()
                         sim_options,
                         compare_armor_vec,
                         compare_weapons_vec,
-                        30,
                         60,
+                        63,
                         50000,
                         1000,
                         5,
@@ -399,8 +399,8 @@ int main()
                                   45,
                                   40};
 
-    //    auto sim_output = sim_interface.simulate(sim_input);
-    auto sim_output = sim_interface.simulate_mult(sim_input_mult);
+        auto sim_output = sim_interface.simulate(sim_input);
+//    auto sim_output = sim_interface.simulate_mult(sim_input_mult);
 
     //    for (const auto &dmg_batch : sim_output.stat_weights)
     //    {
