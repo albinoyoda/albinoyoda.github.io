@@ -321,10 +321,10 @@
     </p>
     <p><b>2020-07-13:</b></p>
     <p>
-        - Fixed some bugs related to windfury implementation, the impale talent.
-        - Added double rolls for yellow hits.
-        - Improved simulator runtime performance
-        - Fixed a bug where the aura uptimes no longer where showing.
+        - Fixed the windfury implementation and the impale talent to work correctly.<br/>
+        - Added double rolls for yellow hits.<br/>
+        - Improved simulator runtime performance<br/>
+        - Fixed a bug where the aura uptimes no longer where showing when doing a standard simulation.<br/>
     </p>
 
 </div>
@@ -1126,7 +1126,8 @@
             <input type="checkbox" id="display_multi_debug">
             <label for="display_multi_debug">Output debug information from the optimizer (shown at the
                 bottom)</label>
-        </div><br>
+        </div>
+        <br>
 
 
         <input type="checkbox" id="do_comparison"
@@ -2289,8 +2290,12 @@
 
             let sources = [];
             let sources_names = ["Main hand", "Off hand", "Blood Thirst", "Execute", "Heroic Strike", "Cleave", "Whirlwind", "Hamstring", "Item procs"];
+            let sources_names_used = [];
             for (let i = 0; i < result['dmg_sources'].size(); i++) {
-                sources.push(100 * result['dmg_sources'].get(i));
+                if (result['dmg_sources'].get(i) > 0.01) {
+                    sources.push(mean_dps[0] * result['dmg_sources'].get(i));
+                    sources_names_used.push(sources_names[i]);
+                }
             }
 
             let aura_name = [];
@@ -2727,7 +2732,7 @@
             bar_chart_damage = new Chart(document.getElementById("bar-chart-damage"), {
                 type: 'bar',
                 data: {
-                    labels: sources_names,
+                    labels: sources_names_used,
                     datasets: [
                         {
                             backgroundColor: colors,
@@ -2741,7 +2746,7 @@
                         fontSize: 60,
                         fontColor: "black",
                         display: true,
-                        text: 'DPS (%) from different sources'
+                        text: 'DPS from different sources'
                     },
                     scales: {
                         yAxes: [{
@@ -2752,7 +2757,7 @@
                             scaleLabel: {
                                 fontColor: "black",
                                 display: true,
-                                labelString: 'Percentage'
+                                labelString: 'DPS'
                             },
                             ticks:
                                 {
