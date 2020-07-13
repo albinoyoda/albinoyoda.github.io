@@ -17,10 +17,12 @@ vector
 -
 
 ../../wow_library/include/Buff_manager.hpp
-vector
--
 Attributes.hpp
 ../../wow_library/include/Attributes.hpp
+Item.hpp
+../../wow_library/include/Item.hpp
+vector
+-
 
 ../../wow_library/include/Character.hpp
 cassert
@@ -33,28 +35,30 @@ Item.hpp
 ../../wow_library/include/Item.hpp
 
 ../../wow_library/include/Combat_simulator.hpp
-vector
--
-cassert
--
-map
--
-cmath
--
-iomanip
--
+Buff_manager.hpp
+../../wow_library/include/Buff_manager.hpp
 Character.hpp
 ../../wow_library/include/Character.hpp
+Statistics.hpp
+../../wow_library/include/Statistics.hpp
 damage_sources.hpp
 ../../wow_library/include/damage_sources.hpp
 time_keeper.hpp
 ../../wow_library/include/time_keeper.hpp
 weapon_sim.hpp
 ../../wow_library/include/weapon_sim.hpp
-Buff_manager.hpp
-../../wow_library/include/Buff_manager.hpp
-Statistics.hpp
-../../wow_library/include/Statistics.hpp
+cassert
+-
+cmath
+-
+iomanip
+-
+map
+-
+vector
+-
+array
+-
 Combat_simulator.tcc
 ../../wow_library/include/Combat_simulator.tcc
 
@@ -131,10 +135,12 @@ vector
 -
 
 /src/wow_library/include/Buff_manager.hpp
-vector
--
 Attributes.hpp
 /src/wow_library/include/Attributes.hpp
+Item.hpp
+/src/wow_library/include/Item.hpp
+vector
+-
 
 /src/wow_library/include/Character.hpp
 cassert
@@ -147,28 +153,30 @@ Item.hpp
 /src/wow_library/include/Item.hpp
 
 /src/wow_library/include/Combat_simulator.hpp
-vector
--
-cassert
--
-map
--
-cmath
--
-iomanip
--
+Buff_manager.hpp
+/src/wow_library/include/Buff_manager.hpp
 Character.hpp
 /src/wow_library/include/Character.hpp
+Statistics.hpp
+/src/wow_library/include/Statistics.hpp
 damage_sources.hpp
 /src/wow_library/include/damage_sources.hpp
 time_keeper.hpp
 /src/wow_library/include/time_keeper.hpp
 weapon_sim.hpp
 /src/wow_library/include/weapon_sim.hpp
-Buff_manager.hpp
-/src/wow_library/include/Buff_manager.hpp
-Statistics.hpp
-/src/wow_library/include/Statistics.hpp
+cassert
+-
+cmath
+-
+iomanip
+-
+map
+-
+vector
+-
+array
+-
 Combat_simulator.tcc
 /src/wow_library/include/Combat_simulator.tcc
 
@@ -215,10 +223,10 @@ Item.hpp
 /src/wow_library/include/Attributes.hpp
 
 /src/wow_library/source/Character.cpp
-iostream
--
 ../include/Character.hpp
 /src/wow_library/include/Character.hpp
+iostream
+-
 
 /src/wow_library/source/Combat_simulator.cpp
 ../include/Combat_simulator.hpp
@@ -237,22 +245,22 @@ cmath
 -
 
 /src/wow_library/source/damage_sources.cpp
+damage_sources.hpp
+/src/wow_library/source/damage_sources.hpp
 iomanip
 -
 iostream
 -
-damage_sources.hpp
-/src/wow_library/source/damage_sources.hpp
 
 /src/wow_library/source/sim_interface.cpp
+sim_interface.hpp
+/src/wow_library/source/sim_interface.hpp
 Armory.hpp
 -
 Character.hpp
 -
 Combat_simulator.hpp
 -
-sim_interface.hpp
-/src/wow_library/source/sim_interface.hpp
 sstream
 -
 

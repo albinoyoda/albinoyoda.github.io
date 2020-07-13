@@ -30,25 +30,25 @@ int main()
     weapons_vec.emplace_back("dal_rends_tribal_guardian");
 
     std::vector<std::string> compare_armor_vec;
-    compare_armor_vec.emplace_back("lionheart_helm");
-    compare_armor_vec.emplace_back("onyxia_tooth_pendant");
-    compare_armor_vec.emplace_back("truestrike_shoulders");
-    compare_armor_vec.emplace_back("cape_of_the_black_baron");
-    compare_armor_vec.emplace_back("savage_gladiator_chain");
-    compare_armor_vec.emplace_back("wristguards_of_stability");
-    compare_armor_vec.emplace_back("flameguard_gauntlets");
-    compare_armor_vec.emplace_back("onslaught_girdle");
-    compare_armor_vec.emplace_back("cloudkeeper_legplates");
-    compare_armor_vec.emplace_back("chromatic_boots");
-    compare_armor_vec.emplace_back("might_of_cenarius");
-    compare_armor_vec.emplace_back("master_dragonslayers_ring");
-    compare_armor_vec.emplace_back("badge_of_the_swarmguard");
-    compare_armor_vec.emplace_back("diamond_flask");
-    compare_armor_vec.emplace_back("blastershot");
+    //    compare_armor_vec.emplace_back("lionheart_helm");
+    //    compare_armor_vec.emplace_back("onyxia_tooth_pendant");
+    //    compare_armor_vec.emplace_back("truestrike_shoulders");
+    //    compare_armor_vec.emplace_back("cape_of_the_black_baron");
+    //    compare_armor_vec.emplace_back("savage_gladiator_chain");
+    //    compare_armor_vec.emplace_back("wristguards_of_stability");
+    //    compare_armor_vec.emplace_back("flameguard_gauntlets");
+    //    compare_armor_vec.emplace_back("onslaught_girdle");
+    //    compare_armor_vec.emplace_back("cloudkeeper_legplates");
+    //    compare_armor_vec.emplace_back("chromatic_boots");
+    //    compare_armor_vec.emplace_back("might_of_cenarius");
+    //    compare_armor_vec.emplace_back("master_dragonslayers_ring");
+    //    compare_armor_vec.emplace_back("badge_of_the_swarmguard");
+    //    compare_armor_vec.emplace_back("diamond_flask");
+    //    compare_armor_vec.emplace_back("blastershot");
 
     std::vector<std::string> compare_weapons_vec;
-    compare_weapons_vec.emplace_back("thrash_blade");
-    compare_weapons_vec.emplace_back("assassination_blade");
+    //    compare_weapons_vec.emplace_back("thrash_blade");
+    //    compare_weapons_vec.emplace_back("assassination_blade");
 
     std::vector<std::string> mult_armor_vec;
     //    mult_armor_vec.emplace_back("lionheart_helm");
@@ -342,7 +342,7 @@ int main()
     buff_vec.emplace_back("warchiefs_blessing");
     buff_vec.emplace_back("spirit_of_zandalar");
     buff_vec.emplace_back("sayges_fortune");
-        buff_vec.emplace_back("windfury_totem");
+    buff_vec.emplace_back("windfury_totem");
     buff_vec.emplace_back("blessing_of_kings");
     //    buff_vec.emplace_back("strength_of_earth_totem");
     //    buff_vec.emplace_back("grace_of_air_totem");
@@ -356,8 +356,9 @@ int main()
     std::string race = "orc";
 
     std::vector<std::string> sim_options = {
-        "faerie_fire", "exposed_armor",        "curse_of_recklessness", "death_wish",     "mighty_rage_potion",
-        "debug_on",    "use_bt_in_exec_phase", "use_hs_in_exec_phase",  "cleave_if_adds", "use_hamstring"};
+        "faerie_fire",          "recklessness",       "exposed_armor", "curse_of_recklessness",
+        "death_wish",           "mighty_rage_potion", "debug_on",      "use_bt_in_exec_phase",
+        "use_hs_in_exec_phase", "cleave_if_adds",     "use_hamstring"};
 
     Sim_input sim_input{{race},
                         armor_vec,
@@ -369,7 +370,7 @@ int main()
                         compare_armor_vec,
                         compare_weapons_vec,
                         60,
-                        60,
+                        63,
                         50000,
                         1000,
                         5,

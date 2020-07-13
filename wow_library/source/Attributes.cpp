@@ -10,7 +10,7 @@ double multiplicative_subtraction(double val1, double val2)
     return (1 + val1) / (1 + val2) - 1;
 }
 
-std::ostream &operator<<(std::ostream &os, Special_stats const &special_stats)
+std::ostream& operator<<(std::ostream& os, Special_stats const& special_stats)
 {
     os << "<b>Special stats:</b><br>";
     os << "Hit: " << special_stats.hit << "<br>";
