@@ -348,7 +348,7 @@ struct Armory
                     {"earthstrike",               Attributes{0, 0}, Special_stats{0, 0,
                                                                                   0},        Socket::trinket, Set::none, {}, {{"earthstrike",             Use_effect::Effect_socket::shared, {0,  0}, {0, 0, 280}, 0, 20, 120, true}}},
                     {"badge_of_the_swarmguard",   Attributes{0, 0}, Special_stats{0, 0,
-                                                                                  0},        Socket::trinket, Set::none, {}, {{"badge_of_the_swarmguard", Use_effect::Effect_socket::unique, {},      {},          0, 30, 180, false, {"badge_of_the_swarmguard", Hit_effect::Type::reduce_armor, {}, {}, 0, 0, 0.5, 0, 1, 200, 6}}}},
+                                                                                  0},        Socket::trinket, Set::none, {}, {{"badge_of_the_swarmguard", Use_effect::Effect_socket::unique, {},      {},          0, 30, 180, false, {{"badge_of_the_swarmguard", Hit_effect::Type::reduce_armor, {}, {}, 0, 0, 0.5, 0, 1, 200, 6}}}}},
             };
 
     std::vector<Armor> ranged_t

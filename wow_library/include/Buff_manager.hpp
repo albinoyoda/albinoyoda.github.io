@@ -4,7 +4,31 @@
 #include "Attributes.hpp"
 #include "Item.hpp"
 
+#include <cmath>
 #include <vector>
+
+struct Over_time_buff
+{
+    Over_time_buff(std::string id, Special_stats special_stats, int init_time, double rage_gain, double damage,
+                   int interval, int duration)
+        : id(std::move(id))
+        , special_stats(special_stats)
+        , init_time(init_time)
+        , total_ticks(duration / interval)
+        , current_ticks(0)
+        , rage_gain(rage_gain)
+        , damage(damage)
+        , interval(interval){};
+
+    std::string id;
+    Special_stats special_stats;
+    int init_time;
+    int total_ticks;
+    int current_ticks;
+    double rage_gain;
+    double damage;
+    int interval;
+};
 
 struct Combat_buff
 {
@@ -76,7 +100,7 @@ public:
         use_effects = use_effects_input;
     };
 
-    double get_dt()
+    double get_dt(double sim_time)
     {
         double dt = 1e10;
         for (const auto& gain : stat_gains)
@@ -87,11 +111,16 @@ public:
         {
             dt = std::min(dt, gain.duration_left);
         }
+        for (const auto& buff : over_time_buffs)
+        {
+            double a = double(buff.interval) - std::fmod((sim_time - double(buff.init_time)), double(buff.interval));
+            dt = std::min(dt, a);
+        }
         return dt;
     }
 
-    void increment(double dt, double time_left, double& rage, double& global_cooldown, std::vector<std::string>& status,
-                   bool debug)
+    void increment(double dt, double current_time, double time_left, double& rage, double& global_cooldown,
+                   std::vector<std::string>& status, bool debug)
     {
         size_t i = 0;
         while (i < stat_gains.size())
@@ -164,9 +193,14 @@ public:
                 {
                     status.emplace_back("Activating: " + use_effects[i].name);
                 }
-                if (use_effects[i].hit_effect.name != "")
+                if (!use_effects[i].hit_effects.empty())
                 {
-                    add_hit_effect(use_effects[i].name, use_effects[i].hit_effect, 30);
+                    add_hit_effect(use_effects[i].name, use_effects[i].hit_effects[0],
+                                   use_effects[i].hit_effects[0].duration);
+                }
+                else if (!use_effects[i].over_time_effects.empty())
+                {
+                    add_over_time_effect(use_effects[i].over_time_effects[0], int(current_time + 1));
                 }
                 else
                 {
@@ -184,6 +218,30 @@ public:
             else
             {
                 ++i;
+            }
+        }
+        i = 0;
+        while (i < over_time_buffs.size())
+        {
+            if ((int(current_time) - over_time_buffs[i].init_time) / over_time_buffs[i].interval <=
+                over_time_buffs[i].current_ticks)
+            {
+                if (debug)
+                {
+                    status.emplace_back("Over time effect: " + over_time_buffs[i].id + " tick.");
+                }
+                rage += over_time_buffs[i].rage_gain;
+                (*simulation_special_stats) += over_time_buffs[i].special_stats;
+                rage = std::min(100.0, rage);
+                over_time_buffs[i].current_ticks++;
+            }
+            if (over_time_buffs[i].current_ticks == over_time_buffs[i].total_ticks)
+            {
+                over_time_buffs.erase(over_time_buffs.begin() + i);
+            }
+            else
+            {
+                i++;
             }
         }
     }
@@ -213,6 +271,26 @@ public:
         hit_gains.emplace_back(name, duration_left);
     }
 
+    void add_over_time_effect(const Over_time_effect& over_time_effect, int init_time)
+    {
+        if (over_time_effect.name == "Deep_wounds")
+        {
+            for (auto& over_time_buff : over_time_buffs)
+            {
+                if (over_time_buff.id == "Deep_wounds")
+                {
+                    over_time_buff.damage = std::max(over_time_effect.damage, over_time_buff.damage);
+                    over_time_buff.total_ticks = 0;
+                    over_time_buff.init_time = init_time;
+                    return;
+                }
+            }
+        }
+        over_time_buffs.emplace_back(over_time_effect.name, over_time_effect.special_stats, init_time,
+                                     over_time_effect.rage_gain, over_time_effect.damage, over_time_effect.interval,
+                                     over_time_effect.duration);
+    }
+
     void increment_proc(const std::string& name)
     {
         for (auto& proc : procs)
@@ -229,10 +307,11 @@ public:
     bool need_to_recompute_hittables{false};
     bool performance_mode{false};
     Special_stats* simulation_special_stats;
-    std::vector<Hit_effect>* hit_effects_mh;
-    std::vector<Hit_effect>* hit_effects_oh;
     std::vector<Combat_buff> stat_gains;
     std::vector<Hit_buff> hit_gains;
+    std::vector<Over_time_buff> over_time_buffs;
+    std::vector<Hit_effect>* hit_effects_mh;
+    std::vector<Hit_effect>* hit_effects_oh;
     std::vector<Use_effect> use_effects;
     Aura_uptime aura_uptime;
     std::vector<Proc> procs;

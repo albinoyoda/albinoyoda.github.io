@@ -15,7 +15,7 @@ public:
         return internal_swing_timer < 0.0;
     }
 
-    constexpr double swing(double attack_power)
+    constexpr double swing(double attack_power) const
     {
         return average_damage + attack_power * swing_speed / 14;
     }

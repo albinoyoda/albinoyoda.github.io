@@ -176,13 +176,14 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit_oh(double damage)
     }
 }
 
-Combat_simulator::Hit_outcome Combat_simulator::generate_hit(double damage, Combat_simulator::Hit_type hit_type,
-                                                             Socket weapon_hand, const Special_stats& special_stats,
-                                                             bool boss_target)
+Combat_simulator::Hit_outcome Combat_simulator::generate_hit(const Weapon_sim& weapon, double damage,
+                                                             Combat_simulator::Hit_type hit_type, Socket weapon_hand,
+                                                             const Special_stats& special_stats, bool boss_target)
 {
+    Combat_simulator::Hit_outcome hit_outcome;
     if (weapon_hand == Socket::main_hand)
     {
-        auto hit_outcome = generate_hit_mh(damage, hit_type);
+        hit_outcome = generate_hit_mh(damage, hit_type);
         if (boss_target)
         {
             hit_outcome.damage *= armor_reduction_factor_ * (1 + special_stats.damage_multiplier);
@@ -192,11 +193,11 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(double damage, Comb
             hit_outcome.damage *= armor_reduction_factor_add * (1 + special_stats.damage_multiplier);
         }
         cout_damage_parse(hit_type, weapon_hand, hit_outcome);
-        return hit_outcome;
+        //        return hit_outcome;
     }
     else
     {
-        auto hit_outcome = generate_hit_oh(damage);
+        hit_outcome = generate_hit_oh(damage);
         if (boss_target)
         {
             hit_outcome.damage *= armor_reduction_factor_ * (1 + special_stats.damage_multiplier);
@@ -206,8 +207,13 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(double damage, Comb
             hit_outcome.damage *= armor_reduction_factor_add * (1 + special_stats.damage_multiplier);
         }
         cout_damage_parse(hit_type, weapon_hand, hit_outcome);
-        return hit_outcome;
     }
+    if (hit_outcome.hit_result == Combat_simulator::Hit_result::crit)
+    {
+        buff_manager_.add_over_time_effect({"Deep_wounds", {}, 0, weapon.swing(special_stats.attack_power), 3, 12},
+                                           int(time_keeper_.time));
+    }
+    return hit_outcome;
 }
 
 void Combat_simulator::compute_hit_table(int level_difference, int weapon_skill, Special_stats special_stats,
@@ -334,7 +340,7 @@ void Combat_simulator::bloodthirst(Weapon_sim& main_hand_weapon, Special_stats& 
 {
     simulator_cout("Bloodthirst!");
     double damage = special_stats.attack_power * 0.45;
-    auto hit_outcome = generate_hit(damage, Hit_type::yellow, Socket::main_hand, special_stats);
+    auto hit_outcome = generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats);
     if (hit_outcome.hit_result == Hit_result::dodge || hit_outcome.hit_result == Hit_result::miss)
     {
         rage -= 6;
@@ -361,7 +367,7 @@ void Combat_simulator::whirlwind(Weapon_sim& main_hand_weapon, Special_stats& sp
     hit_outcomes.reserve(4);
     for (int i = 0; i < std::min(adds_in_melee_range + 1, 4); i++)
     {
-        hit_outcomes.emplace_back(generate_hit(damage, Hit_type::yellow, Socket::main_hand, special_stats, i == 0));
+        hit_outcomes.emplace_back(generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats, i == 0));
     }
     rage -= 25;
     if (hit_outcomes[0].hit_result != Hit_result::dodge && hit_outcomes[0].hit_result != Hit_result::miss)
@@ -390,7 +396,7 @@ void Combat_simulator::execute(Weapon_sim& main_hand_weapon, Special_stats& spec
 {
     simulator_cout("Execute!");
     double damage = 600 + (rage - execute_rage_cost) * 15;
-    auto hit_outcome = generate_hit(damage, Hit_type::yellow, Socket::main_hand, special_stats);
+    auto hit_outcome = generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats);
     time_keeper_.global_cd = 1.5;
     if (hit_outcome.hit_result == Hit_result::dodge || hit_outcome.hit_result == Hit_result::miss)
     {
@@ -411,7 +417,7 @@ void Combat_simulator::hamstring(Weapon_sim& main_hand_weapon, Special_stats& sp
 {
     simulator_cout("Hamstring!");
     double damage = 45;
-    auto hit_outcome = generate_hit(damage, Hit_type::yellow, Socket::main_hand, special_stats);
+    auto hit_outcome = generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats);
     time_keeper_.global_cd = 1.5;
     if (hit_outcome.hit_result == Hit_result::dodge || hit_outcome.hit_result == Hit_result::miss)
     {
@@ -463,7 +469,7 @@ void Combat_simulator::hit_effects(Weapon_sim& weapon, Weapon_sim& main_hand_wea
                 break;
             case Hit_effect::Type::damage_physical:
             {
-                auto hit = generate_hit(hit_effect.damage, Hit_type::yellow, Socket::main_hand, special_stats);
+                auto hit = generate_hit(main_hand_weapon, hit_effect.damage, Hit_type::yellow, Socket::main_hand, special_stats);
                 damage_sources.add_damage(Damage_source::item_hit_effects, hit.damage, time_keeper_.time);
                 if (config.display_combat_debug)
                 {
@@ -706,6 +712,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
 
     // Pick out the best use effect if there are several that shares cooldown
     std::vector<Use_effect> use_effects_all = character.use_effects;
+    std::vector<Over_time_effect> over_time_effects{};
     std::vector<int> shared_items;
     size_t best_idx = 0;
     double best_value = 0;
@@ -728,6 +735,33 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         // Constructor for recklessness
         use_effects_all.push_back(
             {"Recklessness", Use_effect::Effect_socket::unique, {}, {100, 0, 0}, 0, 15, 900, true});
+    }
+
+    if (config.enable_bloodrage)
+    {
+        // Constructor for bloodrage
+        use_effects_all.push_back({"Bloodrage",
+                                   Use_effect::Effect_socket::unique,
+                                   {},
+                                   {},
+                                   10,
+                                   10,
+                                   60,
+                                   false,
+                                   {},
+                                   {{"Bloodrage", {}, 1, 0, 1, 10}}});
+    }
+
+    if (config.mode.vaelastrasz)
+    {
+        // Constructor for Essence of the red
+        over_time_effects.push_back({"Essence_of_the_red", {}, 20, 0, 1, 180});
+    }
+
+    if (config.talents.unbridled_wrath)
+    {
+        // Constructor for Essence of the red
+        over_time_effects.push_back({"Unbridled_wrath", {}, 1, 0, 3, 600});
     }
 
     for (size_t i = 0; i < use_effects_all.size(); i++)
@@ -776,6 +810,11 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         buff_manager_.initialize(special_stats, use_effects, weapons[0].hit_effects, weapons[1].hit_effects,
                                  config.performance_mode);
 
+        for (const auto& over_time_effect : over_time_effects)
+        {
+            buff_manager_.add_over_time_effect(over_time_effect, 0.0);
+        }
+
         // Reset, since these might change
         target_armor_ = 3731 - armor_reduction_from_spells; // Armor for Warrior class monsters
         double target_mitigation = armor_mitigation(target_armor_, 63);
@@ -789,8 +828,8 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         bool execute_phase = false;
         bool bloodrage_active = false;
         int bloodrage_ticks = 0;
-        int anger_management_ticks = 0;
-        int burning_adrenaline_ticks = 0;
+        //        int anger_management_ticks = 0;
+        //        int burning_adrenaline_ticks = 0;
         int fuel_ticks = 0;
         double bloodrage_init_time = 0.0;
         double bloodrage_cooldown = -1e-5;
@@ -831,12 +870,12 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         {
             double mh_dt = weapons[0].internal_swing_timer;
             double oh_dt = (weapons.size() == 2) ? weapons[1].internal_swing_timer : 100.0;
-            double buff_dt = buff_manager_.get_dt();
+            double buff_dt = buff_manager_.get_dt(time_keeper_.time);
             double dt = time_keeper_.get_dynamic_time_step(mh_dt, oh_dt, buff_dt, sim_time);
             time_keeper_.increment(dt);
             std::vector<std::string> debug_msg;
-            buff_manager_.increment(dt, sim_time - time_keeper_.time, rage, time_keeper_.global_cd, debug_msg,
-                                    config.display_combat_debug);
+            buff_manager_.increment(dt, time_keeper_.time, sim_time - time_keeper_.time, rage, time_keeper_.global_cd,
+                                    debug_msg, config.display_combat_debug);
             if (buff_manager_.need_to_recompute_hittables)
             {
                 for (const auto& weapon : weapons)
@@ -917,27 +956,27 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                 }
             }
 
-            if (config.talents.anger_management)
-            {
-                if (time_keeper_.time - 3 * anger_management_ticks > 0.0)
-                {
-                    simulator_cout("Anger management tick, +1 rage");
-                    rage += 1;
-                    rage = std::min(100.0, rage);
-                    anger_management_ticks++;
-                }
-            }
-
-            if (config.mode.vaelastrasz)
-            {
-                if (time_keeper_.time - 1 * burning_adrenaline_ticks > 0.0)
-                {
-                    simulator_cout("burning_adrenaline_ticks, +20 rage");
-                    rage += 10;
-                    rage = std::min(100.0, rage);
-                    burning_adrenaline_ticks++;
-                }
-            }
+            //            if (config.talents.anger_management)
+            //            {
+            //                if (time_keeper_.time - 3 * anger_management_ticks > 0.0)
+            //                {
+            //                    simulator_cout("Anger management tick, +1 rage");
+            //                    rage += 1;
+            //                    rage = std::min(100.0, rage);
+            //                    anger_management_ticks++;
+            //                }
+            //            }
+            //
+            //            if (config.mode.vaelastrasz)
+            //            {
+            //                if (time_keeper_.time - 1 * burning_adrenaline_ticks > 0.0)
+            //                {
+            //                    simulator_cout("burning_adrenaline_ticks, +20 rage");
+            //                    rage += 10;
+            //                    rage = std::min(100.0, rage);
+            //                    burning_adrenaline_ticks++;
+            //                }
+            //            }
 
             if (config.enable_bloodrage)
             {

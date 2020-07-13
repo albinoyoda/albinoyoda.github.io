@@ -181,7 +181,7 @@ public:
 
     static double get_uniform_random(double r_min, double r_max) { return r_min + rand() * (r_max - r_min) / RAND_MAX; }
 
-    Combat_simulator::Hit_outcome generate_hit(double damage, Hit_type hit_type, Socket weapon_hand,
+    Combat_simulator::Hit_outcome generate_hit(const Weapon_sim& weapon, double damage, Hit_type hit_type, Socket weapon_hand,
                                                const Special_stats& special_stats, bool boss_target = true);
 
     Combat_simulator::Hit_outcome generate_hit_oh(double damage);
