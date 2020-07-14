@@ -210,8 +210,14 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(const Weapon_sim& w
     }
     if (hit_outcome.hit_result == Combat_simulator::Hit_result::crit)
     {
-        buff_manager_.add_over_time_effect({"Deep_wounds", {}, 0, weapon.swing(special_stats.attack_power), 3, 12},
-                                           int(time_keeper_.time));
+        buff_manager_.add_over_time_effect(
+            {"Deep_wounds",
+             {},
+             0,
+             (1 + special_stats.damage_multiplier) * weapon.swing(special_stats.attack_power) / 4,
+             3,
+             12},
+            int(time_keeper_.time));
     }
     return hit_outcome;
 }
@@ -367,7 +373,8 @@ void Combat_simulator::whirlwind(Weapon_sim& main_hand_weapon, Special_stats& sp
     hit_outcomes.reserve(4);
     for (int i = 0; i < std::min(adds_in_melee_range + 1, 4); i++)
     {
-        hit_outcomes.emplace_back(generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats, i == 0));
+        hit_outcomes.emplace_back(
+            generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats, i == 0));
     }
     rage -= 25;
     if (hit_outcomes[0].hit_result != Hit_result::dodge && hit_outcomes[0].hit_result != Hit_result::miss)
@@ -467,9 +474,9 @@ void Combat_simulator::hit_effects(Weapon_sim& weapon, Weapon_sim& main_hand_wea
                 damage_sources.add_damage(Damage_source::item_hit_effects, hit_effect.damage * 0.83, time_keeper_.time,
                                           false);
                 break;
-            case Hit_effect::Type::damage_physical:
-            {
-                auto hit = generate_hit(main_hand_weapon, hit_effect.damage, Hit_type::yellow, Socket::main_hand, special_stats);
+            case Hit_effect::Type::damage_physical: {
+                auto hit = generate_hit(main_hand_weapon, hit_effect.damage, Hit_type::yellow, Socket::main_hand,
+                                        special_stats);
                 damage_sources.add_damage(Damage_source::item_hit_effects, hit.damage, time_keeper_.time);
                 if (config.display_combat_debug)
                 {
@@ -501,8 +508,7 @@ void Combat_simulator::hit_effects(Weapon_sim& weapon, Weapon_sim& main_hand_wea
                 buff_manager_.add(weapon.socket_name + "_" + hit_effect.name,
                                   hit_effect.get_special_stat_equivalent(special_stats), hit_effect.duration);
                 break;
-            case Hit_effect::Type::reduce_armor:
-            {
+            case Hit_effect::Type::reduce_armor: {
                 if (current_armor_red_stacks_ < hit_effect.max_stacks)
                 {
                     target_armor_ -= hit_effect.armor_reduction;
@@ -549,7 +555,8 @@ void Combat_simulator::swing_weapon(Weapon_sim& weapon, Weapon_sim& main_hand_we
     {
         simulator_cout("Performing heroic strike");
         swing_damage += 138;
-        hit_outcomes.emplace_back(generate_hit(swing_damage, Hit_type::yellow, weapon.socket, special_stats));
+        hit_outcomes.emplace_back(
+            generate_hit(main_hand_weapon, swing_damage, Hit_type::yellow, weapon.socket, special_stats));
         ability_queue_manager.heroic_strike_queued = false;
         rage -= heroic_strike_rage_cost;
         damage_sources.add_damage(Damage_source::heroic_strike, hit_outcomes[0].damage, time_keeper_.time);
@@ -559,12 +566,12 @@ void Combat_simulator::swing_weapon(Weapon_sim& weapon, Weapon_sim& main_hand_we
     {
         simulator_cout("Performing cleave! #targets = boss + ", adds_in_melee_range, " adds");
         simulator_cout("Cleave hits: ", std::min(adds_in_melee_range + 1, 2), " targets");
-        swing_damage += 50; // talents
+        swing_damage += 50; // TODO talents
 
         for (int i = 0; i < std::min(adds_in_melee_range + 1, 2); i++)
         {
             hit_outcomes.emplace_back(
-                generate_hit(swing_damage, Hit_type::yellow, weapon.socket, special_stats, i == 0));
+                generate_hit(main_hand_weapon, swing_damage, Hit_type::yellow, weapon.socket, special_stats, i == 0));
         }
         ability_queue_manager.cleave_queued = false;
         rage -= 20;
@@ -595,7 +602,8 @@ void Combat_simulator::swing_weapon(Weapon_sim& weapon, Weapon_sim& main_hand_we
         }
 
         // Otherwise do white hit
-        hit_outcomes.emplace_back(generate_hit(swing_damage, Hit_type::white, weapon.socket, special_stats));
+        hit_outcomes.emplace_back(
+            generate_hit(main_hand_weapon, swing_damage, Hit_type::white, weapon.socket, special_stats));
 
         rage += rage_generation(hit_outcomes[0].damage);
         if (hit_outcomes[0].hit_result == Hit_result::dodge)
@@ -634,7 +642,7 @@ void Combat_simulator::swing_weapon(Weapon_sim& weapon, Weapon_sim& main_hand_we
         if (get_uniform_random(1) < config.talents.unbridled_wrath * 0.08)
         {
             rage += 1;
-            simulator_cout("Unbridled wrath, +1 rage");
+            simulator_cout("Unbridled wrath. Current rage: ", int(rage));
         }
     }
 }
@@ -826,13 +834,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         int flurry_charges = 0;
         bool apply_delayed_armor_reduction = true;
         bool execute_phase = false;
-        bool bloodrage_active = false;
-        int bloodrage_ticks = 0;
-        //        int anger_management_ticks = 0;
-        //        int burning_adrenaline_ticks = 0;
         int fuel_ticks = 0;
-        double bloodrage_init_time = 0.0;
-        double bloodrage_cooldown = -1e-5;
 
         double mh_hits = 0;
         double mh_hits_w_flurry = 0;
@@ -954,54 +956,6 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                                    " damage, yielding: ", rage_from_damage_taken(config.extra_rage_damage_amount),
                                    " rage");
                 }
-            }
-
-            //            if (config.talents.anger_management)
-            //            {
-            //                if (time_keeper_.time - 3 * anger_management_ticks > 0.0)
-            //                {
-            //                    simulator_cout("Anger management tick, +1 rage");
-            //                    rage += 1;
-            //                    rage = std::min(100.0, rage);
-            //                    anger_management_ticks++;
-            //                }
-            //            }
-            //
-            //            if (config.mode.vaelastrasz)
-            //            {
-            //                if (time_keeper_.time - 1 * burning_adrenaline_ticks > 0.0)
-            //                {
-            //                    simulator_cout("burning_adrenaline_ticks, +20 rage");
-            //                    rage += 10;
-            //                    rage = std::min(100.0, rage);
-            //                    burning_adrenaline_ticks++;
-            //                }
-            //            }
-
-            if (config.enable_bloodrage)
-            {
-                if (!bloodrage_active && bloodrage_cooldown < 0.0)
-                {
-                    bloodrage_active = true;
-                    rage += 10;
-                    rage = std::min(100.0, rage);
-                    simulator_cout("Bloodrage activated! rage: ", int(rage));
-                    bloodrage_init_time = time_keeper_.time;
-                    bloodrage_cooldown = 60.0 + dt;
-                }
-                if (bloodrage_active && time_keeper_.time - (bloodrage_init_time + bloodrage_ticks) > 1.0)
-                {
-                    rage += 1;
-                    rage = std::min(100.0, rage);
-                    simulator_cout("Bloodrage tick, rage: ", int(rage));
-                    bloodrage_ticks++;
-                    if (bloodrage_ticks == 10)
-                    {
-                        bloodrage_active = false;
-                        bloodrage_ticks = 0;
-                    }
-                }
-                bloodrage_cooldown -= dt;
             }
 
             // Execute phase

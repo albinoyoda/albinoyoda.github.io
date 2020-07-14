@@ -15,7 +15,7 @@ struct Over_time_buff
         , special_stats(special_stats)
         , init_time(init_time)
         , total_ticks(duration / interval)
-        , current_ticks(0)
+        , current_ticks(1)
         , rage_gain(rage_gain)
         , damage(damage)
         , interval(interval){};
@@ -94,6 +94,7 @@ public:
         performance_mode = performance_mode_in;
         stat_gains.clear();
         hit_gains.clear();
+        over_time_buffs.clear();
         simulation_special_stats = &special_stats;
         hit_effects_mh = &hit_effects_mh_input;
         hit_effects_oh = &hit_effects_oh_input;
@@ -103,19 +104,9 @@ public:
     double get_dt(double sim_time)
     {
         double dt = 1e10;
-        for (const auto& gain : stat_gains)
-        {
-            dt = std::min(dt, gain.duration_left);
-        }
-        for (const auto& gain : hit_gains)
-        {
-            dt = std::min(dt, gain.duration_left);
-        }
-        for (const auto& buff : over_time_buffs)
-        {
-            double a = double(buff.interval) - std::fmod((sim_time - double(buff.init_time)), double(buff.interval));
-            dt = std::min(dt, a);
-        }
+        dt = std::min(dt, next_event);
+        double interval_dt = double(min_interval) - std::fmod(sim_time,  double(min_interval));
+        dt = std::min(dt, interval_dt);
         return dt;
     }
 
@@ -123,6 +114,7 @@ public:
                    std::vector<std::string>& status, bool debug)
     {
         size_t i = 0;
+        next_event = 10;
         while (i < stat_gains.size())
         {
             if (!performance_mode)
@@ -145,6 +137,7 @@ public:
             }
             else
             {
+                next_event = std::min(next_event, stat_gains[i].duration_left);
                 ++i;
             }
         }
@@ -180,6 +173,7 @@ public:
             }
             else
             {
+                next_event = std::min(next_event, hit_gains[i].duration_left);
                 ++i;
             }
         }
@@ -223,21 +217,49 @@ public:
         i = 0;
         while (i < over_time_buffs.size())
         {
-            if ((int(current_time) - over_time_buffs[i].init_time) / over_time_buffs[i].interval <=
+            if ((int(current_time) - over_time_buffs[i].init_time) / over_time_buffs[i].interval >=
                 over_time_buffs[i].current_ticks)
             {
-                if (debug)
-                {
-                    status.emplace_back("Over time effect: " + over_time_buffs[i].id + " tick.");
-                }
                 rage += over_time_buffs[i].rage_gain;
                 (*simulation_special_stats) += over_time_buffs[i].special_stats;
                 rage = std::min(100.0, rage);
                 over_time_buffs[i].current_ticks++;
+                if (debug)
+                {
+                    if (over_time_buffs[i].rage_gain > 0)
+                    {
+                        status.emplace_back("Over time effect: " + over_time_buffs[i].id +
+                                            " tick. Current rage: " + std::to_string(int(rage)));
+                    }
+                    else if (over_time_buffs[i].damage > 0)
+                    {
+                        status.emplace_back("Over time effect: " + over_time_buffs[i].id +
+                                            " tick. Damage: " + std::to_string(int(over_time_buffs[i].damage)));
+                    }
+                    else
+                    {
+                        status.emplace_back("Over time effect: " + over_time_buffs[i].id + " tick.");
+                    }
+                }
             }
             if (over_time_buffs[i].current_ticks == over_time_buffs[i].total_ticks)
             {
+                if (debug)
+                {
+                    status.emplace_back("Over time effect: " + over_time_buffs[i].id + " fades.");
+                }
                 over_time_buffs.erase(over_time_buffs.begin() + i);
+                if (over_time_buffs.empty())
+                {
+                    min_interval = 10;
+                }
+                else
+                {
+                    for (const auto& over_time_buff : over_time_buffs)
+                    {
+                        min_interval = std::min(over_time_buff.interval, min_interval);
+                    }
+                }
             }
             else
             {
@@ -280,12 +302,13 @@ public:
                 if (over_time_buff.id == "Deep_wounds")
                 {
                     over_time_buff.damage = std::max(over_time_effect.damage, over_time_buff.damage);
-                    over_time_buff.total_ticks = 0;
-                    over_time_buff.init_time = init_time;
+                    over_time_buff.total_ticks =
+                        (over_time_effect.duration + init_time - over_time_buff.init_time) / over_time_buff.interval;
                     return;
                 }
             }
         }
+        min_interval = std::min(over_time_effect.interval, min_interval);
         over_time_buffs.emplace_back(over_time_effect.name, over_time_effect.special_stats, init_time,
                                      over_time_effect.rage_gain, over_time_effect.damage, over_time_effect.interval,
                                      over_time_effect.duration);
@@ -313,6 +336,8 @@ public:
     std::vector<Hit_effect>* hit_effects_mh;
     std::vector<Hit_effect>* hit_effects_oh;
     std::vector<Use_effect> use_effects;
+    double next_event = 10;
+    int min_interval = 10;
     Aura_uptime aura_uptime;
     std::vector<Proc> procs;
 };

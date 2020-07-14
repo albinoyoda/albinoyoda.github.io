@@ -429,6 +429,8 @@ int main()
         std::cout << message << "\n";
     }
 
+    std::cout << sim_output.extra_stats[1] << "\n";
+
     std::cout << "Code executed in: " << double(clock() - startTime) / (double)CLOCKS_PER_SEC << " seconds."
               << std::endl;
 
