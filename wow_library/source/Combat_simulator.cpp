@@ -25,6 +25,13 @@ std::vector<double> create_hit_table(double miss, double dodge, double glancing,
     return {miss, miss + dodge, miss + dodge + glancing, miss + dodge + glancing + crit};
 }
 
+std::vector<double> create_hit_table_yellow(double miss, double dodge, double glancing, double crit)
+{
+    double double_roll_factor = (100 - miss - dodge) / 100;
+    // Order -> Miss, parry, dodge, block, glancing, crit, hit.
+    return {miss, miss + dodge, miss + dodge + glancing, double_roll_factor * (miss + dodge + glancing + crit)};
+}
+
 std::array<double, 5> create_multipliers(double glancing_factor, double crit_multiplier)
 {
     // Order -> Miss, parry, dodge, block, glancing, crit, hit.
@@ -128,29 +135,9 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit_mh(double damage, H
     {
         simulator_cout("Drawing outcome from yellow table");
         double random_var = get_uniform_random(100);
-        if (random_var < hit_probabilities_yellow_[1])
-        {
-            if (random_var < hit_probabilities_yellow_[0])
-            {
-                return {damage * damage_multipliers_yellow_[0], Hit_result(0)};
-            }
-            else
-            {
-                return {damage * damage_multipliers_yellow_[1], Hit_result(1)};
-            }
-        }
-        else
-        {
-            random_var = get_uniform_random(hit_probabilities_yellow_[1], 100);
-            if (random_var < hit_probabilities_yellow_[3])
-            {
-                return {damage * damage_multipliers_yellow_[3], Hit_result(3)};
-            }
-            else
-            {
-                return {damage * damage_multipliers_yellow_[4], Hit_result(4)};
-            }
-        }
+        int outcome = std::lower_bound(hit_probabilities_yellow_.begin(), hit_probabilities_yellow_.end(), random_var) -
+                      hit_probabilities_yellow_.begin();
+        return {damage * damage_multipliers_yellow_[outcome], Hit_result(outcome)};
     }
 }
 
@@ -302,7 +289,7 @@ void Combat_simulator::compute_hit_table(int level_difference, int weapon_skill,
         hit_probabilities_two_hand_ =
             create_hit_table(two_hand_miss_chance, dodge_chance, glancing_chance, crit_chance);
 
-        hit_probabilities_yellow_ = create_hit_table(two_hand_miss_chance, dodge_chance, 0, crit_chance);
+        hit_probabilities_yellow_ = create_hit_table_yellow(two_hand_miss_chance, dodge_chance, 0, crit_chance);
         damage_multipliers_yellow_ = create_multipliers(1.0, 0.1 * config.talents.impale);
     }
     else
@@ -499,7 +486,7 @@ void Combat_simulator::hit_effects(Weapon_sim& weapon, Weapon_sim& main_hand_wea
                         result = " bugs";
                         break;
                     }
-                    simulator_cout("PROC: ", hit_effect.name, result, " does ", hit.damage, " physical damage");
+                    simulator_cout("PROC: ", hit_effect.name, result, " does ", int(hit.damage), " physical damage");
                 }
             }
             break;
@@ -671,12 +658,15 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         debug_topic_ = "";
         n_damage_batches = 1;
     }
+    if (compute_time_lapse)
+    {
+        reset_time_lapse();
+    }
     if (compute_histogram)
     {
         init_histogram();
     }
     buff_manager_.aura_uptime.auras.clear();
-    reset_time_lapse();
     damage_distribution_ = Damage_sources{};
     flurry_uptime_mh_ = 0;
     flurry_uptime_oh_ = 0;
@@ -697,7 +687,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
     auto hit_effects_oh = weapons[1].hit_effects;
 
     heroic_strike_rage_cost = 15.0 - config.talents.improved_heroic_strike;
-    double execute_rage_cost = 15 - static_cast<int>(2.5 * config.talents.improved_execute);
+    double execute_rage_cost = 15 - static_cast<int>(2.51 * config.talents.improved_execute);
 
     double armor_reduction_from_spells = 0.0;
     double armor_reduction_delayed = 0.0;
@@ -727,49 +717,27 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
 
     if (config.talents.death_wish)
     {
-        // Constructor for deathwish
-        use_effects_all.push_back({"Death_wish",
-                                   Use_effect::Effect_socket::unique,
-                                   {},
-                                   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .20},
-                                   -10,
-                                   30,
-                                   180,
-                                   true});
+        use_effects_all.emplace_back(deathwish);
     }
 
     if (config.enable_recklessness)
     {
-        // Constructor for recklessness
-        use_effects_all.push_back(
-            {"Recklessness", Use_effect::Effect_socket::unique, {}, {100, 0, 0}, 0, 15, 900, true});
+        use_effects_all.emplace_back(recklessness);
     }
 
     if (config.enable_bloodrage)
     {
-        // Constructor for bloodrage
-        use_effects_all.push_back({"Bloodrage",
-                                   Use_effect::Effect_socket::unique,
-                                   {},
-                                   {},
-                                   10,
-                                   10,
-                                   60,
-                                   false,
-                                   {},
-                                   {{"Bloodrage", {}, 1, 0, 1, 10}}});
+        use_effects_all.emplace_back(bloodrage);
     }
 
     if (config.mode.vaelastrasz)
     {
-        // Constructor for Essence of the red
-        over_time_effects.push_back({"Essence_of_the_red", {}, 20, 0, 1, 180});
+        over_time_effects.push_back(essence_of_the_red);
     }
 
     if (config.talents.unbridled_wrath)
     {
-        // Constructor for Essence of the red
-        over_time_effects.push_back({"Unbridled_wrath", {}, 1, 0, 3, 600});
+        over_time_effects.push_back(unbridled_wrath);
     }
 
     for (size_t i = 0; i < use_effects_all.size(); i++)
@@ -878,6 +846,11 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
             std::vector<std::string> debug_msg;
             buff_manager_.increment(dt, time_keeper_.time, sim_time - time_keeper_.time, rage, time_keeper_.global_cd,
                                     debug_msg, config.display_combat_debug);
+            for (const auto& msg : debug_msg)
+            {
+                simulator_cout(msg);
+            }
+
             if (buff_manager_.need_to_recompute_hittables)
             {
                 for (const auto& weapon : weapons)
@@ -888,10 +861,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                 }
                 buff_manager_.need_to_recompute_hittables = false;
             }
-            for (const auto& msg : debug_msg)
-            {
-                simulator_cout(msg);
-            }
+
             if (sim_time - time_keeper_.time < 0.0)
             {
                 break;

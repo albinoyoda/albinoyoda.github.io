@@ -8,12 +8,12 @@
 #include "time_keeper.hpp"
 #include "weapon_sim.hpp"
 
+#include <array>
 #include <cassert>
 #include <cmath>
 #include <iomanip>
 #include <map>
 #include <vector>
-#include <array>
 
 struct Combat_simulator_config
 {
@@ -87,8 +87,19 @@ public:
         {
             srand(config.seed);
         }
-    }
+        deathwish = {
+            "Death_wish", Use_effect::Effect_socket::unique, {}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .20}, -10, 30, 180,
+            true};
 
+        recklessness = {"Recklessness", Use_effect::Effect_socket::unique, {}, {100, 0, 0}, 0, 15, 900, true};
+
+        bloodrage = {"Bloodrage", Use_effect::Effect_socket::unique, {}, {}, 10, 10, 60, false,
+                     {},          {{"Bloodrage", {}, 1, 0, 1, 10}}};
+
+        essence_of_the_red = {"Essence_of_the_red", {}, 20, 0, 1, 180};
+
+        unbridled_wrath = {"Unbridled_wrath", {}, 1, 0, 3, 600};
+    }
     void set_config(Combat_simulator_config& new_config) { config = new_config; }
 
     enum class Hit_result
@@ -181,8 +192,9 @@ public:
 
     static double get_uniform_random(double r_min, double r_max) { return r_min + rand() * (r_max - r_min) / RAND_MAX; }
 
-    Combat_simulator::Hit_outcome generate_hit(const Weapon_sim& weapon, double damage, Hit_type hit_type, Socket weapon_hand,
-                                               const Special_stats& special_stats, bool boss_target = true);
+    Combat_simulator::Hit_outcome generate_hit(const Weapon_sim& weapon, double damage, Hit_type hit_type,
+                                               Socket weapon_hand, const Special_stats& special_stats,
+                                               bool boss_target = true);
 
     Combat_simulator::Hit_outcome generate_hit_oh(double damage);
 
@@ -254,6 +266,12 @@ public:
     Combat_simulator_config config;
 
 private:
+    Use_effect deathwish;
+    Use_effect recklessness;
+    Use_effect bloodrage;
+    Over_time_effect unbridled_wrath;
+    Over_time_effect essence_of_the_red;
+
     std::vector<double> hit_probabilities_white_mh_;
     std::array<double, 5> damage_multipliers_white_mh_;
     std::vector<double> hit_probabilities_white_oh_;

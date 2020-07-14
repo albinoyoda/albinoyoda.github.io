@@ -556,7 +556,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     config.fuel_extra_rage = false;
     config.extra_rage_interval = 3;
     config.extra_rage_damage_amount = 150;
-//    config.performance_mode = true;
+    //    config.performance_mode = true;
 
     Combat_simulator simulator(config);
 
@@ -775,7 +775,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         debug_topic += "DPS bloodthirst: " + std::to_string(dist.bloodthirst_damage / config.sim_time) + "<br>";
         debug_topic += "DPS execute: " + std::to_string(dist.execute_damage / config.sim_time) + "<br>";
         debug_topic += "DPS heroic strike: " + std::to_string(dist.heroic_strike_damage / config.sim_time) + "<br>";
-        debug_topic += "DPS heroic strike: " + std::to_string(dist.cleave_damage / config.sim_time) + "<br>";
+        debug_topic += "DPS cleave: " + std::to_string(dist.cleave_damage / config.sim_time) + "<br>";
         debug_topic += "DPS whirlwind: " + std::to_string(dist.whirlwind_damage / config.sim_time) + "<br>";
         debug_topic += "DPS hamstring: " + std::to_string(dist.hamstring_damage / config.sim_time) + "<br>";
         debug_topic +=
@@ -787,7 +787,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         debug_topic += "#Hits bloodthirst: " + std::to_string(dist.bloodthirst_count) + "<br>";
         debug_topic += "#Hits execute: " + std::to_string(dist.execute_count) + "<br>";
         debug_topic += "#Hits heroic strike: " + std::to_string(dist.heroic_strike_count) + "<br>";
-        debug_topic += "#Hits heroic strike: " + std::to_string(dist.cleave_count) + "<br>";
+        debug_topic += "#Hits cleave: " + std::to_string(dist.cleave_count) + "<br>";
         debug_topic += "#Hits whirlwind: " + std::to_string(dist.whirlwind_count) + "<br>";
         debug_topic += "#Hits hamstring: " + std::to_string(dist.hamstring_count) + "<br>";
         debug_topic += "#Hits item effects: " + std::to_string(dist.item_hit_effects_count) + "<br>";
