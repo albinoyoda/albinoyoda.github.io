@@ -1,8 +1,11 @@
 #include "sim_interface.hpp"
 
-#include <Armory.hpp>
+#include "Armory.hpp"
+#include "Helper_functions.hpp"
+
 #include <Character.hpp>
 #include <Combat_simulator.hpp>
+#include <Item_optimizer.hpp>
 #include <sstream>
 
 struct Stat_weight
@@ -54,34 +57,6 @@ std::vector<double> get_damage_sources(Damage_sources damage_sources_vector)
             damage_sources_vector.whirlwind_damage / damage_sources_vector.sum_damage_sources(),
             damage_sources_vector.hamstring_damage / damage_sources_vector.sum_damage_sources(),
             damage_sources_vector.item_hit_effects_damage / damage_sources_vector.sum_damage_sources()};
-}
-
-bool find_string(const std::vector<std::string>& string_vec, const std::string& match_string)
-{
-    for (const auto& string : string_vec)
-    {
-        if (string == match_string)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-std::string percent_to_str(const std::string& stat_name, double value, const std::string& description)
-{
-    std::ostringstream stream;
-    stream << stat_name << ": " << std::setprecision(3) << "<b>" << value << "%</b> " << description << "<br>";
-    return stream.str();
-}
-
-std::string percent_to_str(const std::string& stat_name, double value1, const std::string& description1, double value2,
-                           const std::string& description2)
-{
-    std::ostringstream stream;
-    stream << stat_name << ": " << std::setprecision(3) << "<b>" << value1 << "%</b> " << description1 << ". (<b>"
-           << value2 << "%</b> " << description2 << ")<br>";
-    return stream.str();
 }
 
 std::string print_stat(const std::string& stat_name, double amount)
@@ -192,53 +167,11 @@ std::string get_character_stat(const Character& character)
     return out_string;
 }
 
-Character get_race(const std::string& race)
+Character character_setup(const Armory& armory, const std::string& race, const std::vector<std::string>& armor_vec,
+                          const std::vector<std::string>& weapons_vec, const std::vector<std::string>& buffs_vec,
+                          const std::vector<std::string>& ench_vec)
 {
-    if (race == "human")
-    {
-        return {Race::human, 60};
-    }
-    else if (race == "gnome")
-    {
-        return {Race::gnome, 60};
-    }
-    else if (race == "dwarf")
-    {
-        return {Race::dwarf, 60};
-    }
-    else if (race == "night_elf")
-    {
-        return {Race::night_elf, 60};
-    }
-    else if (race == "orc")
-    {
-        return {Race::orc, 60};
-    }
-    else if (race == "troll")
-    {
-        return {Race::troll, 60};
-    }
-    else if (race == "undead")
-    {
-        return {Race::undead, 60};
-    }
-    else if (race == "tauren")
-    {
-        return {Race::tauren, 60};
-    }
-    else
-    {
-        std::cout << "Race not found!!! picking human"
-                  << "\n";
-        return {Race::human, 60};
-    }
-}
-
-Character character_setup(const Armory& armory, const Buffs& buffs, const std::string& race,
-                          const std::vector<std::string>& armor_vec, const std::vector<std::string>& weapons_vec,
-                          const std::vector<std::string>& buffs_vec, const std::vector<std::string>& ench_vec)
-{
-    auto character = get_race(race);
+    auto character = get_character_of_race(race);
 
     character.equip_armor(armory.find_armor(Socket::head, armor_vec[0]));
     character.equip_armor(armory.find_armor(Socket::neck, armor_vec[1]));
@@ -258,199 +191,8 @@ Character character_setup(const Armory& armory, const Buffs& buffs, const std::s
 
     character.equip_weapon(armory.find_weapon(weapons_vec[0]), armory.find_weapon(weapons_vec[1]));
 
-    if (find_string(ench_vec, "e+8 strength"))
-    {
-        character.add_enchant(Socket::head, Enchant::Type::strength);
-    }
-    else if (find_string(ench_vec, "e+1 haste"))
-    {
-        character.add_enchant(Socket::head, Enchant::Type::haste);
-    }
-
-    if (find_string(ench_vec, "s+30 attack_power"))
-    {
-        character.add_enchant(Socket::shoulder, Enchant::Type::attack_power);
-    }
-
-    if (find_string(ench_vec, "b+3 agility"))
-    {
-        character.add_enchant(Socket::back, Enchant::Type::agility);
-    }
-
-    if (find_string(ench_vec, "c+3 stats"))
-    {
-        character.add_enchant(Socket::chest, Enchant::Type::minor_stats);
-    }
-    else if (find_string(ench_vec, "c+4 stats"))
-    {
-        character.add_enchant(Socket::chest, Enchant::Type::major_stats);
-    }
-
-    if (find_string(ench_vec, "w+7 strength"))
-    {
-        character.add_enchant(Socket::wrist, Enchant::Type::strength7);
-    }
-    else if (find_string(ench_vec, "w+9 strength"))
-    {
-        character.add_enchant(Socket::wrist, Enchant::Type::strength9);
-    }
-
-    if (find_string(ench_vec, "h+7 strength"))
-    {
-        character.add_enchant(Socket::hands, Enchant::Type::strength);
-    }
-    else if (find_string(ench_vec, "h+7 agility"))
-    {
-        character.add_enchant(Socket::hands, Enchant::Type::agility);
-    }
-    else if (find_string(ench_vec, "h+15 agility"))
-    {
-        character.add_enchant(Socket::hands, Enchant::Type::greater_agility);
-    }
-    else if (find_string(ench_vec, "h+1 haste"))
-    {
-        character.add_enchant(Socket::hands, Enchant::Type::haste);
-    }
-
-    if (find_string(ench_vec, "l+8 strength"))
-    {
-        character.add_enchant(Socket::legs, Enchant::Type::strength);
-    }
-    else if (find_string(ench_vec, "l+1 haste"))
-    {
-        character.add_enchant(Socket::legs, Enchant::Type::haste);
-    }
-
-    if (find_string(ench_vec, "b+7 agility"))
-    {
-        character.add_enchant(Socket::boots, Enchant::Type::agility);
-    }
-
-    if (find_string(ench_vec, "mcrusader"))
-    {
-        character.add_enchant(Socket::main_hand, Enchant::Type::crusader);
-    }
-
-    if (find_string(ench_vec, "ocrusader"))
-    {
-        character.add_enchant(Socket::off_hand, Enchant::Type::crusader);
-    }
-
-    // rallying cry
-    if (find_string(buffs_vec, "rallying_cry"))
-    {
-        character.add_buff(buffs.rallying_cry);
-    }
-    if (find_string(buffs_vec, "dire_maul"))
-    {
-        character.add_buff(buffs.dire_maul);
-    }
-    if (find_string(buffs_vec, "songflower"))
-    {
-        character.add_buff(buffs.songflower);
-    }
-    if (find_string(buffs_vec, "warchiefs_blessing"))
-    {
-        character.add_buff(buffs.warchiefs_blessing);
-    }
-    if (find_string(buffs_vec, "spirit_of_zandalar"))
-    {
-        character.add_buff(buffs.spirit_of_zandalar);
-    }
-    if (find_string(buffs_vec, "sayges_fortune"))
-    {
-        character.add_buff(buffs.sayges_fortune);
-    }
-
-    // Player buffs
-    if (find_string(buffs_vec, "battle_shout"))
-    {
-        character.add_buff(buffs.battle_shout);
-    }
-    if (find_string(buffs_vec, "blessing_of_kings"))
-    {
-        character.add_buff(buffs.blessing_of_kings);
-    }
-    if (find_string(buffs_vec, "blessing_of_might"))
-    {
-        character.add_buff(buffs.blessing_of_might);
-    }
-    if (find_string(buffs_vec, "windfury_totem"))
-    {
-        character.add_buff(buffs.windfury_totem);
-    }
-    if (find_string(buffs_vec, "strength_of_earth_totem"))
-    {
-        character.add_buff(buffs.strength_of_earth_totem);
-    }
-    if (find_string(buffs_vec, "grace_of_air_totem"))
-    {
-        character.add_buff(buffs.grace_of_air_totem);
-    }
-    if (find_string(buffs_vec, "gift_of_the_wild"))
-    {
-        character.add_buff(buffs.gift_of_the_wild);
-    }
-    if (find_string(buffs_vec, "leader_of_the_pack"))
-    {
-        character.add_buff(buffs.leader_of_the_pack);
-    }
-    if (find_string(buffs_vec, "trueshot_aura"))
-    {
-        character.add_buff(buffs.trueshot_aura);
-    }
-    if (find_string(buffs_vec, "elixir_mongoose"))
-    {
-        character.add_buff(buffs.elixir_mongoose);
-    }
-    if (find_string(buffs_vec, "blessed_sunfruit"))
-    {
-        character.add_buff(buffs.blessed_sunfruit);
-    }
-    if (find_string(buffs_vec, "smoked_dessert_dumplings"))
-    {
-        character.add_buff(buffs.smoked_dessert_dumplings);
-    }
-    if (find_string(buffs_vec, "juju_power"))
-    {
-        character.add_buff(buffs.juju_power);
-    }
-    if (find_string(buffs_vec, "elixir_of_giants"))
-    {
-        character.add_buff(buffs.elixir_of_giants);
-    }
-    if (find_string(buffs_vec, "juju_might"))
-    {
-        character.add_buff(buffs.juju_might);
-    }
-    if (find_string(buffs_vec, "winterfall_firewater"))
-    {
-        character.add_buff(buffs.winterfall_firewater);
-    }
-    if (find_string(buffs_vec, "roids"))
-    {
-        character.add_buff(buffs.roids);
-    }
-    if (find_string(buffs_vec, "mighty_rage_potion"))
-    {
-        character.add_buff(buffs.mighty_rage_potion);
-    }
-    if (find_string(buffs_vec, "dense_stone_main_hand"))
-    {
-        character.add_weapon_buff(Socket::main_hand, buffs.dense_stone);
-    }
-    else if (find_string(buffs_vec, "elemental_stone_main_hand"))
-    {
-        character.add_buff(buffs.elemental_stone);
-    }
-    if (find_string(buffs_vec, "dense_stone_off_hand"))
-    {
-        character.add_weapon_buff(Socket::off_hand, buffs.dense_stone);
-    }
-    else if (find_string(buffs_vec, "elemental_stone_off_hand"))
-    {
-        character.add_buff(buffs.elemental_stone);
-    }
+    armory.add_enchants_to_character(character, ench_vec);
+    armory.add_buffs_to_character(character, buffs_vec);
 
     armory.compute_total_stats(character);
 
@@ -471,7 +213,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     }
 
     Character character =
-        character_setup(armory, buffs, input.race[0], input.armor, input.weapons, temp_buffs, input.enchants);
+        character_setup(armory, input.race[0], input.armor, input.weapons, temp_buffs, input.enchants);
 
     // Simulator & Combat settings
     Combat_simulator_config config{};
@@ -588,7 +330,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     if (input.compare_armor.size() == 15 && input.compare_weapons.size() == 2)
     {
         Combat_simulator simulator_compare(config);
-        Character character2 = character_setup(armory, buffs, input.race[0], input.compare_armor, input.compare_weapons,
+        Character character2 = character_setup(armory, input.race[0], input.compare_armor, input.compare_weapons,
                                                temp_buffs, input.enchants);
 
         simulator_compare.simulate(character2);
@@ -742,6 +484,12 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                                           std::to_string(hit.std_dps_minus));
             }
         }
+    }
+
+    if (find_string(input.options, "item_strengths"))
+    {
+        Item_optimizer item_optimizer{};
+//        item_optimizer.
     }
 
     std::string debug_topic{};
