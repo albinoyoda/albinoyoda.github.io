@@ -580,6 +580,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     auto yellow_ht = simulator.get_hit_probabilities_yellow();
     auto white_mh_ht = simulator.get_hit_probabilities_white_mh();
     auto white_oh_ht = simulator.get_hit_probabilities_white_oh();
+    auto white_oh_ht_2h = simulator.get_hit_probabilities_white_2h();
 
     mean_dps_vec.push_back(mean_init);
     sample_std_dps_vec.push_back(sample_std_init);
@@ -607,25 +608,26 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     std::string extra_info_string = "<b>Fight stats vs. target:</b> <br/>";
     extra_info_string += "<b>Hit:</b> <br/>";
     double yellow_miss_chance = yellow_ht[0];
-    double white_mh__miss_chance = white_mh_ht[0];
-    double white_oh__miss_chance = white_oh_ht[0];
+    double white_mh_miss_chance = white_mh_ht[0];
+    double white_oh_miss_chance = white_oh_ht[0];
+    double white_oh_2h_miss_chance = white_oh_ht_2h[0];
     extra_info_string += percent_to_str("Yellow hits", yellow_miss_chance, "chance to miss");
-    extra_info_string += percent_to_str("Main-hand, white hits", white_mh__miss_chance, "chance to miss");
-    extra_info_string += percent_to_str("off-hand, white hits", white_oh__miss_chance, "chance to miss");
+    extra_info_string += percent_to_str("Main-hand, white hits", white_mh_miss_chance, "chance to miss");
+    extra_info_string += percent_to_str("off-hand, white hits", white_oh_miss_chance, "chance to miss");
+    extra_info_string += percent_to_str("off-hand, while ability queued", white_oh_2h_miss_chance, "chance to miss");
 
-    extra_info_string += "<b>Crit:</b> <br/>";
-    double yellow_crit = std::min(yellow_ht[3], 100.0) - yellow_ht[2];
-    double left_to_crit_cap_yellow = std::max(100.0 - yellow_ht.back(), 0.0);
+    extra_info_string += "<b>Crit chance:</b> <br/>";
     double white_mh_crit = std::min(white_mh_ht[3], 100.0) - white_mh_ht[2];
     double left_to_crit_cap_white_mh = std::max(100.0 - white_mh_ht.back(), 0.0);
+    double yellow_crit = std::min(yellow_ht[3], 100.0) - yellow_ht[2];
     double white_oh_crit = std::min(white_oh_ht[3], 100.0) - white_oh_ht[2];
     double left_to_crit_cap_white_oh = std::max(100.0 - white_oh_ht.back(), 0.0);
-    extra_info_string +=
-        percent_to_str("Yellow hits", yellow_crit, "chance to crit", left_to_crit_cap_yellow, "left to crit-cap");
-    extra_info_string += percent_to_str("White hits main hand", white_mh_crit, "chance to crit",
-                                        left_to_crit_cap_white_mh, "left to crit-cap");
-    extra_info_string += percent_to_str("White hits off hand", white_oh_crit, "chance to crit",
-                                        left_to_crit_cap_white_oh, "left to crit-cap");
+    extra_info_string += percent_to_str("Yellow", yellow_crit, "chance to crit per cast (double roll suppression)",
+                                        100 - white_mh_crit, "left to crit-cap");
+    extra_info_string += percent_to_str("White main hand", white_mh_crit, "chance to crit", left_to_crit_cap_white_mh,
+                                        "left to crit-cap");
+    extra_info_string += percent_to_str("White off hand", white_oh_crit, "chance to crit", left_to_crit_cap_white_oh,
+                                        "left to crit-cap");
 
     extra_info_string += "<b>Glancing blows:</b><br/>";
     double glancing_probability = white_oh_ht[2] - white_oh_ht[1];

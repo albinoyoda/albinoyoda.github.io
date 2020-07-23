@@ -21,6 +21,10 @@ Attributes.hpp
 ../../wow_library/include/Attributes.hpp
 Item.hpp
 ../../wow_library/include/Item.hpp
+cmath
+-
+unordered_map
+-
 vector
 -
 
@@ -47,6 +51,8 @@ time_keeper.hpp
 ../../wow_library/include/time_keeper.hpp
 weapon_sim.hpp
 ../../wow_library/include/weapon_sim.hpp
+array
+-
 cassert
 -
 cmath
@@ -57,20 +63,18 @@ map
 -
 vector
 -
-array
--
 Combat_simulator.tcc
 ../../wow_library/include/Combat_simulator.tcc
 
 ../../wow_library/include/Combat_simulator.tcc
 
 ../../wow_library/include/Item.hpp
-utility
--
-cassert
--
 Attributes.hpp
 ../../wow_library/include/Attributes.hpp
+cassert
+-
+utility
+-
 
 ../../wow_library/include/Statistics.hpp
 vector
@@ -139,6 +143,10 @@ Attributes.hpp
 /src/wow_library/include/Attributes.hpp
 Item.hpp
 /src/wow_library/include/Item.hpp
+cmath
+-
+unordered_map
+-
 vector
 -
 
@@ -165,6 +173,8 @@ time_keeper.hpp
 /src/wow_library/include/time_keeper.hpp
 weapon_sim.hpp
 /src/wow_library/include/weapon_sim.hpp
+array
+-
 cassert
 -
 cmath
@@ -175,20 +185,18 @@ map
 -
 vector
 -
-array
--
 Combat_simulator.tcc
 /src/wow_library/include/Combat_simulator.tcc
 
 /src/wow_library/include/Combat_simulator.tcc
 
 /src/wow_library/include/Item.hpp
-utility
--
-cassert
--
 Attributes.hpp
 /src/wow_library/include/Attributes.hpp
+cassert
+-
+utility
+-
 
 /src/wow_library/include/Statistics.hpp
 vector

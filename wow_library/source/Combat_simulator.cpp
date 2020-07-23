@@ -283,8 +283,6 @@ void Combat_simulator::compute_hit_table(int level_difference, int weapon_skill,
         hit_table_white_mh_ = create_hit_table(miss_chance, dodge_chance, glancing_chance, crit_chance);
         damage_multipliers_white_mh_ = create_multipliers((100.0 - glancing_penalty) / 100.0, 0.0);
 
-        hit_table_two_hand_ = create_hit_table(two_hand_miss_chance, dodge_chance, glancing_chance, crit_chance);
-
         hit_table_yellow_ = create_hit_table_yellow(two_hand_miss_chance, dodge_chance, crit_chance);
         damage_multipliers_yellow_ = create_multipliers(1.0, 0.1 * config.talents.impale);
     }
@@ -292,6 +290,8 @@ void Combat_simulator::compute_hit_table(int level_difference, int weapon_skill,
     {
         hit_table_white_oh_ = create_hit_table(miss_chance, dodge_chance, glancing_chance, crit_chance);
         damage_multipliers_white_oh_ = create_multipliers((100.0 - glancing_penalty) / 100.0, 0.0);
+
+        hit_table_two_hand_ = create_hit_table(two_hand_miss_chance, dodge_chance, glancing_chance, crit_chance);
     }
 }
 
@@ -457,7 +457,8 @@ void Combat_simulator::hit_effects(Weapon_sim& weapon, Weapon_sim& main_hand_wea
                 damage_sources.add_damage(Damage_source::item_hit_effects, hit_effect.damage * 0.83, time_keeper_.time,
                                           false);
                 break;
-            case Hit_effect::Type::damage_physical: {
+            case Hit_effect::Type::damage_physical:
+            {
                 auto hit = generate_hit(main_hand_weapon, hit_effect.damage, Hit_type::yellow, Socket::main_hand,
                                         special_stats);
                 damage_sources.add_damage(Damage_source::item_hit_effects, hit.damage, time_keeper_.time);
@@ -491,7 +492,8 @@ void Combat_simulator::hit_effects(Weapon_sim& weapon, Weapon_sim& main_hand_wea
                 buff_manager_.add(weapon.socket_name + "_" + hit_effect.name,
                                   hit_effect.get_special_stat_equivalent(special_stats), hit_effect.duration);
                 break;
-            case Hit_effect::Type::reduce_armor: {
+            case Hit_effect::Type::reduce_armor:
+            {
                 if (current_armor_red_stacks_ < hit_effect.max_stacks)
                 {
                     target_armor_ -= hit_effect.armor_reduction;
@@ -1093,6 +1095,11 @@ const std::vector<double>& Combat_simulator::get_hit_probabilities_white_mh() co
 const std::vector<double>& Combat_simulator::get_hit_probabilities_white_oh() const
 {
     return hit_table_white_oh_;
+}
+
+const std::vector<double>& Combat_simulator::get_hit_probabilities_white_2h() const
+{
+    return hit_table_two_hand_;
 }
 
 const std::vector<double>& Combat_simulator::get_hit_probabilities_yellow() const

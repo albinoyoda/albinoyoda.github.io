@@ -206,6 +206,8 @@ public:
 
     const std::vector<double>& get_hit_probabilities_white_oh() const;
 
+    const std::vector<double>& get_hit_probabilities_white_2h() const;
+
     const std::vector<double>& get_hit_probabilities_yellow() const;
 
     double get_glancing_penalty_mh() const;
