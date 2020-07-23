@@ -284,8 +284,6 @@ private:
     double dps_variance_;
     std::vector<double> hist_x{};
     std::vector<int> hist_y{};
-    double glancing_factor_mh_{};
-    double glancing_factor_oh_{};
     double armor_reduction_factor_{};
     double target_armor_{};
     double armor_reduction_factor_add{};

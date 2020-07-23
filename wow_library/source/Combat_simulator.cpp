@@ -1102,12 +1102,12 @@ const std::vector<double>& Combat_simulator::get_hit_probabilities_yellow() cons
 
 double Combat_simulator::get_glancing_penalty_mh() const
 {
-    return glancing_factor_mh_;
+    return damage_multipliers_white_mh_[2];
 }
 
 double Combat_simulator::get_glancing_penalty_oh() const
 {
-    return glancing_factor_oh_;
+    return damage_multipliers_white_oh_[2];
 }
 
 std::vector<std::string> Combat_simulator::get_aura_uptimes() const

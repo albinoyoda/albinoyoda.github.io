@@ -158,6 +158,10 @@
         text-align: justify;
     }
 
+    div.description {
+        margin-left: 25px;
+    }
+
     .left_select {
         position: relative;
         left: 00px;
@@ -1111,14 +1115,20 @@
         <p class="select-title">Select mode:</p><br>
         <input type="checkbox" id="normal_mode" checked
                onclick="unique_checkboxes('normal_mode', ['multiple_mode', 'do_comparison']);
-                        unique_div(['armor_single'],['armor_multiple', 'compare_div', 'multi_description_div'])">
-        <label for="normal_mode"> <b>Standard</b>: Simulate an item configuration </label><br><br>
+                        unique_div(['armor_single', 'standard_description_div'],['armor_multiple', 'compare_div', 'multi_description_div'])">
+        <label for="normal_mode"> <b>Standard</b>: Simulate an item configuration </label><br>
+        <div class="description" id="standard_description_div">
+            <input type="checkbox" id="item_strengths">
+            <label for="item_strengths">Suggest item upgrades for each slot. Will be displayed in the results
+                section</label>
+        </div>
+        <br>
 
         <input type="checkbox" id="multiple_mode"
                onclick="unique_checkboxes('multiple_mode', ['normal_mode', 'do_comparison']);
-                        unique_div(['armor_multiple', 'multi_description_div'],['armor_single', 'compare_div'])">
+                        unique_div(['armor_multiple', 'multi_description_div'],['armor_single','standard_description_div', 'compare_div'])">
         <label for="multiple_mode"><b>Multi-mode</b>: Enable selection of multiple items from the same slot.</label><br>
-        <div style="display:none" id="multi_description_div">
+        <div class="description" style="display:none" id="multi_description_div">
             <b>Information:</b> More items selected means that the optimizer will run for a longer time. It will break
             automatically when it has found the best set <b>OR</b> when the max optimization timer is reached.<br>
             <label for="max_optimize_time">Max optimization time: (60-120s):</label>
@@ -1129,12 +1139,11 @@
         </div>
         <br>
 
-
         <input type="checkbox" id="do_comparison"
                onclick="unique_checkboxes('do_comparison', ['multiple_mode', 'normal_mode']);
                         unique_div(['compare_div', 'armor_single'],['armor_multiple', 'multi_description_div'])">
         <label for="do_comparison"><b>Comparison</b>: Add a configuration file to compare against</label>
-        <div style="display:none" id="compare_div">
+        <div class="description" style="display:none" id="compare_div">
             <b>Description:</b> Select an item config and press submit.<br/>
             (To generate a config file press "Save config to file" at the top of the page)<br/>
             <input type="file" id="myCompareFile" name="filename" accept=".txt" onclick="show_div('compare_div')">
@@ -1601,7 +1610,7 @@
     var sim_options = ["faerie_fire", "exposed_armor", "curse_of_recklessness", "death_wish",
         "recklessness", "mighty_rage_potion", "default_boss", "sulfuron_harbinger", "golemagg", "vaelastrasz",
         "chromaggus", "debug_on", "use_bt_in_exec_phase", "use_hs_in_exec_phase", "cleave_if_adds",
-        "hamstring_cd_thresh_dd", "hamstring_thresh_dd", "initial_rage", "use_hamstring"];
+        "hamstring_cd_thresh_dd", "hamstring_thresh_dd", "initial_rage", "use_hamstring", "item_strengths"];
 
     var stat_weigths = ["stat_weight_hit", "stat_weight_crit", "stat_weight_haste", "stat_weight_skill"];
 
