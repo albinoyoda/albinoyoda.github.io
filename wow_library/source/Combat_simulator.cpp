@@ -25,17 +25,18 @@ std::vector<double> create_hit_table(double miss, double dodge, double glancing,
     return {miss, miss + dodge, miss + dodge + glancing, miss + dodge + glancing + crit};
 }
 
-std::vector<double> create_hit_table_yellow(double miss, double dodge, double glancing, double crit)
+std::vector<double> create_hit_table_yellow(double miss, double dodge, double crit)
 {
     double double_roll_factor = (100 - miss - dodge) / 100;
     // Order -> Miss, parry, dodge, block, glancing, crit, hit.
-    return {miss, miss + dodge, miss + dodge + glancing, double_roll_factor * (miss + dodge + glancing + crit)};
+    // double_roll_factor compensates for the crit suppression caused by ability double roll
+    return {miss, miss + dodge, miss + dodge, miss + dodge + double_roll_factor * crit};
 }
 
-std::array<double, 5> create_multipliers(double glancing_factor, double crit_multiplier)
+std::array<double, 5> create_multipliers(double glancing_factor, double bonus_crit_multiplier)
 {
     // Order -> Miss, parry, dodge, block, glancing, crit, hit.
-    return {0.0, 0.0, glancing_factor, 2.0 + crit_multiplier, 1.0};
+    return {0.0, 0.0, glancing_factor, 2.0 + bonus_crit_multiplier, 1.0};
 }
 } // namespace
 
@@ -126,17 +127,16 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit_mh(double damage, H
     {
         simulator_cout("Drawing outcome from MH hit table");
         double random_var = get_uniform_random(100);
-        int outcome =
-            std::lower_bound(hit_probabilities_white_mh_.begin(), hit_probabilities_white_mh_.end(), random_var) -
-            hit_probabilities_white_mh_.begin();
+        int outcome = std::lower_bound(hit_table_white_mh_.begin(), hit_table_white_mh_.end(), random_var) -
+                      hit_table_white_mh_.begin();
         return {damage * damage_multipliers_white_mh_[outcome], Hit_result(outcome)};
     }
     else
     {
         simulator_cout("Drawing outcome from yellow table");
         double random_var = get_uniform_random(100);
-        int outcome = std::lower_bound(hit_probabilities_yellow_.begin(), hit_probabilities_yellow_.end(), random_var) -
-                      hit_probabilities_yellow_.begin();
+        int outcome = std::lower_bound(hit_table_yellow_.begin(), hit_table_yellow_.end(), random_var) -
+                      hit_table_yellow_.begin();
         return {damage * damage_multipliers_yellow_[outcome], Hit_result(outcome)};
     }
 }
@@ -147,18 +147,16 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit_oh(double damage)
     {
         simulator_cout("Drawing outcome from OH twohanded hit table");
         double random_var = get_uniform_random(100);
-        int outcome =
-            std::lower_bound(hit_probabilities_two_hand_.begin(), hit_probabilities_two_hand_.end(), random_var) -
-            hit_probabilities_two_hand_.begin();
+        int outcome = std::lower_bound(hit_table_two_hand_.begin(), hit_table_two_hand_.end(), random_var) -
+                      hit_table_two_hand_.begin();
         return {damage * damage_multipliers_white_oh_[outcome], Hit_result(outcome)};
     }
     else
     {
         simulator_cout("Drawing outcome from OH hit table");
         double random_var = get_uniform_random(100);
-        int outcome =
-            std::lower_bound(hit_probabilities_white_oh_.begin(), hit_probabilities_white_oh_.end(), random_var) -
-            hit_probabilities_white_oh_.begin();
+        int outcome = std::lower_bound(hit_table_white_oh_.begin(), hit_table_white_oh_.end(), random_var) -
+                      hit_table_white_oh_.begin();
         return {damage * damage_multipliers_white_oh_[outcome], Hit_result(outcome)};
     }
 }
@@ -283,18 +281,17 @@ void Combat_simulator::compute_hit_table(int level_difference, int weapon_skill,
 
     if (weapon_hand == Socket::main_hand)
     {
-        hit_probabilities_white_mh_ = create_hit_table(miss_chance, dodge_chance, glancing_chance, crit_chance);
+        hit_table_white_mh_ = create_hit_table(miss_chance, dodge_chance, glancing_chance, crit_chance);
         damage_multipliers_white_mh_ = create_multipliers((100.0 - glancing_penalty) / 100.0, 0.0);
 
-        hit_probabilities_two_hand_ =
-            create_hit_table(two_hand_miss_chance, dodge_chance, glancing_chance, crit_chance);
+        hit_table_two_hand_ = create_hit_table(two_hand_miss_chance, dodge_chance, glancing_chance, crit_chance);
 
-        hit_probabilities_yellow_ = create_hit_table_yellow(two_hand_miss_chance, dodge_chance, 0, crit_chance);
+        hit_table_yellow_ = create_hit_table_yellow(two_hand_miss_chance, dodge_chance, crit_chance);
         damage_multipliers_yellow_ = create_multipliers(1.0, 0.1 * config.talents.impale);
     }
     else
     {
-        hit_probabilities_white_oh_ = create_hit_table(miss_chance, dodge_chance, glancing_chance, crit_chance);
+        hit_table_white_oh_ = create_hit_table(miss_chance, dodge_chance, glancing_chance, crit_chance);
         damage_multipliers_white_oh_ = create_multipliers((100.0 - glancing_penalty) / 100.0, 0.0);
     }
 }
@@ -691,16 +688,13 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
 
     double armor_reduction_from_spells = 0.0;
     double armor_reduction_delayed = 0.0;
-    if (config.exposed_armor)
-    {
-        armor_reduction_delayed = 1700 * 1.5;
-    }
-    else
-    {
-        armor_reduction_from_spells += 450 * config.n_sunder_armor_stacks;
-    }
+    armor_reduction_from_spells += 450 * config.n_sunder_armor_stacks;
     armor_reduction_from_spells += 640 * config.curse_of_recklessness_active;
     armor_reduction_from_spells += 505 * config.faerie_fire_feral_active;
+    if (config.exposed_armor)
+    {
+        armor_reduction_delayed = 1700 * 1.5 - 450 * config.n_sunder_armor_stacks;
+    }
 
     double sim_time = config.sim_time;
     if (config.use_sim_time_ramp)
@@ -1094,17 +1088,17 @@ void Combat_simulator::prune_histogram()
 
 const std::vector<double>& Combat_simulator::get_hit_probabilities_white_mh() const
 {
-    return hit_probabilities_white_mh_;
+    return hit_table_white_mh_;
 }
 
 const std::vector<double>& Combat_simulator::get_hit_probabilities_white_oh() const
 {
-    return hit_probabilities_white_oh_;
+    return hit_table_white_oh_;
 }
 
 const std::vector<double>& Combat_simulator::get_hit_probabilities_yellow() const
 {
-    return hit_probabilities_yellow_;
+    return hit_table_yellow_;
 }
 
 double Combat_simulator::get_glancing_penalty_mh() const

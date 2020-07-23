@@ -272,13 +272,13 @@ private:
     Over_time_effect unbridled_wrath;
     Over_time_effect essence_of_the_red;
 
-    std::vector<double> hit_probabilities_white_mh_;
+    std::vector<double> hit_table_white_mh_;
     std::array<double, 5> damage_multipliers_white_mh_;
-    std::vector<double> hit_probabilities_white_oh_;
+    std::vector<double> hit_table_white_oh_;
     std::array<double, 5> damage_multipliers_white_oh_;
-    std::vector<double> hit_probabilities_yellow_;
+    std::vector<double> hit_table_yellow_;
     std::array<double, 5> damage_multipliers_yellow_;
-    std::vector<double> hit_probabilities_two_hand_;
+    std::vector<double> hit_table_two_hand_;
     Damage_sources damage_distribution_{};
     double dps_mean_;
     double dps_variance_;
