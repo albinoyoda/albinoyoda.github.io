@@ -178,7 +178,6 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(const Weapon_sim& w
             hit_outcome.damage *= armor_reduction_factor_add * (1 + special_stats.damage_multiplier);
         }
         cout_damage_parse(hit_type, weapon_hand, hit_outcome);
-        //        return hit_outcome;
     }
     else
     {
@@ -663,7 +662,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
     {
         init_histogram();
     }
-    buff_manager_.aura_uptime.clear();
+    buff_manager_.aura_uptime.auras.clear();
     damage_distribution_ = Damage_sources{};
     flurry_uptime_mh_ = 0;
     flurry_uptime_oh_ = 0;
@@ -764,11 +763,6 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                 use_effects.emplace_back(use_effects_all[i]);
             }
         }
-    }
-
-    if (!config.performance_mode)
-    {
-        buff_manager_.aura_uptime.reserve(15);
     }
 
     for (int iter = init_iteration; iter < n_damage_batches + init_iteration; iter++)
