@@ -663,7 +663,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
     {
         init_histogram();
     }
-    buff_manager_.aura_uptime.auras.clear();
+    buff_manager_.aura_uptime.clear();
     damage_distribution_ = Damage_sources{};
     flurry_uptime_mh_ = 0;
     flurry_uptime_oh_ = 0;
@@ -764,6 +764,11 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                 use_effects.emplace_back(use_effects_all[i]);
             }
         }
+    }
+
+    if (!config.performance_mode)
+    {
+        buff_manager_.aura_uptime.reserve(15);
     }
 
     for (int iter = init_iteration; iter < n_damage_batches + init_iteration; iter++)

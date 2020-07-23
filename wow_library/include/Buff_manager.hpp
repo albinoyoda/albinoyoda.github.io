@@ -5,6 +5,7 @@
 #include "Item.hpp"
 
 #include <cmath>
+#include <unordered_map>
 #include <vector>
 
 struct Over_time_buff
@@ -48,34 +49,6 @@ struct Hit_buff
     double duration_left;
 };
 
-struct Aura_uptime
-{
-    Aura_uptime() = default;
-
-    struct Aura
-    {
-        Aura(std::string id, double duration) : id(std::move(id)), duration(duration){};
-
-        std::string id;
-        double duration;
-    };
-
-    void add(const std::string& name, double duration)
-    {
-        for (auto& aura : auras)
-        {
-            if (name == aura.id)
-            {
-                aura.duration += duration;
-                return;
-            }
-        }
-        auras.emplace_back(name, duration);
-    }
-
-    std::vector<Aura> auras;
-};
-
 class Buff_manager
 {
 public:
@@ -105,7 +78,7 @@ public:
     {
         double dt = 1e10;
         dt = std::min(dt, next_event);
-        double interval_dt = double(min_interval) - std::fmod(sim_time,  double(min_interval));
+        double interval_dt = double(min_interval) - std::fmod(sim_time, double(min_interval));
         dt = std::min(dt, interval_dt);
         return dt;
     }
@@ -119,7 +92,7 @@ public:
         {
             if (!performance_mode)
             {
-                aura_uptime.add(stat_gains[i].id, dt);
+                aura_uptime[stat_gains[i].id] += dt;
             }
             stat_gains[i].duration_left -= dt;
             if (stat_gains[i].duration_left < 0.0)
@@ -146,7 +119,7 @@ public:
         {
             if (!performance_mode)
             {
-                aura_uptime.add(hit_gains[i].id, dt);
+                aura_uptime[stat_gains[i].id] += dt;
             }
             hit_gains[i].duration_left -= dt;
             if (hit_gains[i].duration_left < 0.0)
@@ -270,6 +243,11 @@ public:
 
     void add(const std::string& name, const Special_stats& special_stats, double duration_left)
     {
+        if (aura_uptime.find(name) == aura_uptime.end())
+        {
+            aura_uptime.
+
+        }
         for (auto& gain : stat_gains)
         {
             if (name == gain.id)
@@ -338,7 +316,7 @@ public:
     std::vector<Use_effect> use_effects;
     double next_event = 10;
     int min_interval = 10;
-    Aura_uptime aura_uptime;
+    std::unordered_map<std::string, double> aura_uptime;
     std::vector<Proc> procs;
 };
 
