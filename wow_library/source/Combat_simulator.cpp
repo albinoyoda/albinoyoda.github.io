@@ -1008,6 +1008,12 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                 }
             }
         }
+        double dw_average_damage = buff_manager_.deep_wounds_damage / buff_manager_.deep_wounds_timestamps.size();
+        for (double deep_wounds_timestamp : buff_manager_.deep_wounds_timestamps)
+        {
+            damage_sources.add_damage(Damage_source::deep_wounds, dw_average_damage,
+                                      deep_wounds_timestamp);
+        }
         double new_sample = damage_sources.sum_damage_sources() / sim_time;
         dps_mean_ = Statistics::update_mean(dps_mean_, iter + 1, new_sample);
         dps_variance_ = Statistics::update_variance(dps_variance_, dps_mean_, iter + 1, new_sample);
@@ -1154,11 +1160,12 @@ void Combat_simulator::reset_time_lapse()
     {
         history.push_back(0);
     }
+    history.push_back(0); // This extra bin might be used for last second dot effects
     if (!(damage_time_lapse.empty()))
     {
         damage_time_lapse.clear();
     }
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < 10; i++)
     {
         damage_time_lapse.push_back(history);
     }

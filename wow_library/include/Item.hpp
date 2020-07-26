@@ -62,6 +62,8 @@ struct Over_time_effect
 {
     Over_time_effect() = default;
 
+    ~Over_time_effect() = default;
+
     Over_time_effect(std::string name, Special_stats special_stats, double rage_gain, double damage, int interval,
                      double duration)
         : name(std::move(name))
@@ -138,6 +140,8 @@ public:
     };
 
     Use_effect() = default;
+
+    ~Use_effect() = default;
 
     Use_effect(std::string name, Effect_socket effect_socket, Attributes attribute_boost,
                Special_stats special_stats_boost, double rage_boost, double duration, double cooldown,

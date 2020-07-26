@@ -81,26 +81,18 @@ struct Combat_simulator_config
 class Combat_simulator
 {
 public:
-    explicit Combat_simulator(Combat_simulator_config config) : config(config)
+    Combat_simulator() = default;
+
+    virtual ~Combat_simulator() = default;
+
+    void set_config(Combat_simulator_config& new_config)
     {
+        config = new_config;
         if (config.use_seed)
         {
             srand(config.seed);
         }
-        deathwish = {
-            "Death_wish", Use_effect::Effect_socket::unique, {}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .20}, -10, 30, 180,
-            true};
-
-        recklessness = {"Recklessness", Use_effect::Effect_socket::unique, {}, {100, 0, 0}, 0, 15, 900, true};
-
-        bloodrage = {"Bloodrage", Use_effect::Effect_socket::unique, {}, {}, 10, 10, 60, false,
-                     {},          {{"Bloodrage", {}, 1, 0, 1, 10}}};
-
-        essence_of_the_red = {"Essence_of_the_red", {}, 20, 0, 1, 180};
-
-        unbridled_wrath = {"Unbridled_wrath", {}, 1, 0, 3, 600};
     }
-    void set_config(Combat_simulator_config& new_config) { config = new_config; }
 
     enum class Hit_result
     {
@@ -268,11 +260,17 @@ public:
     Combat_simulator_config config;
 
 private:
-    Use_effect deathwish;
-    Use_effect recklessness;
-    Use_effect bloodrage;
-    Over_time_effect unbridled_wrath;
-    Over_time_effect essence_of_the_red;
+    Use_effect deathwish = {
+        "Death_wish", Use_effect::Effect_socket::unique, {}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .20}, -10, 30, 180, true};
+
+    Use_effect recklessness = {"Recklessness", Use_effect::Effect_socket::unique, {}, {100, 0, 0}, 0, 15, 900, true};
+
+    Use_effect bloodrage = {"Bloodrage", Use_effect::Effect_socket::unique, {}, {}, 10, 10, 60, false,
+                            {},          {{"Bloodrage", {}, 1, 0, 1, 10}}};
+
+    Over_time_effect essence_of_the_red = {"Essence_of_the_red", {}, 20, 0, 1, 180};
+
+    Over_time_effect unbridled_wrath = {"Unbridled_wrath", {}, 1, 0, 3, 600};
 
     std::vector<double> hit_table_white_mh_;
     std::array<double, 5> damage_multipliers_white_mh_;
@@ -302,10 +300,11 @@ private:
     double heroic_strike_rage_cost{};
     double cleave_rage_cost = 20;
     std::vector<std::vector<double>> damage_time_lapse{};
-    std::map<Damage_source, int> source_map{
-        {Damage_source::white_mh, 0},  {Damage_source::white_oh, 1},      {Damage_source::bloodthirst, 2},
-        {Damage_source::execute, 3},   {Damage_source::heroic_strike, 4}, {Damage_source::cleave, 5},
-        {Damage_source::whirlwind, 6}, {Damage_source::hamstring, 7},     {Damage_source::item_hit_effects, 8}};
+    std::map<Damage_source, int> source_map{{Damage_source::white_mh, 0},      {Damage_source::white_oh, 1},
+                                            {Damage_source::bloodthirst, 2},   {Damage_source::execute, 3},
+                                            {Damage_source::heroic_strike, 4}, {Damage_source::cleave, 5},
+                                            {Damage_source::whirlwind, 6},     {Damage_source::hamstring, 7},
+                                            {Damage_source::deep_wounds, 8},   {Damage_source::item_hit_effects, 9}};
 };
 
 #include "Combat_simulator.tcc"

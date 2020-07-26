@@ -11,15 +11,8 @@ struct Sim_output
             std::vector<double> hist_x,
             std::vector<int> hist_y,
             std::vector<double> dmg_sources,
-            std::vector<double> white_mh,
-            std::vector<double> white_oh,
-            std::vector<double> bloodthirst,
-            std::vector<double> execute,
-            std::vector<double> heroic_strike,
-            std::vector<double> cleave,
-            std::vector<double> whirlwind,
-            std::vector<double> hamstring,
-            std::vector<double> item_hit_effects,
+            std::vector<std::string> time_lapse_names,
+            std::vector<std::vector<double>> damage_time_lapse,
             std::vector<std::string> aura_uptimes,
             std::vector<std::string> proc_counter,
             std::vector<std::string> stat_weights,
@@ -31,15 +24,8 @@ struct Sim_output
             hist_x(std::move(hist_x)),
             hist_y(std::move(hist_y)),
             dmg_sources(std::move(dmg_sources)),
-            white_mh(std::move(white_mh)),
-            white_oh(std::move(white_oh)),
-            bloodthirst(std::move(bloodthirst)),
-            execute(std::move(execute)),
-            heroic_strike(std::move(heroic_strike)),
-            cleave(std::move(cleave)),
-            whirlwind(std::move(whirlwind)),
-            hamstring(std::move(hamstring)),
-            item_hit_effects(std::move(item_hit_effects)),
+            time_lapse_names(std::move(time_lapse_names)),
+            damage_time_lapse(std::move(damage_time_lapse)),
             aura_uptimes(std::move(aura_uptimes)),
             proc_counter(std::move(proc_counter)),
             stat_weights(std::move(stat_weights)),
@@ -51,15 +37,8 @@ struct Sim_output
     std::vector<double> hist_x;
     std::vector<int> hist_y;
     std::vector<double> dmg_sources;
-    std::vector<double> white_mh;
-    std::vector<double> white_oh;
-    std::vector<double> bloodthirst;
-    std::vector<double> execute;
-    std::vector<double> heroic_strike;
-    std::vector<double> cleave;
-    std::vector<double> whirlwind;
-    std::vector<double> hamstring;
-    std::vector<double> item_hit_effects;
+    std::vector<std::string> time_lapse_names;
+    std::vector<std::vector<double>> damage_time_lapse;
     std::vector<std::string> aura_uptimes;
     std::vector<std::string> proc_counter;
     std::vector<std::string> stat_weights;

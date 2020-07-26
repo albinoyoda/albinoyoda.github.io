@@ -53,6 +53,7 @@ std::vector<double> get_damage_sources(Damage_sources damage_sources_vector)
             damage_sources_vector.cleave_damage / damage_sources_vector.sum_damage_sources(),
             damage_sources_vector.whirlwind_damage / damage_sources_vector.sum_damage_sources(),
             damage_sources_vector.hamstring_damage / damage_sources_vector.sum_damage_sources(),
+            damage_sources_vector.deep_wounds_damage / damage_sources_vector.sum_damage_sources(),
             damage_sources_vector.item_hit_effects_damage / damage_sources_vector.sum_damage_sources()};
 }
 
@@ -558,25 +559,45 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     config.extra_rage_damage_amount = 150;
     //    config.performance_mode = true;
 
-    Combat_simulator simulator(config);
+    Combat_simulator simulator{};
+    simulator.set_config(config);
 
     simulator.simulate(character, 0, true, true);
 
-    std::string character_stats;
     std::vector<double> mean_dps_vec;
     std::vector<double> sample_std_dps_vec;
 
     auto hist_x = simulator.get_hist_x();
     auto hist_y = simulator.get_hist_y();
 
-    std::vector<double> dps_dist = get_damage_sources(simulator.get_damage_distribution());
+    std::vector<double> dps_dist_raw = get_damage_sources(simulator.get_damage_distribution());
     double mean_init = simulator.get_dps_mean();
     double std_init = std::sqrt(simulator.get_dps_variance());
     double sample_std_init = Statistics::sample_deviation(std_init, config.n_batches);
 
     std::vector<std::string> aura_uptimes = simulator.get_aura_uptimes();
     std::vector<std::string> proc_statistics = simulator.get_proc_statistics();
-    auto a = simulator.get_damage_time_lapse();
+    auto damage_time_lapse_raw = simulator.get_damage_time_lapse();
+    std::vector<std::string> time_lapse_names;
+    std::vector<std::vector<double>> damage_time_lapse;
+    std::vector<double> dps_dist;
+    std::vector<std::string> damage_names = {"White MH", "White OH",  "Bloodthirst", "Execute",     "Heroic Strike",
+                                             "Cleave",   "Whirlwind", "Hamstring",   "Deep Wounds", "Item Hit Effects"};
+    for (size_t i = 0; i < damage_time_lapse_raw.size(); i++)
+    {
+        double total_damage = 0;
+        for (const auto& damage : damage_time_lapse_raw[i])
+        {
+            total_damage += damage;
+        }
+        if (total_damage > 0)
+        {
+            time_lapse_names.push_back(damage_names[i]);
+            damage_time_lapse.push_back(damage_time_lapse_raw[i]);
+            dps_dist.push_back(dps_dist_raw[i]);
+        }
+    }
+
     auto yellow_ht = simulator.get_hit_probabilities_yellow();
     auto white_mh_ht = simulator.get_hit_probabilities_white_mh();
     auto white_oh_ht = simulator.get_hit_probabilities_white_oh();
@@ -584,12 +605,13 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
 
     mean_dps_vec.push_back(mean_init);
     sample_std_dps_vec.push_back(sample_std_init);
-    character_stats = get_character_stat(character);
+    std::string character_stats = get_character_stat(character);
 
     config.performance_mode = true;
     if (input.compare_armor.size() == 15 && input.compare_weapons.size() == 2)
     {
-        Combat_simulator simulator_compare(config);
+        Combat_simulator simulator_compare{};
+        simulator_compare.set_config(config);
         Character character2 = character_setup(armory, buffs, input.race[0], input.compare_armor, input.compare_weapons,
                                                temp_buffs, input.enchants);
 
@@ -753,7 +775,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         config.display_combat_debug = true;
         config.performance_mode = false;
 
-        simulator = Combat_simulator(config);
+        simulator.set_config(config);
         double dps;
         for (int i = 0; i < 1000; i++)
         {
@@ -780,6 +802,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         debug_topic += "DPS cleave: " + std::to_string(dist.cleave_damage / config.sim_time) + "<br>";
         debug_topic += "DPS whirlwind: " + std::to_string(dist.whirlwind_damage / config.sim_time) + "<br>";
         debug_topic += "DPS hamstring: " + std::to_string(dist.hamstring_damage / config.sim_time) + "<br>";
+        debug_topic += "DPS deep wounds: " + std::to_string(dist.deep_wounds_damage / config.sim_time) + "<br>";
         debug_topic +=
             "DPS item effects: " + std::to_string(dist.item_hit_effects_damage / config.sim_time) + "<br><br>";
 
@@ -792,21 +815,15 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         debug_topic += "#Hits cleave: " + std::to_string(dist.cleave_count) + "<br>";
         debug_topic += "#Hits whirlwind: " + std::to_string(dist.whirlwind_count) + "<br>";
         debug_topic += "#Hits hamstring: " + std::to_string(dist.hamstring_count) + "<br>";
+        debug_topic += "#Hits deep_wounds: " + std::to_string(dist.deep_wounds_count) + "<br>";
         debug_topic += "#Hits item effects: " + std::to_string(dist.item_hit_effects_count) + "<br>";
     }
 
     return {hist_x,
             hist_y,
             dps_dist,
-            a[0],
-            a[1],
-            a[2],
-            a[3],
-            a[4],
-            a[5],
-            a[6],
-            a[7],
-            a[8],
+            time_lapse_names,
+            damage_time_lapse,
             aura_uptimes,
             proc_statistics,
             stat_weights,

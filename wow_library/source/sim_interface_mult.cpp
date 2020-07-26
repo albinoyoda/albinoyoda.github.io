@@ -1567,7 +1567,8 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult& input)
     config.fuel_extra_rage = false;
     config.performance_mode = true;
 
-    Combat_simulator simulator(config);
+    Combat_simulator simulator{};
+    simulator.set_config(config);
 
     std::string debug_message;
     item_optimizer.compute_combinations();

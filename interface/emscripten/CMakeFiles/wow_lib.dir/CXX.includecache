@@ -81,12 +81,12 @@ vector
 -
 
 ../../wow_library/include/damage_sources.hpp
-vector
--
-string
--
 Statistics.hpp
 ../../wow_library/include/Statistics.hpp
+string
+-
+vector
+-
 damage_sources.tcc
 ../../wow_library/include/damage_sources.tcc
 
@@ -203,12 +203,12 @@ vector
 -
 
 /src/wow_library/include/damage_sources.hpp
-vector
--
-string
--
 Statistics.hpp
 /src/wow_library/include/Statistics.hpp
+string
+-
+vector
+-
 damage_sources.tcc
 /src/wow_library/include/damage_sources.tcc
 

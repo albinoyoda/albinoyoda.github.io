@@ -2297,16 +2297,6 @@
             }
             document.getElementById("combat_debug").innerHTML = result['extra_stats'].get(1);
 
-            let sources = [];
-            let sources_names = ["Main hand", "Off hand", "Blood Thirst", "Execute", "Heroic Strike", "Cleave", "Whirlwind", "Hamstring", "Item procs"];
-            let sources_names_used = [];
-            for (let i = 0; i < result['dmg_sources'].size(); i++) {
-                if (result['dmg_sources'].get(i) > 0.01) {
-                    sources.push(mean_dps[0] * result['dmg_sources'].get(i));
-                    sources_names_used.push(sources_names[i]);
-                }
-            }
-
             let aura_name = [];
             let aura_uptimes = [];
             for (let i = 0; i < result['aura_uptimes'].size(); i++) {
@@ -2348,45 +2338,35 @@
             }
 
             let colors = ["#3e95cd", "#8e5ea2", "#FFFF00", "#c45850", "#e8c3b9", "#990099", "#145A32", "#3333cc", "#FFFFFF"];
-            let damage_name = ["white_mh", "white_oh", "bloodthirst", "execute", "heroic_strike", "cleave", "whirlwind", "hamstring", "item_hit_effects"];
-            let white_mh = [];
-            let white_oh = [];
-            let bloodthirst = [];
-            let execute = [];
-            let heroic_strike = [];
-            let cleave = [];
-            let whirlwind = [];
-            let hamstring = [];
-            let item_hit_effects = [];
-            let damage_vec = [white_mh, white_oh, bloodthirst, execute, heroic_strike, cleave, whirlwind, hamstring, item_hit_effects];
-            for (let i = 0; i < damage_vec.length; i++) {
+            let damage_name = [];
+            let damage_vec = [];
+            for (let i = 0; i < result["time_lapse_names"].size(); i++) {
+                damage_name.push(result["time_lapse_names"].get(i));
+                damage_vec.push([]);
+                let damage_source_vec = result["damage_time_lapse"].get(i);
                 if (i === 0) {
-                    for (let j = 0; j < result[damage_name[i]].size(); j++) {
-                        damage_vec[i].push(result[damage_name[i]].get(j));
+                    for (let j = 0; j < damage_source_vec.size(); j++) {
+                        damage_vec[i].push(damage_source_vec.get(j));
                     }
                 } else {
-                    for (let j = 0; j < result[damage_name[i]].size(); j++) {
-                        damage_vec[i].push(result[damage_name[i]].get(j) + damage_vec[i - 1][j]);
+                    for (let j = 0; j < damage_source_vec.size(); j++) {
+                        damage_vec[i].push(damage_source_vec.get(j) + damage_vec[i - 1][j]);
                     }
                 }
             }
 
-            let cumulative_white_mh = [];
-            let cumulative_white_oh = [];
-            let cumulative_bloodthirst = [];
-            let cumulative_execute = [];
-            let cumulative_heroic_strike = [];
-            let cumulative_cleave = [];
-            let cumulative_whirlwind = [];
-            let cumulative_hamstring = [];
-            let cumulative_item_hit_effects = [];
-            let cumulative_vec = [cumulative_white_mh, cumulative_white_oh, cumulative_bloodthirst, cumulative_execute,
-                cumulative_heroic_strike, cumulative_cleave, cumulative_whirlwind, cumulative_hamstring, cumulative_item_hit_effects];
-            for (let i = 0; i < cumulative_vec.length; i++) {
+            let cumulative_vec = [];
+            for (let i = 0; i < result["time_lapse_names"].size(); i++) {
+                cumulative_vec.push([]);
                 cumulative_vec[i][0] = damage_vec[i][0];
                 for (let j = 1; j < damage_vec[i].length; j++) {
                     cumulative_vec[i].push(cumulative_vec[i][j - 1] + damage_vec[i][j]);
                 }
+            }
+
+            let sources = [];
+            for (let i = 0; i < result["time_lapse_names"].size(); i++) {
+                sources.push(mean_dps[0] * result['dmg_sources'].get(i));
             }
 
             let time_stamps = [];
@@ -2395,16 +2375,46 @@
                 time_stamps.push(time_stamps[j - 1] + .50);
             }
 
-            Chart.defaults.global.defaultFontSize = 36;
-            Chart.defaults.global.defaultFontStyle = 'Bold';
-            Chart.defaults.scale.gridLines.color = "black";
-
             let hist_x = [];
             let hist_y = [];
             for (let i = 0; i < result['hist_x'].size(); i++) {
                 hist_x.push(parseInt(result['hist_x'].get(i)));
                 hist_y.push(result['hist_y'].get(i));
             }
+
+            let data_damage_time_lapse = [];
+            for (let i = 0; i < damage_vec.length; i++) {
+                data_damage_time_lapse.push(
+                    {
+                        data: damage_vec[i],
+                        label: damage_name[i],
+                        borderWidth: 10,
+                        borderColor: colors[i],
+                        backgroundColor: colors[i],
+                        pointRadius: 0.1,
+                        fill: origin
+                    }
+                )
+            }
+
+            let data_damage_time_lapse_cum = [];
+            for (let i = 0; i < damage_vec.length; i++) {
+                data_damage_time_lapse_cum.push(
+                    {
+                        data: cumulative_vec[i],
+                        label: damage_name[i],
+                        borderWidth: 10,
+                        borderColor: colors[i],
+                        backgroundColor: colors[i],
+                        pointRadius: 0.1,
+                        fill: origin
+                    }
+                )
+            }
+
+            Chart.defaults.global.defaultFontSize = 36;
+            Chart.defaults.global.defaultFontStyle = 'Bold';
+            Chart.defaults.scale.gridLines.color = "black";
 
             line_chart_hist = new Chart(document.getElementById("line-chart-hist"), {
                 type: 'line',
@@ -2473,79 +2483,7 @@
                 type: 'line',
                 data: {
                     labels: time_stamps,
-                    datasets: [{
-                        data: damage_vec[0],
-                        label: damage_name[0],
-                        borderWidth: 10,
-                        borderColor: colors[0],
-                        backgroundColor: colors[0],
-                        pointRadius: 0.1,
-                        fill: origin
-                    }, {
-                        data: damage_vec[1],
-                        label: damage_name[1],
-                        borderWidth: 10,
-                        borderColor: colors[1],
-                        backgroundColor: colors[1],
-                        pointRadius: 0.1,
-                        fill: origin
-                    }, {
-                        data: damage_vec[2],
-                        label: damage_name[2],
-                        borderWidth: 10,
-                        borderColor: colors[2],
-                        backgroundColor: colors[2],
-                        pointRadius: 0.1,
-                        fill: origin
-                    }, {
-                        data: damage_vec[3],
-                        label: damage_name[3],
-                        borderWidth: 10,
-                        borderColor: colors[3],
-                        backgroundColor: colors[3],
-                        pointRadius: 0.1,
-                        fill: origin
-                    }, {
-                        data: damage_vec[4],
-                        label: damage_name[4],
-                        borderWidth: 10,
-                        borderColor: colors[4],
-                        backgroundColor: colors[4],
-                        pointRadius: 0.1,
-                        fill: origin
-                    }, {
-                        data: damage_vec[5],
-                        label: damage_name[5],
-                        borderWidth: 10,
-                        borderColor: colors[5],
-                        backgroundColor: colors[5],
-                        pointRadius: 0.1,
-                        fill: origin
-                    }, {
-                        data: damage_vec[6],
-                        label: damage_name[6],
-                        borderWidth: 10,
-                        borderColor: colors[6],
-                        backgroundColor: colors[6],
-                        pointRadius: 0.1,
-                        fill: origin
-                    }, {
-                        data: damage_vec[7],
-                        label: damage_name[7],
-                        borderWidth: 10,
-                        borderColor: colors[7],
-                        backgroundColor: colors[7],
-                        pointRadius: 0.1,
-                        fill: origin
-                    }, {
-                        data: damage_vec[8],
-                        label: damage_name[8],
-                        borderWidth: 10,
-                        borderColor: colors[8],
-                        backgroundColor: colors[8],
-                        pointRadius: 0.1,
-                        fill: origin
-                    },]
+                    datasets: data_damage_time_lapse
                 },
                 options: {
                     legend: {
@@ -2604,88 +2542,7 @@
                 type: 'line',
                 data: {
                     labels: time_stamps,
-                    datasets: [{
-                        data: cumulative_vec[0],
-                        label: damage_name[0],
-                        borderWidth: 10,
-                        borderColor: colors[0],
-                        backgroundColor: colors[0],
-                        pointRadius: 0.1,
-                        lineTension: 0,
-                        fill: origin
-                    }, {
-                        data: cumulative_vec[1],
-                        label: damage_name[1],
-                        borderWidth: 10,
-                        borderColor: colors[1],
-                        backgroundColor: colors[1],
-                        pointRadius: 0.1,
-                        lineTension: 0,
-                        fill: origin
-                    }, {
-                        data: cumulative_vec[2],
-                        label: damage_name[2],
-                        borderWidth: 10,
-                        borderColor: colors[2],
-                        backgroundColor: colors[2],
-                        pointRadius: 0.1,
-                        lineTension: 0,
-                        fill: origin
-                    }, {
-                        data: cumulative_vec[3],
-                        label: damage_name[3],
-                        borderWidth: 10,
-                        borderColor: colors[3],
-                        backgroundColor: colors[3],
-                        pointRadius: 0.1,
-                        lineTension: 0,
-                        fill: origin
-                    }, {
-                        data: cumulative_vec[4],
-                        label: damage_name[4],
-                        borderWidth: 10,
-                        borderColor: colors[4],
-                        backgroundColor: colors[4],
-                        pointRadius: 0.1,
-                        lineTension: 0,
-                        fill: origin
-                    }, {
-                        data: cumulative_vec[5],
-                        label: damage_name[5],
-                        borderWidth: 10,
-                        borderColor: colors[5],
-                        backgroundColor: colors[5],
-                        pointRadius: 0.1,
-                        lineTension: 0,
-                        fill: origin
-                    }, {
-                        data: cumulative_vec[6],
-                        label: damage_name[6],
-                        borderWidth: 10,
-                        borderColor: colors[6],
-                        backgroundColor: colors[6],
-                        pointRadius: 0.1,
-                        lineTension: 0,
-                        fill: origin
-                    }, {
-                        data: cumulative_vec[7],
-                        label: damage_name[7],
-                        borderWidth: 10,
-                        borderColor: colors[7],
-                        backgroundColor: colors[7],
-                        pointRadius: 0.1,
-                        lineTension: 0,
-                        fill: origin
-                    }, {
-                        data: cumulative_vec[8],
-                        label: damage_name[8],
-                        borderWidth: 10,
-                        borderColor: colors[8],
-                        backgroundColor: colors[8],
-                        pointRadius: 0.1,
-                        lineTension: 0,
-                        fill: origin
-                    },]
+                    datasets: data_damage_time_lapse_cum
                 },
                 options: {
                     legend: {
@@ -2741,7 +2598,7 @@
             bar_chart_damage = new Chart(document.getElementById("bar-chart-damage"), {
                 type: 'bar',
                 data: {
-                    labels: sources_names_used,
+                    labels: damage_name,
                     datasets: [
                         {
                             backgroundColor: colors,

@@ -100,6 +100,8 @@ public:
         hit_effects_mh = &hit_effects_mh_input;
         hit_effects_oh = &hit_effects_oh_input;
         use_effects = use_effects_input;
+        deep_wounds_damage = 0.0;
+        deep_wounds_timestamps.clear();
     };
 
     double get_dt(double sim_time)
@@ -225,6 +227,11 @@ public:
                 (*simulation_special_stats) += over_time_buffs[i].special_stats;
                 rage = std::min(100.0, rage);
                 over_time_buffs[i].current_ticks++;
+                if (over_time_buffs[i].damage > 0.0)
+                {
+                    deep_wounds_damage+=over_time_buffs[i].damage;
+                    deep_wounds_timestamps.push_back(current_time);
+                }
                 if (debug)
                 {
                     if (over_time_buffs[i].rage_gain > 0)
@@ -341,6 +348,8 @@ public:
     int min_interval = 10;
     Aura_uptime aura_uptime;
     std::vector<Proc> procs;
+    double deep_wounds_damage{};
+    std::vector<double> deep_wounds_timestamps{};
 };
 
 #endif // WOW_SIMULATOR_BUFF_MANAGER_HPP
