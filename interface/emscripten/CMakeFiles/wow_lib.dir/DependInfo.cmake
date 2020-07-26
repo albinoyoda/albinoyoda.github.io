@@ -9,6 +9,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/src/wow_library/source/Character.cpp" "/src/interface/emscripten/CMakeFiles/wow_lib.dir/wow_library/source/Character.cpp.o"
   "/src/wow_library/source/Combat_simulator.cpp" "/src/interface/emscripten/CMakeFiles/wow_lib.dir/wow_library/source/Combat_simulator.cpp.o"
   "/src/wow_library/source/Item.cpp" "/src/interface/emscripten/CMakeFiles/wow_lib.dir/wow_library/source/Item.cpp.o"
+  "/src/wow_library/source/Item_optimizer.cpp" "/src/interface/emscripten/CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.o"
   "/src/wow_library/source/Statistics.cpp" "/src/interface/emscripten/CMakeFiles/wow_lib.dir/wow_library/source/Statistics.cpp.o"
   "/src/wow_library/source/damage_sources.cpp" "/src/interface/emscripten/CMakeFiles/wow_lib.dir/wow_library/source/damage_sources.cpp.o"
   "/src/wow_library/source/sim_interface.cpp" "/src/interface/emscripten/CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o"

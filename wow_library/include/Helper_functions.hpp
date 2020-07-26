@@ -3,6 +3,7 @@
 
 #include "Character.hpp"
 
+#include <sstream>
 #include <iomanip>
 #include <string>
 #include <vector>

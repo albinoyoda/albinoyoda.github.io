@@ -9,6 +9,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o"
   "CMakeFiles/wow_lib.dir/wow_library/source/Statistics.cpp.o"
   "CMakeFiles/wow_lib.dir/wow_library/source/damage_sources.cpp.o"
+  "CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.o"
   "libwow_lib.pdb"
   "libwow_lib.a"
 )

@@ -9,6 +9,8 @@
 ../../wow_library/include/Armory.hpp
 Character.hpp
 ../../wow_library/include/Character.hpp
+Helper_functions.hpp
+../../wow_library/include/Helper_functions.hpp
 
 ../../wow_library/include/Attributes.hpp
 ostream
@@ -68,6 +70,18 @@ Combat_simulator.tcc
 
 ../../wow_library/include/Combat_simulator.tcc
 
+../../wow_library/include/Helper_functions.hpp
+Character.hpp
+../../wow_library/include/Character.hpp
+sstream
+-
+iomanip
+-
+string
+-
+vector
+-
+
 ../../wow_library/include/Item.hpp
 Attributes.hpp
 ../../wow_library/include/Attributes.hpp
@@ -76,7 +90,29 @@ cassert
 utility
 -
 
+../../wow_library/include/Item_optimizer.hpp
+Helper_functions.hpp
+../../wow_library/include/Helper_functions.hpp
+Armory.hpp
+-
+Character.hpp
+-
+Combat_simulator.hpp
+-
+algorithm
+-
+ctime
+-
+iostream
+-
+sstream
+-
+
+../../wow_library/include/Item_popularity.hpp
+
 ../../wow_library/include/Statistics.hpp
+cmath
+-
 vector
 -
 
@@ -131,6 +167,8 @@ Item.hpp
 /src/wow_library/include/Armory.hpp
 Character.hpp
 /src/wow_library/include/Character.hpp
+Helper_functions.hpp
+/src/wow_library/include/Helper_functions.hpp
 
 /src/wow_library/include/Attributes.hpp
 ostream
@@ -190,6 +228,18 @@ Combat_simulator.tcc
 
 /src/wow_library/include/Combat_simulator.tcc
 
+/src/wow_library/include/Helper_functions.hpp
+Character.hpp
+/src/wow_library/include/Character.hpp
+sstream
+-
+iomanip
+-
+string
+-
+vector
+-
+
 /src/wow_library/include/Item.hpp
 Attributes.hpp
 /src/wow_library/include/Attributes.hpp
@@ -199,6 +249,8 @@ utility
 -
 
 /src/wow_library/include/Statistics.hpp
+cmath
+-
 vector
 -
 
@@ -240,11 +292,19 @@ iostream
 ../include/Combat_simulator.hpp
 /src/wow_library/include/Combat_simulator.hpp
 
+/src/wow_library/source/Helper_functions.cpp
+Helper_functions.hpp
+/src/wow_library/source/Helper_functions.hpp
+
 /src/wow_library/source/Item.cpp
 ../include/Item.hpp
 /src/wow_library/include/Item.hpp
 cassert
 -
+
+/src/wow_library/source/Item_optimizer.cpp
+Item_optimizer.hpp
+/src/wow_library/source/Item_optimizer.hpp
 
 /src/wow_library/source/Statistics.cpp
 Statistics.hpp
@@ -264,30 +324,38 @@ iostream
 sim_interface.hpp
 /src/wow_library/source/sim_interface.hpp
 Armory.hpp
--
+/src/wow_library/source/Armory.hpp
+Helper_functions.hpp
+/src/wow_library/source/Helper_functions.hpp
 Character.hpp
 -
 Combat_simulator.hpp
+-
+Item_optimizer.hpp
 -
 sstream
 -
 
 /src/wow_library/source/sim_interface_mult.cpp
+Armory.hpp
+/src/wow_library/source/Armory.hpp
+Character.hpp
+/src/wow_library/source/Character.hpp
+Combat_simulator.hpp
+/src/wow_library/source/Combat_simulator.hpp
+Helper_functions.cpp
+/src/wow_library/source/Helper_functions.cpp
+Item_optimizer.hpp
+/src/wow_library/source/Item_optimizer.hpp
+Item_popularity.hpp
+/src/wow_library/source/Item_popularity.hpp
 sim_interface.hpp
 /src/wow_library/source/sim_interface.hpp
-Armory.hpp
--
-Character.hpp
--
-Combat_simulator.hpp
--
 algorithm
 -
 ctime
 -
 iostream
--
-sstream
 -
 
 /src/wow_library/source/weapon_sim.cpp

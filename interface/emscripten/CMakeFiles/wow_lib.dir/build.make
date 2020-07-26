@@ -197,6 +197,20 @@ CMakeFiles/wow_lib.dir/wow_library/source/damage_sources.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/wow_lib.dir/wow_library/source/damage_sources.cpp.s"
 	/emsdk_portable/emscripten/tag-1.39.4/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /src/wow_library/source/damage_sources.cpp -o CMakeFiles/wow_lib.dir/wow_library/source/damage_sources.cpp.s
 
+CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.o: CMakeFiles/wow_lib.dir/flags.make
+CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.o: CMakeFiles/wow_lib.dir/includes_CXX.rsp
+CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.o: ../../wow_library/source/Item_optimizer.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/src/interface/emscripten/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.o"
+	/emsdk_portable/emscripten/tag-1.39.4/em++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.o -c /src/wow_library/source/Item_optimizer.cpp
+
+CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.i"
+	/emsdk_portable/emscripten/tag-1.39.4/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /src/wow_library/source/Item_optimizer.cpp > CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.i
+
+CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.s"
+	/emsdk_portable/emscripten/tag-1.39.4/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /src/wow_library/source/Item_optimizer.cpp -o CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.s
+
 # Object files for target wow_lib
 wow_lib_OBJECTS = \
 "CMakeFiles/wow_lib.dir/wow_library/source/Combat_simulator.cpp.o" \
@@ -208,7 +222,8 @@ wow_lib_OBJECTS = \
 "CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o" \
 "CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o" \
 "CMakeFiles/wow_lib.dir/wow_library/source/Statistics.cpp.o" \
-"CMakeFiles/wow_lib.dir/wow_library/source/damage_sources.cpp.o"
+"CMakeFiles/wow_lib.dir/wow_library/source/damage_sources.cpp.o" \
+"CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.o"
 
 # External object files for target wow_lib
 wow_lib_EXTERNAL_OBJECTS =
@@ -223,10 +238,11 @@ libwow_lib.a: CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o
 libwow_lib.a: CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o
 libwow_lib.a: CMakeFiles/wow_lib.dir/wow_library/source/Statistics.cpp.o
 libwow_lib.a: CMakeFiles/wow_lib.dir/wow_library/source/damage_sources.cpp.o
+libwow_lib.a: CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.o
 libwow_lib.a: CMakeFiles/wow_lib.dir/build.make
 libwow_lib.a: CMakeFiles/wow_lib.dir/objects1.rsp
 libwow_lib.a: CMakeFiles/wow_lib.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/src/interface/emscripten/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX static library libwow_lib.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/src/interface/emscripten/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Linking CXX static library libwow_lib.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/wow_lib.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/wow_lib.dir/link.txt --verbose=$(VERBOSE)
 

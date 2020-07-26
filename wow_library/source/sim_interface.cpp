@@ -406,22 +406,22 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     double dodge_chance = yellow_ht[1] - yellow_ht[0];
     extra_info_string += percent_to_str("Target dodge chance", dodge_chance, "(based on skill difference)");
 
-    if (find_string(input.options, "item_strengths"))
-    {
-        Combat_simulator simulator_mult(config);
-        Item_optimizer item_optimizer{};
-        Character character_new =
-            character_setup(armory, input.race[0], input.armor, input.weapons, temp_buffs, input.enchants);
-        std::string dummy{};
-        auto helmets = item_optimizer.remove_weaker_items(armory.helmet_t, character_new.total_special_stats, dummy);
-        for (const auto& helmet : helmets)
-        {
-            armory.change_armor(character_new.armor, helmet);
-            simulator_mult.simulate(character_new);
-        }
-
-
-    }
+//    if (find_string(input.options, "item_strengths"))
+//    {
+//        Combat_simulator simulator_mult(config);
+//        Item_optimizer item_optimizer{};
+//        Character character_new =
+//            character_setup(armory, input.race[0], input.armor, input.weapons, temp_buffs, input.enchants);
+//        std::string dummy{};
+//        auto helmets = item_optimizer.remove_weaker_items(armory.helmet_t, character_new.total_special_stats, dummy);
+//        for (const auto& helmet : helmets)
+//        {
+//            armory.change_armor(character_new.armor, helmet);
+//            simulator_mult.simulate(character_new);
+//        }
+//
+//
+//    }
 
     config.n_batches = input.n_simulations_stat_weights;
     simulator.set_config(config);

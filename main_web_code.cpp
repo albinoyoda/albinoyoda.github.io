@@ -400,8 +400,8 @@ int main()
                                   45,
                                   40};
 
-//    auto sim_output = sim_interface.simulate(sim_input);
-        auto sim_output = sim_interface.simulate_mult(sim_input_mult);
+    auto sim_output = sim_interface.simulate(sim_input);
+//        auto sim_output = sim_interface.simulate_mult(sim_input_mult);
 
     //    for (const auto &dmg_batch : sim_output.stat_weights)
     //    {

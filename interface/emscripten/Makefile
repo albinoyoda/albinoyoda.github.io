@@ -298,6 +298,33 @@ wow_library/source/Item.cpp.s:
 	$(MAKE) -f CMakeFiles/wow_lib.dir/build.make CMakeFiles/wow_lib.dir/wow_library/source/Item.cpp.s
 .PHONY : wow_library/source/Item.cpp.s
 
+wow_library/source/Item_optimizer.o: wow_library/source/Item_optimizer.cpp.o
+
+.PHONY : wow_library/source/Item_optimizer.o
+
+# target to build an object file
+wow_library/source/Item_optimizer.cpp.o:
+	$(MAKE) -f CMakeFiles/wow_lib.dir/build.make CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.o
+.PHONY : wow_library/source/Item_optimizer.cpp.o
+
+wow_library/source/Item_optimizer.i: wow_library/source/Item_optimizer.cpp.i
+
+.PHONY : wow_library/source/Item_optimizer.i
+
+# target to preprocess a source file
+wow_library/source/Item_optimizer.cpp.i:
+	$(MAKE) -f CMakeFiles/wow_lib.dir/build.make CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.i
+.PHONY : wow_library/source/Item_optimizer.cpp.i
+
+wow_library/source/Item_optimizer.s: wow_library/source/Item_optimizer.cpp.s
+
+.PHONY : wow_library/source/Item_optimizer.s
+
+# target to generate assembly for a file
+wow_library/source/Item_optimizer.cpp.s:
+	$(MAKE) -f CMakeFiles/wow_lib.dir/build.make CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.s
+.PHONY : wow_library/source/Item_optimizer.cpp.s
+
 wow_library/source/Statistics.o: wow_library/source/Statistics.cpp.o
 
 .PHONY : wow_library/source/Statistics.o
@@ -461,6 +488,9 @@ help:
 	@echo "... wow_library/source/Item.o"
 	@echo "... wow_library/source/Item.i"
 	@echo "... wow_library/source/Item.s"
+	@echo "... wow_library/source/Item_optimizer.o"
+	@echo "... wow_library/source/Item_optimizer.i"
+	@echo "... wow_library/source/Item_optimizer.s"
 	@echo "... wow_library/source/Statistics.o"
 	@echo "... wow_library/source/Statistics.i"
 	@echo "... wow_library/source/Statistics.s"
