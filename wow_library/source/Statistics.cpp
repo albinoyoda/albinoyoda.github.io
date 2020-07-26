@@ -39,4 +39,22 @@ double add_standard_deviations(double std1, double std2)
 {
     return std::sqrt(std1 * std1 + std2 * std2);
 }
+
+double normalCDF(double value)
+{
+    return 0.5 * erfc(-value * M_SQRT1_2);
+}
+
+double find_cdf_quantile(double target_quantile, double precision)
+{
+    double x = 0.0;
+    double quantile = 0.5;
+    while (quantile < target_quantile)
+    {
+        x += precision;
+        quantile = normalCDF(x);
+    }
+    return x;
+}
+
 } // namespace Statistics

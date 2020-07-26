@@ -519,20 +519,201 @@ Weapon Armory::find_weapon(const std::string& name) const
     return {"item_not_found: " + name, {}, {}, 2.0, 0, 0, Weapon_socket::one_hand, Weapon_type::unarmed};
 }
 
-// std::vector<Armor> Armory::get_all_armors() const
-//{
-//    std::vector<Armor> armors;
-//    armors.insert( armors.end(), helmet_t.begin(), helmet_t.end() );
-//    armors.insert( armors.end(), neck_t.begin(), neck_t.end() );
-//    armors.insert( armors.end(), shoulder_t.begin(), shoulder_t.end() );
-//    armors.insert( armors.end(), back_t.begin(), back_t.end() );
-//    armors.insert( armors.end(), chest_t.begin(), chest_t.end() );
-//    armors.insert( armors.end(), wrists_t.begin(), wrists_t.end() );
-//    armors.insert( armors.end(), hands_t.begin(), hands_t.end() );
-//    armors.insert( armors.end(), belt_t.begin(), belt_t.end() );
-//    armors.insert( armors.end(), legs_t.begin(), legs_t.end() );
-//    armors.insert( armors.end(), boots_t.begin(), boots_t.end() );
-//    armors.insert( armors.end(), ring_t.begin(), ring_t.end() );
-//    armors.insert( armors.end(), trinket_t.begin(), trinket_t.end() );
-//    armors.insert( armors.end(), ranged_t.begin(), ranged_t.end() );
-//}
+void Armory::add_enchants_to_character(Character& character, const std::vector<std::string>& ench_vec) const
+{
+    if (find_string(ench_vec, "e+8 strength"))
+    {
+        character.add_enchant(Socket::head, Enchant::Type::strength);
+    }
+    else if (find_string(ench_vec, "e+1 haste"))
+    {
+        character.add_enchant(Socket::head, Enchant::Type::haste);
+    }
+
+    if (find_string(ench_vec, "s+30 attack_power"))
+    {
+        character.add_enchant(Socket::shoulder, Enchant::Type::attack_power);
+    }
+
+    if (find_string(ench_vec, "b+3 agility"))
+    {
+        character.add_enchant(Socket::back, Enchant::Type::agility);
+    }
+
+    if (find_string(ench_vec, "c+3 stats"))
+    {
+        character.add_enchant(Socket::chest, Enchant::Type::minor_stats);
+    }
+    else if (find_string(ench_vec, "c+4 stats"))
+    {
+        character.add_enchant(Socket::chest, Enchant::Type::major_stats);
+    }
+
+    if (find_string(ench_vec, "w+7 strength"))
+    {
+        character.add_enchant(Socket::wrist, Enchant::Type::strength7);
+    }
+    else if (find_string(ench_vec, "w+9 strength"))
+    {
+        character.add_enchant(Socket::wrist, Enchant::Type::strength9);
+    }
+
+    if (find_string(ench_vec, "h+7 strength"))
+    {
+        character.add_enchant(Socket::hands, Enchant::Type::strength);
+    }
+    else if (find_string(ench_vec, "h+7 agility"))
+    {
+        character.add_enchant(Socket::hands, Enchant::Type::agility);
+    }
+    else if (find_string(ench_vec, "h+15 agility"))
+    {
+        character.add_enchant(Socket::hands, Enchant::Type::greater_agility);
+    }
+    else if (find_string(ench_vec, "h+1 haste"))
+    {
+        character.add_enchant(Socket::hands, Enchant::Type::haste);
+    }
+
+    if (find_string(ench_vec, "l+8 strength"))
+    {
+        character.add_enchant(Socket::legs, Enchant::Type::strength);
+    }
+    else if (find_string(ench_vec, "l+1 haste"))
+    {
+        character.add_enchant(Socket::legs, Enchant::Type::haste);
+    }
+
+    if (find_string(ench_vec, "b+7 agility"))
+    {
+        character.add_enchant(Socket::boots, Enchant::Type::agility);
+    }
+
+    if (find_string(ench_vec, "mcrusader"))
+    {
+        character.add_enchant(Socket::main_hand, Enchant::Type::crusader);
+    }
+
+    if (find_string(ench_vec, "ocrusader"))
+    {
+        character.add_enchant(Socket::off_hand, Enchant::Type::crusader);
+    }
+}
+
+void Armory::add_buffs_to_character(Character& character, const std::vector<std::string>& buffs_vec) const
+{
+    if (find_string(buffs_vec, "rallying_cry"))
+    {
+        character.add_buff(buffs.rallying_cry);
+    }
+    if (find_string(buffs_vec, "dire_maul"))
+    {
+        character.add_buff(buffs.dire_maul);
+    }
+    if (find_string(buffs_vec, "songflower"))
+    {
+        character.add_buff(buffs.songflower);
+    }
+    if (find_string(buffs_vec, "warchiefs_blessing"))
+    {
+        character.add_buff(buffs.warchiefs_blessing);
+    }
+    if (find_string(buffs_vec, "spirit_of_zandalar"))
+    {
+        character.add_buff(buffs.spirit_of_zandalar);
+    }
+    if (find_string(buffs_vec, "sayges_fortune"))
+    {
+        character.add_buff(buffs.sayges_fortune);
+    }
+
+    // Player buffs
+    if (find_string(buffs_vec, "battle_shout"))
+    {
+        character.add_buff(buffs.battle_shout);
+    }
+    if (find_string(buffs_vec, "blessing_of_kings"))
+    {
+        character.add_buff(buffs.blessing_of_kings);
+    }
+    if (find_string(buffs_vec, "blessing_of_might"))
+    {
+        character.add_buff(buffs.blessing_of_might);
+    }
+    if (find_string(buffs_vec, "windfury_totem"))
+    {
+        character.add_buff(buffs.windfury_totem);
+    }
+    if (find_string(buffs_vec, "strength_of_earth_totem"))
+    {
+        character.add_buff(buffs.strength_of_earth_totem);
+    }
+    if (find_string(buffs_vec, "grace_of_air_totem"))
+    {
+        character.add_buff(buffs.grace_of_air_totem);
+    }
+    if (find_string(buffs_vec, "gift_of_the_wild"))
+    {
+        character.add_buff(buffs.gift_of_the_wild);
+    }
+    if (find_string(buffs_vec, "leader_of_the_pack"))
+    {
+        character.add_buff(buffs.leader_of_the_pack);
+    }
+    if (find_string(buffs_vec, "trueshot_aura"))
+    {
+        character.add_buff(buffs.trueshot_aura);
+    }
+    if (find_string(buffs_vec, "elixir_mongoose"))
+    {
+        character.add_buff(buffs.elixir_mongoose);
+    }
+    if (find_string(buffs_vec, "blessed_sunfruit"))
+    {
+        character.add_buff(buffs.blessed_sunfruit);
+    }
+    if (find_string(buffs_vec, "smoked_dessert_dumplings"))
+    {
+        character.add_buff(buffs.smoked_dessert_dumplings);
+    }
+    if (find_string(buffs_vec, "juju_power"))
+    {
+        character.add_buff(buffs.juju_power);
+    }
+    if (find_string(buffs_vec, "elixir_of_giants"))
+    {
+        character.add_buff(buffs.elixir_of_giants);
+    }
+    if (find_string(buffs_vec, "juju_might"))
+    {
+        character.add_buff(buffs.juju_might);
+    }
+    if (find_string(buffs_vec, "winterfall_firewater"))
+    {
+        character.add_buff(buffs.winterfall_firewater);
+    }
+    if (find_string(buffs_vec, "roids"))
+    {
+        character.add_buff(buffs.roids);
+    }
+    if (find_string(buffs_vec, "mighty_rage_potion"))
+    {
+        character.add_buff(buffs.mighty_rage_potion);
+    }
+    if (find_string(buffs_vec, "dense_stone_main_hand"))
+    {
+        character.add_weapon_buff(Socket::main_hand, buffs.dense_stone);
+    }
+    else if (find_string(buffs_vec, "elemental_stone_main_hand"))
+    {
+        character.add_buff(buffs.elemental_stone);
+    }
+    if (find_string(buffs_vec, "dense_stone_off_hand"))
+    {
+        character.add_weapon_buff(Socket::off_hand, buffs.dense_stone);
+    }
+    else if (find_string(buffs_vec, "elemental_stone_off_hand"))
+    {
+        character.add_buff(buffs.elemental_stone);
+    }
+}
