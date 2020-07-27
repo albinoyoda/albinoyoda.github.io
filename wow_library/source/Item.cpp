@@ -78,3 +78,59 @@ std::ostream& operator<<(std::ostream& os, const Socket& socket)
     }
     return os;
 }
+
+std::string operator+(std::string& string, const Socket& socket)
+{
+    switch (socket)
+    {
+    case Socket::head:
+        string += "Helmet";
+        break;
+    case Socket::neck:
+        string += "Neck";
+        break;
+    case Socket::shoulder:
+        string += "Shoulder";
+        break;
+    case Socket::back:
+        string += "Back";
+        break;
+    case Socket::chest:
+        string += "Chest";
+        break;
+    case Socket::wrist:
+        string += "Wrist";
+        break;
+    case Socket::hands:
+        string += "Hands";
+        break;
+    case Socket::belt:
+        string += "Belt";
+        break;
+    case Socket::legs:
+        string += "Legs";
+        break;
+    case Socket::boots:
+        string += "Boots";
+        break;
+    case Socket::ring:
+        string += "Ring";
+        break;
+    case Socket::trinket:
+        string += "Trinket";
+        break;
+    case Socket::ranged:
+        string += "Ranged";
+        break;
+    case Socket::main_hand:
+        string += "Main hand";
+        break;
+    case Socket::off_hand:
+        string += "Off hand";
+        break;
+    case Socket::none:
+        string += "None";
+        break;
+    }
+    return string;
+}

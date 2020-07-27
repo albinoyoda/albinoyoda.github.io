@@ -100,6 +100,31 @@ public:
         }
     }
 
+    bool has_item(const std::string & item_name)
+    {
+        for (const auto & armor_piece : armor)
+        {
+            if (armor_piece.name == item_name)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    Armor get_item_from_socket(const Socket socket)
+    {
+        for (const auto & armor_piece : armor)
+        {
+            if (armor_piece.socket == socket)
+            {
+                return armor_piece;
+            }
+        }
+        std::cout << "Error did not find item in socket: " << socket << "\n";
+        return armor[0];
+    }
+
     Attributes base_attributes;
     Attributes total_attributes;
     Special_stats base_special_stats;

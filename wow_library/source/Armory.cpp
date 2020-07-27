@@ -420,6 +420,43 @@ void Armory::change_armor(std::vector<Armor>& armor_vec, const Armor& armor, boo
     }
 }
 
+std::vector<Armor> Armory::get_items_in_socket(const Socket socket) const
+{
+    switch (socket)
+    {
+    case Socket::head:
+        return helmet_t;
+    case Socket::neck:
+        return neck_t;
+    case Socket::shoulder:
+        return shoulder_t;
+    case Socket::back:
+        return back_t;
+    case Socket::chest:
+        return chest_t;
+    case Socket::wrist:
+        return wrists_t;
+    case Socket::hands:
+        return hands_t;
+    case Socket::belt:
+        return belt_t;
+    case Socket::legs:
+        return legs_t;
+    case Socket::boots:
+        return boots_t;
+    case Socket::ring:
+        return ring_t;
+    case Socket::trinket:
+        return trinket_t;
+    case Socket::ranged:
+        return ranged_t;
+    default:
+        std::cout << "ERROR: incorrect item socket provided: " << socket << "\n";
+        assert(false);
+        return ranged_t;
+    }
+}
+
 Armor Armory::find_armor(const Socket socket, const std::string& name) const
 {
     std::vector<Armor> items;

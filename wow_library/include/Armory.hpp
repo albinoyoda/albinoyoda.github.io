@@ -543,6 +543,8 @@ struct Armory
             {"the_defilers_resolution", Attributes{0, 0}, Special_stats{1, 0, 0},  3, Set::the_defilers_resolution},
     };
 
+    std::vector<Armor> get_items_in_socket(const Socket socket) const;
+
     Armor find_armor(Socket socket, const std::string &name) const;
 
     Weapon find_weapon(const std::string &name) const;

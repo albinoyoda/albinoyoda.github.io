@@ -8,6 +8,65 @@
 #include <Item_optimizer.hpp>
 #include <sstream>
 
+void item_upgrades(std::string& item_strengths_string, Character character_new, Item_optimizer& item_optimizer,
+                   Armory& armory, double filter_value, std::vector<size_t> batches_per_iteration,
+                   std::vector<size_t> cumulative_simulations, Combat_simulator& simulator, double dps_mean,
+                   double dps_sample_std, Socket socket)
+{
+    std::string dummy;
+    item_strengths_string =
+        item_strengths_string + socket + ": " + "<b>" + character_new.get_item_from_socket(socket).name + "</b>";
+    auto armor_vec = armory.get_items_in_socket(socket);
+    auto items = item_optimizer.remove_weaker_items(armor_vec, character_new.total_special_stats, dummy);
+    bool item_is_weak = true;
+    for (size_t i = 0; i < items.size(); i++)
+    {
+        if (character_new.has_item(items[i].name))
+        {
+            items.erase(items.begin() + i);
+            item_is_weak = false;
+            break;
+        }
+    }
+    double quantile = Statistics::find_cdf_quantile(0.95, 0.01);
+    std::string best_armor_name{};
+    bool found_upgrade = false;
+    for (const auto& item : items)
+    {
+        armory.change_armor(character_new.armor, item);
+        armory.compute_total_stats(character_new);
+        for (size_t iter = 0; iter < batches_per_iteration.size(); iter++)
+        {
+            simulator.simulate(character_new, batches_per_iteration[iter], simulator.get_dps_mean(),
+                               simulator.get_dps_variance(), cumulative_simulations[iter]);
+            double sample_std =
+                Statistics::sample_deviation(std::sqrt(simulator.get_dps_variance()), cumulative_simulations[iter + 1]);
+            if (simulator.get_dps_mean() - sample_std * quantile >= filter_value)
+            {
+                found_upgrade = true;
+                double dps_increase = simulator.get_dps_mean() - dps_mean;
+                double dps_increase_std = Statistics::add_standard_deviations(sample_std, dps_sample_std);
+                item_strengths_string += "<br> Proposed upgrade: <b>" + item.name + "</b> ( +<b>" +
+                                         string_with_precision(dps_increase, 2) + " &plusmn " +
+                                         string_with_precision(dps_increase_std, 2) + "</b> DPS).";
+                break;
+            }
+            else if (simulator.get_dps_mean() + sample_std * quantile <= filter_value)
+            {
+                break;
+            }
+        }
+    }
+    if (!found_upgrade)
+    {
+        item_strengths_string += " is <b>BiS</b> in current configuration!<br><br>";
+    }
+    else
+    {
+        item_strengths_string += "<br><br>";
+    }
+}
+
 struct Stat_weight
 {
     Stat_weight(double dps_plus, double std_dps_plus, double dps_minus, double std_dps_minus, double amount,
@@ -305,6 +364,8 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     simulator.set_config(config);
 
     simulator.simulate(character, 0, true, true);
+    double dps_mean = simulator.get_dps_mean();
+    double dps_sample_std = Statistics::sample_deviation(std::sqrt(simulator.get_dps_variance()), input.n_simulations);
 
     std::vector<double> mean_dps_vec;
     std::vector<double> sample_std_dps_vec;
@@ -406,22 +467,50 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     double dodge_chance = yellow_ht[1] - yellow_ht[0];
     extra_info_string += percent_to_str("Target dodge chance", dodge_chance, "(based on skill difference)");
 
-//    if (find_string(input.options, "item_strengths"))
-//    {
-//        Combat_simulator simulator_mult(config);
-//        Item_optimizer item_optimizer{};
-//        Character character_new =
-//            character_setup(armory, input.race[0], input.armor, input.weapons, temp_buffs, input.enchants);
-//        std::string dummy{};
-//        auto helmets = item_optimizer.remove_weaker_items(armory.helmet_t, character_new.total_special_stats, dummy);
-//        for (const auto& helmet : helmets)
-//        {
-//            armory.change_armor(character_new.armor, helmet);
-//            simulator_mult.simulate(character_new);
-//        }
-//
-//
-//    }
+    std::string item_strengths_string;
+    if (find_string(input.options, "item_strengths"))
+    {
+        item_strengths_string = "<b>Character items and proposed upgrades:</b><br>";
+        //                std::vector<size_t> batches_per_iteration = {100, 200, 500, 1000};
+        //                std::vector<size_t> cumulative_simulations = {0, 100, 300, 800, 1800};
+
+        std::vector<size_t> batches_per_iteration = {20};
+        std::vector<size_t> cumulative_simulations = {0};
+        for (int i = 0; i < 40; i++)
+        {
+            batches_per_iteration.push_back(batches_per_iteration.back() * 1.2);
+            cumulative_simulations.push_back(cumulative_simulations.back() + batches_per_iteration[i]);
+        }
+        cumulative_simulations.push_back(cumulative_simulations.back() + batches_per_iteration.back());
+
+        Combat_simulator simulator_strength{};
+        simulator_strength.set_config(config);
+        Item_optimizer item_optimizer{};
+        Character character_new =
+            character_setup(armory, input.race[0], input.armor, input.weapons, temp_buffs, input.enchants);
+        std::string dummy{};
+        double filter_value = dps_mean + 2*dps_sample_std;
+        std::vector<Socket> all_sockets = {
+            Socket::head,
+            Socket::neck,
+            Socket::shoulder,
+            Socket::back,
+            Socket::chest,
+            Socket::wrist,
+            Socket::hands,
+            Socket::belt,
+            Socket::legs,
+            Socket::boots,
+            //            Socket::ring,  Socket::trinket, Socket::main_hand, Socket::off_hand,
+            Socket::ranged,
+        };
+        for (auto socket : all_sockets)
+        {
+            item_upgrades(item_strengths_string, character_new, item_optimizer, armory, filter_value,
+                          batches_per_iteration, cumulative_simulations, simulator, dps_mean, dps_sample_std, socket);
+        }
+        item_strengths_string += "<br><br>";
+    }
 
     config.n_batches = input.n_simulations_stat_weights;
     simulator.set_config(config);
@@ -585,7 +674,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
             aura_uptimes,
             proc_statistics,
             stat_weights,
-            {extra_info_string, debug_topic},
+            {item_strengths_string + extra_info_string, debug_topic},
             mean_dps_vec,
             sample_std_dps_vec,
             {character_stats}};
