@@ -543,7 +543,14 @@ void Combat_simulator::swing_weapon(Weapon_sim& weapon, Weapon_sim& main_hand_we
         hit_outcomes.emplace_back(
             generate_hit(main_hand_weapon, swing_damage, Hit_type::yellow, weapon.socket, special_stats));
         ability_queue_manager.heroic_strike_queued = false;
-        rage -= heroic_strike_rage_cost;
+        if (hit_outcomes[0].hit_result == Hit_result::dodge || hit_outcomes[0].hit_result == Hit_result::miss)
+        {
+            rage -= 0.2 * heroic_strike_rage_cost; // Refund rage for missed/dodged heroic strikes.
+        }
+        else
+        {
+            rage -= heroic_strike_rage_cost;
+        }
         damage_sources.add_damage(Damage_source::heroic_strike, hit_outcomes[0].damage, time_keeper_.time);
         simulator_cout("Current rage: ", int(rage));
     }
@@ -1011,8 +1018,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         double dw_average_damage = buff_manager_.deep_wounds_damage / buff_manager_.deep_wounds_timestamps.size();
         for (double deep_wounds_timestamp : buff_manager_.deep_wounds_timestamps)
         {
-            damage_sources.add_damage(Damage_source::deep_wounds, dw_average_damage,
-                                      deep_wounds_timestamp);
+            damage_sources.add_damage(Damage_source::deep_wounds, dw_average_damage, deep_wounds_timestamp);
         }
         double new_sample = damage_sources.sum_damage_sources() / sim_time;
         dps_mean_ = Statistics::update_mean(dps_mean_, iter + 1, new_sample);
