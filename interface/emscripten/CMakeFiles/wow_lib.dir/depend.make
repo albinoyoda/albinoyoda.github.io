@@ -5,6 +5,7 @@ CMakeFiles/wow_lib.dir/wow_library/source/Armory.cpp.o: ../../wow_library/includ
 CMakeFiles/wow_lib.dir/wow_library/source/Armory.cpp.o: ../../wow_library/include/Attributes.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/Armory.cpp.o: ../../wow_library/include/Character.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/Armory.cpp.o: ../../wow_library/include/Helper_functions.hpp
+CMakeFiles/wow_lib.dir/wow_library/source/Armory.cpp.o: ../../wow_library/include/Helper_functions.tcc
 CMakeFiles/wow_lib.dir/wow_library/source/Armory.cpp.o: ../../wow_library/include/Item.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/Armory.cpp.o: ../../wow_library/source/Armory.cpp
 
@@ -40,6 +41,7 @@ CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.o: ../../wow_librar
 CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.o: ../../wow_library/include/Combat_simulator.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.o: ../../wow_library/include/Combat_simulator.tcc
 CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.o: ../../wow_library/include/Helper_functions.hpp
+CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.o: ../../wow_library/include/Helper_functions.tcc
 CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.o: ../../wow_library/include/Item.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.o: ../../wow_library/include/Item_optimizer.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/Item_optimizer.cpp.o: ../../wow_library/include/Statistics.hpp
@@ -64,6 +66,7 @@ CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o: ../../wow_library
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o: ../../wow_library/include/Combat_simulator.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o: ../../wow_library/include/Combat_simulator.tcc
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o: ../../wow_library/include/Helper_functions.hpp
+CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o: ../../wow_library/include/Helper_functions.tcc
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o: ../../wow_library/include/Item.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o: ../../wow_library/include/Item_optimizer.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface.cpp.o: ../../wow_library/include/Statistics.hpp
@@ -85,6 +88,7 @@ CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_li
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/Combat_simulator.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/Combat_simulator.tcc
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/Helper_functions.hpp
+CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/Helper_functions.tcc
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/Item.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/Item_optimizer.hpp
 CMakeFiles/wow_lib.dir/wow_library/source/sim_interface_mult.cpp.o: ../../wow_library/include/Item_popularity.hpp

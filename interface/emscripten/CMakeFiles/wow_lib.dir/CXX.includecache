@@ -31,14 +31,14 @@ vector
 -
 
 ../../wow_library/include/Character.hpp
+Item.hpp
+../../wow_library/include/Item.hpp
 cassert
--
-vector
 -
 iostream
 -
-Item.hpp
-../../wow_library/include/Item.hpp
+vector
+-
 
 ../../wow_library/include/Combat_simulator.hpp
 Buff_manager.hpp
@@ -73,14 +73,18 @@ Combat_simulator.tcc
 ../../wow_library/include/Helper_functions.hpp
 Character.hpp
 ../../wow_library/include/Character.hpp
-sstream
--
 iomanip
+-
+sstream
 -
 string
 -
 vector
 -
+Helper_functions.tcc
+../../wow_library/include/Helper_functions.tcc
+
+../../wow_library/include/Helper_functions.tcc
 
 ../../wow_library/include/Item.hpp
 Attributes.hpp
@@ -189,14 +193,14 @@ vector
 -
 
 /src/wow_library/include/Character.hpp
+Item.hpp
+/src/wow_library/include/Item.hpp
 cassert
--
-vector
 -
 iostream
 -
-Item.hpp
-/src/wow_library/include/Item.hpp
+vector
+-
 
 /src/wow_library/include/Combat_simulator.hpp
 Buff_manager.hpp
@@ -231,14 +235,18 @@ Combat_simulator.tcc
 /src/wow_library/include/Helper_functions.hpp
 Character.hpp
 /src/wow_library/include/Character.hpp
-sstream
--
 iomanip
+-
+sstream
 -
 string
 -
 vector
 -
+Helper_functions.tcc
+/src/wow_library/include/Helper_functions.tcc
+
+/src/wow_library/include/Helper_functions.tcc
 
 /src/wow_library/include/Item.hpp
 Attributes.hpp

@@ -3,10 +3,34 @@
 
 #include "Character.hpp"
 
-#include <sstream>
 #include <iomanip>
+#include <sstream>
 #include <string>
 #include <vector>
+
+constexpr double crit_w = 35;
+constexpr double crit_w_cap = 25;
+constexpr double hit_w = 45;
+constexpr double hit_w_cap = 10;
+constexpr double skill_w = 220.0 / 5;
+constexpr double skill_w_soft = 70.0 / 5;
+constexpr double skill_w_hard = 20.0 / 5;
+constexpr double ap_per_coh = 20 / 6.2;
+
+double get_ap_equivalent(const Special_stats& special_stats, int relevant_skill, double swing_speed,
+                         double weapon_damage);
+
+bool is_strictly_weaker(Special_stats special_stats1, Special_stats special_stats2);
+
+double estimate_special_stats_high(const Special_stats& special_stats);
+
+double estimate_special_stats_low(const Special_stats& special_stats);
+
+bool estimate_special_stats_smart(const Special_stats& special_stats1, const Special_stats& special_stats2);
+
+bool estimate_special_stats_smart_no_skill(const Special_stats& special_stats1, const Special_stats& special_stats2);
+
+bool estimated_weaker(Special_stats special_stats1, Special_stats special_stats2);
 
 constexpr int get_skill_of_type(const Special_stats& special_stats, Weapon_type weapon_type)
 {
@@ -36,10 +60,17 @@ std::string percent_to_str(const std::string& stat_name, double value1, const st
 
 bool find_string(const std::vector<std::string>& string_vec, const std::string& match_string);
 
+template <typename T>
+bool does_vector_contain(const std::vector<T>& vec, const T& match);
+
+bool find_string(const std::vector<std::string>& string_vec, const std::string& match_string);
+
 Race get_race(const std::string& race);
 
 Character get_character_of_race(const std::string& race);
 
 std::string string_with_precision(double amount, size_t precision);
+
+#include "Helper_functions.tcc"
 
 #endif // WOW_SIMULATOR_INTERFACE_HELPER_H

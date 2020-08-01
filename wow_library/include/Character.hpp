@@ -1,11 +1,11 @@
 #ifndef WOW_SIMULATOR_CHARACTER_HPP
 #define WOW_SIMULATOR_CHARACTER_HPP
 
-#include <cassert>
-#include <vector>
-#include <iostream>
-
 #include "Item.hpp"
+
+#include <cassert>
+#include <iostream>
+#include <vector>
 
 enum class Race
 {
@@ -29,18 +29,16 @@ enum class Talent
 class Character
 {
 public:
-    Character(const Race &race, int level);
+    Character(const Race& race, int level);
 
-    void equip_armor(const Armor &piece)
-    {
-        armor.emplace_back(piece);
-    }
+    void equip_armor(const Armor& piece) { armor.emplace_back(piece); }
 
     void equip_weapon(Weapon weapon)
     {
         if (weapon.weapon_socket != Weapon_socket::two_hand)
         {
-            std::cout << "WARN: Wielding single weapon that is not two handed." << "\n";
+            std::cout << "WARN: Wielding single weapon that is not two handed."
+                      << "\n";
         }
         weapon.socket = Socket::main_hand;
         weapons.emplace_back(weapon);
@@ -61,14 +59,14 @@ public:
 
     void add_enchant(const Socket socket, const Enchant::Type type)
     {
-        for (auto &wep : weapons)
+        for (auto& wep : weapons)
         {
             if (socket == wep.socket)
             {
                 wep.enchant = Enchant{type};
             }
         }
-        for (auto &item : armor)
+        for (auto& item : armor)
         {
             if (socket == item.socket)
             {
@@ -78,12 +76,9 @@ public:
         }
     }
 
-    void add_buff(const Buff &buff)
-    {
-        buffs.emplace_back(buff);
-    }
+    void add_buff(const Buff& buff) { buffs.emplace_back(buff); }
 
-    void add_weapon_buff(const Socket socket, const Weapon_buff &buff)
+    void add_weapon_buff(const Socket socket, const Weapon_buff& buff)
     {
         if (socket == Socket::main_hand)
         {
@@ -100,9 +95,9 @@ public:
         }
     }
 
-    bool has_item(const std::string & item_name)
+    bool has_item(const std::string& item_name)
     {
-        for (const auto & armor_piece : armor)
+        for (const auto& armor_piece : armor)
         {
             if (armor_piece.name == item_name)
             {
@@ -112,13 +107,17 @@ public:
         return false;
     }
 
-    Armor get_item_from_socket(const Socket socket)
+    Armor get_item_from_socket(const Socket socket, bool first_slot = true)
     {
-        for (const auto & armor_piece : armor)
+        for (const auto& armor_piece : armor)
         {
             if (armor_piece.socket == socket)
             {
-                return armor_piece;
+                if (first_slot)
+                {
+                    return armor_piece;
+                }
+                first_slot = true; // Take the next item
             }
         }
         std::cout << "Error did not find item in socket: " << socket << "\n";
@@ -138,6 +137,6 @@ public:
     int level;
 };
 
-std::ostream &operator<<(std::ostream &os, const Character &character);
+std::ostream& operator<<(std::ostream& os, const Character& character);
 
-#endif //WOW_SIMULATOR_CHARACTER_HPP
+#endif // WOW_SIMULATOR_CHARACTER_HPP

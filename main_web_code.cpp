@@ -348,7 +348,7 @@ int main()
     //    buff_vec.emplace_back("grace_of_air_totem");
 
     std::vector<std::string> ench_vec;
-    ench_vec.emplace_back("h+8 strength");
+    ench_vec.emplace_back("e+8 strength");
     ench_vec.emplace_back("s+30 attack power");
     ench_vec.emplace_back("mcrusader");
     ench_vec.emplace_back("ocrusader");
