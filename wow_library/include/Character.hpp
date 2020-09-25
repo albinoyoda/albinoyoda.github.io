@@ -124,6 +124,19 @@ public:
         return armor[0];
     }
 
+    Weapon get_weapon_from_socket(const Socket socket)
+    {
+        for (const auto& wep : weapons)
+        {
+            if (wep.socket == socket)
+            {
+                return wep;
+            }
+        }
+        std::cout << "Error did not find item in socket: " << socket << "\n";
+        return weapons[0];
+    }
+
     Attributes base_attributes;
     Attributes total_attributes;
     Special_stats base_special_stats;

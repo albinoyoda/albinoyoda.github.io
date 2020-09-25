@@ -545,6 +545,8 @@ struct Armory
 
     std::vector<Armor> get_items_in_socket(const Socket socket) const;
 
+    std::vector<Weapon> get_weapon_in_socket(const Weapon_socket socket) const;
+
     Armor find_armor(Socket socket, const std::string &name) const;
 
     Weapon find_weapon(const std::string &name) const;

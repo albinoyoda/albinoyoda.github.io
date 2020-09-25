@@ -71,7 +71,7 @@ void item_upgrades(std::string& item_strengths_string, Character character_new, 
                                simulator.get_dps_variance(), cumulative_simulations[iter]);
             double sample_std =
                 Statistics::sample_deviation(std::sqrt(simulator.get_dps_variance()), cumulative_simulations[iter + 1]);
-            if (simulator.get_dps_mean() - sample_std * quantile >= dps_mean && cumulative_simulations[iter + 1] > 2000)
+            if (simulator.get_dps_mean() - sample_std * quantile >= dps_mean && cumulative_simulations[iter + 1] > 5000)
             {
                 found_upgrade = true;
                 double dps_increase = simulator.get_dps_mean() - dps_mean;
@@ -89,6 +89,72 @@ void item_upgrades(std::string& item_strengths_string, Character character_new, 
                     item_strengths_string +=
                         "<br> Possible upgrade: <b>" + items[i].name + "</b>. (based on item stats)";
                 }
+                break;
+            }
+        }
+    }
+    if (!found_upgrade)
+    {
+        item_strengths_string += " is <b>BiS</b> in current configuration!<br><br>";
+    }
+    else
+    {
+        item_strengths_string += "<br><br>";
+    }
+}
+
+void item_upgrades_wep(std::string& item_strengths_string, Character character_new, Item_optimizer& item_optimizer,
+                       Armory& armory, std::vector<size_t> batches_per_iteration,
+                       std::vector<size_t> cumulative_simulations, Combat_simulator& simulator, double dps_mean,
+                       double dps_sample_std, Weapon_socket weapon_socket)
+{
+    std::string dummy;
+    Socket socket = (weapon_socket == Weapon_socket::main_hand) ? Socket::main_hand : Socket::off_hand;
+    item_strengths_string =
+        item_strengths_string + socket + ": " + "<b>" + character_new.get_weapon_from_socket(socket).name + "</b>";
+    auto items = armory.get_weapon_in_socket(weapon_socket);
+    items = item_optimizer.remove_weaker_weapons(weapon_socket, items, character_new.total_special_stats, dummy);
+    {
+        size_t i = 0;
+        while (i < items.size())
+        {
+            if (character_new.has_item(items[i].name))
+            {
+                items.erase(items.begin() + i);
+            }
+            else
+            {
+                i++;
+            }
+        }
+    }
+
+    double quantile = Statistics::find_cdf_quantile(0.95, 0.01);
+    std::string best_armor_name{};
+    bool found_upgrade = false;
+    for (auto& item : items)
+    {
+        armory.change_weapon(character_new.weapons, item, socket);
+        armory.compute_total_stats(character_new);
+        for (size_t iter = 0; iter < batches_per_iteration.size(); iter++)
+        {
+            simulator.simulate(character_new, batches_per_iteration[iter], simulator.get_dps_mean(),
+                               simulator.get_dps_variance(), cumulative_simulations[iter]);
+            double sample_std =
+                Statistics::sample_deviation(std::sqrt(simulator.get_dps_variance()), cumulative_simulations[iter + 1]);
+            if (simulator.get_dps_mean() - sample_std * quantile >= dps_mean && cumulative_simulations[iter + 1] > 5000)
+            {
+                found_upgrade = true;
+                double dps_increase = simulator.get_dps_mean() - dps_mean;
+                double dps_increase_std = Statistics::add_standard_deviations(sample_std, dps_sample_std);
+                item_strengths_string += "<br> Proposed upgrade: <b>" + item.name + "</b> ( +<b>" +
+                                         string_with_precision(dps_increase, 2) + " &plusmn " +
+                                         string_with_precision(dps_increase_std, 2) + "</b> DPS).";
+                break;
+            }
+            else if (simulator.get_dps_mean() + sample_std * quantile <= dps_mean &&
+                     cumulative_simulations[iter + 1] > 500)
+            {
                 break;
             }
         }
@@ -559,7 +625,12 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                               character_new.total_special_stats, true);
             }
         }
-        item_strengths_string += "<b>Weapon</b> proposals coming soon!<br>";
+
+        item_upgrades_wep(item_strengths_string, character_new, item_optimizer, armory, batches_per_iteration,
+                          cumulative_simulations, simulator, dps_mean, dps_sample_std, Weapon_socket::main_hand);
+        item_upgrades_wep(item_strengths_string, character_new, item_optimizer, armory, batches_per_iteration,
+                          cumulative_simulations, simulator, dps_mean, dps_sample_std, Weapon_socket::off_hand);
+        //        item_strengths_string += "<b>Weapon</b> proposals coming soon!<br>";
         item_strengths_string += "<br><br>";
     }
 

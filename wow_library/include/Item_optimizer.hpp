@@ -47,8 +47,8 @@ public:
 
     Character construct(size_t index);
 
-    void remove_weaker_weapons(Weapon_socket weapon_socket, const Special_stats& special_stats,
-                               std::string& debug_message);
+    std::vector<Weapon> remove_weaker_weapons(Weapon_socket weapon_socket, const std::vector<Weapon>& weapon_vec,
+                                              const Special_stats& special_stats, std::string& debug_message);
 
     std::vector<Armor> remove_weaker_items(const std::vector<Armor>& armors, const Special_stats& special_stats,
                                            std::string& debug_message);

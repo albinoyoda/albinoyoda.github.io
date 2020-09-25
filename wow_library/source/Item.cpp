@@ -134,3 +134,23 @@ std::string operator+(std::string& string, const Socket& socket)
     }
     return string;
 }
+
+std::string operator+(std::string& string, const Weapon_socket& socket)
+{
+    switch (socket)
+    {
+    case Weapon_socket::main_hand:
+        string += "Main-hand";
+        break;
+    case Weapon_socket::off_hand:
+        string += "Main-hand";
+        break;
+    case Weapon_socket::one_hand:
+        string += "Main-hand";
+        break;
+    case Weapon_socket::two_hand:
+        string += "Main-hand";
+        break;
+    }
+    return string;
+}

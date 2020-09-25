@@ -420,6 +420,82 @@ void Armory::change_armor(std::vector<Armor>& armor_vec, const Armor& armor, boo
     }
 }
 
+std::vector<Weapon> Armory::get_weapon_in_socket(const Weapon_socket socket) const
+{
+    switch (socket)
+    {
+    case Weapon_socket::main_hand:
+    {
+        std::vector<Weapon> mh_weapons{};
+        for (const auto& wep : swords_t)
+        {
+            if (wep.weapon_socket == Weapon_socket::main_hand || wep.weapon_socket == Weapon_socket::one_hand)
+            {
+                mh_weapons.emplace_back(wep);
+            }
+        }
+        for (const auto& wep : axes_t)
+        {
+            if (wep.weapon_socket == Weapon_socket::main_hand || wep.weapon_socket == Weapon_socket::one_hand)
+            {
+                mh_weapons.emplace_back(wep);
+            }
+        }
+        for (const auto& wep : maces_t)
+        {
+            if (wep.weapon_socket == Weapon_socket::main_hand || wep.weapon_socket == Weapon_socket::one_hand)
+            {
+                mh_weapons.emplace_back(wep);
+            }
+        }
+        for (const auto& wep : daggers_t)
+        {
+            if (wep.weapon_socket == Weapon_socket::main_hand || wep.weapon_socket == Weapon_socket::one_hand)
+            {
+                mh_weapons.emplace_back(wep);
+            }
+        }
+        return mh_weapons;
+    }
+    case Weapon_socket::off_hand:
+    {
+        std::vector<Weapon> mh_weapons{};
+        for (const auto& wep : swords_t)
+        {
+            if (wep.weapon_socket == Weapon_socket::off_hand || wep.weapon_socket == Weapon_socket::one_hand)
+            {
+                mh_weapons.emplace_back(wep);
+            }
+        }
+        for (const auto& wep : axes_t)
+        {
+            if (wep.weapon_socket == Weapon_socket::main_hand || wep.weapon_socket == Weapon_socket::one_hand)
+            {
+                mh_weapons.emplace_back(wep);
+            }
+        }
+        for (const auto& wep : maces_t)
+        {
+            if (wep.weapon_socket == Weapon_socket::main_hand || wep.weapon_socket == Weapon_socket::one_hand)
+            {
+                mh_weapons.emplace_back(wep);
+            }
+        }
+        for (const auto& wep : daggers_t)
+        {
+            if (wep.weapon_socket == Weapon_socket::main_hand || wep.weapon_socket == Weapon_socket::one_hand)
+            {
+                mh_weapons.emplace_back(wep);
+            }
+        }
+        return mh_weapons;
+    }
+    default:
+        std::cout << "ERROR: incorrect weapon socket provided!\n";
+        assert(false);
+        return swords_t;
+    }
+}
 std::vector<Armor> Armory::get_items_in_socket(const Socket socket) const
 {
     switch (socket)

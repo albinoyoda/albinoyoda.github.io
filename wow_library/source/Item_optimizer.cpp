@@ -1,6 +1,5 @@
 #include "Item_optimizer.hpp"
 
-
 bool operator<(const Item_optimizer::Sim_result_t& left, const Item_optimizer::Sim_result_t& right)
 {
     return left.mean_dps < right.mean_dps;
@@ -410,10 +409,11 @@ bool estimated_wep_weaker(const Weapon_struct& wep1, const Weapon_struct& wep2, 
     return wep_1_overest < wep_2_underest;
 }
 
-void Item_optimizer::remove_weaker_weapons(const Weapon_socket weapon_socket, const Special_stats& special_stats,
-                                           std::string& debug_message)
+std::vector<Weapon> Item_optimizer::remove_weaker_weapons(const Weapon_socket weapon_socket,
+                                                          const std::vector<Weapon>& weapon_vec,
+                                                          const Special_stats& special_stats,
+                                                          std::string& debug_message)
 {
-    std::vector<Weapon>& weapon_vec = (weapon_socket == Weapon_socket::main_hand) ? main_hands : off_hands;
     std::vector<Weapon_struct> weapon_struct_vec;
     for (size_t i = 0; i < weapon_vec.size(); ++i)
     {
@@ -533,7 +533,7 @@ void Item_optimizer::remove_weaker_weapons(const Weapon_socket weapon_socket, co
         }
     }
 
-    weapon_vec = filtered_weapons;
+    return filtered_weapons;
 }
 
 struct Armor_struct
@@ -747,8 +747,8 @@ void Item_optimizer::filter_weaker_items(const Special_stats& special_stats, std
     trinkets = remove_weaker_items(trinkets, special_stats, debug_message);
 
     debug_message += "<br>Filtering <b> weapons: </b><br>";
-    remove_weaker_weapons(Weapon_socket::main_hand, special_stats, debug_message);
-    remove_weaker_weapons(Weapon_socket::off_hand, special_stats, debug_message);
+    main_hands = remove_weaker_weapons(Weapon_socket::main_hand, main_hands, special_stats, debug_message);
+    off_hands = remove_weaker_weapons(Weapon_socket::off_hand, off_hands, special_stats, debug_message);
 }
 
 void Item_optimizer::fill_empty_armor()
