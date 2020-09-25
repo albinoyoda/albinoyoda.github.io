@@ -2,14 +2,17 @@ cmake_minimum_required(VERSION 3.14)
 project(wow_simulator)
 
 set(CMAKE_CXX_STANDARD 14)
-#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -Werror -Wall -Wextra")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -Werror -Wall -Wextra")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -Werror -Wall -Wextra")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -Werror -Wall -Wextra")
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
 
 set(LIB_TYPE STATIC)
 
 include_directories(wow_library/include)
+#include_directories()
+
+add_library(armory SHARED wow_library/source/Armory.cpp)
 
 add_library(wow_lib SHARED
         wow_library/source/Combat_simulator.cpp
@@ -17,11 +20,9 @@ add_library(wow_lib SHARED
         wow_library/source/Character.cpp
         wow_library/source/weapon_sim.cpp
         wow_library/source/Attributes.cpp
-        wow_library/source/Armory.cpp
         wow_library/source/sim_interface.cpp
         wow_library/source/sim_interface_mult.cpp
         wow_library/source/Statistics.cpp
-        wow_library/source/damage_sources.cpp
         wow_library/source/Item_optimizer.cpp)
 
 #ADD_EXECUTABLE(wow_simulator main_simulator.cpp)
@@ -30,8 +31,8 @@ add_library(wow_lib SHARED
 #target_link_libraries(wow_optimizer wow_lib)
 #ADD_EXECUTABLE(wow_stat_weights main_stat_weights.cpp)
 #target_link_libraries(wow_stat_weights wow_lib)
-#ADD_EXECUTABLE(wow_web main_web_code.cpp)
-#target_link_libraries(wow_web wow_lib)
+ADD_EXECUTABLE(wow_web main_web_code.cpp)
+target_link_libraries(wow_web wow_lib armory)
 #ADD_EXECUTABLE(wow_marrow main_marrow.cpp)
 #target_link_libraries(wow_marrow wow_lib)
 

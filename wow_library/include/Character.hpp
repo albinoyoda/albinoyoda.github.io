@@ -126,8 +126,8 @@ public:
 
     Attributes base_attributes;
     Attributes total_attributes;
-    Special_stats base_special_stats;
-    Special_stats total_special_stats;
+    Total_stats base_total_stats;
+    Total_stats total_total_stats;
     std::vector<Armor> armor;
     std::vector<Weapon> weapons;
     std::vector<Buff> buffs;

@@ -17,22 +17,22 @@ constexpr double skill_w_soft = 70.0 / 5;
 constexpr double skill_w_hard = 20.0 / 5;
 constexpr double ap_per_coh = 20 / 6.2;
 
-double get_ap_equivalent(const Special_stats& special_stats, int relevant_skill, double swing_speed,
+double get_ap_equivalent(const Total_stats& special_stats, int relevant_skill, double swing_speed,
                          double weapon_damage);
 
-bool is_strictly_weaker(Special_stats special_stats1, Special_stats special_stats2);
+bool is_strictly_weaker(Total_stats special_stats1, Total_stats special_stats2);
 
-double estimate_special_stats_high(const Special_stats& special_stats);
+double estimate_special_stats_high(const Total_stats& special_stats);
 
-double estimate_special_stats_low(const Special_stats& special_stats);
+double estimate_special_stats_low(const Total_stats& special_stats);
 
-bool estimate_special_stats_smart(const Special_stats& special_stats1, const Special_stats& special_stats2);
+bool estimate_special_stats_smart(const Total_stats& special_stats1, const Total_stats& special_stats2);
 
-bool estimate_special_stats_smart_no_skill(const Special_stats& special_stats1, const Special_stats& special_stats2);
+bool estimate_special_stats_smart_no_skill(const Total_stats& special_stats1, const Total_stats& special_stats2);
 
-bool estimated_weaker(Special_stats special_stats1, Special_stats special_stats2);
+bool estimated_weaker(Total_stats special_stats1, Total_stats special_stats2);
 
-constexpr int get_skill_of_type(const Special_stats& special_stats, Weapon_type weapon_type)
+constexpr int get_skill_of_type(const Total_stats& special_stats, Weapon_type weapon_type)
 {
     switch (weapon_type)
     {

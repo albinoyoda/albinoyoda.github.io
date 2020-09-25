@@ -16,8 +16,12 @@ enum class Damage_source
     cleave,
     whirlwind,
     hamstring,
+    revenge,
+    overpower,
+    sunder_armor,
     deep_wounds,
-    item_hit_effects
+    item_hit_effects,
+    weapon_elemental_damage
 };
 
 struct Damage_instance
@@ -73,12 +77,9 @@ struct Damage_sources
                whirlwind_count + hamstring_count + execute_count + deep_wounds_count + item_hit_effects_count;
     }
 
-    void add_damage(Damage_source source, double damage, double time_stamp, bool increment_counter = true)
+    void add_damage(Damage_source source, double damage, double time_stamp)
     {
-        if (increment_counter)
-        {
-            damage_instances.emplace_back(source, damage, time_stamp);
-        }
+        damage_instances.emplace_back(source, damage, time_stamp);
         switch (source)
         {
         case Damage_source::white_mh:
@@ -119,10 +120,7 @@ struct Damage_sources
             break;
         case Damage_source::item_hit_effects:
             item_hit_effects_damage += damage;
-            if (increment_counter)
-            {
-                item_hit_effects_count++;
-            }
+            item_hit_effects_count++;
             break;
         }
     }
@@ -138,25 +136,18 @@ struct Damage_sources
     double deep_wounds_damage{};
     double item_hit_effects_damage{};
 
-    long int white_mh_count{};
-    long int white_oh_count{};
-    long int bloodthirst_count{};
-    long int execute_count{};
-    long int heroic_strike_count{};
-    long int cleave_count{};
-    long int whirlwind_count{};
-    long int hamstring_count{};
-    long int deep_wounds_count{};
-    long int item_hit_effects_count{};
+    int white_mh_count{};
+    int white_oh_count{};
+    int bloodthirst_count{};
+    int execute_count{};
+    int heroic_strike_count{};
+    int cleave_count{};
+    int whirlwind_count{};
+    int hamstring_count{};
+    int deep_wounds_count{};
+    int item_hit_effects_count{};
 
     std::vector<Damage_instance> damage_instances;
 };
-
-void print_damage_sources(const std::string& source_name, double source_percent, double source_std, double source_count,
-                          double avg_value);
-
-void print_damage_source_vector(const std::vector<Damage_sources>& damage_sources_vector);
-
-#include "damage_sources.tcc"
 
 #endif // WOW_SIMULATOR_DAMAGE_SOURCES_HPP

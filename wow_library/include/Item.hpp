@@ -62,19 +62,17 @@ struct Over_time_effect
 {
     Over_time_effect() = default;
 
-    ~Over_time_effect() = default;
-
-    Over_time_effect(std::string name, Special_stats special_stats, double rage_gain, double damage, int interval,
+    Over_time_effect(std::string name, Stat_list stat_list, double rage_gain, double damage, int interval,
                      double duration)
         : name(std::move(name))
-        , special_stats(special_stats)
+        , total_stats(create_stats(stat_list))
         , rage_gain(rage_gain)
         , damage(damage)
         , interval(interval)
         , duration(duration){};
 
     std::string name;
-    Special_stats special_stats;
+    Total_stats total_stats;
     double rage_gain;
     double damage;
     int interval;
@@ -95,15 +93,12 @@ public:
         reduce_armor
     };
 
-    Hit_effect() = default;
-
-    Hit_effect(std::string name, Type type, Attributes attribute_boost, Special_stats special_stats_boost,
-               double damage, double duration, double probability, double attack_power_boost = 0, int n_targets = 1,
-               double armor_reduction = 0, int max_stacks = 0)
+    Hit_effect(std::string name, Type type, Stat_list stat_list, double damage, double duration, double probability,
+               double attack_power_boost = 0, int n_targets = 1, double armor_reduction = 0, int max_stacks = 0)
         : name(std::move(name))
         , type(type)
-        , attribute_boost(attribute_boost)
-        , special_stats_boost(special_stats_boost)
+        , attribute_boost(create_attributes(stat_list))
+        , total_stats_boost(create_stats(stat_list))
         , damage(damage)
         , duration(duration)
         , probability(probability)
@@ -112,15 +107,15 @@ public:
         , armor_reduction(armor_reduction)
         , max_stacks(max_stacks){};
 
-    inline Special_stats get_special_stat_equivalent(const Special_stats& special_stats) const
+    inline Total_stats get_special_stat_equivalent(const Total_stats& special_stats) const
     {
-        return attribute_boost.convert_to_special_stats(special_stats) + special_stats_boost;
+        return attribute_boost.convert_to_total_stats(special_stats) + total_stats_boost;
     }
 
     std::string name;
     Type type;
     Attributes attribute_boost;
-    Special_stats special_stats_boost;
+    Total_stats total_stats_boost;
     double damage;
     double duration;
     double probability;
@@ -139,18 +134,13 @@ public:
         unique,
     };
 
-    Use_effect() = default;
-
-    ~Use_effect() = default;
-
-    Use_effect(std::string name, Effect_socket effect_socket, Attributes attribute_boost,
-               Special_stats special_stats_boost, double rage_boost, double duration, double cooldown,
-               bool triggers_gcd, std::vector<Hit_effect> hit_effects = std::vector<Hit_effect>(),
+    Use_effect(std::string name, Effect_socket effect_socket, Stat_list stat_list, double rage_boost, double duration,
+               double cooldown, bool triggers_gcd, std::vector<Hit_effect> hit_effects = std::vector<Hit_effect>(),
                std::vector<Over_time_effect> over_time_effects = std::vector<Over_time_effect>())
         : name(std::move(name))
         , effect_socket(effect_socket)
-        , attribute_boost(attribute_boost)
-        , special_stats_boost(special_stats_boost)
+        , attribute_boost(create_attributes(stat_list))
+        , total_stats_boost(create_stats(stat_list))
         , rage_boost(rage_boost)
         , duration(duration)
         , cooldown(cooldown)
@@ -158,15 +148,15 @@ public:
         , hit_effects(hit_effects)
         , over_time_effects(over_time_effects){};
 
-    inline Special_stats get_special_stat_equivalent(const Special_stats& special_stats) const
+    inline Total_stats get_special_stat_equivalent(const Total_stats& special_stats) const
     {
-        return attribute_boost.convert_to_special_stats(special_stats) + special_stats_boost;
+        return attribute_boost.convert_to_total_stats(special_stats) + total_stats_boost;
     }
 
     std::string name;
     Effect_socket effect_socket;
     Attributes attribute_boost;
-    Special_stats special_stats_boost;
+    Total_stats total_stats_boost;
     double rage_boost{};
     double duration{};
     double cooldown{};
@@ -198,37 +188,38 @@ struct Enchant
 
     Type type{};
     Attributes attributes{};
-    Special_stats special_stats{};
+    Total_stats total_stats{};
 };
 
 struct Set_bonus
 {
-    Set_bonus(std::string name, Attributes attributes, Special_stats special_stats, int pieces, Set set)
-        : name(std::move(name)), attributes(attributes), special_stats(special_stats), pieces(pieces), set(set){};
+    Set_bonus(std::string name, Stat_list stat_list, int pieces, Set set)
+        : name(std::move(name))
+        , attributes(create_attributes(stat_list))
+        , total_stats(create_stats(stat_list))
+        , pieces(pieces)
+        , set(set){};
 
     std::string name;
     Attributes attributes;
-    Special_stats special_stats;
+    Total_stats total_stats;
     int pieces;
     Set set;
 };
 
 struct Buff
 {
-    Buff(std::string name, Attributes attributes, Special_stats special_stats, double bonus_damage = 0,
-         std::vector<Hit_effect> hit_effects = std::vector<Hit_effect>(),
+    Buff(std::string name, Stat_list stat_list, std::vector<Hit_effect> hit_effects = std::vector<Hit_effect>(),
          std::vector<Use_effect> use_effects = std::vector<Use_effect>())
         : name(std::move(name))
-        , attributes(attributes)
-        , special_stats(special_stats)
-        , bonus_damage(bonus_damage)
+        , attributes(create_attributes(stat_list))
+        , total_stats(create_stats(stat_list))
         , hit_effects(std::move(hit_effects))
         , use_effects(std::move(use_effects)){};
 
     std::string name;
     Attributes attributes;
-    Special_stats special_stats;
-    double bonus_damage;
+    Total_stats total_stats;
     std::vector<Hit_effect> hit_effects{};
     std::vector<Use_effect> use_effects{};
 };
@@ -236,46 +227,44 @@ struct Buff
 struct Weapon_buff
 {
     Weapon_buff() = default;
-
-    Weapon_buff(std::string name, Attributes attributes, Special_stats special_stats, double bonus_damage = 0)
-        : name(std::move(name)), attributes(attributes), special_stats(special_stats), bonus_damage(bonus_damage){};
+    Weapon_buff(std::string name, Stat_list stat_list)
+        : name(std::move(name)), attributes(create_attributes(stat_list)), total_stats(create_stats(stat_list)){};
 
     std::string name{};
     Attributes attributes{};
-    Special_stats special_stats{};
-    double bonus_damage{};
+    Total_stats total_stats{};
 };
 
 struct Armor
 {
-    Armor(std::string name, Attributes attributes, Special_stats special_stats, Socket socket, Set set_name = Set::none,
+    Armor(std::string name, Stat_list stat_list, Socket socket, Set set_name = Set::none,
           std::vector<Hit_effect> hit_effects = std::vector<Hit_effect>(),
           std::vector<Use_effect> use_effects = std::vector<Use_effect>())
         : name(std::move(name))
-        , attributes(attributes)
-        , special_stats(special_stats)
+        , attributes(create_attributes(stat_list))
+        , total_stats(create_stats(stat_list))
         , socket(socket)
         , set_name(set_name)
         , hit_effects(std::move(hit_effects))
         , use_effects(std::move(use_effects)){};
     std::string name;
     Attributes attributes;
-    Special_stats special_stats;
+    Total_stats total_stats;
     Socket socket;
     Set set_name;
-    Enchant enchant{};
+    Enchant enchant;
     std::vector<Hit_effect> hit_effects{};
     std::vector<Use_effect> use_effects{};
 };
 
 struct Weapon
 {
-    Weapon(std::string name, Attributes attributes, Special_stats special_stats, double swing_speed, double min_damage,
-           double max_damage, Weapon_socket weapon_socket, Weapon_type weapon_type,
+    Weapon(std::string name, Stat_list stat_list, double swing_speed, double min_damage, double max_damage,
+           Weapon_socket weapon_socket, Weapon_type weapon_type,
            std::vector<Hit_effect> hit_effects = std::vector<Hit_effect>(), Set set_name = Set::none)
         : name(std::move(name))
-        , attributes(attributes)
-        , special_stats(special_stats)
+        , attributes(create_attributes(stat_list))
+        , total_stats(create_stats(stat_list))
         , swing_speed(swing_speed)
         , min_damage(min_damage)
         , max_damage(max_damage)
@@ -286,7 +275,7 @@ struct Weapon
 
     std::string name;
     Attributes attributes;
-    Special_stats special_stats;
+    Total_stats total_stats;
     double swing_speed;
     double min_damage;
     double max_damage;
@@ -303,6 +292,6 @@ std::ostream& operator<<(std::ostream& os, const Socket& socket);
 
 std::string operator+(std::string& string, const Socket& socket);
 
-int get_weapon_skill(const Special_stats& special_stats, Weapon_type weapon_type);
+int get_weapon_skill(const Total_stats& total_stats, Weapon_type weapon_type);
 
 #endif // WOW_SIMULATOR_ITEM_HPP

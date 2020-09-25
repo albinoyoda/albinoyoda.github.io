@@ -2,20 +2,20 @@
 
 #include <cassert>
 
-int get_weapon_skill(const Special_stats& special_stats, Weapon_type weapon_type)
+int get_weapon_skill(const Total_stats& total_stats, Weapon_type weapon_type)
 {
     switch (weapon_type)
     {
     case Weapon_type::sword:
-        return special_stats.sword_skill;
+        return total_stats.sword_skill;
     case Weapon_type::axe:
-        return special_stats.axe_skill;
+        return total_stats.axe_skill;
     case Weapon_type::dagger:
-        return special_stats.dagger_skill;
+        return total_stats.dagger_skill;
     case Weapon_type::mace:
-        return special_stats.mace_skill;
+        return total_stats.mace_skill;
     case Weapon_type::unarmed:
-        return special_stats.fist_skill;
+        return total_stats.fist_skill;
     default:
         assert(false);
         return 0;
