@@ -129,7 +129,7 @@ void Item_optimizer::compute_weapon_combinations()
                 bool new_combination = true;
                 for (const auto& combination : weapon_combinations)
                 {
-                    if (combination[0].name == off_wep.name && combination[1].name == main_wep.name)
+                    if (combination[0].name == main_wep.name && combination[1].name == off_wep.name)
                     {
                         new_combination = false;
                     }
