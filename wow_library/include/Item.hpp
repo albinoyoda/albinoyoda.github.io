@@ -55,7 +55,8 @@ enum class Set
     warblade_of_the_hakkari,
     major_mojo_infusion,
     battlegear_of_heroism,
-    the_defilers_resolution
+    the_defilers_resolution,
+    battlegear_of_wrath
 };
 
 struct Over_time_effect

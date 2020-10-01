@@ -76,6 +76,8 @@ struct Armory
                     {"helm_of_domination",         Attributes{21, 11}, Special_stats{0, 0, 0}, Socket::head},
                     {"helm_of_heroism",            Attributes{21, 11}, Special_stats{0, 0,
                                                                                      0},       Socket::head, Set::battlegear_of_heroism},
+                    {"helm_of_wrath",            Attributes{17, 0}, Special_stats{0, 0,
+                                                                                     0},       Socket::head, Set::battlegear_of_wrath},
             };
 
     std::vector<Armor> neck_t
@@ -128,6 +130,8 @@ struct Armory
                                                                                          0},  Socket::shoulder, Set::battlegear_of_heroism},
                     {"defilers_plate_spaulders",       Attributes{18, 17}, Special_stats{0, 0,
                                                                                          0},  Socket::shoulder, Set::the_defilers_resolution},
+                    {"pauldrons_of_wrath",       Attributes{13, 0}, Special_stats{0, 0,
+                                                                                         0},  Socket::shoulder, Set::battlegear_of_wrath},
             };
 
     std::vector<Armor> back_t
@@ -177,6 +181,8 @@ struct Armory
                     {"obsidian_mail_tunic",                 Attributes{0, 0},   Special_stats{1, 0, 76}, Socket::chest},
                     {"breastplate_of_heroism",              Attributes{21, 13}, Special_stats{0, 1,
                                                                                               0},        Socket::chest, Set::battlegear_of_heroism},
+                    {"breastplate_of_wrath",              Attributes{17, 0}, Special_stats{0, 0,
+                                                                                              0},        Socket::chest, Set::battlegear_of_wrath},
             };
 
     std::vector<Armor> wrists_t
@@ -195,6 +201,7 @@ struct Armory
                     {"bracers_of_heroism",         Attributes{9, 5},   Special_stats{0, 0,
                                                                                      0},       Socket::wrist, Set::battlegear_of_heroism},
                     {"deeprock_bracers",           Attributes{19, 10}, Special_stats{0, 0, 0}, Socket::wrist},
+                    {"bracelets_of_wrath",           Attributes{13, 0}, Special_stats{0, 0, 0}, Socket::wrist, Set::battlegear_of_wrath},
             };
 
     std::vector<Armor> hands_t
@@ -228,12 +235,14 @@ struct Armory
                     {"gauntlets_of_heroism",      Attributes{18, 0},  Special_stats{1, 0,
                                                                                     0},       Socket::hands, Set::battlegear_of_heroism},
                     {"gloves_of_enforcement",     Attributes{28, 20}, Special_stats{0, 1, 0}, Socket::hands},
+                    {"gauntlets_of_steadfast_determination",     Attributes{19, 18}, Special_stats{0, 0, 0}, Socket::hands},
+                    {"gauntlets_of_wrath",     Attributes{15, 0}, Special_stats{0, 0, 0}, Socket::hands, Set::battlegear_of_wrath},
             };
 
     std::vector<Armor> belt_t
             {
                     {"onslaught_girdle",              Attributes{31, 0},  Special_stats{1, 1, 0},  Socket::belt},
-                    {"mugglers_belt",                 Attributes{0, 0},   Special_stats{1, 0, 0, 0, 0, 0, 0,
+                    {"muggers_belt",                  Attributes{0, 0},   Special_stats{1, 0, 0, 0, 0, 0, 0,
                                                                                         5},        Socket::belt},
                     {"omokks_girth_restrainer",       Attributes{15, 0},  Special_stats{1, 0, 0},  Socket::belt},
                     {"brigam_girdle",                 Attributes{15, 0},  Special_stats{0, 1, 0},  Socket::belt},
@@ -247,6 +256,8 @@ struct Armory
                                                                                         0},        Socket::belt, Set::battlegear_of_heroism},
                     {"belt_of_never_ending_agony",    Attributes{0, 0},   Special_stats{1, 1, 64}, Socket::belt},
                     {"triad_girdle",                  Attributes{26, 19}, Special_stats{0, 0, 0},  Socket::belt},
+                    {"belt_of_heroism",               Attributes{20, 0},  Special_stats{0, 0,
+                                                                                        0},        Socket::belt, Set::battlegear_of_wrath},
             };
 
     std::vector<Armor> legs_t
@@ -278,6 +289,7 @@ struct Armory
                     {"dark_heart_pants",                 Attributes{0, 0},   Special_stats{2, 0, 48}, Socket::legs},
                     {"legplates_of_heroism",             Attributes{25, 11}, Special_stats{0, 0,
                                                                                            0},        Socket::legs, Set::battlegear_of_heroism},
+                    {"legplates_of_wrath",             Attributes{19, 0}, Special_stats{0, 0, 0},        Socket::legs, Set::battlegear_of_wrath},
             };
 
     std::vector<Armor> boots_t
@@ -304,6 +316,8 @@ struct Armory
                     {"blooddrenched_footpads",    Attributes{0, 21},  Special_stats{0, 1, 0},  Socket::boots},
                     {"defilers_plate_greaves",    Attributes{14, 12}, Special_stats{0, 0,
                                                                                     0},        Socket::boots, Set::the_defilers_resolution},
+                    {"legplates_of_wrath",    Attributes{19, 0}, Special_stats{0, 0,
+                                                                                    0},        Socket::boots, Set::battlegear_of_wrath},
             };
 
     std::vector<Armor> ring_t
@@ -541,6 +555,7 @@ struct Armory
             {"major_mojo_infusion",     Attributes{0, 0}, Special_stats{0, 0, 30}, 2, Set::major_mojo_infusion},
             {"battlegear_of_heroism",   Attributes{0, 0}, Special_stats{0, 0, 40}, 6, Set::battlegear_of_heroism},
             {"the_defilers_resolution", Attributes{0, 0}, Special_stats{1, 0, 0},  3, Set::the_defilers_resolution},
+            {"battlegear_of_wrath",     Attributes{0, 0}, Special_stats{0, 0, 30},  3, Set::battlegear_of_wrath},
     };
 
     std::vector<Armor> get_items_in_socket(const Socket socket) const;
