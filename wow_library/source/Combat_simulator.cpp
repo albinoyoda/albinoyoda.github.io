@@ -323,7 +323,7 @@ void Combat_simulator::manage_flurry(Hit_result hit_result, Special_stats& speci
         }
         simulator_cout(flurry_charges, " flurry charges");
         assert(special_stats.haste > -.1);
-        assert(special_stats.haste < .9);
+        assert(special_stats.haste < .8);
     }
 }
 
@@ -542,7 +542,7 @@ void Combat_simulator::swing_weapon(Weapon_sim& weapon, Weapon_sim& main_hand_we
         rage >= heroic_strike_rage_cost)
     {
         simulator_cout("Performing heroic strike");
-        swing_damage += 138;
+        swing_damage += config.combat.heroic_strike_damage;
         hit_outcomes.emplace_back(
             generate_hit(main_hand_weapon, swing_damage, Hit_type::yellow, weapon.socket, special_stats));
         ability_queue_manager.heroic_strike_queued = false;

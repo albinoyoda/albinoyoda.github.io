@@ -50,6 +50,7 @@ struct Combat_simulator_config
         double whirlwind_bt_cooldown_thresh;
         double heroic_strike_rage_thresh;
         double cleave_rage_thresh;
+        double heroic_strike_damage;
         bool cleave_if_adds;
         bool use_hamstring;
         double hamstring_cd_thresh;

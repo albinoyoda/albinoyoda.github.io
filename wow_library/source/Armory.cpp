@@ -743,7 +743,14 @@ void Armory::add_buffs_to_character(Character& character, const std::vector<std:
     // Player buffs
     if (find_string(buffs_vec, "battle_shout"))
     {
-        character.add_buff(buffs.battle_shout);
+        if (find_string(buffs_vec, "battle_shout_aq"))
+        {
+            character.add_buff(buffs.battle_shout_aq);
+        }
+        else
+        {
+            character.add_buff(buffs.battle_shout);
+        }
     }
     if (find_string(buffs_vec, "blessing_of_kings"))
     {
@@ -751,7 +758,14 @@ void Armory::add_buffs_to_character(Character& character, const std::vector<std:
     }
     if (find_string(buffs_vec, "blessing_of_might"))
     {
-        character.add_buff(buffs.blessing_of_might);
+        if (find_string(buffs_vec, "blessing_of_might_aq"))
+        {
+            character.add_buff(buffs.blessing_of_might_aq);
+        }
+        else
+        {
+            character.add_buff(buffs.blessing_of_might);
+        }
     }
     if (find_string(buffs_vec, "windfury_totem"))
     {

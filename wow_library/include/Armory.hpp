@@ -17,10 +17,12 @@ struct Buffs
 
     // Player_buffs
     Buff battle_shout{"battle_shout", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 241.0}};
+    Buff battle_shout_aq{"battle_shout_aq", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 290.0}};
     Buff blessing_of_kings{"blessing_of_kings", Attributes{0.0, 0.0},
                            Special_stats{0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0.1}};
-    Buff blessing_of_might{"blessing_of_might", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 155}};
-    Buff gift_of_the_wild{"gift_of_the_wild", Attributes{12.0, 12.0}, Special_stats{0.0, 0.0, 0.0}};
+    Buff blessing_of_might{"blessing_of_might", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 186}};
+    Buff blessing_of_might_aq{"blessing_of_might_aq", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 222}};
+    Buff gift_of_the_wild{"gift_of_the_wild", Attributes{16.0, 16.0}, Special_stats{0.0, 0.0, 0.0}};
     Buff leader_of_the_pack{"leader_of_the_pack", Attributes{0.0, 0.0}, Special_stats{3.0, 0.0, 0.0}};
     Buff trueshot_aura{"trueshot_aura", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 100}};
     Buff windfury_totem{"windfury_totem", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0}, 0,

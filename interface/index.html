@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <style>
     body {
         font-family: Arial;
@@ -1255,99 +1255,109 @@
     <div class="content">
         <p class="select-title">World buffs:</p><br>
         <input type="checkbox" id="rallying_cry" checked>
-        <label for="rallying_cry"> rallying_cry</label><br>
+        <label for="rallying_cry"> Rallying Cry of the Dragon Slayer</label><br>
 
         <input type="checkbox" id="dire_maul" checked>
-        <label for="dire_maul"> dire_maul</label><br>
+        <label for="dire_maul"> Fengus' Ferocity</label><br>
 
         <input type="checkbox" id="songflower">
-        <label for="songflower"> songflower</label><br>
+        <label for="songflower"> Songflower Serenade</label><br>
 
         <input type="checkbox" id="warchiefs_blessing">
-        <label for="warchiefs_blessing"> warchiefs_blessing</label><br>
+        <label for="warchiefs_blessing"> Warchiefs Blessing</label><br>
 
         <input type="checkbox" id="spirit_of_zandalar" checked>
-        <label for="spirit_of_zandalar"> spirit_of_zandalar</label><br>
+        <label for="spirit_of_zandalar"> Spirit of Zandalar</label><br>
 
         <input type="checkbox" id="sayges_fortune">
-        <label for="sayges_fortune"> sayges_fortune</label><br><br>
+        <label for="sayges_fortune"> Sayges Fortune</label><br><br>
 
         <b> Player buffs:</b><br>
         <input type="checkbox" id="battle_shout" checked>
-        <label for="battle_shout"> battle_shout</label><br>
+        <label for="battle_shout"> Battle Shout</label><br>
 
         <input type="checkbox" id="gift_of_the_wild" checked>
-        <label for="gift_of_the_wild"> gift_of_the_wild</label><br>
+        <label for="gift_of_the_wild"> Gift of the Wild</label><br>
 
         <input type="checkbox" id="leader_of_the_pack">
-        <label for="leader_of_the_pack"> leader_of_the_pack</label><br>
+        <label for="leader_of_the_pack"> Leader of the Pack</label><br>
 
         <input type="checkbox" id="trueshot_aura" checked>
-        <label for="trueshot_aura"> trueshot_aura</label><br>
+        <label for="trueshot_aura"> Treushot aura</label><br>
 
         <input type="checkbox" id="blessing_of_kings" checked>
-        <label for="blessing_of_kings" style="color: #003d99"> blessing_of_kings</label><br>
+        <label for="blessing_of_kings" style="color: #003d99"> Blessing of Kings</label><br>
 
         <input type="checkbox" id="blessing_of_might" checked>
-        <label for="blessing_of_might" style="color: #003d99"> blessing_of_might</label><br>
+        <label for="blessing_of_might" style="color: #003d99"> Blessing of Might</label><br>
 
         <input type="checkbox" id="windfury_totem">
-        <label for="windfury_totem" style="color: #cc0000"> windfury_totem</label><br>
+        <label for="windfury_totem" style="color: #cc0000"> Windfury totem</label><br>
 
         <input type="checkbox" id="strength_of_earth_totem">
-        <label for="strength_of_earth_totem" style="color: #cc0000"> strength_of_earth_totem</label><br>
+        <label for="strength_of_earth_totem" style="color: #cc0000"> Strength of earth Totem</label><br>
 
         <input type="checkbox" id="grace_of_air_totem">
-        <label for="grace_of_air_totem" style="color: #cc0000"> grace_of_air_totem</label><br><br>
+        <label for="grace_of_air_totem" style="color: #cc0000"> Grace of Air Totem</label><br><br>
+
+        <b> AQ-books:</b><br>
+        <input type="checkbox" id="battle_shout_aq" checked>
+        <label for="battle_shout_aq"> Battle shout AQ-book</label><br>
+
+        <input type="checkbox" id="blessing_of_might_aq" checked>
+        <label for="blessing_of_might_aq" style="color: #003d99"> Blessing of Might AQ-book</label><br>
+
+        <input type="checkbox" id="heroic_strike_aq" checked>
+        <label for="heroic_strike_aq"> Heroic Strike AQ-book</label><br><br>
 
         <b> Consumables:</b><br>
         <input type="checkbox" id="elixir_mongoose" checked>
-        <label for="elixir_mongoose"> elixir_mongoose</label><br>
+        <label for="elixir_mongoose"> Elixir of the Mongoose</label><br>
 
         <input type="checkbox" id="blessed_sunfruit" onclick=
                 "if (document.getElementById('smoked_dessert_dumplings').checked)
                 {
                     document.getElementById('smoked_dessert_dumplings').checked = false;
                 }" checked>
-        <label for="blessed_sunfruit"> blessed_sunfruit</label><br>
+        <label for="blessed_sunfruit"> Blessed Sunfruit</label><br>
 
         <input type="checkbox" id="smoked_dessert_dumplings" onclick=
                 "if (document.getElementById('blessed_sunfruit').checked)
                 {
                     document.getElementById('blessed_sunfruit').checked = false;
                 }">
-        <label for="smoked_dessert_dumplings"> smoked_dessert_dumplings</label><br>
+        <label for="smoked_dessert_dumplings"> Smoked Dessert Dumplings</label><br>
 
         <input type="checkbox" id="juju_might" onclick=
                 "if (document.getElementById('winterfall_firewater').checked)
                 {
                     document.getElementById('winterfall_firewater').checked = false;
                 }">
-        <label for="juju_might"> juju_might</label><br>
+        <label for="juju_might"> Juju Might</label><br>
 
         <input type="checkbox" id="winterfall_firewater" onclick=
                 "if (document.getElementById('juju_might').checked)
                 {
                     document.getElementById('juju_might').checked = false;
                 }">
-        <label for="winterfall_firewater"> winterfall_firewater</label><br>
+        <label for="winterfall_firewater"> Winterfall Firewater</label><br>
 
         <input type="checkbox" id="juju_power" onclick=
                 "if (document.getElementById('elixir_of_giants').checked)
                 {
                     document.getElementById('elixir_of_giants').checked = false;
                 }" checked>
-        <label for="juju_power"> juju_power</label><br>
+        <label for="juju_power"> Juju Power</label><br>
 
         <input type="checkbox" id="elixir_of_giants" onclick=
                 "if (document.getElementById('juju_power').checked)
                 {
                     document.getElementById('juju_power').checked = false;
                 }">
-        <label for="elixir_of_giants"> elixir_of_giants</label><br>
+        <label for="elixir_of_giants"> Elixir of Giants</label><br>
 
         <input type="checkbox" id="roids" checked>
-        <label for="roids"> roids</label><br><br>
+        <label for="roids"> R.O.I.D.S</label><br><br>
 
         <b> Stones:</b><br>
         <input type="checkbox" id="dense_stone_main_hand" onclick=
@@ -1355,28 +1365,28 @@
                 {
                     document.getElementById('elemental_stone_main_hand').checked = false;
                 }" checked>
-        <label for="dense_stone_main_hand"> dense_stone_main_hand</label><br>
+        <label for="dense_stone_main_hand"> Dense Stone Main Hand</label><br>
 
         <input type="checkbox" id="elemental_stone_main_hand" onclick=
                 "if (document.getElementById('dense_stone_main_hand').checked)
                 {
                     document.getElementById('dense_stone_main_hand').checked = false;
                 }">
-        <label for="elemental_stone_main_hand"> elemental_stone_main_hand</label><br>
+        <label for="elemental_stone_main_hand"> Elemental Stone Main Hand</label><br>
 
         <input type="checkbox" id="dense_stone_off_hand" onclick=
                 "if (document.getElementById('elemental_stone_off_hand').checked)
                 {
                     document.getElementById('elemental_stone_off_hand').checked = false;
                 }" checked>
-        <label for="dense_stone_off_hand"> dense_stone_off_hand</label><br>
+        <label for="dense_stone_off_hand"> Dense Stone Main Hand</label><br>
 
         <input type="checkbox" id="elemental_stone_off_hand" onclick=
                 "if (document.getElementById('dense_stone_off_hand').checked)
                 {
                     document.getElementById('dense_stone_off_hand').checked = false;
                 }">
-        <label for="elemental_stone_off_hand"> elemental_stone_off_hand</label>
+        <label for="elemental_stone_off_hand"> Elemental Stone Main Hand</label>
     </div>
     <br/><br/>
 
@@ -1474,6 +1484,9 @@
 
         <input type="checkbox" id="stat_weight_haste">
         <label for="stat_weight_haste"> Calculate stat weight for &plusmn1% haste.</label><br>
+
+        <input type="checkbox" id="stat_weight_extra_hit">
+        <label for="stat_weight_extra_hit"> Calculate stat weight for +1% extra hit.</label><br>
 
         <input type="checkbox" id="stat_weight_skill">
         <label for="stat_weight_skill"> Calculate stat weight for &plusmn5 skill.</label><br><br>
@@ -1603,7 +1616,8 @@
     var buffs_input = [];
 
     var consumables = ["elixir_mongoose", "blessed_sunfruit", "smoked_dessert_dumplings", "juju_power", "elixir_of_giants", "winterfall_firewater",
-        "juju_might", "roids", "dense_stone_main_hand", "elemental_stone_main_hand", "dense_stone_off_hand", "elemental_stone_off_hand"];
+        "juju_might", "roids", "dense_stone_main_hand", "elemental_stone_main_hand", "dense_stone_off_hand", "elemental_stone_off_hand",
+        "battle_shout_aq", "blessing_of_might_aq"];
     var consumables_input = [];
 
     var armor = ["helmet_dd", "neck_dd", "shoulder_dd", "back_dd",
@@ -1631,9 +1645,10 @@
         "recklessness", "mighty_rage_potion", "default_boss", "sulfuron_harbinger", "golemagg", "vaelastrasz",
         "chromaggus", "debug_on", "use_bt_in_exec_phase", "use_hs_in_exec_phase", "cleave_if_adds",
         "hamstring_cd_thresh_dd", "hamstring_thresh_dd", "initial_rage", "use_hamstring", "item_strengths",
-        "deep_wounds"];
+        "deep_wounds", "heroic_strike_aq"];
 
-    var stat_weigths = ["stat_weight_hit", "stat_weight_crit", "stat_weight_haste", "stat_weight_skill"];
+    var stat_weigths = ["stat_weight_hit", "stat_weight_crit", "stat_weight_haste",
+        "stat_weight_extra_hit", "stat_weight_skill"];
 
     var race;
     var race_string;
@@ -2169,6 +2184,11 @@
             total_simulations += n_simulations_stat_dd * 2 + n_simulations_stat_dd * 2 * need_to_add_for_ap;
             need_to_add_for_ap = false;
         }
+        if (document.getElementById("stat_weight_extra_hit").checked) {
+            stat_weight_vec.push_back("extra_hit");
+            total_simulations += n_simulations_stat_dd * 2 + n_simulations_stat_dd * 2 * need_to_add_for_ap;
+            need_to_add_for_ap = false;
+        }
         if (document.getElementById("stat_weight_skill").checked) {
             stat_weight_vec.push_back("skill");
             total_simulations += n_simulations_stat_dd * 2 + n_simulations_stat_dd * 2 * need_to_add_for_ap;
@@ -2287,7 +2307,6 @@
                         'value_min': Math.max((parseFloat(stat_string[1]) - parseFloat(stat_string[2])) / dps_per_ap_max, 0),
                         'negative_value_max': Math.max((parseFloat(stat_string[3]) - parseFloat(stat_string[4])) / -dps_per_ap_min, 0),
                         'negative_value_min': Math.max((parseFloat(stat_string[3]) + parseFloat(stat_string[4])) / -dps_per_ap_max, 0)
-                        // 'std': parseFloat(stat_string[2]) / dps_per_ap
                     });
                 }
             }
@@ -2300,8 +2319,11 @@
                 for (let i = 0; i < stat_weights.length; i++) {
                     string += "+" + stat_weights[i]['name'] + " equivalates: <b>" + stat_weights[i]['value_min'].toFixed(2) +
                         " &#8722 " + stat_weights[i]['value_max'].toFixed(2) + "</b> attack power. <br />";
-                    string += "-" + stat_weights[i]['name'] + " equivalates: <b>-" + stat_weights[i]['negative_value_min'].toFixed(2) +
-                        " &#8722 -" + stat_weights[i]['negative_value_max'].toFixed(2) + "</b> attack power. <br /><br />";
+                    if (stat_weights[i]['name'] !== '1%ExtraHit') {
+                        string += "-" + stat_weights[i]['name'] + " equivalates: <b>-" + stat_weights[i]['negative_value_min'].toFixed(2) +
+                            " &#8722 -" + stat_weights[i]['negative_value_max'].toFixed(2) + "</b> attack power. <br />";
+                    }
+                    string += "<br />";
                 }
             }
             document.getElementById("output2").innerHTML = string;
