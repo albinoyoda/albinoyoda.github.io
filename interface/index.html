@@ -1461,7 +1461,9 @@
         <label for="opponent_level_dd">Opponent level: (60-63):</label>
         <input type="number" id="opponent_level_dd" name="quantity" min="60" max="63" value="63"><br/>
         <label for="fight_time_dd">Fight duration: (10-120s):</label>
-        <input type="number" id="fight_time_dd" name="quantity" min="10" max="120" value="60"><br/><br/>
+        <input type="number" id="fight_time_dd" name="quantity" min="10" max="300" value="60"><br/>
+        <input type="checkbox" id="deep_wounds">
+        <label for="deep_wounds"> Enable deep wounds.</label><br><br/>
 
         <b>Stat weights (each stat weight adds extra simulations):</b><br/>
         <input type="checkbox" id="stat_weight_crit" checked>
@@ -1628,7 +1630,8 @@
     var sim_options = ["faerie_fire", "exposed_armor", "curse_of_recklessness", "death_wish",
         "recklessness", "mighty_rage_potion", "default_boss", "sulfuron_harbinger", "golemagg", "vaelastrasz",
         "chromaggus", "debug_on", "use_bt_in_exec_phase", "use_hs_in_exec_phase", "cleave_if_adds",
-        "hamstring_cd_thresh_dd", "hamstring_thresh_dd", "initial_rage", "use_hamstring", "item_strengths"];
+        "hamstring_cd_thresh_dd", "hamstring_thresh_dd", "initial_rage", "use_hamstring", "item_strengths",
+        "deep_wounds"];
 
     var stat_weigths = ["stat_weight_hit", "stat_weight_crit", "stat_weight_haste", "stat_weight_skill"];
 
@@ -2116,7 +2119,7 @@
         if (isNaN(fight_time_dd)) {
             fight_time_dd = 60;
         }
-        fight_time_dd = Math.min(Math.max(fight_time_dd, 10), 120);
+        fight_time_dd = Math.min(Math.max(fight_time_dd, 10), 300);
 
         let sunder_armor_dd = parseInt(document.getElementById("sunder_armor_dd").value);
         if (isNaN(sunder_armor_dd)) {

@@ -55,6 +55,7 @@ struct Combat_simulator_config
         double hamstring_cd_thresh;
         double hamstring_thresh_dd;
         double initial_rage;
+        bool deep_wounds;
     } combat;
 
     struct talents_t

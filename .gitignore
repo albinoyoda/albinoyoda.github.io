@@ -1,3 +1,5 @@
 .idea
 cmake-build-debug
 node_modules
+*.cpp.o
+interface/emscripten/libwow_lib.a

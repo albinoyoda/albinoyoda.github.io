@@ -192,16 +192,19 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(const Weapon_sim& w
         }
         cout_damage_parse(hit_type, weapon_hand, hit_outcome);
     }
-    if (hit_outcome.hit_result == Combat_simulator::Hit_result::crit)
+    if (config.combat.deep_wounds)
     {
-        buff_manager_.add_over_time_effect(
-            {"Deep_wounds",
-             {},
-             0,
-             (1 + special_stats.damage_multiplier) * weapon.swing(special_stats.attack_power) / 4,
-             3,
-             12},
-            int(time_keeper_.time));
+        if (hit_outcome.hit_result == Combat_simulator::Hit_result::crit)
+        {
+            buff_manager_.add_over_time_effect(
+                {"Deep_wounds",
+                 {},
+                 0,
+                 (1 + special_stats.damage_multiplier) * weapon.swing(special_stats.attack_power) / 4,
+                 3,
+                 12},
+                int(time_keeper_.time));
+        }
     }
     return hit_outcome;
 }
@@ -1015,10 +1018,13 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                 }
             }
         }
-        double dw_average_damage = buff_manager_.deep_wounds_damage / buff_manager_.deep_wounds_timestamps.size();
-        for (double deep_wounds_timestamp : buff_manager_.deep_wounds_timestamps)
+        if (config.combat.deep_wounds)
         {
-            damage_sources.add_damage(Damage_source::deep_wounds, dw_average_damage, deep_wounds_timestamp);
+            double dw_average_damage = buff_manager_.deep_wounds_damage / buff_manager_.deep_wounds_timestamps.size();
+            for (double deep_wounds_timestamp : buff_manager_.deep_wounds_timestamps)
+            {
+                damage_sources.add_damage(Damage_source::deep_wounds, dw_average_damage, deep_wounds_timestamp);
+            }
         }
         double new_sample = damage_sources.sum_damage_sources() / sim_time;
         dps_mean_ = Statistics::update_mean(dps_mean_, iter + 1, new_sample);

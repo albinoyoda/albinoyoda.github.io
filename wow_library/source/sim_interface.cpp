@@ -436,6 +436,10 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     {
         config.combat.use_hamstring = true;
     }
+    if (find_string(input.options, "deep_wounds"))
+    {
+        config.combat.deep_wounds = true;
+    }
     config.n_sunder_armor_stacks = input.sunder_armor;
 
     config.talents.improved_heroic_strike = 2;
