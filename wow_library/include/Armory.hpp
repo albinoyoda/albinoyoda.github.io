@@ -258,7 +258,7 @@ struct Armory
                                                                                         0},        Socket::belt, Set::battlegear_of_heroism},
                     {"belt_of_never_ending_agony",    Attributes{0, 0},   Special_stats{1, 1, 64}, Socket::belt},
                     {"triad_girdle",                  Attributes{26, 19}, Special_stats{0, 0, 0},  Socket::belt},
-                    {"belt_of_heroism",               Attributes{20, 0},  Special_stats{0, 0,
+                    {"belt_of_wrath",                 Attributes{20, 0},  Special_stats{0, 0,
                                                                                         0},        Socket::belt, Set::battlegear_of_wrath},
             };
 
@@ -318,7 +318,7 @@ struct Armory
                     {"blooddrenched_footpads",    Attributes{0, 21},  Special_stats{0, 1, 0},  Socket::boots},
                     {"defilers_plate_greaves",    Attributes{14, 12}, Special_stats{0, 0,
                                                                                     0},        Socket::boots, Set::the_defilers_resolution},
-                    {"legplates_of_wrath",    Attributes{19, 0}, Special_stats{0, 0,
+                    {"sabatons_of_wrath",         Attributes{13, 0}, Special_stats{0, 0,
                                                                                     0},        Socket::boots, Set::battlegear_of_wrath},
             };
 
