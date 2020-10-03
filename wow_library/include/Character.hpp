@@ -104,6 +104,13 @@ public:
                 return true;
             }
         }
+        for (const auto& wep : weapons)
+        {
+            if (wep.name == item_name)
+            {
+                return true;
+            }
+        }
         return false;
     }
 

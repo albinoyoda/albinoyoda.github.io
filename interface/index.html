@@ -1583,12 +1583,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-<!--<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">-->
-<!--<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.css">-->
-<!--<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.css">-->
-
-<!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/picnic">-->
-
 <script>
     function show_div(box) {
         let vis = "none";
@@ -1625,7 +1619,7 @@
         document.getElementById(clicked_box).checked = true;
     }
 
-    var coll = document.getElementsByClassName("collapsible");
+    let coll = document.getElementsByClassName("collapsible");
 
     for (let i = 0; i < coll.length; i++) {
         coll[i].addEventListener("click", function () {
@@ -1650,50 +1644,50 @@
         // armor_wep_div.style.display = "block";
     }
 
-    var world_buffs = ["rallying_cry", "dire_maul", "songflower", "warchiefs_blessing", "spirit_of_zandalar", "sayges_fortune"];
-    var world_buffs_input = [];
+    let world_buffs = ["rallying_cry", "dire_maul", "songflower", "warchiefs_blessing", "spirit_of_zandalar", "sayges_fortune"];
+    let world_buffs_input = [];
 
-    var buffs = ["battle_shout", "blessing_of_kings", "blessing_of_might", "gift_of_the_wild", "leader_of_the_pack", "trueshot_aura",
+    let buffs = ["battle_shout", "blessing_of_kings", "blessing_of_might", "gift_of_the_wild", "leader_of_the_pack", "trueshot_aura",
         "windfury_totem", "strength_of_earth_totem", "grace_of_air_totem"];
-    var buffs_input = [];
+    let buffs_input = [];
 
-    var consumables = ["elixir_mongoose", "blessed_sunfruit", "smoked_dessert_dumplings", "juju_power", "elixir_of_giants", "winterfall_firewater",
+    let consumables = ["elixir_mongoose", "blessed_sunfruit", "smoked_dessert_dumplings", "juju_power", "elixir_of_giants", "winterfall_firewater",
         "juju_might", "roids", "dense_stone_main_hand", "elemental_stone_main_hand", "dense_stone_off_hand", "elemental_stone_off_hand",
         "battle_shout_aq", "blessing_of_might_aq", "fire_toasted_bun", "strength_of_earth_totem_aq", "grace_of_air_totem_aq"];
-    var consumables_input = [];
+    let consumables_input = [];
 
-    var armor = ["helmet_dd", "neck_dd", "shoulder_dd", "back_dd",
+    let armor = ["helmet_dd", "neck_dd", "shoulder_dd", "back_dd",
         "chest_dd", "wrists_dd", "hands_dd", "belt_dd", "legs_dd",
         "boots_dd", "ring1_dd", "ring2_dd", "trinket1_dd", "trinket2_dd", "ranged_dd"];
-    var armor_input = [];
+    let armor_input = [];
 
-    var weapons = ["main_hand_dd", "off_hand_dd"];
-    var weapons_input = [];
+    let weapons = ["main_hand_dd", "off_hand_dd"];
+    let weapons_input = [];
 
-    var armor_mult = ["helmet_dd_mult", "neck_dd_mult", "shoulder_dd_mult", "back_dd_mult",
+    let armor_mult = ["helmet_dd_mult", "neck_dd_mult", "shoulder_dd_mult", "back_dd_mult",
         "chest_dd_mult", "wrists_dd_mult", "hands_dd_mult", "belt_dd_mult", "legs_dd_mult",
         "boots_dd_mult", "ring_dd_mult", "trinket_dd_mult", "ranged_dd_mult"];
-    var armor_input_mult = [];
+    let armor_input_mult = [];
 
-    var weapons_mult = ["weapons_dd_mult"];
-    var weapons_input_mult = [];
+    let weapons_mult = ["weapons_dd_mult"];
+    let weapons_input_mult = [];
 
-    var enchants = ["helmet_ench_dd", "shoulder_ench_dd", "back_ench_dd", "chest_ench_dd", "wrist_ench_dd",
+    let enchants = ["helmet_ench_dd", "shoulder_ench_dd", "back_ench_dd", "chest_ench_dd", "wrist_ench_dd",
         "hands_ench_dd", "legs_ench_dd", "boots_ench_dd", "main_hand_ench_dd", "off_hand_ench_dd"];
-    var enchant_prefixes = ["e", "s", "b", "c", "w", "h", "l", "b", "m", "o"];
-    var enchants_input = [];
+    let enchant_prefixes = ["e", "s", "b", "c", "w", "h", "l", "b", "m", "o"];
+    let enchants_input = [];
 
-    var sim_options = ["faerie_fire", "exposed_armor", "curse_of_recklessness", "death_wish",
+    let sim_options = ["faerie_fire", "exposed_armor", "curse_of_recklessness", "death_wish",
         "recklessness", "mighty_rage_potion", "default_boss", "sulfuron_harbinger", "golemagg", "vaelastrasz",
         "chromaggus", "debug_on", "use_bt_in_exec_phase", "use_hs_in_exec_phase", "cleave_if_adds",
         "hamstring_cd_thresh_dd", "hamstring_thresh_dd", "initial_rage", "use_hamstring", "item_strengths",
         "deep_wounds", "heroic_strike_aq"];
 
-    var stat_weigths = ["stat_weight_hit", "stat_weight_crit", "stat_weight_haste",
+    let stat_weigths = ["stat_weight_hit", "stat_weight_crit", "stat_weight_haste",
         "stat_weight_extra_hit", "stat_weight_skill", "stat_weight_mh_speed", "stat_weight_oh_speed"];
 
-    var race;
-    var race_string;
+    let race;
+    let race_string;
 
     function string_is_armor(string) {
         for (let armor_string of armor) {
@@ -1713,8 +1707,8 @@
         return false;
     }
 
-    var compare_armor_input = [];
-    var compare_weapons_input = [];
+    let compare_armor_input = [];
+    let compare_weapons_input = [];
 
     function load_compare_data() {
         let file = document.getElementById("myCompareFile");
@@ -1742,8 +1736,8 @@
 
     function load_file() {
         let file = document.getElementById("myFile");
-        var myFile = file.files[0];
-        var reader = new FileReader();
+        let myFile = file.files[0];
+        let reader = new FileReader();
 
         //set all buff-values to unchecked before loading
         for (let world_buff of world_buffs) {
@@ -1755,15 +1749,12 @@
         for (let consumable of consumables) {
             document.getElementById(consumable).checked = false;
         }
-        for (let consumable of stat_weigths) {
-            document.getElementById(consumable).checked = false;
+        for (let stat_weight of stat_weigths) {
+            document.getElementById(stat_weight).checked = false;
         }
-        for (let consumable of sim_options) {
-            document.getElementById(consumable).checked = false;
+        for (let sim_option of sim_options) {
+            document.getElementById(sim_option).checked = false;
         }
-        // for (let consumable of ar) {
-        //     document.getElementById(consumable).checked = false;
-        // }
 
         reader.readAsText(myFile);
         reader.onload = function () {
@@ -2057,12 +2048,12 @@
         }
     }
 
-    var bar_chart_auras;
-    var bar_chart_proc;
-    var bar_chart_damage;
-    var line_chart_hist;
-    var line_chart_fight;
-    var line_chart_fight_cum;
+    let bar_chart_auras;
+    let bar_chart_proc;
+    let bar_chart_damage;
+    let line_chart_hist;
+    let line_chart_fight;
+    let line_chart_fight_cum;
 
     function clean_charts() {
         try {
