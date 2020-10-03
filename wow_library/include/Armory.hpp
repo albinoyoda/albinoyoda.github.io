@@ -28,7 +28,9 @@ struct Buffs
     Buff windfury_totem{"windfury_totem", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0}, 0,
                         {{"windfury_totem", Hit_effect::Type::extra_hit, {}, {}, 0, 0, 0.2, 315}}};
     Buff strength_of_earth_totem{"strength_of_earth_totem", Attributes{61.0, 0.0}, Special_stats{0.0, 0.0, 0}};
+    Buff strength_of_earth_totem_aq{"strength_of_earth_totem_aq", Attributes{77.0, 0.0}, Special_stats{0.0, 0.0, 0}};
     Buff grace_of_air_totem{"grace_of_air_totem", Attributes{0.0, 67.0}, Special_stats{0.0, 0.0, 0}};
+    Buff grace_of_air_totem_aq{"grace_of_air_totem_aq", Attributes{0.0, 77.0}, Special_stats{0.0, 0.0, 0}};
 
     // Consumables
     Buff elixir_mongoose{"elixir_mongoose", Attributes{0.0, 25.0}, Special_stats{2.0, 0.0, 0.0}};
@@ -39,6 +41,7 @@ struct Buffs
     Buff juju_might{"juju_might", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 40}};
     Buff winterfall_firewater{"winterfall_firewater", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 35}};
     Buff roids{"roids", Attributes{25.0, 0.0}, Special_stats{0.0, 0.0, 0.0}};
+    Buff fire_toasted_bun{"fire_toasted_bun", Attributes{0.0, 0.0}, Special_stats{0.0, 2.0, 0.0}};
     Buff mighty_rage_potion{"mighty_rage_potion", {}, {}, 0, {},
                             {{"mighty_rage_potion", Use_effect::Effect_socket::unique, {60, 0}, {0, 0, 0}, 60, 20,
                               120, false}}};

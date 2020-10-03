@@ -773,11 +773,25 @@ void Armory::add_buffs_to_character(Character& character, const std::vector<std:
     }
     if (find_string(buffs_vec, "strength_of_earth_totem"))
     {
-        character.add_buff(buffs.strength_of_earth_totem);
+        if (find_string(buffs_vec, "strength_of_earth_totem_aq"))
+        {
+            character.add_buff(buffs.strength_of_earth_totem_aq);
+        }
+        else
+        {
+            character.add_buff(buffs.strength_of_earth_totem);
+        }
     }
     if (find_string(buffs_vec, "grace_of_air_totem"))
     {
-        character.add_buff(buffs.grace_of_air_totem);
+        if (find_string(buffs_vec, "grace_of_air_totem_aq"))
+        {
+            character.add_buff(buffs.grace_of_air_totem_aq);
+        }
+        else
+        {
+            character.add_buff(buffs.grace_of_air_totem);
+        }
     }
     if (find_string(buffs_vec, "gift_of_the_wild"))
     {
@@ -822,6 +836,10 @@ void Armory::add_buffs_to_character(Character& character, const std::vector<std:
     if (find_string(buffs_vec, "roids"))
     {
         character.add_buff(buffs.roids);
+    }
+    if (find_string(buffs_vec, "fire_toasted_bun"))
+    {
+        character.add_buff(buffs.fire_toasted_bun);
     }
     if (find_string(buffs_vec, "mighty_rage_potion"))
     {
