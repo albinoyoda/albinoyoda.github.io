@@ -227,7 +227,7 @@ void Armory::compute_total_stats(Character& character) const
         auto hit_effect = enchant_hit_effect(weapon.swing_speed, weapon.enchant.type);
         if (hit_effect.type != Hit_effect::Type::none)
         {
-            weapon.hit_effects.emplace_back(enchant_hit_effect(weapon.swing_speed, weapon.enchant.type));
+            weapon.hit_effects.emplace_back(hit_effect);
         }
 
         set_names.emplace_back(weapon.set_name);

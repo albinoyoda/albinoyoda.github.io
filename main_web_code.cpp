@@ -356,7 +356,7 @@ int main()
     std::string race = "orc";
 
     std::vector<std::string> sim_options = {
-        "faerie_fire",    "recklessness",       "exposed_armor", "curse_of_recklessness", "item_strengths",
+        "faerie_fire",    "recklessness",       "exposed_armor", "curse_of_recklessness", //"item_strengths",
         "death_wish",     "mighty_rage_potion", "debug_on",      "use_bt_in_exec_phase",  "use_hs_in_exec_phase",
         "cleave_if_adds", "use_hamstring",      "deep_wounds"};
 
@@ -365,13 +365,13 @@ int main()
                         weapons_vec,
                         buff_vec,
                         ench_vec,
-                        {""},
+                        {"mh_speed", "oh_speed"},
                         sim_options,
                         compare_armor_vec,
                         compare_weapons_vec,
                         60,
                         63,
-                        50000,
+                        5000,
                         1000,
                         5,
                         60,

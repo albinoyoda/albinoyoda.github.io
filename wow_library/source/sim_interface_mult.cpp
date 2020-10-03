@@ -89,6 +89,18 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult& input)
     {
         config.combat.use_hamstring = true;
     }
+    if (find_string(input.options, "deep_wounds"))
+    {
+        config.combat.deep_wounds = true;
+    }
+    if (find_string(input.options, "heroic_strike_aq"))
+    {
+        config.combat.heroic_strike_damage = 157;
+    }
+    else
+    {
+        config.combat.heroic_strike_damage = 138;
+    }
     config.n_sunder_armor_stacks = input.sunder_armor;
 
     config.talents.improved_heroic_strike = 2;

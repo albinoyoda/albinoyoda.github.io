@@ -1507,7 +1507,14 @@
         <label for="stat_weight_extra_hit"> Calculate stat weight for +1% extra hit.</label><br>
 
         <input type="checkbox" id="stat_weight_skill">
-        <label for="stat_weight_skill"> Calculate stat weight for &plusmn5 skill.</label><br><br>
+        <label for="stat_weight_skill"> Calculate stat weight for &plusmn5 skill.</label><br>
+
+        <input type="checkbox" id="stat_weight_mh_speed">
+        <label for="stat_weight_mh_speed"> Calculate stat weight for &plusmn 0.5s main hand weapon
+            speed.</label><br>
+
+        <input type="checkbox" id="stat_weight_oh_speed">
+        <label for="stat_weight_oh_speed"> Calculate stat weight for &plusmn 0.5s off hand weapon speed.</label><br><br>
 
         <b>Debug:</b><br/>
         <input type="checkbox" id="debug_on">
@@ -1666,7 +1673,7 @@
         "deep_wounds", "heroic_strike_aq"];
 
     var stat_weigths = ["stat_weight_hit", "stat_weight_crit", "stat_weight_haste",
-        "stat_weight_extra_hit", "stat_weight_skill"];
+        "stat_weight_extra_hit", "stat_weight_skill", "stat_weight_mh_speed", "stat_weight_oh_speed"];
 
     var race;
     var race_string;
@@ -2187,31 +2194,14 @@
         }
         let need_to_add_for_ap = true;
         let stat_weight_vec = new Module.StringList();
-        if (document.getElementById("stat_weight_crit").checked) {
-            stat_weight_vec.push_back("crit");
-            total_simulations += n_simulations_stat_dd * 2 + n_simulations_stat_dd * 2 * need_to_add_for_ap;
-            need_to_add_for_ap = false;
+        for (let stat_weight of stat_weigths) {
+            if (document.getElementById(stat_weight).checked) {
+                console.log(stat_weight.slice(12, stat_weight.length));
+                stat_weight_vec.push_back(stat_weight.slice(12, stat_weight.length));
+                total_simulations += n_simulations_stat_dd * 2 + n_simulations_stat_dd * 2 * need_to_add_for_ap;
+                need_to_add_for_ap = false;
+            }
         }
-        if (document.getElementById("stat_weight_hit").checked) {
-            stat_weight_vec.push_back("hit");
-            total_simulations += n_simulations_stat_dd * 2 + n_simulations_stat_dd * 2 * need_to_add_for_ap;
-            need_to_add_for_ap = false;
-        }
-        if (document.getElementById("stat_weight_haste").checked) {
-            stat_weight_vec.push_back("haste");
-            total_simulations += n_simulations_stat_dd * 2 + n_simulations_stat_dd * 2 * need_to_add_for_ap;
-            need_to_add_for_ap = false;
-        }
-        if (document.getElementById("stat_weight_extra_hit").checked) {
-            stat_weight_vec.push_back("extra_hit");
-            total_simulations += n_simulations_stat_dd * 2 + n_simulations_stat_dd * 2 * need_to_add_for_ap;
-            need_to_add_for_ap = false;
-        }
-        if (document.getElementById("stat_weight_skill").checked) {
-            stat_weight_vec.push_back("skill");
-            total_simulations += n_simulations_stat_dd * 2 + n_simulations_stat_dd * 2 * need_to_add_for_ap;
-        }
-
         let race_vec = new Module.StringList();
         race_vec.push_back(race_string);
 
@@ -2318,13 +2308,16 @@
                 for (let i = 1; i < result['stat_weights'].size(); i++) {
                     let stat_string = result['stat_weights'].get(i);
                     stat_string = stat_string.split(" ");
+                    let p_val_p = (parseFloat(stat_string[1]) + parseFloat(stat_string[2])) / dps_per_ap_min;
+                    let p_val_n = (parseFloat(stat_string[1]) - parseFloat(stat_string[2])) / dps_per_ap_max;
+                    let n_val_p = (parseFloat(stat_string[3]) - parseFloat(stat_string[4])) / dps_per_ap_min;
+                    let n_val_n = (parseFloat(stat_string[3]) + parseFloat(stat_string[4])) / dps_per_ap_max;
                     stat_weights.push({
                         'name': stat_string[0],
-                        'value': parseFloat(stat_string[1]) / dps_per_ap,
-                        'value_max': Math.max((parseFloat(stat_string[1]) + parseFloat(stat_string[2])) / dps_per_ap_min, 0),
-                        'value_min': Math.max((parseFloat(stat_string[1]) - parseFloat(stat_string[2])) / dps_per_ap_max, 0),
-                        'negative_value_max': Math.max((parseFloat(stat_string[3]) - parseFloat(stat_string[4])) / -dps_per_ap_min, 0),
-                        'negative_value_min': Math.max((parseFloat(stat_string[3]) + parseFloat(stat_string[4])) / -dps_per_ap_max, 0)
+                        'value_max': Math.max(p_val_p, p_val_n),
+                        'value_min': Math.min(p_val_p, p_val_n),
+                        'negative_value_max': Math.max(n_val_p, n_val_n),
+                        'negative_value_min': Math.min(n_val_p, n_val_n)
                     });
                 }
             }
@@ -2333,13 +2326,14 @@
             if (document.getElementById("do_comparison").checked) {
                 string = "<b>Stat weights (Setup 1):</b> <br />";
             }
+            string += "(Accuracy is based on the 'number of simulations per stat weight' value.)<br>";
             if (result['stat_weights'].size() > 0) {
                 for (let i = 0; i < stat_weights.length; i++) {
                     string += "+" + stat_weights[i]['name'] + " equivalates: <b>" + stat_weights[i]['value_min'].toFixed(2) +
                         " &#8722 " + stat_weights[i]['value_max'].toFixed(2) + "</b> attack power. <br />";
                     if (stat_weights[i]['name'] !== '1%ExtraHit') {
-                        string += "-" + stat_weights[i]['name'] + " equivalates: <b>-" + stat_weights[i]['negative_value_min'].toFixed(2) +
-                            " &#8722 -" + stat_weights[i]['negative_value_max'].toFixed(2) + "</b> attack power. <br />";
+                        string += "-" + stat_weights[i]['name'] + " equivalates: <b>" + stat_weights[i]['negative_value_min'].toFixed(2) +
+                            " &#8722 " + stat_weights[i]['negative_value_max'].toFixed(2) + "</b> attack power. <br />";
                     }
                     string += "<br />";
                 }

@@ -1,4 +1,0 @@
-/src/interface/emscripten/CMakeFiles/edit_cache.dir
-/src/interface/emscripten/CMakeFiles/rebuild_cache.dir
-/src/interface/emscripten/CMakeFiles/wow_lib.dir
-/src/interface/emscripten/CMakeFiles/wow_interface.dir
