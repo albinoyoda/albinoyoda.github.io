@@ -137,6 +137,8 @@ struct Armory
                                                                                          0},  Socket::shoulder, Set::the_defilers_resolution},
                     {"pauldrons_of_wrath",       Attributes{13, 0}, Special_stats{0, 0,
                                                                                          0},  Socket::shoulder, Set::battlegear_of_wrath},
+                    {"taut_dragonhide_shoulderpads",       Attributes{0, 0}, Special_stats{0, 0,
+                                                                                         46},  Socket::shoulder},
             };
 
     std::vector<Armor> back_t
@@ -155,6 +157,7 @@ struct Armory
                     {"cloak_of_the_fallen_god",      Attributes{11, 26}, Special_stats{0, 0, 0},  Socket::back},
                     {"cloak_of_the_golden_hive",     Attributes{13, 10}, Special_stats{0, 0, 0},  Socket::back},
                     {"drake_of_unyielding_strength", Attributes{15, 9},  Special_stats{0, 1, 0},  Socket::back},
+                    {"might_of_the_tribe", Attributes{0, 0},  Special_stats{0, 0, 28},  Socket::back},
             };
 
     std::vector<Armor> chest_t
@@ -261,6 +264,7 @@ struct Armory
                                                                                         0},        Socket::belt, Set::battlegear_of_heroism},
                     {"belt_of_never_ending_agony",    Attributes{0, 0},   Special_stats{1, 1, 64}, Socket::belt},
                     {"triad_girdle",                  Attributes{26, 19}, Special_stats{0, 0, 0},  Socket::belt},
+                    {"belt_of_preserved_heads",                  Attributes{14, 15}, Special_stats{0, 1, 0},  Socket::belt},
                     {"belt_of_wrath",                 Attributes{20, 0},  Special_stats{0, 0,
                                                                                         0},        Socket::belt, Set::battlegear_of_wrath},
             };
@@ -386,6 +390,7 @@ struct Armory
                     {"riphook",                        Attributes{0, 0},  Special_stats{0, 0, 22}, Socket::ranged},
                     {"gurubashi_dwarf_destroyer",      Attributes{0, 0},  Special_stats{0, 0, 30}, Socket::ranged},
                     {"huhurans_stinger",               Attributes{0, 18}, Special_stats{0, 0, 0},  Socket::ranged},
+                    {"bow_of_taut_sinew",               Attributes{0, 0}, Special_stats{0, 0, 22},  Socket::ranged},
             };
 
     std::vector<Weapon> swords_t
