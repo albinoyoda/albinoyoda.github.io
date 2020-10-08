@@ -97,6 +97,7 @@ struct Armory
                     {"beads_of_ogre_might",            Attributes{0, 0},   Special_stats{0, 1, 24}, Socket::neck},
                     {"choker_of_the_shifting_sands",   Attributes{0, 0},   Special_stats{0, 0, 42}, Socket::neck},
                     {"fury_of_the_forgotten_swarm",    Attributes{8, 0},   Special_stats{1, 1, 0},  Socket::neck},
+                    {"pendant_of_the_qiraji_guardian",    Attributes{12, 11},   Special_stats{0, 0, 0},  Socket::neck},
             };
 
     std::vector<Armor> shoulder_t
