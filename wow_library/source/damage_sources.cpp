@@ -1,34 +1,92 @@
 #include "damage_sources.hpp"
 
-#include <iomanip>
-#include <iostream>
-
-void print_damage_sources(const std::string& source_name, double source_percent, double source_std, double source_count,
-                          double avg_value)
+Damage_sources::Damage_sources()
 {
-    if (source_count > 0)
-    {
-        std::cout << std::setw(15) << source_name << std::left << std::setprecision(3) << std::setw(5)
-                  << 100 * source_percent << " +- " << std::setw(5) << 100 * source_std << ", casts: " << source_count
-                  << ", average damage per cast: " << std::setprecision(6) << avg_value << "\n";
-    }
+    damage_instances.reserve(500);
+};
+
+Damage_sources& Damage_sources::operator+(const Damage_sources& rhs)
+{
+    whirlwind_damage = whirlwind_damage + rhs.whirlwind_damage;
+    overpower_damage = overpower_damage + rhs.overpower_damage;
+    bloodthirst_damage = bloodthirst_damage + rhs.bloodthirst_damage;
+    execute_damage = execute_damage + rhs.execute_damage;
+    white_mh_damage = white_mh_damage + rhs.white_mh_damage;
+    white_oh_damage = white_oh_damage + rhs.white_oh_damage;
+    heroic_strike_damage = heroic_strike_damage + rhs.heroic_strike_damage;
+    cleave_damage = cleave_damage + rhs.cleave_damage;
+    hamstring_damage = hamstring_damage + rhs.hamstring_damage;
+    deep_wounds_damage = deep_wounds_damage + rhs.deep_wounds_damage;
+    item_hit_effects_damage = item_hit_effects_damage + rhs.item_hit_effects_damage;
+
+    whirlwind_count = whirlwind_count + rhs.whirlwind_count;
+    overpower_count = overpower_count + rhs.overpower_count;
+    bloodthirst_count = bloodthirst_count + rhs.bloodthirst_count;
+    execute_count = execute_count + rhs.execute_count;
+    white_mh_count = white_mh_count + rhs.white_mh_count;
+    white_oh_count = white_oh_count + rhs.white_oh_count;
+    heroic_strike_count = heroic_strike_count + rhs.heroic_strike_count;
+    cleave_count = cleave_count + rhs.cleave_count;
+    hamstring_count = hamstring_count + rhs.hamstring_count;
+    deep_wounds_count = deep_wounds_count + rhs.deep_wounds_count;
+    item_hit_effects_count = item_hit_effects_count + rhs.item_hit_effects_count;
+    return *(this);
 }
 
-void print_damage_source_vector(const std::vector<Damage_sources>& damage_sources_vector)
+void Damage_sources::add_damage(Damage_source source, double damage, double time_stamp, bool increment_counter)
 {
-    std::cout << "Damage_sources (%):\n";
-    extract_damage_source_data(damage_sources_vector, "White MH", &Damage_sources::white_mh_damage,
-                               &Damage_sources::white_mh_count);
-    extract_damage_source_data(damage_sources_vector, "White OH", &Damage_sources::white_oh_damage,
-                               &Damage_sources::white_oh_count);
-    extract_damage_source_data(damage_sources_vector, "Bloodthirst", &Damage_sources::bloodthirst_damage,
-                               &Damage_sources::bloodthirst_count);
-    extract_damage_source_data(damage_sources_vector, "Execute", &Damage_sources::execute_damage,
-                               &Damage_sources::execute_count);
-    extract_damage_source_data(damage_sources_vector, "Heroic strike", &Damage_sources::heroic_strike_damage,
-                               &Damage_sources::heroic_strike_count);
-    extract_damage_source_data(damage_sources_vector, "Whirlwind", &Damage_sources::whirlwind_damage,
-                               &Damage_sources::whirlwind_count);
-    extract_damage_source_data(damage_sources_vector, "Item effects", &Damage_sources::item_hit_effects_damage,
-                               &Damage_sources::item_hit_effects_count);
+    if (increment_counter)
+    {
+        damage_instances.emplace_back(source, damage, time_stamp);
+    }
+    switch (source)
+    {
+    case Damage_source::white_mh:
+        white_mh_damage += damage;
+        white_mh_count++;
+        break;
+    case Damage_source::white_oh:
+        white_oh_damage += damage;
+        white_oh_count++;
+        break;
+    case Damage_source::bloodthirst:
+        bloodthirst_damage += damage;
+        bloodthirst_count++;
+        break;
+    case Damage_source::overpower:
+        overpower_damage += damage;
+        overpower_count++;
+        break;
+    case Damage_source::execute:
+        execute_damage += damage;
+        execute_count++;
+        break;
+    case Damage_source::heroic_strike:
+        heroic_strike_damage += damage;
+        heroic_strike_count++;
+        break;
+    case Damage_source::cleave:
+        cleave_damage += damage;
+        cleave_count++;
+        break;
+    case Damage_source::whirlwind:
+        whirlwind_damage += damage;
+        whirlwind_count++;
+        break;
+    case Damage_source::hamstring:
+        hamstring_damage += damage;
+        hamstring_count++;
+        break;
+    case Damage_source::deep_wounds:
+        deep_wounds_damage += damage;
+        deep_wounds_count++;
+        break;
+    case Damage_source::item_hit_effects:
+        item_hit_effects_damage += damage;
+        if (increment_counter)
+        {
+            item_hit_effects_count++;
+        }
+        break;
+    }
 }

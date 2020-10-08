@@ -22,6 +22,9 @@ struct Sim_input_mult
                    double whirlwind_bt_cooldown_thresh,
                    double hamstring_cd_thresh,
                    double hamstring_thresh_dd,
+                   double overpower_rage_thresh,
+                   double overpower_bt_cooldown_thresh,
+                   double overpower_ww_cooldown_thresh,
                    double initial_rage,
                    double max_optimize_time
                   ) :
@@ -40,6 +43,9 @@ struct Sim_input_mult
             whirlwind_bt_cooldown_thresh(whirlwind_bt_cooldown_thresh),
             hamstring_cd_thresh(hamstring_cd_thresh),
             hamstring_thresh_dd(hamstring_thresh_dd),
+            overpower_rage_thresh(overpower_rage_thresh),
+            overpower_bt_cooldown_thresh(overpower_bt_cooldown_thresh),
+            overpower_ww_cooldown_thresh(overpower_ww_cooldown_thresh),
             initial_rage(initial_rage),
             max_optimize_time(max_optimize_time) {}
 
@@ -58,6 +64,9 @@ struct Sim_input_mult
     double whirlwind_bt_cooldown_thresh{};
     double hamstring_cd_thresh{};
     double hamstring_thresh_dd{};
+    double overpower_rage_thresh{};
+    double overpower_bt_cooldown_thresh{};
+    double overpower_ww_cooldown_thresh{};
     double initial_rage{};
     double max_optimize_time{};
 };

@@ -3,8 +3,11 @@
 
 #include "Buff_manager.hpp"
 #include "Character.hpp"
+#include "Helper_functions.hpp"
 #include "Statistics.hpp"
 #include "damage_sources.hpp"
+#include "sim_input.hpp"
+#include "sim_input_mult.hpp"
 #include "time_keeper.hpp"
 #include "weapon_sim.hpp"
 
@@ -17,9 +20,27 @@
 
 struct Combat_simulator_config
 {
+    Combat_simulator_config() = default;
+
+    explicit Combat_simulator_config(const Sim_input& input)
+    {
+        get_combat_simulator_config(input);
+        n_batches = static_cast<int>(input.n_simulations);
+        seed = 110000;
+    };
+
+    explicit Combat_simulator_config(const Sim_input_mult& input)
+    {
+        get_combat_simulator_config(input);
+        seed = clock();
+        performance_mode = true;
+    };
+
+    template <typename T>
+    void get_combat_simulator_config(const T& input);
+
     // Combat settings
     int n_batches{};
-    int n_batches_statweights{};
     double sim_time{};
     int opponent_level{};
 
@@ -44,19 +65,26 @@ struct Combat_simulator_config
 
     struct combat_t
     {
-        bool use_bt_in_exec_phase;
-        bool use_hs_in_exec_phase;
-        double whirlwind_rage_thresh;
-        double whirlwind_bt_cooldown_thresh;
-        double heroic_strike_rage_thresh;
-        double cleave_rage_thresh;
-        double heroic_strike_damage;
-        bool cleave_if_adds;
-        bool use_hamstring;
-        double hamstring_cd_thresh;
-        double hamstring_thresh_dd;
-        double initial_rage;
-        bool deep_wounds;
+        bool use_bt_in_exec_phase{false};
+        bool use_hs_in_exec_phase{false};
+        double whirlwind_rage_thresh{};
+        double overpower_rage_thresh{};
+        double whirlwind_bt_cooldown_thresh{};
+        double overpower_bt_cooldown_thresh{};
+        double overpower_ww_cooldown_thresh{};
+        double heroic_strike_rage_thresh{};
+        double cleave_rage_thresh{};
+        double heroic_strike_damage{};
+        bool cleave_if_adds{false};
+        bool use_hamstring{false};
+        bool use_bloodthirst{false};
+        bool use_whirlwind{false};
+        bool use_overpower{false};
+        bool use_heroic_strike{false};
+        double hamstring_cd_thresh{};
+        double hamstring_thresh_dd{};
+        double initial_rage{};
+        bool deep_wounds{false};
     } combat;
 
     struct talents_t
@@ -67,6 +95,7 @@ struct Combat_simulator_config
         int flurry = 0;
         int unbridled_wrath = 0;
         int impale = 0;
+        int overpower = 0;
         int improved_execute = 0;
         int dual_wield_specialization = 0;
     } talents;
@@ -162,6 +191,9 @@ public:
     void hit_effects(Weapon_sim& weapon, Weapon_sim& main_hand_weapon, Special_stats& special_stats, double& rage,
                      Damage_sources& damage_sources, int& flurry_charges, bool is_extra_attack = false);
 
+    void overpower(Weapon_sim& main_hand_weapon, Special_stats& special_stats, double& rage,
+                   Damage_sources& damage_sources, int& flurry_charges);
+
     void bloodthirst(Weapon_sim& main_hand_weapon, Special_stats& special_stats, double& rage,
                      Damage_sources& damage_sources, int& flurry_charges);
 
@@ -188,11 +220,11 @@ public:
 
     Combat_simulator::Hit_outcome generate_hit(const Weapon_sim& weapon, double damage, Hit_type hit_type,
                                                Socket weapon_hand, const Special_stats& special_stats,
-                                               bool boss_target = true);
+                                               bool boss_target = true, bool is_overpower = false);
 
     Combat_simulator::Hit_outcome generate_hit_oh(double damage);
 
-    Combat_simulator::Hit_outcome generate_hit_mh(double damage, Hit_type hit_type);
+    Combat_simulator::Hit_outcome generate_hit_mh(double damage, Hit_type hit_type, bool is_overpower = false);
 
     void compute_hit_table(int level_difference, int weapon_skill, Special_stats special_stats, Socket weapon_hand);
 
@@ -230,6 +262,12 @@ public:
     constexpr double get_dps_variance() const { return dps_variance_; }
 
     constexpr int get_n_simulations() const { return config.n_batches; }
+
+    constexpr int get_rage_lost_stance() const { return rage_lost_stance_swap_; }
+
+    constexpr int get_rage_lost_exec() const { return rage_lost_execute_batch_; }
+
+    constexpr int get_rage_lost_capped() const { return rage_lost_capped_; }
 
     std::vector<double>& get_hist_x() { return hist_x; }
 
@@ -275,11 +313,12 @@ private:
     Over_time_effect unbridled_wrath = {"Unbridled_wrath", {}, 1, 0, 3, 600};
 
     std::vector<double> hit_table_white_mh_;
-    std::array<double, 5> damage_multipliers_white_mh_;
+    std::vector<double> damage_multipliers_white_mh_;
     std::vector<double> hit_table_white_oh_;
-    std::array<double, 5> damage_multipliers_white_oh_;
+    std::vector<double> damage_multipliers_white_oh_;
     std::vector<double> hit_table_yellow_;
-    std::array<double, 5> damage_multipliers_yellow_;
+    std::vector<double> hit_table_overpower_;
+    std::vector<double> damage_multipliers_yellow_;
     std::vector<double> hit_table_two_hand_;
     Damage_sources damage_distribution_{};
     double dps_mean_;
@@ -300,13 +339,15 @@ private:
     int adds_in_melee_range{};
     double remove_adds_timer{};
     double heroic_strike_rage_cost{};
-    double cleave_rage_cost = 20;
+    double rage_lost_execute_batch_{};
+    double rage_lost_stance_swap_{};
+    double rage_lost_capped_{};
     std::vector<std::vector<double>> damage_time_lapse{};
-    std::map<Damage_source, int> source_map{{Damage_source::white_mh, 0},      {Damage_source::white_oh, 1},
-                                            {Damage_source::bloodthirst, 2},   {Damage_source::execute, 3},
-                                            {Damage_source::heroic_strike, 4}, {Damage_source::cleave, 5},
-                                            {Damage_source::whirlwind, 6},     {Damage_source::hamstring, 7},
-                                            {Damage_source::deep_wounds, 8},   {Damage_source::item_hit_effects, 9}};
+    std::map<Damage_source, int> source_map{
+        {Damage_source::white_mh, 0},         {Damage_source::white_oh, 1},      {Damage_source::bloodthirst, 2},
+        {Damage_source::execute, 3},          {Damage_source::heroic_strike, 4}, {Damage_source::cleave, 5},
+        {Damage_source::whirlwind, 6},        {Damage_source::hamstring, 7},     {Damage_source::deep_wounds, 8},
+        {Damage_source::item_hit_effects, 9}, {Damage_source::overpower, 10}};
 };
 
 #include "Combat_simulator.tcc"

@@ -37,6 +37,9 @@ EMSCRIPTEN_BINDINGS(module)
         .field("whirlwind_bt_cooldown_thresh", &Sim_input::whirlwind_bt_cooldown_thresh)
         .field("hamstring_cd_thresh", &Sim_input::hamstring_cd_thresh)
         .field("hamstring_thresh_dd", &Sim_input::hamstring_thresh_dd)
+        .field("overpower_rage_thresh", &Sim_input::overpower_rage_thresh)
+        .field("overpower_bt_cooldown_thresh", &Sim_input::overpower_bt_cooldown_thresh)
+        .field("overpower_ww_cooldown_thresh", &Sim_input::overpower_ww_cooldown_thresh)
         .field("initial_rage", &Sim_input::initial_rage);
 
     value_object<Sim_input_mult>("Sim_input_mult")
@@ -55,6 +58,9 @@ EMSCRIPTEN_BINDINGS(module)
         .field("whirlwind_bt_cooldown_thresh", &Sim_input_mult::whirlwind_bt_cooldown_thresh)
         .field("hamstring_cd_thresh", &Sim_input_mult::hamstring_cd_thresh)
         .field("hamstring_thresh_dd", &Sim_input_mult::hamstring_thresh_dd)
+        .field("overpower_rage_thresh", &Sim_input_mult::overpower_rage_thresh)
+        .field("overpower_bt_cooldown_thresh", &Sim_input_mult::overpower_bt_cooldown_thresh)
+        .field("overpower_ww_cooldown_thresh", &Sim_input_mult::overpower_ww_cooldown_thresh)
         .field("initial_rage", &Sim_input_mult::initial_rage)
         .field("max_optimize_time", &Sim_input_mult::max_optimize_time);
 
@@ -72,7 +78,5 @@ EMSCRIPTEN_BINDINGS(module)
         .field("std_dps", &Sim_output::std_dps)
         .field("messages", &Sim_output::messages);
 
-    value_object<Sim_output_mult>("Sim_output_mult")
-        .field("messages", &Sim_output_mult::messages);
-
+    value_object<Sim_output_mult>("Sim_output_mult").field("messages", &Sim_output_mult::messages);
 };

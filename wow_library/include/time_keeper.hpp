@@ -1,8 +1,6 @@
 #ifndef WOW_SIMULATOR_TIME_KEEPER_HPP
 #define WOW_SIMULATOR_TIME_KEEPER_HPP
 
-#include <algorithm>
-
 class Time_keeper
 {
 public:
@@ -11,6 +9,7 @@ public:
     void increment(double dt)
     {
         blood_thirst_cd -= dt;
+        overpower_cd -= dt;
         whirlwind_cd -= dt;
         global_cd -= dt;
         time += dt;
@@ -19,17 +18,19 @@ public:
     void reset()
     {
         blood_thirst_cd = -1e-10;
+        overpower_cd = -1e-10;
         whirlwind_cd = -1e-10;
         global_cd = -1e-10;
         time = 0.0;
     }
 
-    constexpr double get_dynamic_time_step(double mh_dt,
-                                           double oh_dt,
-                                           double buff_dt,
-                                           double sim_dt)
+    constexpr double get_dynamic_time_step(double mh_dt, double oh_dt, double buff_dt, double sim_dt)
     {
         double dt = 100.0;
+        if (overpower_cd > 0.0)
+        {
+            dt = std::min(overpower_cd, dt);
+        }
         if (blood_thirst_cd > 0.0)
         {
             dt = std::min(blood_thirst_cd, dt);
@@ -51,10 +52,10 @@ public:
     }
 
     double blood_thirst_cd;
+    double overpower_cd;
     double whirlwind_cd;
     double global_cd;
     double time;
 };
 
-
-#endif //WOW_SIMULATOR_TIME_KEEPER_HPP
+#endif // WOW_SIMULATOR_TIME_KEEPER_HPP

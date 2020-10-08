@@ -183,11 +183,17 @@
 
 <head>
     <title>wow fury sim</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="emscripten/wow_interface.js"></script>
+    <meta name="site_description" content="WoW Classic simulator for Fury Warriors">
 </head>
 
 <h1>wow fury sim</h1>
 
-<body style="background-color:#bfbfbf;" onload="openTab('event', 'Simulator');open_armor()">
+<body style="background-color:#bfbfbf;"
+      onload="openTab('event', 'Simulator');open_armor();show_div('cleave_if_adds', 'cleave_div');
+      show_div('use_hamstring', 'hamstring_div');show_div('hint_combat_box', 'hint_combat_div')">
 
 <div class="tab">
     <button class="tablinks" onclick="openTab(event, 'Simulator')">Simulator</button>
@@ -1190,7 +1196,8 @@
         <div class="description" style="display:none" id="compare_div">
             <b>Description:</b> Select an item config and press submit.<br/>
             (To generate a config file press "Save config to file" at the top of the page)<br/>
-            <input type="file" id="myCompareFile" name="filename" accept=".txt" onclick="show_div('compare_div')">
+            <input type="file" id="myCompareFile" name="filename" accept=".txt"
+                   onclick="show_div('do_comparison', 'compare_div')">
             <input type="submit" onclick="load_compare_data()">
         </div>
         <br/>
@@ -1446,31 +1453,72 @@
         <input type="checkbox" id="curse_of_recklessness" checked>
         <label for="curse_of_recklessness"> Curse of recklessness active</label><br><br/>
 
-        <b>Combat strategy:</b><br/>
-        <input type="checkbox" id="use_bt_in_exec_phase">
-        <label for="use_bt_in_exec_phase"> Use bloodthirst in execute phase</label><br>
-        <input type="checkbox" id="use_hs_in_exec_phase" checked>
-        <label for="use_hs_in_exec_phase"> Use heroic strike in execute phase</label><br>
+        <b>Combat policy:</b><br/>
+        <input type="checkbox" id="hint_combat_box" onclick="show_div('hint_combat_box', 'hint_combat_div')">
+        <label for="hint_combat_box"><b> Information about CD config.</b></label><br>
+        <div class="description" id="hint_combat_div">
+            If an ability depends on an <i>inactivated</i> ability's CD, set that threshold to be
+            "-1000".<br>
+            E.g., if whirlwind is inactivated, and you want to use overpower set:<br>
+            "Overpower when whirlwind CD is above: -1000".<br>
+        </div>
+
+        <input type="checkbox" id="use_bloodthirst" checked onclick="show_div('use_bloodthirst', 'bloodthirst_div')">
+        <label for="use_bloodthirst"><b> Use bloodthirst</b></label><br>
+        <div class="description" id="bloodthirst_div">
+            <input type="checkbox" id="use_bt_in_exec_phase">
+            <label for="use_bt_in_exec_phase"> Use bloodthirst in execute phase</label><br>
+        </div>
+
+        <input type="checkbox" id="use_whirlwind" checked onclick="show_div('use_whirlwind', 'whirlwind_div')">
+        <label for="use_whirlwind"><b> Use whirlwind</b></label><br>
+        <div class="description" id="whirlwind_div">
+            <label for="whirlwind_rage_thresh_dd">Whirlwind when rage is above:</label>
+            <input type="number" id="whirlwind_rage_thresh_dd" name="quantity" min="0" max="100" value="0"><br>
+            <label for="whirlwind_bt_cooldown_thresh_dd">Whirlwind when bloodthirst CD is above:</label>
+            <input type="number" id="whirlwind_bt_cooldown_thresh_dd" name="quantity" min="0" max="6" value="1.5"><br>
+        </div>
+
+        <input type="checkbox" id="use_overpower" checked onclick="show_div('use_overpower', 'overpower_div')">
+        <label for="use_overpower"><b> Use overpower</b></label><br>
+        <div class="description" id="overpower_div">
+            <label for="overpower_rage_thresh_dd">Overpower when rage is below:</label>
+            <input type="number" id="overpower_rage_thresh_dd" name="quantity" min="0" max="100" value="50"><br>
+            <label for="overpower_bt_cooldown_thresh_dd">Overpower when bloodthirst CD is above:</label>
+            <input type="number" id="overpower_bt_cooldown_thresh_dd" name="quantity" min="0" max="6" value="3.0"><br>
+            <label for="overpower_ww_cooldown_thresh_dd">Overpower when whirlwind CD is above:</label>
+            <input type="number" id="overpower_ww_cooldown_thresh_dd" name="quantity" min="0" max="10" value="3.0"><br>
+        </div>
+
+        <input type="checkbox" id="use_heroic_strike" checked
+               onclick="show_div('use_heroic_strike', 'heroic_strike_div')">
+        <label for="use_heroic_strike"><b> Use Heroic Strike</b></label><br>
+        <div class="description" id="heroic_strike_div">
+            <label for="heroic_strike_rage_thresh_dd">Heroic strike when rage is above:</label>
+            <input type="number" id="heroic_strike_rage_thresh_dd" name="quantity" min="0" max="100" value="50"><br>
+            <input type="checkbox" id="use_hs_in_exec_phase">
+            <label for="use_hs_in_exec_phase"> Use heroic strike in execute phase</label><br>
+        </div>
+
+        <input type="checkbox" id="cleave_if_adds" onclick="show_div('cleave_if_adds', 'cleave_div')">
+        <label for="cleave_if_adds"> <b>Use cleave</b> (used if there are more than one target.)</label><br>
+        <div class="description" id="cleave_div">
+            <label for="cleave_rage_thresh_dd">Cleave when rage is above:</label>
+            <input type="number" id="cleave_rage_thresh_dd" name="quantity" min="0" max="100" value="50"><br>
+        </div>
+
+        <input type="checkbox" id="use_hamstring" onclick="show_div('use_hamstring', 'hamstring_div')">
+        <label for="use_hamstring"><b> Use hamstring</b></label><br>
+        <div class="description" id="hamstring_div">
+            <label for="hamstring_cd_thresh_dd">Hamstring when bloodthirst/Whirlwind CD is above:</label>
+            <input type="number" id="hamstring_cd_thresh_dd" name="quantity" min="0" max="6" value="2.0"><br>
+            <label for="hamstring_thresh_dd">Hamstring when rage is above:</label>
+            <input type="number" id="hamstring_thresh_dd" name="quantity" min="0" max="100" value="70"><br><br>
+        </div>
+
+        <b>Other:</b><br/>
         <label for="initial_rage">Initial rage when fight starts:</label>
-        <input type="number" id="initial_rage" name="quantity" min="0" max="100" value="0.0"><br/>
-        <label for="heroic_strike_rage_thresh_dd">Heroic strike when rage is above:</label>
-        <input type="number" id="heroic_strike_rage_thresh_dd" name="quantity" min="0" max="100" value="50"><br>
-        <label for="whirlwind_rage_thresh_dd">Whirlwind when rage is above:</label>
-        <input type="number" id="whirlwind_rage_thresh_dd" name="quantity" min="0" max="100" value="0"><br>
-        <label for="whirlwind_bt_cooldown_thresh_dd">Whirlwind when bloodthirst CD is above:</label>
-        <input type="number" id="whirlwind_bt_cooldown_thresh_dd" name="quantity" min="0" max="6" value="1.5"><br>
-
-        <input type="checkbox" id="cleave_if_adds" checked>
-        <label for="cleave_if_adds"> Use cleave if there are more than one target.</label><br>
-        <label for="cleave_rage_thresh_dd">Cleave when rage is above:</label>
-        <input type="number" id="cleave_rage_thresh_dd" name="quantity" min="0" max="100" value="50"><br>
-
-        <input type="checkbox" id="use_hamstring">
-        <label for="use_hamstring"> Use hamstring</label><br>
-        <label for="hamstring_cd_thresh_dd">Hamstring when bloodthirst/Whirlwind CD is above:</label>
-        <input type="number" id="hamstring_cd_thresh_dd" name="quantity" min="0" max="6" value="2.0"><br>
-        <label for="hamstring_thresh_dd">Hamstring when rage is above:</label>
-        <input type="number" id="hamstring_thresh_dd" name="quantity" min="0" max="100" value="70"><br><br>
+        <input type="number" id="initial_rage" name="quantity" min="0" max="100" value="0.0"><br><br>
 
         <b>Boss settings:</b><br/>
         <b>Default:</b><br/>
@@ -1580,16 +1628,14 @@
     <canvas id="bar-chart-proc"></canvas>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <script>
-    function show_div(box) {
-        let vis = "none";
-        if (document.getElementById("do_comparison").checked) {
-            vis = "block";
+    function show_div(box, div) {
+        if (document.getElementById(box).checked === true) {
+            document.getElementById(div).style.display = "block";
+        } else {
+            document.getElementById(div).style.display = "none";
         }
-        document.getElementById(box).style.display = vis;
     }
 
     function unique_checkboxes(clicked_box, list_of_boxes) {
@@ -1680,8 +1726,13 @@
     let sim_options = ["faerie_fire", "exposed_armor", "curse_of_recklessness", "death_wish",
         "recklessness", "mighty_rage_potion", "default_boss", "sulfuron_harbinger", "golemagg", "vaelastrasz",
         "chromaggus", "debug_on", "use_bt_in_exec_phase", "use_hs_in_exec_phase", "cleave_if_adds",
-        "hamstring_cd_thresh_dd", "hamstring_thresh_dd", "initial_rage", "use_hamstring", "item_strengths",
-        "deep_wounds", "heroic_strike_aq"];
+        "initial_rage", "use_hamstring", "use_bloodthirst",
+        "use_whirlwind", "use_overpower", "use_heroic_strike", "item_strengths", "deep_wounds", "heroic_strike_aq"];
+
+    let float_sim_options = ["n_simulations_dd", "n_simulations_stat_dd", "opponent_level_dd", "fight_time_dd",
+        "sunder_armor_dd", "heroic_strike_rage_thresh_dd", "cleave_rage_thresh_dd", "whirlwind_rage_thresh_dd",
+        "whirlwind_bt_cooldown_thresh_dd", "overpower_rage_thresh_dd", "overpower_bt_cooldown_thresh_dd",
+        "overpower_ww_cooldown_thresh_dd", "hamstring_cd_thresh_dd"];
 
     let stat_weigths = ["stat_weight_hit", "stat_weight_crit", "stat_weight_haste",
         "stat_weight_extra_hit", "stat_weight_skill", "stat_weight_mh_speed", "stat_weight_oh_speed"];
@@ -1938,10 +1989,7 @@
             file_content += consumables[i] + " " + consumables_input[i] + "\n";
         }
 
-        let var_array = ["n_simulations_dd", "n_simulations_stat_dd", "opponent_level_dd", "fight_time_dd",
-            "sunder_armor_dd", "heroic_strike_rage_thresh_dd", "cleave_rage_thresh_dd", "whirlwind_rage_thresh_dd",
-            "whirlwind_bt_cooldown_thresh_dd"];
-        for (let variable of var_array) {
+        for (let variable of float_sim_options) {
             file_content += variable + " " + parseFloat(document.getElementById(variable).value) + "\n";
         }
 
@@ -2194,6 +2242,9 @@
         let whirlwind_bt_cooldown_thresh = parseFloat(document.getElementById("whirlwind_bt_cooldown_thresh_dd").value);
         let hamstring_cd_thresh = parseFloat(document.getElementById("hamstring_cd_thresh_dd").value);
         let hamstring_thresh = parseFloat(document.getElementById("hamstring_thresh_dd").value);
+        let overpower_rage_thresh_dd = parseFloat(document.getElementById("overpower_rage_thresh_dd").value);
+        let overpower_bt_cooldown_thresh_dd = parseFloat(document.getElementById("overpower_bt_cooldown_thresh_dd").value);
+        let overpower_ww_cooldown_thresh_dd = parseFloat(document.getElementById("overpower_ww_cooldown_thresh_dd").value);
         let initial_rage = parseFloat(document.getElementById("initial_rage").value);
 
         let total_simulations = n_simulations_dd;
@@ -2234,6 +2285,9 @@
                 whirlwind_bt_cooldown_thresh: whirlwind_bt_cooldown_thresh,
                 hamstring_cd_thresh: hamstring_cd_thresh,
                 hamstring_thresh_dd: hamstring_thresh,
+                overpower_rage_thresh_dd: overpower_rage_thresh_dd,
+                overpower_bt_cooldown_thresh_dd: overpower_bt_cooldown_thresh_dd,
+                overpower_ww_cooldown_thresh_dd: overpower_ww_cooldown_thresh_dd,
                 initial_rage: initial_rage,
                 max_optimize_time: max_optimize_time,
             };
@@ -2271,6 +2325,9 @@
                 whirlwind_bt_cooldown_thresh: whirlwind_bt_cooldown_thresh,
                 hamstring_cd_thresh: hamstring_cd_thresh,
                 hamstring_thresh_dd: hamstring_thresh,
+                overpower_rage_thresh_dd: overpower_rage_thresh_dd,
+                overpower_bt_cooldown_thresh_dd: overpower_bt_cooldown_thresh_dd,
+                overpower_ww_cooldown_thresh_dd: overpower_ww_cooldown_thresh_dd,
                 initial_rage: initial_rage,
             };
 
@@ -2400,7 +2457,9 @@
                 proc_counter[k] = proc_list[k].counter;
             }
 
-            let colors = ["#3e95cd", "#8e5ea2", "#FFFF00", "#c45850", "#e8c3b9", "#990099", "#145A32", "#3333cc", "#FFFFFF"];
+            let colors = ["#3e95cd", "#8e5ea2", "#FFFF00", "#c45850",
+                "#e8c3b9", "#990099", "#145A32", "#3333cc",
+                "#B300C4", "#00FF08", "#FF000A", "#FFFFFF"];
             let damage_name = [];
             let damage_vec = [];
             for (let i = 0; i < result["time_lapse_names"].size(); i++) {
@@ -2834,6 +2893,4 @@
         }
     }
 </script>
-
-<script src="emscripten/wow_interface.js"></script>
 </body>

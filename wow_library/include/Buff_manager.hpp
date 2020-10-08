@@ -113,8 +113,8 @@ public:
         return dt;
     }
 
-    void increment(double dt, double current_time, double time_left, double& rage, double& global_cooldown,
-                   std::vector<std::string>& status, bool debug)
+    void increment(double dt, double current_time, double time_left, double& rage, double& rage_lost_stance,
+                   double& rage_lost_exec, double& global_cooldown, std::vector<std::string>& status, bool debug)
     {
         size_t i = 0;
         next_event = 10;
@@ -130,6 +130,23 @@ public:
                 if (debug)
                 {
                     status.emplace_back(stat_gains[i].id + " fades.");
+                }
+                if (stat_gains[i].id == "battle_stance")
+                {
+                    if (rage > 25.0)
+                    {
+                        rage_lost_stance += rage - 25;
+                        rage = 25;
+                    }
+                }
+                else if (stat_gains[i].id == "execute_rage_batch")
+                {
+                    if (rage > rage_before_execute)
+                    {
+                        rage_lost_exec += rage - rage_before_execute;
+                    }
+                    rage = 0;
+                    status.emplace_back("Current rage: 0");
                 }
                 if (stat_gains[i].special_stats.hit > 0.0 || stat_gains[i].special_stats.critical_strike > 0.0)
                 {
@@ -229,7 +246,7 @@ public:
                 over_time_buffs[i].current_ticks++;
                 if (over_time_buffs[i].damage > 0.0)
                 {
-                    deep_wounds_damage+=over_time_buffs[i].damage;
+                    deep_wounds_damage += over_time_buffs[i].damage;
                     deep_wounds_timestamps.push_back(current_time);
                 }
                 if (debug)
@@ -335,6 +352,18 @@ public:
         procs.emplace_back(name, 1);
     }
 
+    bool can_do_overpower()
+    {
+        for (auto& gain : stat_gains)
+        {
+            if ("overpower_aura" == gain.id)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     bool need_to_recompute_hittables{false};
     bool performance_mode{false};
     Special_stats* simulation_special_stats;
@@ -345,6 +374,7 @@ public:
     std::vector<Hit_effect>* hit_effects_oh;
     std::vector<Use_effect> use_effects;
     double next_event = 10;
+    double rage_before_execute{};
     int min_interval = 10;
     Aura_uptime aura_uptime;
     std::vector<Proc> procs;
