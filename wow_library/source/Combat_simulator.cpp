@@ -342,7 +342,7 @@ void Combat_simulator::manage_flurry(Hit_result hit_result, Special_stats& speci
         }
         simulator_cout(flurry_charges, " flurry charges");
         assert(special_stats.haste > -.1);
-        assert(special_stats.haste < .8);
+        assert(special_stats.haste < 1.2);
     }
 }
 
