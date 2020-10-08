@@ -6,7 +6,7 @@ namespace
 {
 constexpr double rage_factor = 15.0 / 230.6 / 2.0;
 
-//constexpr double rage_from_damage_taken(double damage)
+// constexpr double rage_from_damage_taken(double damage)
 //{
 //    return damage * 5 / 2 / 230.6;
 //}
@@ -1050,9 +1050,13 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
 
                 if (config.combat.use_whirlwind)
                 {
+                    bool use_ww = true;
+                    if (config.combat.use_bloodthirst)
+                    {
+                        use_ww = time_keeper_.blood_thirst_cd > config.combat.whirlwind_bt_cooldown_thresh;
+                    }
                     if (time_keeper_.whirlwind_cd < 0.0 && rage > config.combat.whirlwind_rage_thresh && rage > 25 &&
-                        time_keeper_.global_cd < 0 &&
-                        time_keeper_.blood_thirst_cd > config.combat.whirlwind_bt_cooldown_thresh)
+                        time_keeper_.global_cd < 0 && use_ww)
                     {
                         whirlwind(weapons[0], special_stats, rage, damage_sources, flurry_charges);
                     }
@@ -1060,10 +1064,17 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
 
                 if (config.combat.use_overpower)
                 {
+                    bool use_op = true;
+                    if (config.combat.use_bloodthirst)
+                    {
+                        use_op &= time_keeper_.blood_thirst_cd > config.combat.overpower_bt_cooldown_thresh;
+                    }
+                    if (config.combat.use_whirlwind)
+                    {
+                        use_op &= time_keeper_.whirlwind_cd > config.combat.overpower_ww_cooldown_thresh;
+                    }
                     if (time_keeper_.overpower_cd < 0.0 && rage < config.combat.overpower_rage_thresh && rage > 5 &&
-                        time_keeper_.global_cd < 0 && buff_manager_.can_do_overpower() &&
-                        time_keeper_.blood_thirst_cd > config.combat.overpower_bt_cooldown_thresh &&
-                        time_keeper_.whirlwind_cd > config.combat.overpower_ww_cooldown_thresh)
+                        time_keeper_.global_cd < 0 && buff_manager_.can_do_overpower() && use_op)
                     {
                         overpower(weapons[0], special_stats, rage, damage_sources, flurry_charges);
                     }
@@ -1071,9 +1082,16 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
 
                 if (config.combat.use_hamstring)
                 {
-                    if (time_keeper_.whirlwind_cd > config.combat.hamstring_cd_thresh &&
-                        time_keeper_.blood_thirst_cd > config.combat.hamstring_cd_thresh &&
-                        rage > config.combat.hamstring_thresh_dd && time_keeper_.global_cd < 0)
+                    bool use_ham = true;
+                    if (config.combat.use_bloodthirst)
+                    {
+                        use_ham &= time_keeper_.blood_thirst_cd > config.combat.hamstring_cd_thresh;
+                    }
+                    if (config.combat.use_whirlwind)
+                    {
+                        use_ham &= time_keeper_.whirlwind_cd > config.combat.hamstring_cd_thresh;
+                    }
+                    if (rage > config.combat.hamstring_thresh_dd && time_keeper_.global_cd < 0 && use_ham)
                     {
                         hamstring(weapons[0], special_stats, rage, damage_sources, flurry_charges);
                     }
