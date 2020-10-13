@@ -179,13 +179,13 @@ int main()
 
     mult_armor_vec.emplace_back("wristguards_of_stability");
     mult_armor_vec.emplace_back("vambraces_of_the_sadist");
-    mult_armor_vec.emplace_back("wristhuards_of_true_flight");
+    mult_armor_vec.emplace_back("wristguards_of_true_flight");
     mult_armor_vec.emplace_back("battleborn_armbraces");
     mult_armor_vec.emplace_back("zandalar_armguards");
     mult_armor_vec.emplace_back("blinkstrike");
     mult_armor_vec.emplace_back("bracers_of_brutality");
     mult_armor_vec.emplace_back("hive_defiler_wristguards");
-    mult_armor_vec.emplace_back("quiraji_execution_bracers");
+    mult_armor_vec.emplace_back("qiraji_execution_bracers");
     mult_armor_vec.emplace_back("berserker_bracers");
     mult_armor_vec.emplace_back("abyssal_plate_vambraces");
     mult_armor_vec.emplace_back("bracers_of_heroism");
@@ -284,7 +284,7 @@ int main()
     //    mult_weapons_vec.emplace_back("mirahs_song");
     //    mult_weapons_vec.emplace_back("viskag");
     //    mult_weapons_vec.emplace_back("quel_serrar");
-    //    mult_weapons_vec.emplace_back("ancient_quiraji_ripper");
+    //    mult_weapons_vec.emplace_back("ancient_qiraji_ripper");
     //    mult_weapons_vec.emplace_back("dal_rends_sacred_charge");
     //    mult_weapons_vec.emplace_back("dal_rends_tribal_guardian");
     //    mult_weapons_vec.emplace_back("warblade_hakkari_mh");
@@ -332,7 +332,7 @@ int main()
     //    mult_weapons_vec.emplace_back("ironfoe");
     //    mult_weapons_vec.emplace_back("mass_of_mcgowan");
     //    mult_weapons_vec.emplace_back("sceptre_of_smiting");
-    //    mult_weapons_vec.emplace_back("blessed_quiraji_warhammer");
+    //    mult_weapons_vec.emplace_back("blessed_qiraji_warhammer");
     //    mult_weapons_vec.emplace_back("persuader");
 
     std::vector<std::string> buff_vec;
