@@ -101,6 +101,7 @@ public:
         hit_effects_oh = &hit_effects_oh_input;
         use_effects = use_effects_input;
         deep_wounds_damage = 0.0;
+        rage_spent_executing = 0.0;
         deep_wounds_timestamps.clear();
     };
 
@@ -145,6 +146,7 @@ public:
                     {
                         rage_lost_exec += rage - rage_before_execute;
                     }
+                    rage_spent_executing += rage;
                     rage = 0;
                     status.emplace_back("Current rage: 0");
                 }
@@ -375,6 +377,7 @@ public:
     std::vector<Use_effect> use_effects;
     double next_event = 10;
     double rage_before_execute{};
+    double rage_spent_executing{};
     int min_interval = 10;
     Aura_uptime aura_uptime;
     std::vector<Proc> procs;

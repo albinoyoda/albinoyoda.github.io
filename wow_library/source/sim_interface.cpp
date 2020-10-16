@@ -456,32 +456,17 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     std::string character_stats = get_character_stat(character);
 
     std::string rage_info = "<b>Rage Statistics:</b><br>";
+    rage_info += "(Average per simulation)<br>";
     rage_info += "Rage lost to rage cap (gaining rage when at 100): <b>" +
-                 string_with_precision(simulator.get_rage_lost_capped() / double(simulator.get_n_simulations()), 3) +"</b><br>";
+                 string_with_precision(simulator.get_rage_lost_capped() / double(simulator.get_n_simulations()), 3) +
+                 "</b><br>";
     rage_info += "</b>Rage lost when changing stace (cutting rage at 25): <b>" +
-                 string_with_precision(simulator.get_rage_lost_stance() / double(simulator.get_n_simulations()), 3)+"</b><br>";
-    rage_info += "</b>Rage lost to execute batch window (rage gained during two server cycles after execute is cast will be lost): <b>" +
-                 string_with_precision(simulator.get_rage_lost_exec() / double(simulator.get_n_simulations()), 3)+"</b><br>";
-
-    config.performance_mode = true;
-    if (input.compare_armor.size() == 15 && input.compare_weapons.size() == 2)
-    {
-        Combat_simulator simulator_compare{};
-        simulator_compare.set_config(config);
-        Character character2 = character_setup(armory, input.race[0], input.compare_armor, input.compare_weapons,
-                                               temp_buffs, input.enchants);
-
-        simulator_compare.simulate(character2);
-
-        double mean_init_2 = simulator_compare.get_dps_mean();
-        double std_init_2 = std::sqrt(simulator_compare.get_dps_variance());
-        double sample_std_init_2 = Statistics::sample_deviation(std_init_2, config.n_batches);
-
-        character_stats = get_character_stat(character, character2);
-
-        mean_dps_vec.push_back(mean_init_2);
-        sample_std_dps_vec.push_back(sample_std_init_2);
-    }
+                 string_with_precision(simulator.get_rage_lost_stance() / double(simulator.get_n_simulations()), 3) +
+                 "</b><br>";
+    rage_info += "</b>Rage lost to execute batch window (rage gained during two server cycles after execute is cast "
+                 "will be lost): <b>" +
+                 string_with_precision(simulator.get_rage_lost_exec() / double(simulator.get_n_simulations()), 3) +
+                 "</b><br>";
 
     std::string extra_info_string = "<b>Fight stats vs. target:</b> <br/>";
     extra_info_string += "<b>Hit:</b> <br/>";
@@ -520,6 +505,191 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     double dodge_chance = yellow_ht[1] - yellow_ht[0];
     extra_info_string += percent_to_str("Target dodge chance", dodge_chance, "(based on skill difference)") + "<br><"
                                                                                                               "br>";
+
+    std::string dpr_info = "<br>(Hint: Ability damage per rage computations can be turned on under 'Simulation "
+                           "settings'";
+    config.performance_mode = true;
+    if (find_string(input.options, "compute_dpr"))
+    {
+        config.n_batches = 5000;
+        dpr_info = "<br><b>Ability damage per rage:</b><br>";
+        dpr_info += "DPR for ability X is computed as following:<br> "
+                    "((Normal DPS) - (DPS where ability X costs rage but has no effect)) / (rage cost of ability "
+                    "X)<br>";
+        auto dmg_dist = simulator.get_damage_distribution();
+        if (config.combat.use_bloodthirst)
+        {
+            double avg_bt_casts =
+                static_cast<double>(dmg_dist.bloodthirst_count) / static_cast<double>(input.n_simulations);
+            double dmg_per_rage = 0.0;
+            if (avg_bt_casts > 0.0)
+            {
+                config.dpr_settings.compute_dpr_bt_ = true;
+                Combat_simulator simulator_dpr{};
+                simulator_dpr.set_config(config);
+                simulator_dpr.simulate(character, 0, false, false);
+                double delta_dps = dps_mean - simulator_dpr.get_dps_mean();
+                double dmg_tot = delta_dps * (config.sim_time - 1);
+                double dmg_per_hit = dmg_tot / avg_bt_casts;
+                dmg_per_rage = dmg_per_hit / 30.0;
+                dpr_info += "<b>Bloodthirst</b>:<br>Damage per cast:<b>" + string_with_precision(dmg_per_hit, 4) +
+                            "</b><br>Rage cost:<b>" + string_with_precision(30.0, 3) + "</b><br>DPR:<b>" +
+                            string_with_precision(dmg_per_rage, 4) + "</b><br>";
+            }
+            config.dpr_settings.compute_dpr_bt_ = false;
+        }
+        if (config.combat.use_whirlwind)
+        {
+            double avg_ww_casts =
+                static_cast<double>(dmg_dist.whirlwind_count) / static_cast<double>(input.n_simulations);
+            double dmg_per_rage = 0.0;
+            if (avg_ww_casts > 0.0)
+            {
+                config.dpr_settings.compute_dpr_ww_ = true;
+                Combat_simulator simulator_dpr{};
+                simulator_dpr.set_config(config);
+                simulator_dpr.simulate(character, 0, false, false);
+                double delta_dps = dps_mean - simulator_dpr.get_dps_mean();
+                double dmg_tot = delta_dps * (config.sim_time - 1);
+                double dmg_per_hit = dmg_tot / avg_ww_casts;
+                dmg_per_rage = dmg_per_hit / 25.0;
+                dpr_info += "<b>Whirlwind</b>:<br>Damage per cast:<b>" + string_with_precision(dmg_per_hit, 4) +
+                            "</b><br>Rage cost:<b>" + string_with_precision(25.0, 3) + "</b><br>DPR:<b>" +
+                            string_with_precision(dmg_per_rage, 4) + "</b><br>";
+            }
+            config.dpr_settings.compute_dpr_ww_ = false;
+        }
+        if (config.combat.use_heroic_strike)
+        {
+            double avg_hs_casts =
+                static_cast<double>(dmg_dist.heroic_strike_count) / static_cast<double>(input.n_simulations);
+            double dmg_per_rage = 0.0;
+            if (avg_hs_casts > 0.0)
+            {
+                config.dpr_settings.compute_dpr_hs_ = true;
+                Combat_simulator simulator_dpr{};
+                simulator_dpr.set_config(config);
+                simulator_dpr.simulate(character, 0, false, false);
+                double delta_dps = dps_mean - simulator_dpr.get_dps_mean();
+                double dmg_tot = delta_dps * (config.sim_time - 1);
+                double dmg_per_hs = dmg_tot / avg_hs_casts;
+                double avg_mh_dmg =
+                    static_cast<double>(dmg_dist.white_mh_damage) / static_cast<double>(dmg_dist.white_mh_count);
+                double avg_mh_rage_lost = avg_mh_dmg * 15.0 / 230.6 / 2.0;
+                dmg_per_rage = dmg_per_hs / (13 + avg_mh_rage_lost);
+                dpr_info += "<b>Heroic Strike</b>:<br>Damage per cast:<b>" + string_with_precision(dmg_per_hs, 4) +
+                            "</b><br>Rage cost:<b>" + string_with_precision((13 + avg_mh_rage_lost), 3) +
+                            "</b><br>DPR:<b>" + string_with_precision(dmg_per_rage, 4) + "</b><br>";
+            }
+            config.dpr_settings.compute_dpr_hs_ = false;
+        }
+        if (config.combat.cleave_if_adds)
+        {
+            double avg_cl_casts = static_cast<double>(dmg_dist.cleave_count) / static_cast<double>(input.n_simulations);
+            double dmg_per_rage = 0.0;
+            if (avg_cl_casts > 0.0)
+            {
+                config.dpr_settings.compute_dpr_cl_ = true;
+                Combat_simulator simulator_dpr{};
+                simulator_dpr.set_config(config);
+                simulator_dpr.simulate(character, 0, false, false);
+                double delta_dps = dps_mean - simulator_dpr.get_dps_mean();
+                double dmg_tot = delta_dps * (config.sim_time - 1);
+                double dmg_per_hs = dmg_tot / avg_cl_casts;
+                double avg_mh_dmg =
+                    static_cast<double>(dmg_dist.white_mh_damage) / static_cast<double>(dmg_dist.white_mh_count);
+                double avg_mh_rage_lost = avg_mh_dmg * 15.0 / 230.6 / 2.0;
+                dmg_per_rage = dmg_per_hs / (20 + avg_mh_rage_lost);
+                dpr_info += "<b>Cleave</b>:<br>Damage per cast:<b>" + string_with_precision(dmg_per_hs, 4) +
+                            "</b><br>Rage cost:<b>" + string_with_precision((20 + avg_mh_rage_lost), 3) +
+                            "</b><br>DPR:<b>" + string_with_precision(dmg_per_rage, 4) + "</b><br>";
+            }
+            config.dpr_settings.compute_dpr_cl_ = false;
+        }
+        if (config.combat.use_hamstring)
+        {
+            double avg_ha_casts =
+                static_cast<double>(dmg_dist.hamstring_count) / static_cast<double>(input.n_simulations);
+            double dmg_per_rage = 0.0;
+            if (avg_ha_casts > 0.0)
+            {
+                config.dpr_settings.compute_dpr_ha_ = true;
+                Combat_simulator simulator_dpr{};
+                simulator_dpr.set_config(config);
+                simulator_dpr.simulate(character, 0, false, false);
+                double delta_dps = dps_mean - simulator_dpr.get_dps_mean();
+                double dmg_tot = delta_dps * (config.sim_time - 1);
+                double dmg_per_ha = dmg_tot / avg_ha_casts;
+                dmg_per_rage = dmg_per_ha / 10;
+                dpr_info += "<b>Hamstring</b>:<br>Damage per cast:<b>" + string_with_precision(dmg_per_ha, 4) +
+                            "</b><br>Rage cost:<b>" + string_with_precision(10, 3) + "</b><br>DPR:<b>" +
+                            string_with_precision(dmg_per_rage, 4) + "</b><br>";
+            }
+            config.dpr_settings.compute_dpr_ha_ = false;
+        }
+        if (config.combat.use_overpower)
+        {
+            double avg_op_casts =
+                static_cast<double>(dmg_dist.overpower_count) / static_cast<double>(input.n_simulations);
+            double dmg_per_rage = 0.0;
+            if (avg_op_casts > 0.0)
+            {
+                config.dpr_settings.compute_dpr_op_ = true;
+                Combat_simulator simulator_dpr{};
+                simulator_dpr.set_config(config);
+                simulator_dpr.simulate(character, 0, false, false);
+                double delta_dps = dps_mean - simulator_dpr.get_dps_mean();
+                double dmg_tot = delta_dps * (config.sim_time - 1);
+                double dmg_per_hit = dmg_tot / avg_op_casts;
+                double overpower_cost =
+                    simulator.get_rage_lost_stance() / double(simulator.get_n_simulations()) / avg_op_casts + 5.0;
+                dmg_per_rage = dmg_per_hit / overpower_cost;
+                dpr_info += "<b>Overpower</b>:<br>Damage per cast:<b>" + string_with_precision(dmg_per_hit, 4) +
+                            "</b><br>Rage cost:<b>" + string_with_precision(overpower_cost, 3) + "</b><br>DPR:<b>" +
+                            string_with_precision(dmg_per_rage, 4) + "</b><br>";
+            }
+            config.dpr_settings.compute_dpr_op_ = false;
+        }
+
+        double avg_ex_casts = static_cast<double>(dmg_dist.execute_count) / static_cast<double>(input.n_simulations);
+        double dmg_per_rage = 0.0;
+        if (avg_ex_casts > 0.0)
+        {
+            config.dpr_settings.compute_dpr_ex_ = true;
+            Combat_simulator simulator_dpr{};
+            simulator_dpr.set_config(config);
+            simulator_dpr.simulate(character, 0, false, false);
+            double delta_dps = dps_mean - simulator_dpr.get_dps_mean();
+            double dmg_tot = delta_dps * (config.sim_time - 1);
+            double dmg_per_hit = dmg_tot / avg_ex_casts;
+            double execute_cost = simulator.get_avg_rage_spent_executing() / avg_ex_casts;
+            dmg_per_rage = dmg_per_hit / execute_cost;
+            dpr_info += "<b>Execute</b>:<br>Damage per cast:<b>" + string_with_precision(dmg_per_hit, 4) +
+                        "</b><br>Rage cost:<b>" + string_with_precision(execute_cost, 3) + "</b><br>DPR:<b>" +
+                        string_with_precision(dmg_per_rage, 4) + "</b><br>";
+        }
+        config.dpr_settings.compute_dpr_ex_ = false;
+    }
+    config.n_batches = input.n_simulations;
+
+    if (input.compare_armor.size() == 15 && input.compare_weapons.size() == 2)
+    {
+        Combat_simulator simulator_compare{};
+        simulator_compare.set_config(config);
+        Character character2 = character_setup(armory, input.race[0], input.compare_armor, input.compare_weapons,
+                                               temp_buffs, input.enchants);
+
+        simulator_compare.simulate(character2);
+
+        double mean_init_2 = simulator_compare.get_dps_mean();
+        double std_init_2 = std::sqrt(simulator_compare.get_dps_variance());
+        double sample_std_init_2 = Statistics::sample_deviation(std_init_2, config.n_batches);
+
+        character_stats = get_character_stat(character, character2);
+
+        mean_dps_vec.push_back(mean_init_2);
+        sample_std_dps_vec.push_back(sample_std_init_2);
+    }
 
     std::string item_strengths_string;
     if (find_string(input.options, "item_strengths"))
@@ -803,7 +973,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
             aura_uptimes,
             proc_statistics,
             stat_weights,
-            {item_strengths_string + extra_info_string + rage_info, debug_topic},
+            {item_strengths_string + extra_info_string + rage_info + dpr_info, debug_topic},
             mean_dps_vec,
             sample_std_dps_vec,
             {character_stats}};

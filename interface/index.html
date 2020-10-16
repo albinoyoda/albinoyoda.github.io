@@ -1574,6 +1574,9 @@
         <input type="checkbox" id="stat_weight_oh_speed">
         <label for="stat_weight_oh_speed"> Calculate stat weight for &plusmn 0.5s off hand weapon speed.</label><br><br>
 
+        <input type="checkbox" id="compute_dpr">
+        <label for="compute_dpr"> Compute DPR values for abilities.</label><br><br>
+
         <b>Debug:</b><br/>
         <input type="checkbox" id="debug_on">
         <label for="debug_on"> Display combat debug information for the median fight.</label><br>
@@ -1719,8 +1722,8 @@
     let sim_options = ["faerie_fire", "exposed_armor", "curse_of_recklessness", "death_wish",
         "recklessness", "mighty_rage_potion", "default_boss", "sulfuron_harbinger", "golemagg", "vaelastrasz",
         "chromaggus", "debug_on", "use_bt_in_exec_phase", "use_hs_in_exec_phase", "cleave_if_adds",
-        "initial_rage", "use_hamstring", "use_bloodthirst",
-        "use_whirlwind", "use_overpower", "use_heroic_strike", "item_strengths", "deep_wounds", "heroic_strike_aq"];
+        "initial_rage", "use_hamstring", "use_bloodthirst", "use_whirlwind", "use_overpower", "use_heroic_strike",
+        "item_strengths", "deep_wounds", "heroic_strike_aq", "compute_dpr"];
 
     let float_sim_options = ["n_simulations_dd", "n_simulations_stat_dd", "opponent_level_dd", "fight_time_dd",
         "sunder_armor_dd", "heroic_strike_rage_thresh_dd", "cleave_rage_thresh_dd", "whirlwind_rage_thresh_dd",

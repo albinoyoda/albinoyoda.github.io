@@ -87,6 +87,17 @@ struct Combat_simulator_config
         bool deep_wounds{false};
     } combat;
 
+    struct dpr_t
+    {
+        bool compute_dpr_bt_{false};
+        bool compute_dpr_op_{false};
+        bool compute_dpr_ww_{false};
+        bool compute_dpr_ex_{false};
+        bool compute_dpr_ha_{false};
+        bool compute_dpr_hs_{false};
+        bool compute_dpr_cl_{false};
+    } dpr_settings;
+
     struct talents_t
     {
         bool death_wish{false};
@@ -269,6 +280,8 @@ public:
 
     constexpr int get_rage_lost_capped() const { return rage_lost_capped_; }
 
+    constexpr int get_avg_rage_spent_executing() const { return avg_rage_spent_executing_; }
+
     std::vector<double>& get_hist_x() { return hist_x; }
 
     std::vector<int>& get_hist_y() { return hist_y; }
@@ -342,6 +355,9 @@ private:
     double rage_lost_execute_batch_{};
     double rage_lost_stance_swap_{};
     double rage_lost_capped_{};
+    double avg_rage_spent_executing_{};
+    bool dpr_heroic_strike_queued_{false};
+    bool dpr_cleave_queued_{false};
     std::vector<std::vector<double>> damage_time_lapse{};
     std::map<Damage_source, int> source_map{
         {Damage_source::white_mh, 0},         {Damage_source::white_oh, 1},      {Damage_source::bloodthirst, 2},

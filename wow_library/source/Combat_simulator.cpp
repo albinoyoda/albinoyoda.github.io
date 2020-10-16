@@ -305,7 +305,7 @@ void Combat_simulator::compute_hit_table(int level_difference, int weapon_skill,
 
         hit_table_yellow_ = create_hit_table_yellow(two_hand_miss_chance, dodge_chance, crit_chance);
         hit_table_overpower_ =
-            create_hit_table_yellow(two_hand_miss_chance, 0, crit_chance + 25 * config.talents.overpower);
+            create_hit_table_yellow(two_hand_miss_chance, 0, crit_chance + 25 * config.talents.overpower - 3.0);
         damage_multipliers_yellow_ = create_multipliers(1.0, 0.1 * config.talents.impale);
     }
     else
@@ -349,6 +349,13 @@ void Combat_simulator::manage_flurry(Hit_result hit_result, Special_stats& speci
 void Combat_simulator::bloodthirst(Weapon_sim& main_hand_weapon, Special_stats& special_stats, double& rage,
                                    Damage_sources& damage_sources, int& flurry_charges)
 {
+    if (config.dpr_settings.compute_dpr_bt_)
+    {
+        get_uniform_random(100) < hit_table_yellow_[1] ? rage -= 6 : rage -= 30;
+        time_keeper_.blood_thirst_cd = 6.0;
+        time_keeper_.global_cd = 1.5;
+        return;
+    }
     simulator_cout("Bloodthirst!");
     double damage = special_stats.attack_power * 0.45;
     auto hit_outcome = generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats);
@@ -371,6 +378,14 @@ void Combat_simulator::bloodthirst(Weapon_sim& main_hand_weapon, Special_stats& 
 void Combat_simulator::overpower(Weapon_sim& main_hand_weapon, Special_stats& special_stats, double& rage,
                                  Damage_sources& damage_sources, int& flurry_charges)
 {
+    if (config.dpr_settings.compute_dpr_op_)
+    {
+        rage > 25 ? rage = 20 : rage -= 5;
+        buff_manager_.add("battle_stance", {-3.0, 0, 0}, 1.5);
+        time_keeper_.overpower_cd = 5.0;
+        time_keeper_.global_cd = 1.5;
+        return;
+    }
     simulator_cout("Changed stance: Battle Stance.");
     simulator_cout("Overpower!");
     buff_manager_.add("battle_stance", {-3.0, 0, 0}, 1.5);
@@ -397,6 +412,13 @@ void Combat_simulator::overpower(Weapon_sim& main_hand_weapon, Special_stats& sp
 void Combat_simulator::whirlwind(Weapon_sim& main_hand_weapon, Special_stats& special_stats, double& rage,
                                  Damage_sources& damage_sources, int& flurry_charges)
 {
+    if (config.dpr_settings.compute_dpr_ww_)
+    {
+        rage -= 25;
+        time_keeper_.whirlwind_cd = 10;
+        time_keeper_.global_cd = 1.5;
+        return;
+    }
     simulator_cout("Whirlwind! #targets = boss + ", adds_in_melee_range, " adds");
     simulator_cout("Whirlwind hits: ", std::min(adds_in_melee_range + 1, 4), " targets");
     double damage = main_hand_weapon.normalized_swing(special_stats.attack_power);
@@ -432,10 +454,17 @@ void Combat_simulator::whirlwind(Weapon_sim& main_hand_weapon, Special_stats& sp
 void Combat_simulator::execute(Weapon_sim& main_hand_weapon, Special_stats& special_stats, double& rage,
                                Damage_sources& damage_sources, int& flurry_charges, double execute_rage_cost)
 {
+    if (config.dpr_settings.compute_dpr_ex_)
+    {
+        get_uniform_random(100) < hit_table_yellow_[1] ? rage *= 0.85 : rage -= 30;
+        double next_server_batch = std::fmod(time_keeper_.time, 0.4);
+        buff_manager_.add("execute_rage_batch", {}, 0.4 + next_server_batch);
+        time_keeper_.global_cd = 1.5;
+        return;
+    }
     simulator_cout("Execute!");
     double damage = 600 + (rage - execute_rage_cost) * 15;
     auto hit_outcome = generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats);
-    time_keeper_.global_cd = 1.5;
     if (hit_outcome.hit_result == Hit_result::dodge || hit_outcome.hit_result == Hit_result::miss)
     {
         rage *= 0.85;
@@ -447,6 +476,7 @@ void Combat_simulator::execute(Weapon_sim& main_hand_weapon, Special_stats& spec
     double next_server_batch = std::fmod(time_keeper_.time, 0.4);
     buff_manager_.add("execute_rage_batch", {}, 0.4 + next_server_batch);
     buff_manager_.rage_before_execute = rage;
+    time_keeper_.global_cd = 1.5;
     manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges, true);
     damage_sources.add_damage(Damage_source::execute, hit_outcome.damage, time_keeper_.time);
     simulator_cout("Current rage: ", int(rage));
@@ -455,6 +485,12 @@ void Combat_simulator::execute(Weapon_sim& main_hand_weapon, Special_stats& spec
 void Combat_simulator::hamstring(Weapon_sim& main_hand_weapon, Special_stats& special_stats, double& rage,
                                  Damage_sources& damage_sources, int& flurry_charges)
 {
+    if (config.dpr_settings.compute_dpr_ha_)
+    {
+        get_uniform_random(100) < hit_table_yellow_[1] ? rage -= 2 : rage -= 10;
+        time_keeper_.global_cd = 1.5;
+        return;
+    }
     simulator_cout("Hamstring!");
     double damage = 45;
     auto hit_outcome = generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats);
@@ -646,8 +682,20 @@ void Combat_simulator::swing_weapon(Weapon_sim& weapon, Weapon_sim& main_hand_we
         // Otherwise do white hit
         hit_outcomes.emplace_back(
             generate_hit(main_hand_weapon, swing_damage, Hit_type::white, weapon.socket, special_stats));
-
-        rage += rage_generation(hit_outcomes[0].damage);
+        if (dpr_heroic_strike_queued_)
+        {
+            rage -= heroic_strike_rage_cost;
+            dpr_heroic_strike_queued_ = false;
+        }
+        else if (dpr_cleave_queued_)
+        {
+            rage -= 20;
+            dpr_cleave_queued_ = false;
+        }
+        else
+        {
+            rage += rage_generation(hit_outcomes[0].damage);
+        }
         if (hit_outcomes[0].hit_result == Hit_result::dodge)
         {
             simulator_cout("Rage gained from enemy dodging");
@@ -1022,8 +1070,18 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                 {
                     if (config.combat.use_heroic_strike)
                     {
-                        ability_queue_manager.queue_heroic_strike();
-                        simulator_cout("Heroic strike activated");
+                        if (config.dpr_settings.compute_dpr_hs_)
+                        {
+                            if (mh_swing)
+                            {
+                                rage -= config.combat.heroic_strike_rage_thresh;
+                            }
+                        }
+                        else
+                        {
+                            ability_queue_manager.queue_heroic_strike();
+                            simulator_cout("Heroic strike activated");
+                        }
                     }
                 }
                 if (config.combat.use_bt_in_exec_phase)
@@ -1101,8 +1159,15 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                 {
                     if (rage > config.combat.cleave_rage_thresh && !ability_queue_manager.cleave_queued)
                     {
-                        ability_queue_manager.queue_cleave();
-                        simulator_cout("Cleave activated");
+                        if (config.dpr_settings.compute_dpr_cl_)
+                        {
+                            dpr_cleave_queued_ = true;
+                        }
+                        else
+                        {
+                            ability_queue_manager.queue_cleave();
+                            simulator_cout("Cleave activated");
+                        }
                     }
                 }
                 else
@@ -1111,8 +1176,15 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                     {
                         if (config.combat.use_heroic_strike)
                         {
-                            ability_queue_manager.queue_heroic_strike();
-                            simulator_cout("Heroic strike activated");
+                            if (config.dpr_settings.compute_dpr_hs_)
+                            {
+                                dpr_heroic_strike_queued_ = true;
+                            }
+                            else
+                            {
+                                ability_queue_manager.queue_heroic_strike();
+                                simulator_cout("Heroic strike activated");
+                            }
                         }
                     }
                 }
@@ -1133,6 +1205,8 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         flurry_uptime_mh_ = Statistics::update_mean(flurry_uptime_mh_, iter + 1, mh_hits_w_flurry / mh_hits);
         flurry_uptime_oh_ = Statistics::update_mean(flurry_uptime_oh_, iter + 1, oh_hits_w_flurry / oh_hits);
         heroic_strike_uptime_ = Statistics::update_mean(heroic_strike_uptime_, iter + 1, oh_hits_w_heroic / oh_hits);
+        avg_rage_spent_executing_ =
+            Statistics::update_mean(avg_rage_spent_executing_, iter + 1, buff_manager_.rage_spent_executing);
         if (compute_time_lapse)
         {
             add_damage_source_to_time_lapse(damage_sources.damage_instances);
