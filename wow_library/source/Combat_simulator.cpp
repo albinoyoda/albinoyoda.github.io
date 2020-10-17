@@ -842,6 +842,15 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         use_effects_all.emplace_back(bloodrage);
     }
 
+    if (config.enable_blood_fury)
+    {
+        // TODO need strength multiplier to make this more accurate
+        double ap_boost =
+            character.total_attributes.convert_to_special_stats(character.total_special_stats).attack_power * 0.25;
+        use_effects_all.emplace_back(
+            Use_effect{"Blood_fury", Use_effect::Effect_socket::unique, {}, {0, 0, ap_boost}, 0, 15, 120, true, {}});
+    }
+
     if (config.mode.vaelastrasz)
     {
         over_time_effects.push_back(essence_of_the_red);
@@ -1026,19 +1035,6 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                 }
                 swing_weapon(weapons[1], weapons[0], special_stats, rage, damage_sources, flurry_charges);
             }
-
-            //            if (config.fuel_extra_rage)
-            //            {
-            //                if (time_keeper_.time - config.extra_rage_interval * fuel_ticks > 0.0)
-            //                {
-            //                    rage += rage_from_damage_taken(config.extra_rage_damage_amount);
-            //                    rage = std::min(100.0, rage);
-            //                    fuel_ticks++;
-            //                    simulator_cout("Rage from damage: ", config.extra_rage_damage_amount,
-            //                                   " damage, yielding: ",
-            //                                   rage_from_damage_taken(config.extra_rage_damage_amount), " rage");
-            //                }
-            //            }
 
             // Execute phase
             if (config.mode.vaelastrasz)

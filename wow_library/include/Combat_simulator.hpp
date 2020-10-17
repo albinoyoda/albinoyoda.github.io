@@ -50,13 +50,10 @@ struct Combat_simulator_config
     int n_sunder_armor_stacks = 0;
 
     // Simulator settings
-    bool use_sim_time_ramp = false;
+    bool use_sim_time_ramp{false};
     bool enable_bloodrage{false};
     bool enable_recklessness{false};
-
-    bool fuel_extra_rage{false};
-    int extra_rage_interval{};
-    int extra_rage_damage_amount{};
+    bool enable_blood_fury{false};
 
     bool display_combat_debug{false};
     bool performance_mode{false};

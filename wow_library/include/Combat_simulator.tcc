@@ -24,6 +24,10 @@ void Combat_simulator_config::get_combat_simulator_config(const T& input)
     {
         enable_recklessness = true;
     }
+    if (find_string(input.options, "enable_blood_fury"))
+    {
+        enable_blood_fury = true;
+    }
     if (find_string(input.options, "sulfuron_harbinger"))
     {
         mode.sulfuron_harbinger = true;
@@ -107,11 +111,7 @@ void Combat_simulator_config::get_combat_simulator_config(const T& input)
     combat.overpower_bt_cooldown_thresh = input.overpower_bt_cooldown_thresh;
     combat.overpower_ww_cooldown_thresh = input.overpower_ww_cooldown_thresh;
 
-    std::cout << combat.overpower_rage_thresh << ", " << combat.overpower_bt_cooldown_thresh << ", "
-              << combat.overpower_ww_cooldown_thresh << std::endl;
-
     use_sim_time_ramp = true;
     enable_bloodrage = true;
     use_seed = true;
-    fuel_extra_rage = false;
 }

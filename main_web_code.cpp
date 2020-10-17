@@ -356,12 +356,11 @@ int main()
     std::string race = "orc";
 
     std::vector<std::string> sim_options = {
-        "faerie_fire",     "recklessness",       "curse_of_recklessness",
+        "faerie_fire",       "recklessness",       "enable_blood_fury", "curse_of_recklessness",
         "golemagg", //"item_strengths",
-        "death_wish",      "mighty_rage_potion", "debug_on",
-        "cleave_if_adds",  "use_hamstring",      "compute_dpr",
-        "use_bloodthirst", "use_whirlwind",      "use_heroic_strike",
-        "use_hamstring",   "use_overpower",
+        "death_wish",        "mighty_rage_potion", "debug_on",          "cleave_if_adds",
+        "use_hamstring",     "compute_dpr",        "use_bloodthirst",   "use_whirlwind",
+        "use_heroic_strike", "use_hamstring",      "use_overpower",
     };
 
     Sim_input sim_input{{race},

@@ -171,7 +171,7 @@ public:
     double rage_boost{};
     double duration{};
     double cooldown{};
-    double triggers_gcd{false};
+    bool triggers_gcd{false};
     std::vector<Hit_effect> hit_effects{};
     std::vector<Over_time_effect> over_time_effects{};
 };

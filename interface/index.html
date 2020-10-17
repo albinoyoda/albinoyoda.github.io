@@ -1437,12 +1437,15 @@
     <button type="button" class="collapsible">Open combat settings</button>
     <div class="content">
         <b>Cooldowns:</b><br/>
+        (Cooldowns are used towards the end of the fight, with a one second precision)
         <input type="checkbox" id="death_wish" checked>
-        <label for="death_wish"> Use death wish (used in the last 30sec)</label><br>
+        <label for="death_wish"> Use death wish</label><br>
+        <input type="checkbox" id="enable_blood_fury">
+        <label for="enable_blood_fury"> Use blood fury</label><br>
         <input type="checkbox" id="mighty_rage_potion">
-        <label for="mighty_rage_potion"> Use mighty rage potion (used in the last 25sec)</label><br>
+        <label for="mighty_rage_potion"> Use mighty rage potion</label><br>
         <input type="checkbox" id="recklessness">
-        <label for="recklessness"> Use recklessness (used in the last 20sec)</label><br><br/>
+        <label for="recklessness"> Use recklessness</label><br><br/>
 
         <b>Armor reduction:</b><br/>
         The target is a "warrior" type monster with 3731 armor. <br/>
@@ -1719,7 +1722,7 @@
     let enchant_prefixes = ["e", "s", "b", "c", "w", "h", "l", "b", "m", "o"];
     let enchants_input = [];
 
-    let sim_options = ["faerie_fire", "exposed_armor", "curse_of_recklessness", "death_wish",
+    let sim_options = ["faerie_fire", "exposed_armor", "curse_of_recklessness", "death_wish", "enable_blood_fury",
         "recklessness", "mighty_rage_potion", "default_boss", "sulfuron_harbinger", "golemagg", "vaelastrasz",
         "chromaggus", "debug_on", "use_bt_in_exec_phase", "use_hs_in_exec_phase", "cleave_if_adds",
         "initial_rage", "use_hamstring", "use_bloodthirst", "use_whirlwind", "use_overpower", "use_heroic_strike",
@@ -2353,7 +2356,7 @@
                 "Simulations for stat weights = <b>" + (total_simulations - n_simulations_dd) +
                 "</b><br/>Total simulations: <b>" + total_simulations + "</b><br/> ";
             if (!document.getElementById("debug_on").checked) {
-                n_sim_status += "TIP! Combat logs can be activated under the 'Open Simulation settings' dialog"
+                n_sim_status += "(Hint: Combat logs can be activated in 'Open Simulation settings')"
             }
 
             document.getElementById("output1").innerHTML = n_sim_status;
@@ -2455,7 +2458,8 @@
 
             let colors = ["#3e95cd", "#8e5ea2", "#FFFF00", "#c45850",
                 "#e8c3b9", "#990099", "#145A32", "#3333cc",
-                "#B300C4", "#00FF08", "#FF000A", "#FFFFFF"];
+                "#B300C4", "#00FF08", "#FF000A", "#ffffff",
+                "#abc46b", "#f75fff", "#5cffeb", "#beff5b"];
             let damage_name = [];
             let damage_vec = [];
             for (let i = 0; i < result["time_lapse_names"].size(); i++) {
