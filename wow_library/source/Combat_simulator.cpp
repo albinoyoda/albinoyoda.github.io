@@ -733,7 +733,7 @@ void Combat_simulator::swing_weapon(Weapon_sim& weapon, Weapon_sim& main_hand_we
         hit_effects(weapon, main_hand_weapon, special_stats, rage, damage_sources, flurry_charges, is_extra_attack);
 
         // Unbridled wrath
-        if (get_uniform_random(1) < config.talents.unbridled_wrath * 0.08)
+        if (get_uniform_random(1) < p_unbridled_wrath_)
         {
             rage += 1;
             if (rage > 100.0)
@@ -802,6 +802,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
     auto hit_effects_oh = weapons[1].hit_effects;
 
     heroic_strike_rage_cost = 15.0 - config.talents.improved_heroic_strike;
+    p_unbridled_wrath_ = config.talents.unbridled_wrath * 0.08;
     double execute_rage_cost = 15 - static_cast<int>(2.51 * config.talents.improved_execute);
 
     double armor_reduction_from_spells = 0.0;
@@ -856,9 +857,9 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         over_time_effects.push_back(essence_of_the_red);
     }
 
-    if (config.talents.unbridled_wrath)
+    if (config.talents.anger_management)
     {
-        over_time_effects.push_back(unbridled_wrath);
+        over_time_effects.push_back(anger_management);
     }
 
     for (size_t i = 0; i < use_effects_all.size(); i++)

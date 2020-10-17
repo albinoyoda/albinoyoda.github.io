@@ -408,8 +408,9 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     simulator.set_config(config);
 
     simulator.simulate(character, 0, true, true);
-    double dps_mean = simulator.get_dps_mean();
-    double dps_sample_std = Statistics::sample_deviation(std::sqrt(simulator.get_dps_variance()), input.n_simulations);
+    const double dps_mean = simulator.get_dps_mean();
+    const double dps_sample_std =
+        Statistics::sample_deviation(std::sqrt(simulator.get_dps_variance()), input.n_simulations);
 
     std::vector<double> mean_dps_vec;
     std::vector<double> sample_std_dps_vec;
@@ -534,8 +535,8 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 dpr_info += "<b>Bloodthirst</b>: <br>Damage per cast: <b>" + string_with_precision(dmg_per_hit, 4) +
                             "</b><br>Average rage cost: <b>" + string_with_precision(30.0, 3) + "</b><br>DPR: <b>" +
                             string_with_precision(dmg_per_rage, 4) + "</b><br>";
+                config.dpr_settings.compute_dpr_bt_ = false;
             }
-            config.dpr_settings.compute_dpr_bt_ = false;
         }
         if (config.combat.use_whirlwind)
         {
@@ -554,8 +555,8 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 dpr_info += "<b>Whirlwind</b>: <br>Damage per cast: <b>" + string_with_precision(dmg_per_hit, 4) +
                             "</b><br>Average rage cost: <b>" + string_with_precision(25.0, 3) + "</b><br>DPR: <b>" +
                             string_with_precision(dmg_per_rage, 4) + "</b><br>";
+                config.dpr_settings.compute_dpr_ww_ = false;
             }
-            config.dpr_settings.compute_dpr_ww_ = false;
         }
         if (config.combat.use_heroic_strike)
         {
@@ -577,8 +578,8 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 dpr_info += "<b>Heroic Strike</b>: <br>Damage per cast: <b>" + string_with_precision(dmg_per_hs, 4) +
                             "</b><br>Average rage cost: <b>" + string_with_precision((13 + avg_mh_rage_lost), 3) +
                             "</b><br>DPR: <b>" + string_with_precision(dmg_per_rage, 4) + "</b><br>";
+                config.dpr_settings.compute_dpr_hs_ = false;
             }
-            config.dpr_settings.compute_dpr_hs_ = false;
         }
         if (config.combat.cleave_if_adds)
         {
@@ -599,8 +600,8 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 dpr_info += "<b>Cleave</b>: <br>Damage per cast: <b>" + string_with_precision(dmg_per_hs, 4) +
                             "</b><br>Average rage cost: <b>" + string_with_precision((20 + avg_mh_rage_lost), 3) +
                             "</b><br>DPR: <b>" + string_with_precision(dmg_per_rage, 4) + "</b><br>";
+                config.dpr_settings.compute_dpr_cl_ = false;
             }
-            config.dpr_settings.compute_dpr_cl_ = false;
         }
         if (config.combat.use_hamstring)
         {
@@ -619,8 +620,8 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 dpr_info += "<b>Hamstring</b>: <br>Damage per cast: <b>" + string_with_precision(dmg_per_ha, 4) +
                             "</b><br>Average rage cost: <b>" + string_with_precision(10, 3) + "</b><br>DPR: <b>" +
                             string_with_precision(dmg_per_rage, 4) + "</b><br>";
+                config.dpr_settings.compute_dpr_ha_ = false;
             }
-            config.dpr_settings.compute_dpr_ha_ = false;
         }
         if (config.combat.use_overpower)
         {
@@ -641,8 +642,8 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 dpr_info += "<b>Overpower</b>: <br>Damage per cast: <b>" + string_with_precision(dmg_per_hit, 4) +
                             "</b><br>Average rage cost: <b>" + string_with_precision(overpower_cost, 3) +
                             "</b><br>DPR: <b>" + string_with_precision(dmg_per_rage, 4) + "</b><br>";
+                config.dpr_settings.compute_dpr_op_ = false;
             }
-            config.dpr_settings.compute_dpr_op_ = false;
         }
 
         double avg_ex_casts = static_cast<double>(dmg_dist.execute_count) / static_cast<double>(input.n_simulations);
@@ -660,50 +661,91 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
             dpr_info += "<b>Execute</b>: <br>Damage per cast: <b>" + string_with_precision(dmg_per_hit, 4) +
                         "</b><br>Average rage cost: <b>" + string_with_precision(execute_cost, 3) + "</b><br>DPR: <b>" +
                         string_with_precision(dmg_per_rage, 4) + "</b><br>";
+            config.dpr_settings.compute_dpr_ex_ = false;
         }
-        config.dpr_settings.compute_dpr_ex_ = false;
+        config.n_batches = input.n_simulations;
     }
-    config.n_batches = input.n_simulations;
 
-//    std::string talents_info = "<br>(Hint: Talent stat-weights can be activated under 'Simulation settings')";
-//    if (find_string(input.options, "talents_statweights"))
-//    {
-//        config.n_batches = 5000;
-//        config.talents.improved_heroic_strike = 2;
-//        config.talents.overpower = 1;
-//        config.talents.unbridled_wrath = 5;
-//        config.talents.flurry = 5;
-//        config.talents.anger_management = true;
-//        config.talents.impale = 2;
-//        config.talents.improved_execute = 2;
-//        config.talents.dual_wield_specialization = 5;
-//        config.talents.death_wish = true;
-//        dpr_info = "<br><b>Ability damage per rage:</b><br>";
-//        dpr_info += "DPR for ability X is computed as following:<br> "
-//                    "((Normal DPS) - (DPS where ability X costs rage but has no effect)) / (rage cost of ability "
-//                    "X)<br>";
-//
-//        if (config.combat.use_bloodthirst)
-//        {
-//            double avg_bt_casts =
-//                static_cast<double>(dmg_dist.bloodthirst_count) / static_cast<double>(input.n_simulations);
-//            if (avg_bt_casts > 0.0)
-//            {
-//                config.dpr_settings.compute_dpr_bt_ = true;
-//                Combat_simulator simulator_dpr{};
-//                simulator_dpr.set_config(config);
-//                simulator_dpr.simulate(character, 0, false, false);
-//                double delta_dps = dps_mean - simulator_dpr.get_dps_mean();
-//                double dmg_tot = delta_dps * (config.sim_time - 1);
-//                double dmg_per_hit = dmg_tot / avg_bt_casts;
-//                double dmg_per_rage = dmg_per_hit / 30.0;
-//                dpr_info += "<b>Bloodthirst</b>: <br>Damage per cast: <b>" + string_with_precision(dmg_per_hit, 4) +
-//                            "</b><br>Average rage cost: <b>" + string_with_precision(30.0, 3) + "</b><br>DPR: <b>" +
-//                            string_with_precision(dmg_per_rage, 4) + "</b><br>";
-//            }
-//            config.dpr_settings.compute_dpr_bt_ = false;
-//        }
-//    }
+    std::string talents_info = "<br>(Hint: Talent stat-weights can be activated under 'Simulation settings')";
+    if (find_string(input.options, "talents_stat_weights"))
+    {
+        double delta_dps{};
+        config.n_batches = 5000;
+        Combat_simulator simulator_talent{};
+
+        talents_info = "<br><b>Value per 1 talent point:</b>";
+        config.talents.improved_heroic_strike -= 2;
+        simulator_talent.set_config(config);
+        simulator_talent.simulate(character, 0, false, false);
+        delta_dps = (dps_mean - simulator_talent.get_dps_mean()) / 2;
+        talents_info += "<br>Talent: <b>Improved Heroic Strike</b><br>Value: <b>" +
+                        string_with_precision(delta_dps, 3) + "</b> DPS<br>";
+        config.talents.improved_heroic_strike += 2;
+
+        config.talents.overpower--;
+        simulator_talent.set_config(config);
+        simulator_talent.simulate(character, 0, false, false);
+        delta_dps = dps_mean - simulator_talent.get_dps_mean();
+        talents_info += "<br>Talent: <b>Improved Overpower</b><br>Value: <b>" + string_with_precision(delta_dps, 4) +
+                        "</b> DPS<br>";
+        config.talents.overpower++;
+
+        config.talents.improved_execute -= 2;
+        simulator_talent.set_config(config);
+        simulator_talent.simulate(character, 0, false, false);
+        delta_dps = (dps_mean - simulator_talent.get_dps_mean()) / 2;
+        talents_info +=
+            "<br>Talent: <b>Improved Execute</b><br>Value: <b>" + string_with_precision(delta_dps, 4) + "</b> DPS<br>";
+        config.talents.improved_execute += 2;
+
+        config.talents.unbridled_wrath -= 5;
+        simulator_talent.set_config(config);
+        simulator_talent.simulate(character, 0, false, false);
+        delta_dps = (dps_mean - simulator_talent.get_dps_mean()) / 5;
+        talents_info +=
+            "<br>Talent: <b>Unbridled Wrath</b><br>Value: <b>" + string_with_precision(delta_dps, 4) + "</b> DPS<br>";
+        config.talents.unbridled_wrath += 5;
+
+        config.talents.flurry -= 2;
+        simulator_talent.set_config(config);
+        simulator_talent.simulate(character, 0, false, false);
+        delta_dps = (dps_mean - simulator_talent.get_dps_mean()) / 2;
+        talents_info +=
+            "<br>Talent: <b>Flurry</b><br>Value: <b>" + string_with_precision(delta_dps, 4) + "</b> DPS<br>";
+        config.talents.flurry += 2;
+
+        config.talents.anger_management = false;
+        simulator_talent.set_config(config);
+        simulator_talent.simulate(character, 0, false, false);
+        delta_dps = dps_mean - simulator_talent.get_dps_mean();
+        talents_info +=
+            "<br>Talent: <b>Anger Management</b><br>Value: <b>" + string_with_precision(delta_dps, 4) + "</b> DPS<br>";
+        config.talents.anger_management = true;
+
+        config.talents.death_wish = false;
+        simulator_talent.set_config(config);
+        simulator_talent.simulate(character, 0, false, false);
+        delta_dps = dps_mean - simulator_talent.get_dps_mean();
+        talents_info +=
+            "<br>Talent: <b>Death wish</b><br>Value: <b>" + string_with_precision(delta_dps, 4) + "</b> DPS<br>";
+        config.talents.death_wish = true;
+
+        config.talents.impale--;
+        simulator_talent.set_config(config);
+        simulator_talent.simulate(character, 0, false, false);
+        delta_dps = dps_mean - simulator_talent.get_dps_mean();
+        talents_info +=
+            "<br>Talent: <b>Impale</b><br>Value: <b>" + string_with_precision(delta_dps, 4) + "</b> DPS<br>";
+        config.talents.impale++;
+
+        config.talents.dual_wield_specialization -= 2;
+        simulator_talent.set_config(config);
+        simulator_talent.simulate(character, 0, false, false);
+        delta_dps = (dps_mean - simulator_talent.get_dps_mean()) / 2;
+        talents_info += "<br>Talent: <b>Dual Wield Specialization</b><br>Value: <b>" +
+                        string_with_precision(delta_dps, 4) + "</b> DPS<br>";
+        config.talents.dual_wield_specialization += 2;
+    }
 
     if (input.compare_armor.size() == 15 && input.compare_weapons.size() == 2)
     {
@@ -1006,7 +1048,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
             aura_uptimes,
             proc_statistics,
             stat_weights,
-            {item_strengths_string + extra_info_string + rage_info + dpr_info, debug_topic},
+            {item_strengths_string + extra_info_string + rage_info + dpr_info + talents_info, debug_topic},
             mean_dps_vec,
             sample_std_dps_vec,
             {character_stats}};

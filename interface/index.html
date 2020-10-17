@@ -1551,8 +1551,6 @@
         <input type="number" id="opponent_level_dd" name="quantity" min="60" max="63" value="63"><br/>
         <label for="fight_time_dd">Fight duration: (10-120s):</label>
         <input type="number" id="fight_time_dd" name="quantity" min="10" max="300" value="60"><br/>
-        <input type="checkbox" id="deep_wounds">
-        <label for="deep_wounds"> Enable deep wounds.</label><br><br/>
 
         <b>Stat weights (each stat weight adds extra simulations):</b><br/>
         <input type="checkbox" id="stat_weight_crit" checked>
@@ -1577,8 +1575,16 @@
         <input type="checkbox" id="stat_weight_oh_speed">
         <label for="stat_weight_oh_speed"> Calculate stat weight for &plusmn 0.5s off hand weapon speed.</label><br><br>
 
+        <b>Other settings:</b><br/>
         <input type="checkbox" id="compute_dpr">
-        <label for="compute_dpr"> Compute DPR values for abilities.</label><br><br>
+        <label for="compute_dpr"> Compute DPR values for abilities.</label><br>
+
+        <input type="checkbox" id="talents_stat_weights">
+        <label for="talents_stat_weights"> Compute the value of the various talents of the DW Fury 17/34/0
+            build.</label><br>
+
+        <input type="checkbox" id="deep_wounds">
+        <label for="deep_wounds"> Enable deep wounds.</label><br><br/>
 
         <b>Debug:</b><br/>
         <input type="checkbox" id="debug_on">
@@ -1726,7 +1732,7 @@
         "recklessness", "mighty_rage_potion", "default_boss", "sulfuron_harbinger", "golemagg", "vaelastrasz",
         "chromaggus", "debug_on", "use_bt_in_exec_phase", "use_hs_in_exec_phase", "cleave_if_adds",
         "initial_rage", "use_hamstring", "use_bloodthirst", "use_whirlwind", "use_overpower", "use_heroic_strike",
-        "item_strengths", "deep_wounds", "heroic_strike_aq", "compute_dpr"];
+        "item_strengths", "deep_wounds", "heroic_strike_aq", "compute_dpr", "talents_stat_weights"];
 
     let float_sim_options = ["n_simulations_dd", "n_simulations_stat_dd", "opponent_level_dd", "fight_time_dd",
         "sunder_armor_dd", "heroic_strike_rage_thresh_dd", "cleave_rage_thresh_dd", "whirlwind_rage_thresh_dd",

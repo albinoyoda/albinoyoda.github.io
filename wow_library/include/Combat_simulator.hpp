@@ -320,7 +320,7 @@ private:
 
     Over_time_effect essence_of_the_red = {"Essence_of_the_red", {}, 20, 0, 1, 180};
 
-    Over_time_effect unbridled_wrath = {"Unbridled_wrath", {}, 1, 0, 3, 600};
+    Over_time_effect anger_management = {"Anger_Management", {}, 1, 0, 3, 600};
 
     std::vector<double> hit_table_white_mh_;
     std::vector<double> damage_multipliers_white_mh_;
@@ -353,6 +353,7 @@ private:
     double rage_lost_stance_swap_{};
     double rage_lost_capped_{};
     double avg_rage_spent_executing_{};
+    double p_unbridled_wrath_{};
     bool dpr_heroic_strike_queued_{false};
     bool dpr_cleave_queued_{false};
     std::vector<std::vector<double>> damage_time_lapse{};
