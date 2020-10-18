@@ -1169,7 +1169,8 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                 }
                 else
                 {
-                    if (rage > config.combat.heroic_strike_rage_thresh && !ability_queue_manager.heroic_strike_queued)
+                    if (rage > config.combat.heroic_strike_rage_thresh && !ability_queue_manager.heroic_strike_queued &&
+                        rage > heroic_strike_rage_cost)
                     {
                         if (config.combat.use_heroic_strike)
                         {

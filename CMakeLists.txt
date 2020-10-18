@@ -9,7 +9,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
 
 include_directories(wow_library/include)
 
-add_library(wow_lib SHARED
+add_library(wow_lib STATIC
         wow_library/source/Combat_simulator.cpp
         wow_library/source/Item.cpp
         wow_library/source/Character.cpp

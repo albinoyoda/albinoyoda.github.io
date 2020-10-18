@@ -1,32 +1,15 @@
-# WOW-Classic warrior DPS simulator
-Welcome!
+# Welcome to wow fury sim GitHub
 ## Basics
-This code gives an alternative to the popular spreadsheet methods, i.e.,  
-nested excel computations, which by design have many many flaws.  
-This code provides and option where instead the DPS is computed by a C++  
-implemented warrior simulator with classic mechanics.  
-All the details and mechanics used in the simulator is taken from:  
-(https://github.com/magey/classic-warrior/wiki/Attack-table)  
-Which have been validated on classic servers.
+This is a C++ based wow classic simulator for fury warriors,
+the mechanics used in the simulator can be found in:
+https://github.com/magey/classic-warrior/wiki/Attack-table
 
-## Usage
-You need to be able to compile C++ code, which can be done by either  
-downloading a compiler and manually compiling it, or downloading an IDE  
-such as CLion or Visual studio. (Do it!! will be worth it).
-Currently you control all the feature of the simulator in main.cpp,  
-where gear, buffs, race, etc. is specifield.
+# Website
+https://wow-fury-sim.herokuapp.com/
 
-## Result
-The output will be expected DPS vs a monster of level 60 - 63,  
-(you choose) and also a set of simulated stat weights.  
-All data outputs are given with 95% confidence intervals, meaning that  
-you will know how sure the simulator are that it have converged  
-towards the true value of the DPS.
-
-
-Algorithm
-swing weapons:
-possible re-swing
+# Discord
+Feel free to join the Discord for Discussions, bug-reporting, if you have a wish of what you want to be added next, etc.
+https://discord.gg/xTuKsRz
 
 # How to contribute
 ## Learn how to use git for contributing to projects
