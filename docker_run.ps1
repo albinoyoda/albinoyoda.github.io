@@ -1,0 +1,1 @@
+docker run -p 49160:5000 -d rzeci/emscripten
