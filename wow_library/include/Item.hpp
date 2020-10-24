@@ -56,7 +56,9 @@ enum class Set
     major_mojo_infusion,
     battlegear_of_heroism,
     the_defilers_resolution,
-    battlegear_of_wrath
+    battlegear_of_wrath,
+    dreadnaughts_battlegear,
+    battlegear_of_undead_slaying
 };
 
 struct Over_time_effect

@@ -101,11 +101,13 @@ double estimate_special_stats_high(const Special_stats& special_stats)
     max_skill = std::max(special_stats.mace_skill, max_skill);
     max_skill = std::max(special_stats.dagger_skill, max_skill);
 
+    double ap_from_skill = max_skill <= 5 ? max_skill * skill_w : 5 * skill_w + (max_skill - 5) * skill_w_soft;
+
     // Assume 1.8 speed for the high estimation
     double high_estimation = special_stats.bonus_damage / 1.8 * 14;
 
-    high_estimation += special_stats.attack_power + special_stats.hit * hit_w + special_stats.critical_strike * crit_w +
-                       max_skill * skill_w;
+    high_estimation +=
+        special_stats.attack_power + special_stats.hit * hit_w + special_stats.critical_strike * crit_w + ap_from_skill;
     return high_estimation;
 }
 
@@ -124,7 +126,22 @@ double estimate_special_stats_low(const Special_stats& special_stats)
     return low_estimation;
 }
 
-bool estimate_special_stats_smart(const Special_stats& special_stats1, const Special_stats& special_stats2)
+bool estimate_special_stats_smart_no_skill(const Special_stats& special_stats1, const Special_stats& special_stats2)
+{
+    Special_stats diff = special_stats2 - special_stats1;
+    Special_stats res_1{};
+    Special_stats res_2{};
+    diff.critical_strike > 0 ? res_2.critical_strike = diff.critical_strike :
+                               res_1.critical_strike = -diff.critical_strike;
+    diff.hit > 0 ? res_2.hit = diff.hit : res_1.hit = -diff.hit;
+    diff.attack_power > 0 ? res_2.attack_power = diff.attack_power : res_1.attack_power = -diff.attack_power;
+    diff.bonus_damage > 0 ? res_2.bonus_damage = diff.bonus_damage : res_1.bonus_damage = -diff.bonus_damage;
+    double ap_1 = estimate_special_stats_high(res_1);
+    double ap_2 = estimate_special_stats_low(res_2);
+    return ap_2 > ap_1;
+}
+
+double estimate_stat_diff(Special_stats special_stats1, Special_stats special_stats2)
 {
     Special_stats diff = special_stats2 - special_stats1;
     Special_stats res_1{};
@@ -140,27 +157,7 @@ bool estimate_special_stats_smart(const Special_stats& special_stats1, const Spe
     diff.dagger_skill > 0 ? res_2.dagger_skill = diff.dagger_skill : res_1.dagger_skill = -diff.dagger_skill;
     double ap_1 = estimate_special_stats_high(res_1);
     double ap_2 = estimate_special_stats_low(res_2);
-    return ap_2 > ap_1;
-}
-
-bool estimate_special_stats_smart_no_skill(const Special_stats& special_stats1, const Special_stats& special_stats2)
-{
-    Special_stats diff = special_stats2 - special_stats1;
-    Special_stats res_1{};
-    Special_stats res_2{};
-    diff.critical_strike > 0 ? res_2.critical_strike = diff.critical_strike :
-        res_1.critical_strike = -diff.critical_strike;
-    diff.hit > 0 ? res_2.hit = diff.hit : res_1.hit = -diff.hit;
-    diff.attack_power > 0 ? res_2.attack_power = diff.attack_power : res_1.attack_power = -diff.attack_power;
-    diff.bonus_damage > 0 ? res_2.bonus_damage = diff.bonus_damage : res_1.bonus_damage = -diff.bonus_damage;
-    double ap_1 = estimate_special_stats_high(res_1);
-    double ap_2 = estimate_special_stats_low(res_2);
-    return ap_2 > ap_1;
-}
-
-bool estimated_weaker(Special_stats special_stats1, Special_stats special_stats2)
-{
-    return estimate_special_stats_smart(special_stats1, special_stats2);
+    return ap_2 - ap_1;
 }
 
 std::string percent_to_str(double value)
@@ -280,6 +277,13 @@ Character get_character_of_race(const std::string& race)
                   << "\n";
         return {Race::human, 60};
     }
+}
+
+std::string string_with_precision(int amount)
+{
+    std::ostringstream stream;
+    stream << amount;
+    return stream.str();
 }
 
 std::string string_with_precision(double amount, size_t precision)

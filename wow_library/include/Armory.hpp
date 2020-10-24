@@ -48,6 +48,7 @@ struct Buffs
 
     Weapon_buff dense_stone{"dense_stone", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, 8};
     Buff elemental_stone{"elemental_stone", Attributes{0.0, 0.0}, Special_stats{2.0, 0.0, 0.0}};
+    Buff consecrated_sharpening_stone{"consecrated_sharpening_stone", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 100.0}};
 };
 
 struct Armory
@@ -83,6 +84,8 @@ struct Armory
                                                                                      0},       Socket::head, Set::battlegear_of_heroism},
                     {"helm_of_wrath",            Attributes{17, 0}, Special_stats{0, 0,
                                                                                      0},       Socket::head, Set::battlegear_of_wrath},
+                    {"dreadnaught_helmet",            Attributes{21, 0}, Special_stats{0, 0,
+                                                                                  0},       Socket::head, Set::dreadnaughts_battlegear},
             };
 
     std::vector<Armor> neck_t
@@ -98,6 +101,8 @@ struct Armory
                     {"choker_of_the_shifting_sands",   Attributes{0, 0},   Special_stats{0, 0, 42}, Socket::neck},
                     {"fury_of_the_forgotten_swarm",    Attributes{8, 0},   Special_stats{1, 1, 0},  Socket::neck},
                     {"pendant_of_the_qiraji_guardian",    Attributes{12, 11},   Special_stats{0, 0, 0},  Socket::neck},
+                    {"sadists_collar",    Attributes{0, 0},   Special_stats{1, 0, 20},  Socket::neck},
+                    {"stormrages_talisman_of_seething",    Attributes{0, 0},   Special_stats{2, 0, 26},  Socket::neck},
             };
 
     std::vector<Armor> shoulder_t
@@ -140,6 +145,8 @@ struct Armory
                                                                                          0},  Socket::shoulder, Set::battlegear_of_wrath},
                     {"taut_dragonhide_shoulderpads",       Attributes{0, 0}, Special_stats{0, 0,
                                                                                          46},  Socket::shoulder},
+                    {"dreadnaught_pauldrons",       Attributes{16, 0}, Special_stats{0, 1,
+                                                                                  0},  Socket::shoulder, Set::dreadnaughts_battlegear},
             };
 
     std::vector<Armor> back_t
@@ -159,6 +166,9 @@ struct Armory
                     {"cloak_of_the_golden_hive",     Attributes{13, 10}, Special_stats{0, 0, 0},  Socket::back},
                     {"drake_of_unyielding_strength", Attributes{15, 9},  Special_stats{0, 1, 0},  Socket::back},
                     {"might_of_the_tribe", Attributes{0, 0},  Special_stats{0, 0, 28},  Socket::back},
+                    {"cloak_of_the_scourge", Attributes{0, 0},  Special_stats{0, 1, 30},  Socket::back},
+                    {"shifting_cloak", Attributes{0, 17},  Special_stats{0, 0, 0},  Socket::back},
+                    {"shroud_of_dominion", Attributes{0, 0},  Special_stats{1, 0, 50},  Socket::back},
             };
 
     std::vector<Armor> chest_t
@@ -192,6 +202,14 @@ struct Armory
                                                                                               0},        Socket::chest, Set::battlegear_of_heroism},
                     {"breastplate_of_wrath",              Attributes{17, 0}, Special_stats{0, 0,
                                                                                               0},        Socket::chest, Set::battlegear_of_wrath},
+                    {"breastplate_of_undead_slaying",              Attributes{0, 0}, Special_stats{0, 0,
+                                                                                           81},        Socket::chest, Set::battlegear_of_undead_slaying},
+                    {"ghoul_skin_tunic",              Attributes{40, 0}, Special_stats{2, 0,
+                                                                                           0},        Socket::chest},
+                    {"plated_abomination_ribcage",              Attributes{45, 0}, Special_stats{1, 1,
+                                                                                       0},        Socket::chest},
+                    {"dreadnaught_breastplate",              Attributes{21, 0}, Special_stats{0, 2,
+                                                                                                 0},        Socket::chest, Set::dreadnaughts_battlegear},
             };
 
     std::vector<Armor> wrists_t
@@ -211,6 +229,9 @@ struct Armory
                                                                                      0},       Socket::wrist, Set::battlegear_of_heroism},
                     {"deeprock_bracers",           Attributes{19, 10}, Special_stats{0, 0, 0}, Socket::wrist},
                     {"bracelets_of_wrath",           Attributes{13, 0}, Special_stats{0, 0, 0}, Socket::wrist, Set::battlegear_of_wrath},
+                    {"bracers_of_undead_slaying",           Attributes{0, 0}, Special_stats{0, 0, 45}, Socket::wrist, Set::battlegear_of_undead_slaying},
+                    {"wristguards_of_vengeance",           Attributes{24, 0}, Special_stats{1, 0, 0}, Socket::wrist},
+                    {"dreadnaught_bracers",           Attributes{14, 0}, Special_stats{0, 0, 0}, Socket::wrist},
             };
 
     std::vector<Armor> hands_t
@@ -246,6 +267,8 @@ struct Armory
                     {"gloves_of_enforcement",     Attributes{28, 20}, Special_stats{0, 1, 0}, Socket::hands},
                     {"gauntlets_of_steadfast_determination",     Attributes{19, 18}, Special_stats{0, 0, 0}, Socket::hands},
                     {"gauntlets_of_wrath",     Attributes{15, 0}, Special_stats{0, 0, 0}, Socket::hands, Set::battlegear_of_wrath},
+                    {"gauntlets_of_undead_slaying",     Attributes{0, 0}, Special_stats{0, 0, 60}, Socket::hands, Set::battlegear_of_undead_slaying},
+                    {"dreadnaught_gauntlets",     Attributes{17, 0}, Special_stats{0, 0, 0}, Socket::hands, Set::dreadnaughts_battlegear},
             };
 
     std::vector<Armor> belt_t
@@ -268,6 +291,8 @@ struct Armory
                     {"belt_of_preserved_heads",                  Attributes{14, 15}, Special_stats{0, 1, 0},  Socket::belt},
                     {"belt_of_wrath",                 Attributes{20, 0},  Special_stats{0, 0,
                                                                                         0},        Socket::belt, Set::battlegear_of_wrath},
+                    {"girdle_of_the_mentor",                 Attributes{21, 20},  Special_stats{1, 1, 0},        Socket::belt},
+                    {"dreadnaught_waistguard",                 Attributes{20, 0},  Special_stats{0, 0, 0},        Socket::belt, Set::dreadnaughts_battlegear},
             };
 
     std::vector<Armor> legs_t
@@ -300,6 +325,9 @@ struct Armory
                     {"legplates_of_heroism",             Attributes{25, 11}, Special_stats{0, 0,
                                                                                            0},        Socket::legs, Set::battlegear_of_heroism},
                     {"legplates_of_wrath",             Attributes{19, 0}, Special_stats{0, 0, 0},        Socket::legs, Set::battlegear_of_wrath},
+                    {"leggings_of_apocalypse",             Attributes{15, 31}, Special_stats{2, 0, 0},        Socket::legs},
+                    {"leggings_of_carnage",             Attributes{42, 0}, Special_stats{2, 0, 0},        Socket::legs},
+                    {"dreadnaughts_legplates",             Attributes{23, 0}, Special_stats{0, 0, 0},        Socket::legs, Set::dreadnaughts_battlegear},
             };
 
     std::vector<Armor> boots_t
@@ -324,6 +352,7 @@ struct Armory
                     {"conquerors_greaves",        Attributes{21, 17}, Special_stats{0, 0, 0},  Socket::boots},
                     {"slime_kickers",             Attributes{18, 12}, Special_stats{0, 1, 0},  Socket::boots},
                     {"blooddrenched_footpads",    Attributes{0, 21},  Special_stats{0, 1, 0},  Socket::boots},
+                    {"dreadnaughts_sabatons",    Attributes{15, 0},  Special_stats{0, 0, 0},  Socket::boots, Set::dreadnaughts_battlegear},
                     {"defilers_plate_greaves",    Attributes{14, 12}, Special_stats{0, 0,
                                                                                     0},        Socket::boots, Set::the_defilers_resolution},
                     {"sabatons_of_wrath",         Attributes{13, 0}, Special_stats{0, 0,
@@ -354,6 +383,10 @@ struct Armory
                     {"ring_of_the_qiraji_fury",           Attributes{0, 0},   Special_stats{1, 0, 40},   Socket::ring},
                     {"signet_of_unyielding_strength",     Attributes{11, 0},  Special_stats{1, 0, 0},    Socket::ring},
                     {"signet_of_the_bronze_dragonflight", Attributes{0, 24},  Special_stats{0, 1, 0},    Socket::ring},
+                    {"band_of_reanimation", Attributes{0, 34},  Special_stats{0, 0, 0},    Socket::ring},
+                    {"band_of_unnatural_forces", Attributes{0, 0},  Special_stats{1, 1, 52},    Socket::ring},
+                    {"signet_of_the_fallen_defender", Attributes{0, 0},  Special_stats{0, 1, 0},    Socket::ring},
+                    {"ring_of_the_dreadnaught", Attributes{0, 0},  Special_stats{0, 0, 0},    Socket::ring, Set::dreadnaughts_battlegear},
             };
 
     std::vector<Armor> trinket_t
@@ -374,6 +407,11 @@ struct Armory
                                                                                   0},        Socket::trinket, Set::none, {}, {{"earthstrike",             Use_effect::Effect_socket::shared, {0,  0}, {0, 0, 280}, 0, 20, 120, true}}},
                     {"badge_of_the_swarmguard",   Attributes{0, 0}, Special_stats{0, 0,
                                                                                   0},        Socket::trinket, Set::none, {}, {{"badge_of_the_swarmguard", Use_effect::Effect_socket::unique, {},      {},          0, 30, 180, false, {{"badge_of_the_swarmguard", Hit_effect::Type::reduce_armor, {}, {}, 0, 30, 0.5, 0, 1, 200, 6}}}}},
+                    {"kiss_of_the_spider",               Attributes{0, 0}, Special_stats{1, 1,
+                                                                                  0},        Socket::trinket, Set::none, {}, {{"kiss_of_the_spider",             Use_effect::Effect_socket::shared, {0,  0}, {0, 0, 0, 0, .2}, 0, 15, 120, false}}},
+                    {"mark_of_the_champion",       Attributes{0, 0}, Special_stats{0, 0, 150}, Socket::trinket},
+                    {"slayers_crest",               Attributes{0, 0}, Special_stats{0, 0,
+                                                                                  64},        Socket::trinket, Set::none, {}, {{"slayers_crest",             Use_effect::Effect_socket::shared, {0,  0}, {0, 0, 260}, 0, 20, 120, true}}},
             };
 
     std::vector<Armor> ranged_t
@@ -392,6 +430,9 @@ struct Armory
                     {"gurubashi_dwarf_destroyer",      Attributes{0, 0},  Special_stats{0, 0, 30}, Socket::ranged},
                     {"huhurans_stinger",               Attributes{0, 18}, Special_stats{0, 0, 0},  Socket::ranged},
                     {"bow_of_taut_sinew",               Attributes{0, 0}, Special_stats{0, 0, 22},  Socket::ranged},
+                    {"nerubian_slavemaker",               Attributes{0, 0}, Special_stats{1, 0, 24},  Socket::ranged},
+                    {"soulstring",               Attributes{0, 0}, Special_stats{1, 0, 16},  Socket::ranged},
+                    {"toxin_injector",               Attributes{0, 0}, Special_stats{0, 0, 28},  Socket::ranged},
             };
 
     std::vector<Weapon> swords_t
@@ -444,6 +485,14 @@ struct Armory
                                                                                            26},  2.8, 83,    156,   Weapon_socket::one_hand,  Weapon_type::sword},
                     {"blackguard",                   Attributes{0, 0},       Special_stats{0, 0,
                                                                                            0},   1.8, 65,    121,   Weapon_socket::one_hand,  Weapon_type::sword},
+                    {"gressil_dawn_of_ruin",                   Attributes{0, 0},       Special_stats{0, 0,
+                                                                                           40},   2.7, 138,    257,   Weapon_socket::one_hand,  Weapon_type::sword},
+                    {"iblis_blade_of_the_fallen_seraph",                   Attributes{0, 0},       Special_stats{1, 1,
+                                                                                                     26},   1.6, 70,    131,   Weapon_socket::one_hand,  Weapon_type::sword},
+                    {"the_hungering_cold",                   Attributes{0, 0},       Special_stats{0, 0,
+                                                                                                     0, 0, 0, 6},   1.5, 76,    143,   Weapon_socket::one_hand,  Weapon_type::sword},
+                    {"widows_remorse",                   Attributes{0, 0},       Special_stats{0, 1,
+                                                                                                     0},   1.6, 70,    131,   Weapon_socket::one_hand,  Weapon_type::sword},
             };
 
 //    std::vector<Weapon> two_handed_swords_t
@@ -482,6 +531,8 @@ struct Armory
                                                                                            14},   2.6, 110,   205,   Weapon_socket::one_hand, Weapon_type::axe},
                     {"sickle_on_unyielding_strength", Attributes{15, 6},     Special_stats{0, 0,
                                                                                            0},    2.1, 75,    141,   Weapon_socket::one_hand, Weapon_type::axe},
+                    {"hatchet_of_sundered_bone", Attributes{0, 0},     Special_stats{1, 0,
+                                                                                           36},    2.6, 119,    221,   Weapon_socket::one_hand, Weapon_type::axe},
             };
 
     std::vector<Weapon> daggers_t
@@ -504,6 +555,12 @@ struct Armory
                                                                               18}, 1.7, 72, 134, Weapon_socket::one_hand,  Weapon_type::dagger},
                     {"fang_of_the_faceless", Attributes{0, 0},  Special_stats{1, 0,
                                                                               28}, 1.9, 66, 123, Weapon_socket::one_hand,  Weapon_type::dagger},
+                    {"harbinger_of_doom", Attributes{0, 8},  Special_stats{1, 1,
+                                                                              0}, 1.6, 83, 126, Weapon_socket::one_hand,  Weapon_type::dagger},
+                    {"kingsfall", Attributes{0, 16},  Special_stats{1, 1,
+                                                                           0}, 1.8, 105, 158, Weapon_socket::one_hand,  Weapon_type::dagger},
+                    {"maexxnas_fang", Attributes{0, 16},  Special_stats{0, 1,
+                                                                    36}, 1.8, 94, 141, Weapon_socket::one_hand,  Weapon_type::dagger},
             };
 
     std::vector<Weapon> maces_t
@@ -542,6 +599,11 @@ struct Armory
                                                                                       0},             2.1, 89,   166, Weapon_socket::one_hand,  Weapon_type::mace},
                     {"persuader",                 Attributes{0, 0},     Special_stats{1, 1,
                                                                                       0},             2.7, 86,   161, Weapon_socket::main_hand, Weapon_type::mace},
+                    {"misplaced_servo_arm",                 Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, 2.8, 128.0, 238.0,
+                        Weapon_socket::one_hand,  Weapon_type::mace,
+                        {{"misplaced_servo_arm",           Hit_effect::Type::damage_magic, {},     {},                125, 0,  0.10}}},
+                    {"the_castigator",                 Attributes{0, 0},     Special_stats{1, 1,
+                                                                                      16},             2.6, 119,   221, Weapon_socket::one_hand, Weapon_type::mace},
 
             };
 
@@ -551,6 +613,8 @@ struct Armory
                             Weapon_socket::main_hand, Weapon_type::unarmed},
                     {"silithid_claw",           Attributes{0, 0},  Special_stats{1, 0, 30}, 1.6, 64,  120,
                             Weapon_socket::main_hand, Weapon_type::unarmed},
+                    {"claw_of_the_frost_wyrm",           Attributes{0, 0},  Special_stats{1, 1, 22}, 1.5, 75,  140,
+                        Weapon_socket::off_hand, Weapon_type::unarmed},
             };
 
     std::vector<Set_bonus> set_bonuses{
@@ -567,6 +631,7 @@ struct Armory
             {"battlegear_of_heroism",   Attributes{0, 0}, Special_stats{0, 0, 40}, 6, Set::battlegear_of_heroism},
             {"the_defilers_resolution", Attributes{0, 0}, Special_stats{1, 0, 0},  3, Set::the_defilers_resolution},
             {"battlegear_of_wrath",     Attributes{0, 0}, Special_stats{0, 0, 30},  3, Set::battlegear_of_wrath},
+            {"battlegear_of_undead_slaying",     Attributes{0, 0}, Special_stats{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.02},  3, Set::battlegear_of_undead_slaying},
     };
 
     std::vector<Armor> get_items_in_socket(const Socket socket) const;

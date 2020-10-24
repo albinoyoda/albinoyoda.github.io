@@ -26,11 +26,9 @@ double estimate_special_stats_high(const Special_stats& special_stats);
 
 double estimate_special_stats_low(const Special_stats& special_stats);
 
-bool estimate_special_stats_smart(const Special_stats& special_stats1, const Special_stats& special_stats2);
-
 bool estimate_special_stats_smart_no_skill(const Special_stats& special_stats1, const Special_stats& special_stats2);
 
-bool estimated_weaker(Special_stats special_stats1, Special_stats special_stats2);
+double estimate_stat_diff(Special_stats special_stats1, Special_stats special_stats2);
 
 constexpr int get_skill_of_type(const Special_stats& special_stats, Weapon_type weapon_type)
 {
@@ -68,6 +66,8 @@ bool find_string(const std::vector<std::string>& string_vec, const std::string& 
 Race get_race(const std::string& race);
 
 Character get_character_of_race(const std::string& race);
+
+std::string string_with_precision(int amount);
 
 std::string string_with_precision(double amount, size_t precision);
 

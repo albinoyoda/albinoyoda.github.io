@@ -48,14 +48,15 @@ public:
     Character construct(size_t index);
 
     std::vector<Weapon> remove_weaker_weapons(Weapon_socket weapon_socket, const std::vector<Weapon>& weapon_vec,
-                                              const Special_stats& special_stats, std::string& debug_message);
+                                              const Special_stats& special_stats, std::string& debug_message,
+                                              int keep_n_stronger_items);
 
     std::vector<Armor> remove_weaker_items(const std::vector<Armor>& armors, const Special_stats& special_stats,
-                                           std::string& debug_message);
+                                           std::string& debug_message, int keep_n_stronger_items);
 
     void filter_weaker_items(const Special_stats& special_stats, std::string& debug_message);
 
-    void find_best_use_effect(const Special_stats& special_stats, std::string& debug_message);
+//    void find_best_use_effect(const Special_stats& special_stats, std::string& debug_message);
 
     void fill_empty_armor();
 

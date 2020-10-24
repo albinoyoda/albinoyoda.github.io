@@ -39,7 +39,7 @@ void item_upgrades(std::string& item_strengths_string, Character character_new, 
                             character_new.get_item_from_socket(socket, first_item).name + "</b>";
     auto armor_vec = armory.get_items_in_socket(socket);
     auto items = (socket != Socket::trinket) ?
-                     item_optimizer.remove_weaker_items(armor_vec, character_new.total_special_stats, dummy) :
+                     item_optimizer.remove_weaker_items(armor_vec, character_new.total_special_stats, dummy, 3) :
                      armor_vec;
 
     {
@@ -134,7 +134,7 @@ void item_upgrades_wep(std::string& item_strengths_string, Character character_n
     item_strengths_string =
         item_strengths_string + socket + ": " + "<b>" + character_new.get_weapon_from_socket(socket).name + "</b>";
     auto items = armory.get_weapon_in_socket(weapon_socket);
-    items = item_optimizer.remove_weaker_weapons(weapon_socket, items, character_new.total_special_stats, dummy);
+    items = item_optimizer.remove_weaker_weapons(weapon_socket, items, character_new.total_special_stats, dummy, 5);
     {
         size_t i = 0;
         while (i < items.size())

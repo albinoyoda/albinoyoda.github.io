@@ -76,44 +76,49 @@ double Item_optimizer::get_total_qp_equivalent(const Special_stats& special_stat
            hit_effects_ap;
 }
 
-void Item_optimizer::find_best_use_effect(const Special_stats& special_stats, std::string& debug_message)
-{
-    std::vector<Use_effect> use_effects;
-    for (const auto& armor : legs)
-    {
-        if (!armor.use_effects.empty())
-        {
-            use_effects.push_back(armor.use_effects[0]);
-        }
-    }
-    for (const auto& armor : trinkets)
-    {
-        if (!armor.use_effects.empty())
-        {
-            use_effects.push_back(armor.use_effects[0]);
-        }
-    }
-
-    double best_ap = 0;
-    for (const auto& use_effect : use_effects)
-    {
-        if (use_effect.effect_socket == Use_effect::Effect_socket::shared)
-        {
-            double ap_equiv = use_effect.get_special_stat_equivalent(special_stats).attack_power *
-                              std::min(use_effect.duration, sim_time);
-            debug_message +=
-                "Name: " + use_effect.name + ". Estimated as: " + string_with_precision(ap_equiv, 5) + "<br>";
-            std::cout << "Name: " + use_effect.name + ". Estimated as: " + string_with_precision(ap_equiv, 5) + "\n";
-            if (ap_equiv > best_ap)
-            {
-                best_use_effect_name = use_effect.name;
-                best_ap = ap_equiv;
-            }
-        }
-    }
-    debug_message += "Best shared use-effect: " + best_use_effect_name + "<br>";
-    std::cout << "Best shared use-effect: " + best_use_effect_name + "\n";
-}
+//void Item_optimizer::find_best_use_effect(const Special_stats& special_stats, std::string& debug_message)
+//{
+//    std::vector<Use_effect> use_effects;
+//    //    for (const auto& armor : legs)
+//    //    {
+//    //        if (!armor.use_effects.empty())
+//    //        {
+//    //            use_effects.push_back(armor.use_effects[0]);
+//    //        }
+//    //    }
+//    //    for (const auto& armor : trinkets)
+//    //    {
+//    //        if (!armor.use_effects.empty())
+//    //        {
+//    //            use_effects.push_back(armor.use_effects[0]);
+//    //        }
+//    //    }
+//
+//    double best_ap = 0;
+//    for (const auto& armor : trinkets)
+//    {
+//        if (!armor.use_effects.empty())
+//        {
+//            if (armor.use_effects[0].effect_socket == Use_effect::Effect_socket::shared)
+//            {
+//                Special_stats armor_stats = armor.special_stats;
+//                armor_stats += armor.attributes.convert_to_special_stats(special_stats);
+//                double ap_equiv = estimate_special_stats_high(armor_stats);
+//                ap_equiv += armor.use_effects[0].get_special_stat_equivalent(special_stats).attack_power *
+//                            std::min(armor.use_effects[0].duration, sim_time) / sim_time;
+//
+//                debug_message +=
+//                    "Name: " + armor.name + ". Estimated as: " + string_with_precision(ap_equiv, 5) + "<br>";
+//                if (ap_equiv > best_ap)
+//                {
+//                    best_use_effect_name = armor.name;
+//                    best_ap = ap_equiv;
+//                }
+//            }
+//        }
+//    }
+//    debug_message += "Best shared use-effect: " + best_use_effect_name + "<br>";
+//}
 
 void Item_optimizer::compute_weapon_combinations()
 {
@@ -362,63 +367,45 @@ bool is_strictly_weaker_wep(const Weapon_struct& wep_struct1, const Weapon_struc
     return greater_eq && greater;
 }
 
-double estimate_wep_high(const Weapon_struct& wep, bool add_skill)
+double estimate_wep_stat_diff(const Weapon_struct& wep1, const Weapon_struct& wep2, bool main_hand)
 {
-    Special_stats special_stats = wep.special_stats + wep.set_special_stats + wep.hit_special_stats;
-    int max_skill = std::max(special_stats.axe_skill, 0);
-    max_skill = std::max(special_stats.sword_skill, max_skill);
-    max_skill = std::max(special_stats.mace_skill, max_skill);
-    max_skill = std::max(special_stats.dagger_skill, max_skill);
-    if (add_skill)
-    {
-        max_skill += 5; // Assumed to come from another source
-    }
-    double ap_from_skill = max_skill <= 5 ? max_skill * skill_w : 5 * skill_w + (max_skill - 5) * skill_w_soft;
-
-    double ap_from_damage = wep.average_damage / wep.swing_speed * 14;
-
-    double high_estimation = ap_from_damage + special_stats.attack_power + special_stats.hit * hit_w +
-                             special_stats.critical_strike * crit_w + ap_from_skill;
-    return high_estimation;
-}
-
-double estimate_wep_low(const Weapon_struct& wep)
-{
-    Special_stats special_stats = wep.special_stats;
-    int max_skill = std::max(special_stats.axe_skill, 0);
-    max_skill = std::max(special_stats.sword_skill, max_skill);
-    max_skill = std::max(special_stats.mace_skill, max_skill);
-    max_skill = std::max(special_stats.dagger_skill, max_skill);
-
-    double ap_from_skill = max_skill * skill_w_hard;
-
-    double ap_from_damage = wep.average_damage / wep.swing_speed * 14;
-
-    double low_estimation = ap_from_damage + special_stats.attack_power + special_stats.hit * hit_w_cap +
-                            special_stats.critical_strike * crit_w_cap + ap_from_skill;
-    return low_estimation;
-}
-
-bool estimated_wep_weaker(const Weapon_struct& wep1, const Weapon_struct& wep2, bool main_hand)
-{
-    double wep_1_overest = estimate_wep_high(wep1, wep1.type != wep2.type);
     // Penalize fast MH and slow OH. Set 1 second to equal 100 AP.
-    wep_1_overest += main_hand ? 100 * (wep1.swing_speed - 2.3) : -100 * (wep1.swing_speed - 2.3);
-    double wep_2_underest = estimate_wep_low(wep2);
-    wep_2_underest += main_hand ? 100 * (wep2.swing_speed - 2.3) : -100 * (wep1.swing_speed - 2.3);
-    return wep_1_overest < wep_2_underest;
+    double wep_1_ap = wep1.average_damage / wep1.swing_speed * 14;
+    wep_1_ap += main_hand ? 100 * (wep1.swing_speed - 2.3) : -100 * (wep1.swing_speed - 2.3);
+
+    double wep_2_ap = wep2.average_damage / wep2.swing_speed * 14;
+    wep_2_ap += main_hand ? 100 * (wep2.swing_speed - 2.3) : -100 * (wep1.swing_speed - 2.3);
+
+    return wep_2_ap - wep_1_ap;
 }
 
 std::vector<Weapon> Item_optimizer::remove_weaker_weapons(const Weapon_socket weapon_socket,
                                                           const std::vector<Weapon>& weapon_vec,
                                                           const Special_stats& special_stats,
-                                                          std::string& debug_message)
+                                                          std::string& debug_message, int keep_n_stronger_items)
 {
     std::vector<Weapon_struct> weapon_struct_vec;
+    Character character{race, 60};
+    Special_stats racial_stats = character.base_special_stats;
     for (size_t i = 0; i < weapon_vec.size(); ++i)
     {
         Special_stats wep_special_stats = weapon_vec[i].special_stats;
         wep_special_stats += weapon_vec[i].attributes.convert_to_special_stats(special_stats);
+        switch (weapon_vec[i].type)
+        {
+        case Weapon_type::sword:
+            wep_special_stats.sword_skill += racial_stats.sword_skill - 300;
+            break;
+        case Weapon_type::axe:
+            wep_special_stats.axe_skill += racial_stats.axe_skill - 300;
+            break;
+        case Weapon_type::mace:
+            wep_special_stats.mace_skill += racial_stats.mace_skill - 300;
+            break;
+        default:
+            break;
+        }
+
         Weapon_struct wep_struct{i,
                                  wep_special_stats,
                                  (weapon_vec[i].min_damage + weapon_vec[i].max_damage) / 2,
@@ -426,6 +413,7 @@ std::vector<Weapon> Item_optimizer::remove_weaker_weapons(const Weapon_socket we
                                  weapon_vec[i].name,
                                  weapon_vec[i].type,
                                  weapon_vec[i].weapon_socket};
+
         if (weapon_vec[i].set_name != Set::none)
         {
             double ap_equiv_max = 0;
@@ -476,46 +464,40 @@ std::vector<Weapon> Item_optimizer::remove_weaker_weapons(const Weapon_socket we
     {
         if (wep1.can_be_estimated)
         {
-            bool found_one_stronger = false;
+            int stronger_found = 0;
             for (const auto& wep2 : weapon_struct_vec)
             {
                 if (wep1.index != wep2.index)
                 {
-                    if (wep1.type == wep2.type)
+                    if ((wep1.type == wep2.type) && is_strictly_weaker_wep(wep1, wep2, weapon_socket))
                     {
-                        if (is_strictly_weaker_wep(wep1, wep2, weapon_socket))
+                        stronger_found++;
+                        debug_message += string_with_precision(stronger_found) + "/" +
+                                         string_with_precision(keep_n_stronger_items) + " since <b>" + wep2.name +
+                                         "</b> is better than <b>" + wep1.name + "</b> in all aspects.<br>";
+                    }
+                    else
+                    {
+                        double stat_diff =
+                            estimate_stat_diff(wep1.special_stats + wep1.set_special_stats + wep1.hit_special_stats,
+                                               wep2.special_stats + wep2.hit_special_stats);
+                        double wep_stat_diff =
+                            estimate_wep_stat_diff(wep1, wep2, weapon_socket == Weapon_socket::main_hand);
+                        if (stat_diff + wep_stat_diff > 0)
                         {
-                            if (found_one_stronger)
-                            {
-                                wep1.remove = true;
-                                debug_message += "<b>REMOVED: " + wep1.name + "</b> from" + wep_socket + " since " +
-                                                 wep2.name + " is strictly better.<br>";
-                                std::cout << "<b>REMOVED: " + wep1.name + "</b> from " + wep_socket + " since " +
-                                                 wep2.name + " is strictly better.\n";
-                                break;
-                            }
-                            found_one_stronger = true;
-                            debug_message += "1/2: " + wep1.name + " from" + wep_socket + " since " + wep2.name +
-                                             " is strictly better.<br>";
-                            continue;
+                            stronger_found++;
+                            debug_message += string_with_precision(stronger_found) + "/" +
+                                             string_with_precision(keep_n_stronger_items) + " since <b>" + wep2.name +
+                                             "</b> was estimated to be <b>" +
+                                             string_with_precision(stat_diff + wep_stat_diff, 3) +
+                                             " AP </b>better than <b>" + wep1.name + "</b>.<br>";
                         }
-                        if (estimated_wep_weaker(wep1, wep2, weapon_socket == Weapon_socket::main_hand))
-                        {
-                            if (found_one_stronger)
-                            {
-                                wep1.remove = true;
-                                debug_message +=
-                                    "<b>REMOVED: " + wep1.name + "</b> from " + wep_socket + ". High-est as: " +
-                                    string_with_precision(estimate_wep_high(wep1, wep1.type != wep2.type), 3) +
-                                    "AP. Eliminated by: ";
-                                debug_message += "<b>" + wep2.name + "</b> low-est as: " +
-                                                 string_with_precision(estimate_wep_low(wep2), 3) + "AP.<br>";
-                                break;
-                            }
-                            found_one_stronger = true;
-                            debug_message += "1/2: " + wep1.name + " from" + wep_socket + " since " + wep2.name +
-                                             " is strictly better.<br>";
-                        }
+                    }
+                    if (stronger_found >= keep_n_stronger_items)
+                    {
+                        wep1.remove = true;
+                        debug_message += "REMOVED:<b> " + wep1.name + "</b>.<br>";
+                        break;
                     }
                 }
             }
@@ -546,17 +528,18 @@ struct Armor_struct
     }
 
     size_t index{};
-    Special_stats special_stats;
-    Special_stats set_special_stats;
-    Special_stats use_special_stats;
-    Special_stats hit_special_stats;
-    std::string name;
+    Special_stats special_stats{};
+    Special_stats set_special_stats{};
+    Special_stats use_special_stats{};
+    Special_stats hit_special_stats{};
+    std::string name{};
     bool can_be_estimated{true};
     bool remove{false};
 };
 
 std::vector<Armor> Item_optimizer::remove_weaker_items(const std::vector<Armor>& armors,
-                                                       const Special_stats& special_stats, std::string& debug_message)
+                                                       const Special_stats& special_stats, std::string& debug_message,
+                                                       int keep_n_stronger_items)
 {
     std::vector<Armor_struct> armors_special_stats;
     for (size_t i = 0; i < armors.size(); ++i)
@@ -586,19 +569,19 @@ std::vector<Armor> Item_optimizer::remove_weaker_items(const std::vector<Armor>&
         }
         if (!armors[i].use_effects.empty())
         {
-            if (armors[i].use_effects[0].effect_socket == Use_effect::Effect_socket::shared)
-            {
-                if (armors[i].use_effects[0].name == best_use_effect_name)
-                {
-                    Special_stats use_sp = armors[i].use_effects[0].get_special_stat_equivalent(special_stats);
-                    use_sp.attack_power *= armors[i].use_effects[0].duration / sim_time;
-                    armor_equiv.use_special_stats = use_sp;
-                }
-            }
-            else
-            {
+//            if (armors[i].use_effects[0].effect_socket == Use_effect::Effect_socket::shared)
+//            {
+//                if (armors[i].use_effects[0].name == best_use_effect_name)
+//                {
+//                    Special_stats use_sp = armors[i].use_effects[0].get_special_stat_equivalent(special_stats);
+//                    use_sp.attack_power *= armors[i].use_effects[0].duration / sim_time;
+//                    armor_equiv.use_special_stats = use_sp;
+//                }
+//            }
+//            else
+//            {
                 armor_equiv.can_be_estimated = false;
-            }
+//            }
         }
         if (!armors[i].hit_effects.empty())
         {
@@ -625,11 +608,7 @@ std::vector<Armor> Item_optimizer::remove_weaker_items(const std::vector<Armor>&
 
     for (auto& armor1 : armors_special_stats)
     {
-        bool found_one_stronger = true;
-        if (armors[0].socket == Socket::ring || armors[0].socket == Socket::trinket)
-        {
-            found_one_stronger = false;
-        }
+        int stronger_found = 0;
         if (armor1.can_be_estimated)
         {
             for (const auto& armor2 : armors_special_stats)
@@ -640,38 +619,31 @@ std::vector<Armor> Item_optimizer::remove_weaker_items(const std::vector<Armor>&
                                                armor1.hit_special_stats,
                                            armor2.special_stats + armor2.hit_special_stats))
                     {
-                        if (found_one_stronger)
-                        {
-                            armor1.remove = true;
-                            debug_message += "<b>REMOVED: " + armor1.name + "</b> since <b>" + armor2.name +
-                                             "</b> is strictly better.<br>";
-                            break;
-                        }
-                        debug_message +=
-                            "<b>1/2: " + armor1.name + "</b> since <b>" + armor2.name + "</b> is strictly better.<br>";
-                        found_one_stronger = true;
-                        continue;
+                        stronger_found++;
+                        debug_message += string_with_precision(stronger_found) + "/" +
+                                         string_with_precision(keep_n_stronger_items) + " since <b>" + armor2.name +
+                                         "</b> is better than <b>" + armor1.name + "</b> in all aspects.<br>";
                     }
-                    if (estimated_weaker(armor1.special_stats + armor1.set_special_stats + armor1.use_special_stats +
-                                             armor1.hit_special_stats,
-                                         armor2.special_stats + armor2.use_special_stats + armor2.hit_special_stats))
+                    else
                     {
-                        if (found_one_stronger)
+                        double stat_diff = estimate_stat_diff(armor1.special_stats + armor1.set_special_stats +
+                                                                  armor1.use_special_stats + armor1.hit_special_stats,
+                                                              armor2.special_stats + armor2.use_special_stats +
+                                                                  armor2.hit_special_stats);
+                        if (stat_diff > 0)
                         {
-                            armor1.remove = true;
-                            debug_message +=
-                                "<b>REMOVED: " + armor1.name + "</b>. High-est as: " +
-                                string_with_precision(estimate_special_stats_high(armor1.special_stats) +
-                                                          estimate_special_stats_high(armor1.set_special_stats),
-                                                      3) +
-                                "AP. Eliminated by: ";
-                            debug_message +=
-                                "<b>" + armor2.name + "</b> low-est as: " +
-                                string_with_precision(estimate_special_stats_low(armor2.special_stats), 3) + "AP.<br>";
-                            break;
+                            stronger_found++;
+                            debug_message += string_with_precision(stronger_found) + "/" +
+                                             string_with_precision(keep_n_stronger_items) + " since <b>" + armor2.name +
+                                             "</b> was estimated to be <b>" + string_with_precision(stat_diff, 3) +
+                                             " AP </b>better than <b>" + armor1.name + "</b>.<br>";
                         }
-                        debug_message += "<b>1/2: " + armor1.name + "</b>." + armor2.name + " is estimated better.<br>";
-                        found_one_stronger = true;
+                    }
+                    if (stronger_found >= keep_n_stronger_items)
+                    {
+                        armor1.remove = true;
+                        debug_message += "REMOVED:<b> " + armor1.name + "</b>.<br>";
+                        break;
                     }
                 }
             }
@@ -689,66 +661,44 @@ std::vector<Armor> Item_optimizer::remove_weaker_items(const std::vector<Armor>&
         }
     }
 
-    if (armors[0].socket == Socket::ring || armors[0].socket == Socket::trinket)
-    {
-        if (filtered_armors.size() == 1)
-        {
-            debug_message += "Removed to many ring/trinkets, need atleast 2! Adding back the second best one<br>";
-            double best_ap = -1;
-            size_t best_index = 0;
-            for (size_t i = 0; i < armors.size(); ++i)
-            {
-                if (armors_special_stats[i].remove)
-                {
-                    double ap = estimate_special_stats_high(armors_special_stats[i].special_stats);
-                    if (ap > best_ap)
-                    {
-                        best_ap = ap;
-                        best_index = i;
-                    }
-                }
-            }
-            filtered_armors.push_back(armors[best_index]);
-        }
-    }
     return filtered_armors;
 }
 
 void Item_optimizer::filter_weaker_items(const Special_stats& special_stats, std::string& debug_message)
 {
-    debug_message += "<br>Filtering <b>Shared cooldown use-effects: </b><br>";
-    find_best_use_effect(special_stats, debug_message);
+//    debug_message += "<br>Filtering <b>Shared cooldown use-effects: </b><br>";
+//    find_best_use_effect(special_stats, debug_message);
 
     debug_message += "<br>Filtering <b> Helmets: </b><br>";
-    helmets = remove_weaker_items(helmets, special_stats, debug_message);
+    helmets = remove_weaker_items(helmets, special_stats, debug_message, 1);
     debug_message += "<br>Filtering <b> necks: </b><br>";
-    necks = remove_weaker_items(necks, special_stats, debug_message);
+    necks = remove_weaker_items(necks, special_stats, debug_message, 1);
     debug_message += "<br>Filtering <b> shoulders: </b><br>";
-    shoulders = remove_weaker_items(shoulders, special_stats, debug_message);
+    shoulders = remove_weaker_items(shoulders, special_stats, debug_message, 1);
     debug_message += "<br>Filtering <b> backs: </b><br>";
-    backs = remove_weaker_items(backs, special_stats, debug_message);
+    backs = remove_weaker_items(backs, special_stats, debug_message, 1);
     debug_message += "<br>Filtering <b> chests: </b><br>";
-    chests = remove_weaker_items(chests, special_stats, debug_message);
+    chests = remove_weaker_items(chests, special_stats, debug_message, 1);
     debug_message += "<br>Filtering <b> wrists: </b><br>";
-    wrists = remove_weaker_items(wrists, special_stats, debug_message);
+    wrists = remove_weaker_items(wrists, special_stats, debug_message, 1);
     debug_message += "<br>Filtering <b> hands: </b><br>";
-    hands = remove_weaker_items(hands, special_stats, debug_message);
+    hands = remove_weaker_items(hands, special_stats, debug_message, 1);
     debug_message += "<br>Filtering <b> belts: </b><br>";
-    belts = remove_weaker_items(belts, special_stats, debug_message);
+    belts = remove_weaker_items(belts, special_stats, debug_message, 1);
     debug_message += "<br>Filtering <b> legs: </b><br>";
-    legs = remove_weaker_items(legs, special_stats, debug_message);
+    legs = remove_weaker_items(legs, special_stats, debug_message, 1);
     debug_message += "<br>Filtering <b> boots: </b><br>";
-    boots = remove_weaker_items(boots, special_stats, debug_message);
+    boots = remove_weaker_items(boots, special_stats, debug_message, 1);
     debug_message += "<br>Filtering <b> ranged: </b><br>";
-    ranged = remove_weaker_items(ranged, special_stats, debug_message);
+    ranged = remove_weaker_items(ranged, special_stats, debug_message, 1);
     debug_message += "<br>Filtering <b> rings: </b><br>";
-    rings = remove_weaker_items(rings, special_stats, debug_message);
+    rings = remove_weaker_items(rings, special_stats, debug_message, 2);
     debug_message += "<br>Filtering <b> trinkets: </b><br>";
-    trinkets = remove_weaker_items(trinkets, special_stats, debug_message);
+    trinkets = remove_weaker_items(trinkets, special_stats, debug_message, 2);
 
     debug_message += "<br>Filtering <b> weapons: </b><br>";
-    main_hands = remove_weaker_weapons(Weapon_socket::main_hand, main_hands, special_stats, debug_message);
-    off_hands = remove_weaker_weapons(Weapon_socket::off_hand, off_hands, special_stats, debug_message);
+    main_hands = remove_weaker_weapons(Weapon_socket::main_hand, main_hands, special_stats, debug_message, 2);
+    off_hands = remove_weaker_weapons(Weapon_socket::off_hand, off_hands, special_stats, debug_message, 2);
 }
 
 void Item_optimizer::fill_empty_armor()

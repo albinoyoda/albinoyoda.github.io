@@ -845,6 +845,7 @@ void Armory::add_buffs_to_character(Character& character, const std::vector<std:
     {
         character.add_buff(buffs.mighty_rage_potion);
     }
+
     if (find_string(buffs_vec, "dense_stone_main_hand"))
     {
         character.add_weapon_buff(Socket::main_hand, buffs.dense_stone);
@@ -853,6 +854,11 @@ void Armory::add_buffs_to_character(Character& character, const std::vector<std:
     {
         character.add_buff(buffs.elemental_stone);
     }
+    else if (find_string(buffs_vec, "consecrated_sharpening_stone_main_hand"))
+    {
+        character.add_buff(buffs.consecrated_sharpening_stone);
+    }
+
     if (find_string(buffs_vec, "dense_stone_off_hand"))
     {
         character.add_weapon_buff(Socket::off_hand, buffs.dense_stone);
@@ -860,5 +866,9 @@ void Armory::add_buffs_to_character(Character& character, const std::vector<std:
     else if (find_string(buffs_vec, "elemental_stone_off_hand"))
     {
         character.add_buff(buffs.elemental_stone);
+    }
+    else if (find_string(buffs_vec, "consecrated_sharpening_stone_off_hand"))
+    {
+        character.add_buff(buffs.consecrated_sharpening_stone);
     }
 }
