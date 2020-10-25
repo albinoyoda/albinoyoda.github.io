@@ -767,7 +767,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     }
 
     std::string item_strengths_string;
-    if (find_string(input.options, "item_strengths"))
+    if (find_string(input.options, "item_strengths") || find_string(input.options, "wep_strengths"))
     {
         item_strengths_string = "<b>Character items and proposed upgrades:</b><br>";
         //                std::vector<size_t> batches_per_iteration = {100, 200, 500, 1000};
@@ -804,29 +804,35 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
             //                        Socket::main_hand, Socket::off_hand,
             Socket::ranged,
         };
-        for (auto socket : all_sockets)
+
+        if (find_string(input.options, "item_strengths"))
         {
-            if (socket == Socket::ring || socket == Socket::trinket)
+            for (auto socket : all_sockets)
             {
-                item_upgrades(item_strengths_string, character_new, item_optimizer, armory, batches_per_iteration,
-                              cumulative_simulations, simulator, dps_mean, dps_sample_std, socket,
-                              character_new.total_special_stats, true);
-                item_upgrades(item_strengths_string, character_new, item_optimizer, armory, batches_per_iteration,
-                              cumulative_simulations, simulator, dps_mean, dps_sample_std, socket,
-                              character_new.total_special_stats, false);
-            }
-            else
-            {
-                item_upgrades(item_strengths_string, character_new, item_optimizer, armory, batches_per_iteration,
-                              cumulative_simulations, simulator, dps_mean, dps_sample_std, socket,
-                              character_new.total_special_stats, true);
+                if (socket == Socket::ring || socket == Socket::trinket)
+                {
+                    item_upgrades(item_strengths_string, character_new, item_optimizer, armory, batches_per_iteration,
+                                  cumulative_simulations, simulator, dps_mean, dps_sample_std, socket,
+                                  character_new.total_special_stats, true);
+                    item_upgrades(item_strengths_string, character_new, item_optimizer, armory, batches_per_iteration,
+                                  cumulative_simulations, simulator, dps_mean, dps_sample_std, socket,
+                                  character_new.total_special_stats, false);
+                }
+                else
+                {
+                    item_upgrades(item_strengths_string, character_new, item_optimizer, armory, batches_per_iteration,
+                                  cumulative_simulations, simulator, dps_mean, dps_sample_std, socket,
+                                  character_new.total_special_stats, true);
+                }
             }
         }
-
-        item_upgrades_wep(item_strengths_string, character_new, item_optimizer, armory, batches_per_iteration,
-                          cumulative_simulations, simulator, dps_mean, dps_sample_std, Weapon_socket::main_hand);
-        item_upgrades_wep(item_strengths_string, character_new, item_optimizer, armory, batches_per_iteration,
-                          cumulative_simulations, simulator, dps_mean, dps_sample_std, Weapon_socket::off_hand);
+        if (find_string(input.options, "wep_strengths"))
+        {
+            item_upgrades_wep(item_strengths_string, character_new, item_optimizer, armory, batches_per_iteration,
+                              cumulative_simulations, simulator, dps_mean, dps_sample_std, Weapon_socket::main_hand);
+            item_upgrades_wep(item_strengths_string, character_new, item_optimizer, armory, batches_per_iteration,
+                              cumulative_simulations, simulator, dps_mean, dps_sample_std, Weapon_socket::off_hand);
+        }
         //        item_strengths_string += "<b>Weapon</b> proposals coming soon!<br>";
         item_strengths_string += "<br><br>";
     }

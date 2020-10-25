@@ -381,10 +381,11 @@
     <div class="content">
         <div id="armor_single">
             <p class="select-title">Quick-select:</p><br>
-            <button onclick="load_p1prebis()">Phase 1 "pre-BiS"</button>
-            <button onclick="load_p3pvebis()">Phase 3 PvE-BiS</button>
-            <button onclick="load_p4pvebis()">Phase 4 PvE-BiS</button>
-            <button onclick="load_p5pvebis()">Phase 5 PvE-BiS</button>
+            <button onclick="load_p1prebis()">P1 "pre-BiS"</button>
+            <button onclick="load_p3pvebis()">P3 PvE-BiS</button>
+            <button onclick="load_p4pvebis()">P4 PvE-BiS</button>
+            <button onclick="load_p5pvebis()">P5 PvE-BiS</button>
+            <button onclick="load_p6pvebis()">P6 PvE-BiS</button>
             <br><br>
             <!--armor begin-->
             <span class="left_select">helmet</span><span class="middle_select">neck</span><span class="right_select">shoulder</span><br>
@@ -1271,11 +1272,14 @@
         <input type="checkbox" id="normal_mode" checked
                onclick="unique_checkboxes('normal_mode', ['multiple_mode', 'do_comparison']);
                         unique_div(['armor_single', 'standard_description_div'],['armor_multiple', 'compare_div', 'multi_description_div'])">
-        <label for="normal_mode"> <b>Standard</b>: Simulate an item configuration </label><br>
+        <label for="normal_mode"> <b>Standard</b>: Simulate the above selected item configuration. </label><br>
         <div class="description" id="standard_description_div">
             <input type="checkbox" id="item_strengths">
-            <label for="item_strengths">Suggest item upgrades for each slot. Will be displayed in the results
-                section</label>
+            <label for="item_strengths">Suggest armor upgrades for each slot.</label><br>
+
+            <input type="checkbox" id="wep_strengths">
+            <label for="wep_strengths">Suggest weapon upgrades.</label><br>
+            (Proposals are displayed in the results section.)<br>
         </div>
         <br>
 
@@ -1333,7 +1337,8 @@
 
         <select id="shoulder_ench_dd" class="enchant-select">
             <option value="shoulder">shoulder</option>
-            <option value="+30 attack_power">+30 attack power</option>
+            <option value="+30 attack_power">+30 AP</option>
+            <option value="naxxramas">+1 crit +26 AP</option>
         </select>
 
         <select id="back_ench_dd" class="enchant-select">
@@ -1836,7 +1841,7 @@
         "recklessness", "mighty_rage_potion", "default_boss", "sulfuron_harbinger", "golemagg", "vaelastrasz",
         "chromaggus", "debug_on", "use_bt_in_exec_phase", "use_hs_in_exec_phase", "cleave_if_adds",
         "initial_rage", "use_hamstring", "use_bloodthirst", "use_whirlwind", "use_overpower", "use_heroic_strike",
-        "item_strengths", "deep_wounds", "heroic_strike_aq", "compute_dpr", "talents_stat_weights"];
+        "item_strengths", "wep_strengths", "deep_wounds", "heroic_strike_aq", "compute_dpr", "talents_stat_weights"];
 
     let float_sim_options = ["n_simulations_dd", "n_simulations_stat_dd", "opponent_level_dd", "fight_time_dd",
         "sunder_armor_dd", "heroic_strike_rage_thresh_dd", "cleave_rage_thresh_dd", "whirlwind_rage_thresh_dd",
@@ -2025,6 +2030,18 @@
         let selected_enchants = ["+8 strength", "+30 attack_power", "+3 agility", "+4 stats", "+9 strength",
             "+7 strength", "+8 strength", "+7 agility", "crusader", "crusader"];
         select_prebis_mult(selected_items, selected_weapons, selected_enchants);
+    }
+
+    function load_p6pvebis() {
+        let selected_items = ["lionheart_helm", "stormrages_talisman_of_seething", "conquerors_spaulders",
+            "shroud_of_dominion", "plated_abomination_ribcage", "hive_defiler_wristguards",
+            "gauntlets_of_annihilation", "girdle_of_the_mentor", "leggings_of_carnage",
+            "chromatic_boots", "quick_strike_ring", "band_of_unnatural_forces",
+            "kiss_of_the_spider", "badge_of_the_swarmguard", "nerubian_slavemaker"];
+        let selected_weapons = ["the_hungering_cold", "iblis_blade_of_the_fallen_seraph"];
+        let selected_enchants = ["+8 strength", "naxxramas", "+3 agility", "+4 stats", "+9 strength",
+            "+15 agility", "+8 strength", "+7 agility", "crusader", "crusader"];
+        select_prebis(selected_items, selected_weapons, selected_enchants);
     }
 
     function load_p5pvebis() {
@@ -2568,7 +2585,7 @@
 
             let colors = ["#3e95cd", "#8e5ea2", "#FFFF00", "#c45850",
                 "#e8c3b9", "#990099", "#145A32", "#3333cc",
-                "#B300C4", "#00FF08", "#FF000A", "#ffffff",
+                "#c45000", "#00FF08", "#FF000A", "#ffffff",
                 "#abc46b", "#f75fff", "#5cffeb", "#beff5b"];
             let damage_name = [];
             let damage_vec = [];

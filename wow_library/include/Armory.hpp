@@ -601,7 +601,7 @@ struct Armory
                                                                                       0},             2.7, 86,   161, Weapon_socket::main_hand, Weapon_type::mace},
                     {"misplaced_servo_arm",                 Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, 2.8, 128.0, 238.0,
                         Weapon_socket::one_hand,  Weapon_type::mace,
-                        {{"misplaced_servo_arm",           Hit_effect::Type::damage_magic, {},     {},                125, 0,  0.10}}},
+                        {{"misplaced_servo_arm",           Hit_effect::Type::damage_magic, {},     {},                125, 0,  0.10, 0, 1, 0, 0, 2, true}}},
                     {"the_castigator",                 Attributes{0, 0},     Special_stats{1, 1,
                                                                                       16},             2.6, 119,   221, Weapon_socket::one_hand, Weapon_type::mace},
 

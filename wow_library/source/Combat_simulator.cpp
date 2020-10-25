@@ -798,6 +798,26 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                           wep.socket);
     }
 
+    for (size_t i = 0; i < 2; i++)
+    {
+        size_t j = (i == 0) ? 1 : 0;
+        for (const auto& hit_effect : character.weapons[i].hit_effects)
+        {
+            if (hit_effect.affects_both_weapons)
+            {
+                auto new_hit_effect = hit_effect;
+                if (hit_effect.ppm != 0)
+                {
+                    new_hit_effect.probability = hit_effect.ppm / (60.0 / weapons[j].swing_speed);
+                }
+                else
+                {
+                    std::cout << "missing PPM for hit effect that affects both weapons!\n";
+                }
+                weapons[j].hit_effects.emplace_back(new_hit_effect);
+            }
+        }
+    }
     auto hit_effects_mh = weapons[0].hit_effects;
     auto hit_effects_oh = weapons[1].hit_effects;
 

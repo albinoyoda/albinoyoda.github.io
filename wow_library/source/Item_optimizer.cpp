@@ -76,7 +76,7 @@ double Item_optimizer::get_total_qp_equivalent(const Special_stats& special_stat
            hit_effects_ap;
 }
 
-//void Item_optimizer::find_best_use_effect(const Special_stats& special_stats, std::string& debug_message)
+// void Item_optimizer::find_best_use_effect(const Special_stats& special_stats, std::string& debug_message)
 //{
 //    std::vector<Use_effect> use_effects;
 //    //    for (const auto& armor : legs)
@@ -443,8 +443,16 @@ std::vector<Weapon> Item_optimizer::remove_weaker_weapons(const Weapon_socket we
                 case Hit_effect::Type::damage_magic_guaranteed:
                 case Hit_effect::Type::damage_magic:
                 case Hit_effect::Type::damage_physical:
-                    wep_struct.hit_special_stats.attack_power += effect.probability * effect.damage * ap_per_coh;
+                {
+                    double factor = 1.0;
+                    if (effect.affects_both_weapons)
+                    {
+                        factor = 2.0;
+                    }
+                    wep_struct.hit_special_stats.attack_power +=
+                        effect.probability * effect.damage * ap_per_coh * factor;
                     break;
+                }
                 case Hit_effect::Type::extra_hit:
                 {
                     double factor = weapon_socket == Weapon_socket::main_hand ? 1.0 : 0.5;
@@ -569,19 +577,20 @@ std::vector<Armor> Item_optimizer::remove_weaker_items(const std::vector<Armor>&
         }
         if (!armors[i].use_effects.empty())
         {
-//            if (armors[i].use_effects[0].effect_socket == Use_effect::Effect_socket::shared)
-//            {
-//                if (armors[i].use_effects[0].name == best_use_effect_name)
-//                {
-//                    Special_stats use_sp = armors[i].use_effects[0].get_special_stat_equivalent(special_stats);
-//                    use_sp.attack_power *= armors[i].use_effects[0].duration / sim_time;
-//                    armor_equiv.use_special_stats = use_sp;
-//                }
-//            }
-//            else
-//            {
-                armor_equiv.can_be_estimated = false;
-//            }
+            //            if (armors[i].use_effects[0].effect_socket == Use_effect::Effect_socket::shared)
+            //            {
+            //                if (armors[i].use_effects[0].name == best_use_effect_name)
+            //                {
+            //                    Special_stats use_sp =
+            //                    armors[i].use_effects[0].get_special_stat_equivalent(special_stats);
+            //                    use_sp.attack_power *= armors[i].use_effects[0].duration / sim_time;
+            //                    armor_equiv.use_special_stats = use_sp;
+            //                }
+            //            }
+            //            else
+            //            {
+            armor_equiv.can_be_estimated = false;
+            //            }
         }
         if (!armors[i].hit_effects.empty())
         {
@@ -666,8 +675,8 @@ std::vector<Armor> Item_optimizer::remove_weaker_items(const std::vector<Armor>&
 
 void Item_optimizer::filter_weaker_items(const Special_stats& special_stats, std::string& debug_message)
 {
-//    debug_message += "<br>Filtering <b>Shared cooldown use-effects: </b><br>";
-//    find_best_use_effect(special_stats, debug_message);
+    //    debug_message += "<br>Filtering <b>Shared cooldown use-effects: </b><br>";
+    //    find_best_use_effect(special_stats, debug_message);
 
     debug_message += "<br>Filtering <b> Helmets: </b><br>";
     helmets = remove_weaker_items(helmets, special_stats, debug_message, 1);

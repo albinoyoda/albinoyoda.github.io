@@ -111,6 +111,8 @@ Special_stats Armory::get_enchant_special_stats(Socket socket, Enchant::Type typ
         {
         case Enchant::Type::attack_power:
             return {0, 0, 30};
+        case Enchant::Type::naxxramas:
+            return {1, 0, 26};
         default:
             return {0, 0, 0};
         }
@@ -646,6 +648,10 @@ void Armory::add_enchants_to_character(Character& character, const std::vector<s
     if (find_string(ench_vec, "s+30 attack_power"))
     {
         character.add_enchant(Socket::shoulder, Enchant::Type::attack_power);
+    }
+    else if (find_string(ench_vec, "snaxxramas"))
+    {
+        character.add_enchant(Socket::shoulder, Enchant::Type::naxxramas);
     }
 
     if (find_string(ench_vec, "b+3 agility"))

@@ -102,7 +102,7 @@ public:
 
     Hit_effect(std::string name, Type type, Attributes attribute_boost, Special_stats special_stats_boost,
                double damage, double duration, double probability, double attack_power_boost = 0, int n_targets = 1,
-               double armor_reduction = 0, int max_stacks = 0)
+               double armor_reduction = 0, int max_stacks = 0, double ppm = 0.0, bool affects_both_weapons = false)
         : name(std::move(name))
         , type(type)
         , attribute_boost(attribute_boost)
@@ -113,6 +113,8 @@ public:
         , attack_power_boost(attack_power_boost)
         , n_targets(n_targets)
         , armor_reduction(armor_reduction)
+        , ppm(ppm)
+        , affects_both_weapons(affects_both_weapons)
         , max_stacks(max_stacks){};
 
     inline Special_stats get_special_stat_equivalent(const Special_stats& special_stats) const
@@ -130,6 +132,8 @@ public:
     double attack_power_boost;
     int n_targets;
     double armor_reduction;
+    double ppm;
+    bool affects_both_weapons;
     int max_stacks;
 };
 
@@ -192,7 +196,8 @@ struct Enchant
         crusader,
         minor_stats,
         major_stats,
-        attack_power
+        attack_power,
+        naxxramas
     };
 
     Enchant() = default;
@@ -306,7 +311,7 @@ std::ostream& operator<<(std::ostream& os, const Socket& socket);
 
 std::string operator+(std::string& string, const Socket& socket);
 
-std::string operator+(std::string& string, const Weapon_socket & socket);
+std::string operator+(std::string& string, const Weapon_socket& socket);
 
 int get_weapon_skill(const Special_stats& special_stats, Weapon_type weapon_type);
 

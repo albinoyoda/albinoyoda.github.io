@@ -27,7 +27,7 @@ int main()
 
     std::vector<std::string> weapons_vec;
     weapons_vec.emplace_back("thunderfury_blessed_blade");
-    weapons_vec.emplace_back("dal_rends_tribal_guardian");
+    weapons_vec.emplace_back("misplaced_servo_arm");
 
     std::vector<std::string> compare_armor_vec;
     //    compare_armor_vec.emplace_back("lionheart_helm");
@@ -430,8 +430,8 @@ int main()
                                   45,
                                   40};
 
-    //    auto sim_output = sim_interface.simulate(sim_input);
-    auto sim_output = sim_interface.simulate_mult(sim_input_mult);
+        auto sim_output = sim_interface.simulate(sim_input);
+//    auto sim_output = sim_interface.simulate_mult(sim_input_mult);
 
     //    for (const auto &dmg_batch : sim_output.stat_weights)
     //    {
