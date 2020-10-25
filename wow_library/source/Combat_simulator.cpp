@@ -428,12 +428,12 @@ void Combat_simulator::whirlwind(Weapon_sim& main_hand_weapon, Special_stats& sp
     {
         hit_outcomes.emplace_back(
             generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats, i == 0));
+        if (hit_outcomes.back().hit_result != Hit_result::dodge && hit_outcomes.back().hit_result != Hit_result::miss)
+        {
+            hit_effects(main_hand_weapon, main_hand_weapon, special_stats, rage, damage_sources, flurry_charges);
+        }
     }
     rage -= 25;
-    if (hit_outcomes[0].hit_result != Hit_result::dodge && hit_outcomes[0].hit_result != Hit_result::miss)
-    {
-        hit_effects(main_hand_weapon, main_hand_weapon, special_stats, rage, damage_sources, flurry_charges);
-    }
     time_keeper_.whirlwind_cd = 10;
     time_keeper_.global_cd = 1.5;
     Hit_result result_used_for_flurry = Hit_result::TBD;
@@ -728,21 +728,24 @@ void Combat_simulator::swing_weapon(Weapon_sim& weapon, Weapon_sim& main_hand_we
     }
     manage_flurry(result_used_for_flurry, special_stats, flurry_charges);
 
-    if (hit_outcomes[0].hit_result != Hit_result::miss && hit_outcomes[0].hit_result != Hit_result::dodge)
+    for (const auto& hit_outcome : hit_outcomes)
     {
-        hit_effects(weapon, main_hand_weapon, special_stats, rage, damage_sources, flurry_charges, is_extra_attack);
-
-        // Unbridled wrath
-        if (get_uniform_random(1) < p_unbridled_wrath_)
+        if (hit_outcome.hit_result != Hit_result::miss && hit_outcome.hit_result != Hit_result::dodge)
         {
-            rage += 1;
-            if (rage > 100.0)
-            {
-                rage_lost_capped_ += rage - 100.0;
-                rage = 100.0;
-            }
-            simulator_cout("Unbridled wrath. Current rage: ", int(rage));
+            hit_effects(weapon, main_hand_weapon, special_stats, rage, damage_sources, flurry_charges, is_extra_attack);
         }
+    }
+
+    // Unbridled wrath
+    if (get_uniform_random(1) < p_unbridled_wrath_)
+    {
+        rage += 1;
+        if (rage > 100.0)
+        {
+            rage_lost_capped_ += rage - 100.0;
+            rage = 100.0;
+        }
+        simulator_cout("Unbridled wrath. Current rage: ", int(rage));
     }
 }
 
