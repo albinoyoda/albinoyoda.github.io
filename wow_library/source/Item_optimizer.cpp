@@ -374,7 +374,7 @@ double estimate_wep_stat_diff(const Weapon_struct& wep1, const Weapon_struct& we
     wep_1_ap += main_hand ? 100 * (wep1.swing_speed - 2.3) : -100 * (wep1.swing_speed - 2.3);
 
     double wep_2_ap = wep2.average_damage / wep2.swing_speed * 14;
-    wep_2_ap += main_hand ? 100 * (wep2.swing_speed - 2.3) : -100 * (wep1.swing_speed - 2.3);
+    wep_2_ap += main_hand ? 100 * (wep2.swing_speed - 2.3) : -100 * (wep2.swing_speed - 2.3);
 
     return wep_2_ap - wep_1_ap;
 }
