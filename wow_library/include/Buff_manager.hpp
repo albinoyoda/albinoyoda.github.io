@@ -103,6 +103,7 @@ public:
         deep_wounds_damage = 0.0;
         rage_spent_executing = 0.0;
         deep_wounds_timestamps.clear();
+        need_to_recompute_hittables = true;
     };
 
     double get_dt(double sim_time)
