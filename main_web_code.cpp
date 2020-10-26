@@ -10,24 +10,35 @@ int main()
 
     std::vector<std::string> armor_vec;
     armor_vec.emplace_back("lionheart_helm");
-    armor_vec.emplace_back("onyxia_tooth_pendant");
-    armor_vec.emplace_back("drake_talon_pauldrons");
-    armor_vec.emplace_back("cape_of_the_black_baron");
-    armor_vec.emplace_back("savage_gladiator_chain");
-    armor_vec.emplace_back("wristguards_of_stability");
-    armor_vec.emplace_back("flameguard_gauntlets");
-    armor_vec.emplace_back("onslaught_girdle");
-    armor_vec.emplace_back("cloudkeeper_legplates");
+    armor_vec.emplace_back("stormrages_talisman_of_seething");
+    armor_vec.emplace_back("conquerors_spaulders");
+    armor_vec.emplace_back("shroud_of_dominion");
+    armor_vec.emplace_back("plated_abomination_ribcage");
+    armor_vec.emplace_back("hive_defiler_wristguards");
+    armor_vec.emplace_back("gauntlets_of_annihilation");
+    armor_vec.emplace_back("girdle_of_the_mentor");
+    armor_vec.emplace_back("leggings_of_carnage");
     armor_vec.emplace_back("chromatic_boots");
-    armor_vec.emplace_back("might_of_cenarius");
-    armor_vec.emplace_back("master_dragonslayers_ring");
+    armor_vec.emplace_back("quick_strike_ring");
+    armor_vec.emplace_back("band_of_unnatural_forces");
+    armor_vec.emplace_back("kiss_of_the_spider");
     armor_vec.emplace_back("badge_of_the_swarmguard");
-    armor_vec.emplace_back("diamond_flask");
-    armor_vec.emplace_back("blastershot");
+    armor_vec.emplace_back("nerubian_slavemaker");
 
     std::vector<std::string> weapons_vec;
-    weapons_vec.emplace_back("thunderfury_blessed_blade");
-    weapons_vec.emplace_back("misplaced_servo_arm");
+    weapons_vec.emplace_back("gressil_dawn_of_ruin");
+    weapons_vec.emplace_back("the_hungering_cold");
+
+    //    mult_weapons_vec.emplace_back("persuader");
+    //    mult_weapons_vec.emplace_back("gressil_dawn_of_ruin");
+    //    mult_weapons_vec.emplace_back("iblis_blade_of_the_fallen_seraph");
+    //    mult_weapons_vec.emplace_back("the_hungering_cold");
+    //    mult_weapons_vec.emplace_back("widows_remorse");
+    //    mult_weapons_vec.emplace_back("hatchet_of_sundered_bone");
+    //    mult_weapons_vec.emplace_back("harbinger_of_doom");
+    //    mult_weapons_vec.emplace_back("kingsfall");
+    //    mult_weapons_vec.emplace_back("maexxnas_fang");
+    //    mult_weapons_vec.emplace_back("misplaced_servo_arm");
 
     std::vector<std::string> compare_armor_vec;
     //    compare_armor_vec.emplace_back("lionheart_helm");
@@ -430,8 +441,8 @@ int main()
                                   45,
                                   40};
 
-        auto sim_output = sim_interface.simulate(sim_input);
-//    auto sim_output = sim_interface.simulate_mult(sim_input_mult);
+    auto sim_output = sim_interface.simulate(sim_input);
+    //    auto sim_output = sim_interface.simulate_mult(sim_input_mult);
 
     //    for (const auto &dmg_batch : sim_output.stat_weights)
     //    {

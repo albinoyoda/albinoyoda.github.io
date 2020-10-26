@@ -341,8 +341,6 @@ void Combat_simulator::manage_flurry(Hit_result hit_result, Special_stats& speci
             special_stats -= {0, 0, 0, 0, 0.05 + 0.05 * config.talents.flurry};
         }
         simulator_cout(flurry_charges, " flurry charges");
-        assert(special_stats.haste > -.1);
-        assert(special_stats.haste < 1.2);
     }
 }
 
