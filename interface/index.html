@@ -1514,30 +1514,30 @@
         <b>Weapon Stones:</b><br>
         Main-hand:<br>
         <input type="checkbox" id="dense_stone_main_hand"
-               onclick="unique_checkboxes('dense_stone_main_hand', ['elemental_stone_main_hand', 'consecrated_sharpening_stone_main_hand'] )"
+               onclick="unique_checkboxes_unselect('dense_stone_main_hand', ['elemental_stone_main_hand', 'consecrated_sharpening_stone_main_hand'] )"
                checked>
         <label for="dense_stone_main_hand"> Dense Stone</label><br>
 
         <input type="checkbox" id="elemental_stone_main_hand"
-               onclick="unique_checkboxes('elemental_stone_main_hand', ['dense_stone_main_hand', 'consecrated_sharpening_stone_main_hand'] )">
+               onclick="unique_checkboxes_unselect('elemental_stone_main_hand', ['dense_stone_main_hand', 'consecrated_sharpening_stone_main_hand'] )">
         <label for="elemental_stone_main_hand"> Elemental Stone</label><br>
 
         <input type="checkbox" id="consecrated_sharpening_stone_main_hand"
-               onclick="unique_checkboxes('consecrated_sharpening_stone_main_hand', ['elemental_stone_main_hand', 'dense_stone_main_hand'] )">
+               onclick="unique_checkboxes_unselect('consecrated_sharpening_stone_main_hand', ['elemental_stone_main_hand', 'dense_stone_main_hand'] )">
         <label for="consecrated_sharpening_stone_main_hand"> Consecrated Stone</label><br>
 
         Off-hand:<br>
         <input type="checkbox" id="dense_stone_off_hand"
-               onclick="unique_checkboxes('dense_stone_off_hand', ['elemental_stone_off_hand', 'consecrated_sharpening_stone_off_hand'] )"
+               onclick="unique_checkboxes_unselect('dense_stone_off_hand', ['elemental_stone_off_hand', 'consecrated_sharpening_stone_off_hand'] )"
                checked>
         <label for="dense_stone_off_hand"> Dense Stone</label><br>
 
         <input type="checkbox" id="elemental_stone_off_hand"
-               onclick="unique_checkboxes('elemental_stone_off_hand', ['consecrated_sharpening_stone_off_hand', 'dense_stone_off_hand'] )">
+               onclick="unique_checkboxes_unselect('elemental_stone_off_hand', ['consecrated_sharpening_stone_off_hand', 'dense_stone_off_hand'] )">
         <label for="elemental_stone_off_hand"> Elemental Stone Off Hand</label><br>
 
         <input type="checkbox" id="consecrated_sharpening_stone_off_hand"
-               onclick="unique_checkboxes('consecrated_sharpening_stone_off_hand', ['elemental_stone_off_hand', 'dense_stone_off_hand'] )">
+               onclick="unique_checkboxes_unselect('consecrated_sharpening_stone_off_hand', ['elemental_stone_off_hand', 'dense_stone_off_hand'] )">
         <label for="consecrated_sharpening_stone_off_hand"> Consecrated Stone</label>
     </div>
     <br/><br/>
@@ -1758,6 +1758,12 @@
             }
         }
         document.getElementById(clicked_box).checked = true;
+    }
+
+    function unique_checkboxes_unselect(clicked_box, list_of_boxes) {
+        for (let box of list_of_boxes) {
+            document.getElementById(box).checked = false;
+        }
     }
 
     function unique_div(divs_to_show, divs_to_hide) {
