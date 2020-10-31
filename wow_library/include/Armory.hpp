@@ -14,6 +14,7 @@ struct Buffs
     Buff spirit_of_zandalar{"spirit_of_zandalar", Attributes{0, 0},
                             Special_stats{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .15}};
     Buff sayges_fortune{"sayges_fortune", Attributes{0, 0}, Special_stats{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .1}};
+    Buff traces_of_silithyst{"traces_of_silithyst", Attributes{0, 0}, Special_stats{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .05}};
 
     // Player_buffs
     Buff battle_shout{"battle_shout", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 241.0}};
@@ -164,7 +165,7 @@ struct Armory
                     {"zulian_tigerhide_cloak",       Attributes{0, 13},  Special_stats{0, 1, 0},  Socket::back},
                     {"cloak_of_the_fallen_god",      Attributes{11, 26}, Special_stats{0, 0, 0},  Socket::back},
                     {"cloak_of_the_golden_hive",     Attributes{13, 10}, Special_stats{0, 0, 0},  Socket::back},
-                    {"drake_of_unyielding_strength", Attributes{15, 9},  Special_stats{0, 1, 0},  Socket::back},
+                    {"drape_of_unyielding_strength", Attributes{15, 9},  Special_stats{0, 1, 0},  Socket::back},
                     {"might_of_the_tribe", Attributes{0, 0},  Special_stats{0, 0, 28},  Socket::back},
                     {"cloak_of_the_scourge", Attributes{0, 0},  Special_stats{0, 1, 30},  Socket::back},
                     {"shifting_cloak", Attributes{0, 17},  Special_stats{0, 0, 0},  Socket::back},

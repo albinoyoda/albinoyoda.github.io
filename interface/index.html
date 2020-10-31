@@ -206,7 +206,8 @@
     <h2>Welcome to wow-fury-sim!</h2>
     If you like my simulator feel free to join my <b>Discord</b>:
     <h3><a href="https://discord.gg/xTuKsRz">Discord link</a></h3>
-    There we can discuss your results, get notifications when a <b>new patch</b> goes live with <b>patch-notes</b>, <br/>
+    There we can discuss your results, get notifications when a <b>new patch</b> goes live with <b>patch-notes</b>,
+    <br/>
     or, if you have some good ideas, feel free to contribute to the <b>wish-list</b>.<br/>
 </div>
 
@@ -370,7 +371,7 @@
                 <option value="cloak_of_the_scourge">Cloak of the scourge</option>
                 <option value="cloak_of_the_shrouded_mists">Cloak of the shrouded mists</option>
                 <option value="deathguards_cloak">Deathguards cloak</option>
-                <option value="drake_of_unyielding_strength">Drake of unyielding strength</option>
+                <option value="drape_of_unyielding_strength">Drape of unyielding strength</option>
                 <option value="might_of_the_tribe">Might of the tribe</option>
                 <option value="puissant_cape">Puissant cape</option>
                 <option value="shifting_cloak">Shifting cloak</option>
@@ -875,7 +876,7 @@
                 <option value="cloak_of_the_scourge">Cloak of the scourge</option>
                 <option value="cloak_of_the_shrouded_mists">Cloak of the shrouded mists</option>
                 <option value="deathguards_cloak">Deathguards cloak</option>
-                <option value="drake_of_unyielding_strength">Drake of unyielding strength</option>
+                <option value="drape_of_unyielding_strength">Drape of unyielding strength</option>
                 <option value="might_of_the_tribe">Might of the tribe</option>
                 <option value="puissant_cape">Puissant cape</option>
                 <option value="shifting_cloak">Shifting cloak</option>
@@ -1318,7 +1319,10 @@
         <label for="spirit_of_zandalar"> Spirit of Zandalar</label><br>
 
         <input type="checkbox" id="sayges_fortune">
-        <label for="sayges_fortune"> Sayges Fortune</label><br><br>
+        <label for="sayges_fortune"> Sayges Fortune</label><br>
+
+        <input type="checkbox" id="traces_of_silithyst">
+        <label for="traces_of_silithyst"> Traces of Silithyst</label><br><br>
 
         <b> Player buffs:</b><br>
         <input type="checkbox" id="battle_shout" checked>
@@ -1350,19 +1354,26 @@
 
         <b> AQ-books:</b><br>
         <input type="checkbox" id="battle_shout_aq" checked>
-        <label for="battle_shout_aq"> Battle shout AQ-book</label><br>
+        <label for="battle_shout_aq"> Battle shout</label><br>
 
         <input type="checkbox" id="blessing_of_might_aq">
-        <label for="blessing_of_might_aq" style="color: #003d99"> Blessing of Might AQ-book</label><br>
+        <label for="blessing_of_might_aq" style="color: #003d99"> Blessing of Might</label><br>
 
         <input type="checkbox" id="strength_of_earth_totem_aq">
-        <label for="strength_of_earth_totem_aq" style="color: #cc0000"> Strength of earth Totem AQ-book</label><br>
+        <label for="strength_of_earth_totem_aq" style="color: #cc0000"> Strength of earth Totem</label><br>
 
         <input type="checkbox" id="grace_of_air_totem_aq">
-        <label for="grace_of_air_totem_aq" style="color: #cc0000"> Grace of Air Totem AQ-book</label><br>
+        <label for="grace_of_air_totem_aq" style="color: #cc0000"> Grace of Air Totem</label><br>
 
         <input type="checkbox" id="heroic_strike_aq" checked>
-        <label for="heroic_strike_aq"> Heroic Strike AQ-book</label><br><br>
+        <label for="heroic_strike_aq"> Heroic Strike</label><br><br>
+
+        <b> Talents:</b><br>
+        <input type="checkbox" id="improved_weapon_totems">
+        <label for="improved_weapon_totems" style="color: #cc0000"> Improved Weapon Totems</label><br>
+
+        <input type="checkbox" id="enhancing_totems">
+        <label for="enhancing_totems" style="color: #cc0000"> Enhancing Totems</label><br><br>
 
         <b> Consumables:</b><br>
         <input type="checkbox" id="elixir_mongoose" checked>
@@ -1713,17 +1724,19 @@
         // armor_wep_div.style.display = "block";
     }
 
-    let world_buffs = ["rallying_cry", "dire_maul", "songflower", "warchiefs_blessing", "spirit_of_zandalar", "sayges_fortune"];
+    let world_buffs = ["rallying_cry", "dire_maul", "songflower", "warchiefs_blessing", "spirit_of_zandalar", "sayges_fortune", "traces_of_silithyst"];
     let world_buffs_input = [];
 
     let buffs = ["battle_shout", "blessing_of_kings", "blessing_of_might", "gift_of_the_wild", "leader_of_the_pack", "trueshot_aura",
         "windfury_totem", "strength_of_earth_totem", "grace_of_air_totem"];
     let buffs_input = [];
 
-    let consumables = ["elixir_mongoose", "blessed_sunfruit", "smoked_dessert_dumplings", "juju_power", "elixir_of_giants", "winterfall_firewater",
-        "juju_might", "roids", "dense_stone_main_hand", "elemental_stone_main_hand", "dense_stone_off_hand", "elemental_stone_off_hand",
+    let consumables = ["elixir_mongoose", "blessed_sunfruit", "smoked_dessert_dumplings", "juju_power",
+        "elixir_of_giants", "winterfall_firewater", "juju_might", "roids", "dense_stone_main_hand",
+        "elemental_stone_main_hand", "dense_stone_off_hand", "elemental_stone_off_hand",
         "consecrated_sharpening_stone_main_hand", "consecrated_sharpening_stone_off_hand",
-        "battle_shout_aq", "blessing_of_might_aq", "fire_toasted_bun", "strength_of_earth_totem_aq", "grace_of_air_totem_aq"];
+        "battle_shout_aq", "blessing_of_might_aq", "fire_toasted_bun", "strength_of_earth_totem_aq",
+        "grace_of_air_totem_aq", "improved_weapon_totems", "enhancing_totems"];
     let consumables_input = [];
 
     let armor = ["helmet_dd", "neck_dd", "shoulder_dd", "back_dd",

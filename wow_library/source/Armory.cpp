@@ -745,6 +745,10 @@ void Armory::add_buffs_to_character(Character& character, const std::vector<std:
     {
         character.add_buff(buffs.sayges_fortune);
     }
+    if (find_string(buffs_vec, "traces_of_silithyst"))
+    {
+        character.add_buff(buffs.traces_of_silithyst);
+    }
 
     // Player buffs
     if (find_string(buffs_vec, "battle_shout"))
@@ -775,29 +779,32 @@ void Armory::add_buffs_to_character(Character& character, const std::vector<std:
     }
     if (find_string(buffs_vec, "windfury_totem"))
     {
-        character.add_buff(buffs.windfury_totem);
+        Buff totem = buffs.windfury_totem;
+        if (find_string(buffs_vec, "improved_weapon_totems"))
+        {
+            totem.hit_effects[0].attack_power_boost *= 1.3;
+        }
+        character.add_buff(totem);
     }
     if (find_string(buffs_vec, "strength_of_earth_totem"))
     {
-        if (find_string(buffs_vec, "strength_of_earth_totem_aq"))
+        Buff totem = (find_string(buffs_vec, "strength_of_earth_totem_aq")) ? buffs.strength_of_earth_totem_aq :
+                                                                              buffs.strength_of_earth_totem;
+        if (find_string(buffs_vec, "enhancing_totems"))
         {
-            character.add_buff(buffs.strength_of_earth_totem_aq);
+            totem.attributes.strength *= 1.15;
         }
-        else
-        {
-            character.add_buff(buffs.strength_of_earth_totem);
-        }
+        character.add_buff(totem);
     }
     if (find_string(buffs_vec, "grace_of_air_totem"))
     {
-        if (find_string(buffs_vec, "grace_of_air_totem_aq"))
+        Buff totem =
+            (find_string(buffs_vec, "grace_of_air_totem_aq")) ? buffs.grace_of_air_totem_aq : buffs.grace_of_air_totem;
+        if (find_string(buffs_vec, "enhancing_totems"))
         {
-            character.add_buff(buffs.grace_of_air_totem_aq);
+            totem.attributes.agility *= 1.15;
         }
-        else
-        {
-            character.add_buff(buffs.grace_of_air_totem);
-        }
+        character.add_buff(totem);
     }
     if (find_string(buffs_vec, "gift_of_the_wild"))
     {
