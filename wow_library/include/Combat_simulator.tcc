@@ -111,7 +111,6 @@ void Combat_simulator_config::get_combat_simulator_config(const T& input)
     combat.overpower_bt_cooldown_thresh = input.overpower_bt_cooldown_thresh;
     combat.overpower_ww_cooldown_thresh = input.overpower_ww_cooldown_thresh;
 
-    use_sim_time_ramp = true;
     enable_bloodrage = true;
     use_seed = true;
 }

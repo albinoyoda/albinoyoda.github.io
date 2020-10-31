@@ -656,7 +656,8 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
             double delta_dps = dps_mean - simulator_dpr.get_dps_mean();
             double dmg_tot = delta_dps * (config.sim_time - 1);
             double dmg_per_hit = dmg_tot / avg_ex_casts;
-            double execute_cost = simulator.get_avg_rage_spent_executing() / avg_ex_casts;
+            double execute_rage_cost = 15 - static_cast<int>(2.51 * config.talents.improved_execute);
+            double execute_cost = simulator.get_avg_rage_spent_executing() / avg_ex_casts + execute_rage_cost;
             double dmg_per_rage = dmg_per_hit / execute_cost;
             dpr_info += "<b>Execute</b>: <br>Damage per cast: <b>" + string_with_precision(dmg_per_hit, 4) +
                         "</b><br>Average rage cost: <b>" + string_with_precision(execute_cost, 3) + "</b><br>DPR: <b>" +
@@ -673,14 +674,27 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         config.n_batches = 5000;
         Combat_simulator simulator_talent{};
 
-        talents_info = "<br><b>Value per 1 talent point:</b>";
-        config.talents.improved_heroic_strike -= 2;
-        simulator_talent.set_config(config);
-        simulator_talent.simulate(character, 0, false, false);
-        delta_dps = (dps_mean - simulator_talent.get_dps_mean()) / 2;
-        talents_info += "<br>Talent: <b>Improved Heroic Strike</b><br>Value: <b>" +
-                        string_with_precision(delta_dps, 3) + "</b> DPS<br>";
-        config.talents.improved_heroic_strike += 2;
+        if (!config.combat.cleave_if_adds)
+        {
+            talents_info = "<br><b>Value per 1 talent point:</b>";
+            config.talents.improved_heroic_strike -= 2;
+            simulator_talent.set_config(config);
+            simulator_talent.simulate(character, 0, false, false);
+            delta_dps = (dps_mean - simulator_talent.get_dps_mean()) / 2;
+            talents_info += "<br>Talent: <b>Improved Heroic Strike</b><br>Value: <b>" +
+                            string_with_precision(delta_dps, 3) + "</b> DPS<br>";
+            config.talents.improved_heroic_strike += 2;
+        }
+        else
+        {
+            config.talents.improved_cleave += 3;
+            simulator_talent.set_config(config);
+            simulator_talent.simulate(character, 0, false, false);
+            delta_dps = -(dps_mean - simulator_talent.get_dps_mean()) / 3;
+            talents_info += "<br>Talent: <b>Improved Cleave</b><br>Value: <b>" + string_with_precision(delta_dps, 3) +
+                            "</b> DPS<br>";
+            config.talents.improved_cleave -= 3;
+        }
 
         config.talents.overpower--;
         simulator_talent.set_config(config);
@@ -770,8 +784,6 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     if (find_string(input.options, "item_strengths") || find_string(input.options, "wep_strengths"))
     {
         item_strengths_string = "<b>Character items and proposed upgrades:</b><br>";
-        //                std::vector<size_t> batches_per_iteration = {100, 200, 500, 1000};
-        //                std::vector<size_t> cumulative_simulations = {0, 100, 300, 800, 1800};
 
         std::vector<size_t> batches_per_iteration = {100};
         std::vector<size_t> cumulative_simulations = {0};
@@ -902,7 +914,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 char_plus.weapons[1].hit_effects.emplace_back(extra_hit);
                 Stat_weight hit = compute_stat_weight(simulator, char_plus, char_minus, "extra_hit", 1, 5, mean_init,
                                                       sample_std_init);
-                stat_weights.emplace_back("1%ExtraHit " + std::to_string(hit.dps_plus) + " " +
+                stat_weights.emplace_back("1%ExtraAttack " + std::to_string(hit.dps_plus) + " " +
                                           std::to_string(hit.std_dps_plus) + " " + std::to_string(hit.dps_minus) + " " +
                                           std::to_string(hit.std_dps_minus));
             }
@@ -1001,8 +1013,8 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         config.performance_mode = false;
 
         simulator.set_config(config);
-        double dps;
-        for (int i = 0; i < 1000; i++)
+        double dps{};
+        for (int i = 0; i < 100000; i++)
         {
             simulator.simulate(character);
             dps = simulator.get_dps_mean();

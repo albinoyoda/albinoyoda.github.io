@@ -333,12 +333,12 @@ void Combat_simulator::manage_flurry(Hit_result hit_result, Special_stats& speci
             flurry_charges = 3;
             if (!flurry_active)
             {
-                special_stats += {0, 0, 0, 0, 0.05 + 0.05 * config.talents.flurry};
+                special_stats += {0, 0, 0, 0, flurry_haste_factor_};
             }
         }
         else if (flurry_active && flurry_charges == 0)
         {
-            special_stats -= {0, 0, 0, 0, 0.05 + 0.05 * config.talents.flurry};
+            special_stats -= {0, 0, 0, 0, flurry_haste_factor_};
         }
         simulator_cout(flurry_charges, " flurry charges");
     }
@@ -450,28 +450,29 @@ void Combat_simulator::whirlwind(Weapon_sim& main_hand_weapon, Special_stats& sp
 }
 
 void Combat_simulator::execute(Weapon_sim& main_hand_weapon, Special_stats& special_stats, double& rage,
-                               Damage_sources& damage_sources, int& flurry_charges, double execute_rage_cost)
+                               Damage_sources& damage_sources, int& flurry_charges)
 {
     if (config.dpr_settings.compute_dpr_ex_)
     {
-        get_uniform_random(100) < hit_table_yellow_[1] ? rage *= 0.85 : rage -= 30;
-        double next_server_batch = std::fmod(time_keeper_.time, 0.4);
+        get_uniform_random(100) < hit_table_yellow_[1] ? rage *= 0.8 : rage -= execute_rage_cost_;
+        double next_server_batch = std::fmod(time_keeper_.time + init_server_time, 0.4);
         buff_manager_.add("execute_rage_batch", {}, 0.4 + next_server_batch);
         time_keeper_.global_cd = 1.5;
         return;
     }
     simulator_cout("Execute!");
-    double damage = 600 + (rage - execute_rage_cost) * 15;
+    double damage = 600 + (rage - execute_rage_cost_) * 15;
     auto hit_outcome = generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats);
     if (hit_outcome.hit_result == Hit_result::dodge || hit_outcome.hit_result == Hit_result::miss)
     {
-        rage *= 0.85;
+        rage *= 0.8;
     }
     else
     {
+        rage -= execute_rage_cost_;
         hit_effects(main_hand_weapon, main_hand_weapon, special_stats, rage, damage_sources, flurry_charges);
     }
-    double next_server_batch = std::fmod(time_keeper_.time, 0.4);
+    double next_server_batch = std::fmod(time_keeper_.time + init_server_time, 0.4);
     buff_manager_.add("execute_rage_batch", {}, 0.4 + next_server_batch);
     buff_manager_.rage_before_execute = rage;
     time_keeper_.global_cd = 1.5;
@@ -614,7 +615,7 @@ void Combat_simulator::swing_weapon(Weapon_sim& weapon, Weapon_sim& main_hand_we
     double swing_damage = weapon.swing(special_stats.attack_power + attack_power_bonus);
     if (weapon.socket == Socket::off_hand)
     {
-        swing_damage *= (0.5 + 0.025 * config.talents.dual_wield_specialization);
+        swing_damage *= dual_wield_damage_factor_;
     }
     weapon.internal_swing_timer = weapon.swing_speed / (1 + special_stats.haste);
 
@@ -642,7 +643,7 @@ void Combat_simulator::swing_weapon(Weapon_sim& weapon, Weapon_sim& main_hand_we
     {
         simulator_cout("Performing cleave! #targets = boss + ", adds_in_melee_range, " adds");
         simulator_cout("Cleave hits: ", std::min(adds_in_melee_range + 1, 2), " targets");
-        swing_damage += 50; // TODO talents
+        swing_damage += cleave_bonus_damage_;
 
         for (int i = 0; i < std::min(adds_in_melee_range + 1, 2); i++)
         {
@@ -696,8 +697,9 @@ void Combat_simulator::swing_weapon(Weapon_sim& weapon, Weapon_sim& main_hand_we
         }
         if (hit_outcomes[0].hit_result == Hit_result::dodge)
         {
-            simulator_cout("Rage gained from enemy dodging");
-            rage += rage_generation(swing_damage * armor_reduction_factor_);
+            simulator_cout("Rage gained since the enemy dodged.");
+            rage +=
+                0.75 * rage_generation(swing_damage * armor_reduction_factor_ * (1 + special_stats.damage_multiplier));
         }
         if (rage > 100.0)
         {
@@ -822,25 +824,9 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
     auto hit_effects_mh = weapons[0].hit_effects;
     auto hit_effects_oh = weapons[1].hit_effects;
 
-    heroic_strike_rage_cost = 15.0 - config.talents.improved_heroic_strike;
-    p_unbridled_wrath_ = config.talents.unbridled_wrath * 0.08;
-    double execute_rage_cost = 15 - static_cast<int>(2.51 * config.talents.improved_execute);
-
-    double armor_reduction_from_spells = 0.0;
-    double armor_reduction_delayed = 0.0;
-    armor_reduction_from_spells += 450 * config.n_sunder_armor_stacks;
-    armor_reduction_from_spells += 640 * config.curse_of_recklessness_active;
-    armor_reduction_from_spells += 505 * config.faerie_fire_feral_active;
-    if (config.exposed_armor)
-    {
-        armor_reduction_delayed = 1700 * 1.5 - 450 * config.n_sunder_armor_stacks;
-    }
-
     double sim_time = config.sim_time;
-    if (config.use_sim_time_ramp)
-    {
-        sim_time -= 2.0;
-    }
+    double averaging_interval = 2.0; // Duration of the uniform interval that is evaluated
+    sim_time -= averaging_interval;
 
     // Pick out the best use effect if there are several that shares cooldown
     std::vector<Use_effect> use_effects_all = character.use_effects;
@@ -934,17 +920,14 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         }
 
         // Reset, since these might change
-        target_armor_ = 3731 - armor_reduction_from_spells; // Armor for Warrior class monsters
-        double target_mitigation = armor_mitigation(target_armor_, 63);
-        double add_mitigation = armor_mitigation(3000, 62);
-        armor_reduction_factor_ = 1 - target_mitigation;
-        armor_reduction_factor_add = 1 - add_mitigation;
+        target_armor_ = 3731 - armor_reduction_from_spells_; // Armor for Warrior class monsters
+        armor_reduction_factor_ = 1 - armor_mitigation(target_armor_, 63);
+        armor_reduction_factor_add = 1 - armor_mitigation(3000, 62);
         current_armor_red_stacks_ = 0;
 
         int flurry_charges = 0;
         bool apply_delayed_armor_reduction = true;
         bool execute_phase = false;
-        //        int fuel_ticks = 0;
 
         double mh_hits = 0;
         double mh_hits_w_flurry = 0;
@@ -958,10 +941,8 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         }
 
         // To avoid local max/min results from running a specific run time
-        if (config.use_sim_time_ramp)
-        {
-            sim_time += 2.0 / n_damage_batches;
-        }
+        sim_time += averaging_interval / n_damage_batches;
+        init_server_time = 50.0 * iter / n_damage_batches;
 
         // Combat configuration
         adds_in_melee_range = 0;
@@ -1010,11 +991,11 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                 break;
             }
 
-            if (time_keeper_.time > 6 && armor_reduction_delayed > 0 && apply_delayed_armor_reduction)
+            if (time_keeper_.time > 6 && config.exposed_armor && apply_delayed_armor_reduction)
             {
-                target_armor_ -= armor_reduction_delayed; // Armor for Warrior class monsters
+                target_armor_ -= armor_reduction_delayed_; // Armor for Warrior class monsters
                 target_armor_ = std::max(target_armor_, 0.0);
-                target_mitigation = armor_mitigation(target_armor_, 63);
+                double target_mitigation = armor_mitigation(target_armor_, 63);
                 simulator_cout("Improved expose armor applied. Target armor: ", int(target_armor_),
                                ". New mitigation factor: ", target_mitigation, "%.");
                 armor_reduction_factor_ = 1 - target_mitigation;
@@ -1109,9 +1090,9 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                         bloodthirst(weapons[0], special_stats, rage, damage_sources, flurry_charges);
                     }
                 }
-                if (time_keeper_.global_cd < 0 && rage > execute_rage_cost)
+                if (time_keeper_.global_cd < 0 && rage > execute_rage_cost_)
                 {
-                    execute(weapons[0], special_stats, rage, damage_sources, flurry_charges, execute_rage_cost);
+                    execute(weapons[0], special_stats, rage, damage_sources, flurry_charges);
                 }
             }
             else

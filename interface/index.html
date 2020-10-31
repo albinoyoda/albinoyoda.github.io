@@ -197,18 +197,24 @@
 
 <div class="tab">
     <button class="tablinks" onclick="openTab(event, 'Simulator')">Simulator</button>
+    <button class="tablinks" onclick="openTab(event, 'Discord')">Discord/Patch-notes</button>
     <button class="tablinks" onclick="openTab(event, 'About')">About</button>
-    <button class="tablinks" onclick="openTab(event, 'Equations')">Equations</button>
-    <button class="tablinks" onclick="openTab(event, 'Coming soon')">Coming soon</button>
-    <button class="tablinks" onclick="openTab(event, 'Change log')">Change log</button>
+    <!--    <button class="tablinks" onclick="openTab(event, 'Armory')">Equations</button>-->
+</div>
+
+<div id="Discord" class="tabcontent">
+    <h2>Welcome to wow-fury-sim!</h2>
+    If you like my simulator feel free to join my <b>Discord</b>:
+    <h3><a href="https://discord.gg/xTuKsRz">Discord link</a></h3>
+    There we can discuss your results, get notifications when a <b>new patch</b> goes live with <b>patch-notes</b>, <br/>
+    or, if you have some good ideas, feel free to contribute to the <b>wish-list</b>.<br/>
 </div>
 
 <div id="About" class="tabcontent">
     <h2>Welcome to my fury simulator!</h2>
-
-    <h3><a href="https://discord.gg/xTuKsRz">Discord link</a></h3>
     <h3><a href="https://github.com/albinoyoda/wow_classic_simulator">Github link</a></h3>
-
+    The project is open-source and can be found on github. <br/>
+    If you have ideas of what you think is missing/would be nice to have join my <a href="https://discord.gg/xTuKsRz">Discord.</a>
     <h3>FAQ:</h3>
     <p><b>Q: Is this a spreadsheet? How does it work? </b></p>
     <p> A: No, this is not a spreadsheet. This is an actual simulator with world of warcraft classic mechanics.<br/>
@@ -263,108 +269,6 @@
         And it works, hey! However, the C++ based simulator and the derivation/interpretation of the results should<br/>
         be of higher quality, since they are closed to my field of expertise<br/>
     </p>
-</div>
-
-<div id="Equations" class="tabcontent">
-    <h2>Details about the simulator will be coming soon!</h2>
-</div>
-
-<div id="Change log" class="tabcontent">
-    <h2>Change log:</h2>
-    <p><b>2020-05-29:</b></p>
-    <p>-Reworked "use effects": Now cloudkeepers, diamond flask, mighty rage potion, etc., adds an aura that is <br/>
-        tracked in the simulator. These auras take into account stat-multipilers, triggers GCD <br/>
-        (if it should) and has proper buff slots. As an example consider a character with both cloudkeepers and<br/>
-        diamondflask. Then the simulator will pick the best one (best = max(AP bonus * uptime)) and use that one<br/>
-        It will also stack all effects towards the end so that the uptime ends roughly when the fight ends<br/>
-        (stacking buffs towards the execute phase).<br/>
-        - Fixed the simulation output formatting.
-    </p>
-    <p><b>2020-05-29:</b></p>
-    <p> -Changed the item names to be capitalized and without underscores. Also, now main-hand and off-hand items <br/>
-        are only possible to select in their respective drop down menus.
-    </p>
-    <p><b>2020-05-29:</b></p>
-    <p> -Added combat debug information. When this is checked a window will be shown in the results section that <br/>
-        contains a complete fight log. At the bottom om this log detailed fighting stats are displayed. <br/>
-        NOTE: In the log, rage gained will sometimes be different when the same amount of damage is dealt.<br/>
-        This is due to the printout being rounded down, where in reality the rage is a floating point number in <br/>
-        the simulator. The same phenomena can be seen in the wow client aswell.<br/>
-    </p>
-    <p><b>2020-05-31:</b></p>
-    <p> - Can now select what stat weights to compute (increases performance, since these are expensive)<br/>
-        - Added BOSSES!! now its possible to select different boss scenarios to test the item configuration against<br/>
-        more bosses will come soon.<br/>
-        - Added the cleave ability.<br/>
-        - Combat debug log displays the median fight.<br/>
-        <br/>
-    </p>
-    <p><b>2020-06-01:</b></p>
-    <p> - Fixed the armor values for the adds in the bossfights.<br/>
-        - Added the ZG item-set. <br/>
-        <br/>
-    </p>
-    <p><b>2020-06-02:</b></p>
-    <p>
-        - Added AQ item-set!!! Finally we got Badge of the swarmguard (thats a dirty item to implement) and more!<br/>
-        - Fixed the back-ends memory handling. Now the app uses a constant amount of memory, and<br/>
-        does no longer scale with the number of simulations. (Max number of runs now are increased to 1.000.000.)<br/>
-        - Fixed the "proc counter" for items with elemental damage, e.g., Thunder fury.<br/>
-    </p>
-    <p><b>2020-06-08:</b></p>
-    <p>
-        - Comparison functionality, which computes the stat/DPS difference of selected items vs. a load file.<br/>
-        - Added more items: Defiler set, fang of the faceless, blackguard, and some more.<br/>
-        - Hamstring can now be configured in the simulation settings.<br/>
-        - Initial rage is now a variable.<br/>
-        - Added a tracker for the number of off-hand hits which got benefits from the "heroic strike bug", also <br/>
-        works on cleave. <br/>
-    </p>
-    <p><b>2020-06-27:</b></p>
-    <p>
-        - Multi-select! When this is selected its possible to enter multiple items from the same slot. This is<br/>
-        usefull if you have alot of different promising items and want some help with finding the best<br/>
-        possible configuration of these. It uses a probabilistic framework, so results from run to run may vary.<br/>
-        If it produces weird/scattered results for a specified set of items try increasing the maximum allowed<br/>
-        simulation time for the optimizer, which will increase the performance.<br/>
-        - Some small appearance changes and bugfixes.
-    </p>
-    <p><b>2020-07-13:</b></p>
-    <p>
-        - Fixed the windfury implementation and the impale talent to work correctly.<br/>
-        - Added double rolls for yellow hits.<br/>
-        - Improved simulator runtime performance<br/>
-        - Fixed a bug where the aura uptimes no longer where showing when doing a standard simulation.<br/>
-    </p>
-    <p><b>2020-08-01:</b></p>
-    <p>
-        - Added item proposal functionality under "Armor and Weapons -> Standard" which, if enabled, will propose<br/>
-        one or several items for each slot which will improve the results in the simulator. (does not propose<br/>
-        weapons at the moment, but that will come soon.)<br/>
-        - Added better implementations of all "over time" effects, such as Deep wounds, Essence of the red, <br/>
-        anger management, etc. Now they properly tick with a batch window.<br/>
-        - Deep wounds DPS added to the plots and average DPS. This will results in an increased DPS. However, this <br/>
-        should not effect any BiS lists or such, since affects all item combinations in approximately the same<br/>
-        way.<br/>
-        - HOTFIX: Heroic strike now properly refunds rage when dodged/missed.<br/>
-    </p>
-    <p><b>2020-09-25:</b></p>
-    <p>
-        - Added weapon upgrade proposals!<br/>
-        - HOTFIX: there was a bug in the multi select which made it to not evaluate all different<br/>
-        main-hand/off-hand combinations.<br/>
-    </p>
-
-</div>
-
-<div id="Coming soon" class="tabcontent">
-    <h2>Stuff to be added soon:</h2>
-    <p>TPS calculator for tanking. </p>
-    <p>Item filters, will reduce the size of the drop down menus </p>
-    <p>Hover-over item display </p>
-    <p>Configure use effect timings. </p>
-    <p>Talents </p>
-    <p>2h fury support </p>
 </div>
 
 <div id="Simulator" class="tabcontent">
@@ -888,7 +792,8 @@
 
             <p class="select-title">Quick-select:</p><br>
             <button onclick="load_p1prebisitems()">Example where phase 1 "pre-BiS" items are examined</button>
-            <button onclick="load_p5pvebismult()">Load Phase 5 PvE-BiS</button>
+            <button onclick="load_p5pvebismult()">Load P5 PvE-BiS</button>
+            <button onclick="load_p6pvebismult()">Load P6 BiS</button>
             <br>
             Add/remove items: <b>ctrl + left-click</b>.<br>
             Add all items in a slot: Select an item box then press <b> ctrl + a</b>.<br><br>
@@ -1562,7 +1467,7 @@
         <input type="checkbox" id="exposed_armor">
         <label for="exposed_armor"> Improved exposed armor applied after 6-7 seconds (replaces sunder armor)</label><br>
         <input type="checkbox" id="faerie_fire" checked>
-        <label for="faerie_fire"> Faerie fire feral active</label><br>
+        <label for="faerie_fire"> Faerie fire active</label><br>
         <input type="checkbox" id="curse_of_recklessness" checked>
         <label for="curse_of_recklessness"> Curse of recklessness active</label><br><br/>
 
@@ -1671,7 +1576,7 @@
         <label for="stat_weight_haste"> Calculate stat weight for &plusmn1% haste.</label><br>
 
         <input type="checkbox" id="stat_weight_extra_hit">
-        <label for="stat_weight_extra_hit"> Calculate stat weight for +1% extra hit.</label><br>
+        <label for="stat_weight_extra_hit"> Calculate stat weight for +1% chance of extra attack.</label><br>
 
         <input type="checkbox" id="stat_weight_skill">
         <label for="stat_weight_skill"> Calculate stat weight for &plusmn5 skill.</label><br>
@@ -1688,8 +1593,7 @@
         <label for="compute_dpr"> Compute DPR values for abilities.</label><br>
 
         <input type="checkbox" id="talents_stat_weights">
-        <label for="talents_stat_weights"> Compute the value of the various talents of the DW Fury 17/34/0
-            build.</label><br>
+        <label for="talents_stat_weights"> Compute the value of the various talents in the DW Fury build.</label><br>
 
         <input type="checkbox" id="deep_wounds">
         <label for="deep_wounds"> Enable deep wounds.</label><br><br/>
@@ -2023,6 +1927,18 @@
         let selected_weapons = ["dal_rends_sacred_charge", "dal_rends_tribal_guardian", "ironfoe", "thrash_blade", "mirahs_song"];
         let selected_enchants = ["+8 strength", "+30 attack_power", "+3 agility", "+4 stats", "+9 strength",
             "+7 strength", "+8 strength", "+7 agility", "crusader", "crusader"];
+        select_prebis_mult(selected_items, selected_weapons, selected_enchants);
+    }
+
+    function load_p6pvebismult() {
+        let selected_items = ["lionheart_helm", "stormrages_talisman_of_seething", "conquerors_spaulders",
+            "shroud_of_dominion", "plated_abomination_ribcage", "hive_defiler_wristguards",
+            "gauntlets_of_annihilation", "girdle_of_the_mentor", "leggings_of_carnage",
+            "chromatic_boots", "quick_strike_ring", "band_of_unnatural_forces",
+            "kiss_of_the_spider", "badge_of_the_swarmguard", "nerubian_slavemaker"];
+        let selected_weapons = ["the_hungering_cold", "iblis_blade_of_the_fallen_seraph"];
+        let selected_enchants = ["+8 strength", "naxxramas", "+3 agility", "+4 stats", "+9 strength",
+            "+15 agility", "+8 strength", "+7 agility", "crusader", "crusader"];
         select_prebis_mult(selected_items, selected_weapons, selected_enchants);
     }
 
@@ -2499,7 +2415,17 @@
             if (result['stat_weights'].size() > 0) {
                 let ap_string = result['stat_weights'].get(0);
                 ap_string = ap_string.split(" ");
-                let dps_per_ap = parseFloat(ap_string[1]) / 100;
+                let p_val_p = parseFloat(ap_string[1]) + parseFloat(ap_string[2]);
+                let p_val_n = parseFloat(ap_string[1]) - parseFloat(ap_string[2]);
+                let n_val_p = parseFloat(ap_string[3]) - parseFloat(ap_string[4]);
+                let n_val_n = parseFloat(ap_string[3]) + parseFloat(ap_string[4]);
+                stat_weights.push({
+                    'name': "100 AP",
+                    'value_max': Math.max(p_val_p, p_val_n),
+                    'value_min': Math.min(p_val_p, p_val_n),
+                    'negative_value_max': Math.max(n_val_p, n_val_n),
+                    'negative_value_min': Math.min(n_val_p, n_val_n)
+                });
                 let dps_per_ap_max = (parseFloat(ap_string[1]) + parseFloat(ap_string[2])) / 100;
                 let dps_per_ap_min = (parseFloat(ap_string[1]) - parseFloat(ap_string[2])) / 100;
                 for (let i = 1; i < result['stat_weights'].size(); i++) {
@@ -2525,10 +2451,18 @@
             }
             string += "(Accuracy is based on the 'number of simulations per stat weight' value.)<br>";
             if (result['stat_weights'].size() > 0) {
-                for (let i = 0; i < stat_weights.length; i++) {
+                string += "+" + stat_weights[0]['name'] + " equivalates: <b>" + stat_weights[0]['value_min'].toFixed(2) +
+                    " &#8722 " + stat_weights[0]['value_max'].toFixed(2) + "</b> DPS. <br />";
+                if (stat_weights[0]['name'] !== '1%ExtraAttack') {
+                    string += "-" + stat_weights[0]['name'] + " equivalates: <b>" + stat_weights[0]['negative_value_min'].toFixed(2) +
+                        " &#8722 " + stat_weights[0]['negative_value_max'].toFixed(2) + "</b> DPS. <br />";
+                }
+                string += "<br />";
+
+                for (let i = 1; i < stat_weights.length; i++) {
                     string += "+" + stat_weights[i]['name'] + " equivalates: <b>" + stat_weights[i]['value_min'].toFixed(2) +
                         " &#8722 " + stat_weights[i]['value_max'].toFixed(2) + "</b> attack power. <br />";
-                    if (stat_weights[i]['name'] !== '1%ExtraHit') {
+                    if (stat_weights[i]['name'] !== '1%ExtraAttack') {
                         string += "-" + stat_weights[i]['name'] + " equivalates: <b>" + stat_weights[i]['negative_value_min'].toFixed(2) +
                             " &#8722 " + stat_weights[i]['negative_value_max'].toFixed(2) + "</b> attack power. <br />";
                     }

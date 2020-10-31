@@ -50,7 +50,6 @@ struct Combat_simulator_config
     int n_sunder_armor_stacks = 0;
 
     // Simulator settings
-    bool use_sim_time_ramp{false};
     bool enable_bloodrage{false};
     bool enable_recklessness{false};
     bool enable_blood_fury{false};
@@ -106,6 +105,7 @@ struct Combat_simulator_config
         int overpower = 0;
         int improved_execute = 0;
         int dual_wield_specialization = 0;
+        int improved_cleave = 0;
     } talents;
 
     struct mode_t
@@ -131,6 +131,23 @@ public:
         {
             srand(config.seed);
         }
+
+        heroic_strike_rage_cost = 15.0 - config.talents.improved_heroic_strike;
+        p_unbridled_wrath_ = config.talents.unbridled_wrath * 0.08;
+        execute_rage_cost_ = 15 - static_cast<int>(2.51 * config.talents.improved_execute);
+
+        armor_reduction_from_spells_ = 0.0;
+        armor_reduction_from_spells_ += 450 * config.n_sunder_armor_stacks;
+        armor_reduction_from_spells_ += 640 * config.curse_of_recklessness_active;
+        armor_reduction_from_spells_ += 505 * config.faerie_fire_feral_active;
+        if (config.exposed_armor)
+        {
+            armor_reduction_delayed_ = 1700 * 1.5 - 450 * config.n_sunder_armor_stacks;
+        }
+
+        flurry_haste_factor_ = 0.05 + 0.05 * config.talents.flurry;
+        dual_wield_damage_factor_ = 0.5 + 0.025 * config.talents.dual_wield_specialization;
+        cleave_bonus_damage_ = 50 * (1.0 + 0.4 * config.talents.improved_cleave);
     }
 
     enum class Hit_result
@@ -209,7 +226,7 @@ public:
                    Damage_sources& damage_sources, int& flurry_charges);
 
     void execute(Weapon_sim& main_hand_weapon, Special_stats& special_stats, double& rage,
-                 Damage_sources& damage_sources, int& flurry_charges, double execute_cost);
+                 Damage_sources& damage_sources, int& flurry_charges);
 
     void hamstring(Weapon_sim& main_hand_weapon, Special_stats& special_stats, double& rage,
                    Damage_sources& damage_sources, int& flurry_charges);
@@ -349,11 +366,18 @@ private:
     int adds_in_melee_range{};
     double remove_adds_timer{};
     double heroic_strike_rage_cost{};
+    double cleave_bonus_damage_{};
     double rage_lost_execute_batch_{};
     double rage_lost_stance_swap_{};
     double rage_lost_capped_{};
     double avg_rage_spent_executing_{};
     double p_unbridled_wrath_{};
+    double execute_rage_cost_{};
+    double armor_reduction_from_spells_{};
+    double armor_reduction_delayed_{};
+    double flurry_haste_factor_{};
+    double init_server_time{};
+    double dual_wield_damage_factor_;
     bool dpr_heroic_strike_queued_{false};
     bool dpr_cleave_queued_{false};
     std::vector<std::vector<double>> damage_time_lapse{};
