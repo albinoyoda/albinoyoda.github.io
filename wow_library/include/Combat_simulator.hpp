@@ -25,7 +25,9 @@ struct Combat_simulator_config
     explicit Combat_simulator_config(const Sim_input& input)
     {
         get_combat_simulator_config(input);
-        n_batches = static_cast<int>(input.n_simulations);
+
+        n_batches =
+            static_cast<int>(find_value(input.float_options_string, input.float_options_val, "n_simulations_dd"));
         seed = 110000;
     };
 
@@ -42,7 +44,26 @@ struct Combat_simulator_config
     // Combat settings
     int n_batches{};
     double sim_time{};
-    int opponent_level{};
+
+    int main_target_level{};
+    double main_target_initial_armor_{};
+    int extra_target_level{};
+    int number_of_extra_targets{};
+    double extra_target_initial_armor_{};
+
+    bool take_periodic_damage_{};
+    bool can_trigger_enrage_{};
+    double periodic_damage_amount_{};
+    double periodic_damage_interval_{};
+    bool essence_of_the_red_{};
+
+    double execute_phase_percentage_{};
+
+    bool multi_target_mode_{};
+    bool first_global_sunder_{};
+
+    bool ability_queue_{};
+    double ability_queue_rage_thresh_{};
 
     bool exposed_armor{false};
     bool curse_of_recklessness_active{false};
@@ -56,7 +77,6 @@ struct Combat_simulator_config
 
     bool display_combat_debug{false};
     bool performance_mode{false};
-    bool use_seed{false};
     int seed{};
 
     struct combat_t
@@ -107,14 +127,6 @@ struct Combat_simulator_config
         int dual_wield_specialization = 0;
         int improved_cleave = 0;
     } talents;
-
-    struct mode_t
-    {
-        bool sulfuron_harbinger{false};
-        bool golemagg{false};
-        bool vaelastrasz{false};
-        bool chromaggus{false};
-    } mode;
 };
 
 class Combat_simulator
@@ -127,10 +139,6 @@ public:
     void set_config(Combat_simulator_config& new_config)
     {
         config = new_config;
-        if (config.use_seed)
-        {
-            srand(config.seed);
-        }
 
         heroic_strike_rage_cost = 15.0 - config.talents.improved_heroic_strike;
         p_unbridled_wrath_ = config.talents.unbridled_wrath * 0.08;
@@ -251,7 +259,7 @@ public:
 
     Combat_simulator::Hit_outcome generate_hit_mh(double damage, Hit_type hit_type, bool is_overpower = false);
 
-    void compute_hit_table(int level_difference, int weapon_skill, Special_stats special_stats, Socket weapon_hand);
+    void compute_hit_table(int weapon_skill, Special_stats special_stats, Socket weapon_hand);
 
     const std::vector<double>& get_hit_probabilities_white_mh() const;
 
@@ -306,6 +314,8 @@ public:
 
     void normalize_timelapse();
 
+    std::string hit_result_to_string(const Combat_simulator::Hit_result hit_result);
+
     void print_statement(std::string t) { debug_topic_ += t; }
 
     void print_statement(int t) { debug_topic_ += std::to_string(t); }
@@ -335,9 +345,9 @@ private:
     Use_effect bloodrage = {"Bloodrage", Use_effect::Effect_socket::unique, {}, {}, 10, 10, 60, false,
                             {},          {{"Bloodrage", {}, 1, 0, 1, 10}}};
 
-    Over_time_effect essence_of_the_red = {"Essence_of_the_red", {}, 20, 0, 1, 180};
+    Over_time_effect essence_of_the_red = {"Essence of the Red", {}, 20, 0, 1, 600};
 
-    Over_time_effect anger_management = {"Anger_Management", {}, 1, 0, 3, 600};
+    Over_time_effect anger_management = {"Anger Management", {}, 1, 0, 3, 600};
 
     std::vector<double> hit_table_white_mh_;
     std::vector<double> damage_multipliers_white_mh_;
@@ -363,8 +373,6 @@ private:
     double flurry_uptime_oh_{};
     double heroic_strike_uptime_{};
     std::string debug_topic_{};
-    int adds_in_melee_range{};
-    double remove_adds_timer{};
     double heroic_strike_rage_cost{};
     double cleave_bonus_damage_{};
     double rage_lost_execute_batch_{};

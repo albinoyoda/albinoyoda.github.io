@@ -58,6 +58,9 @@ std::string percent_to_str(const std::string& stat_name, double value1, const st
 
 bool find_string(const std::vector<std::string>& string_vec, const std::string& match_string);
 
+double find_value(const std::vector<std::string>& string_vec, const std::vector<double>& double_vec,
+                  const std::string& match_string);
+
 template <typename T>
 bool does_vector_contain(const std::vector<T>& vec, const T& match);
 

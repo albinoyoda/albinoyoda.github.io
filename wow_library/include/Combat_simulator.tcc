@@ -1,9 +1,6 @@
 template <typename T>
 void Combat_simulator_config::get_combat_simulator_config(const T& input)
 {
-    sim_time = input.fight_time;
-    opponent_level = input.target_level;
-
     if (find_string(input.options, "exposed_armor"))
     {
         exposed_armor = true;
@@ -27,22 +24,6 @@ void Combat_simulator_config::get_combat_simulator_config(const T& input)
     if (find_string(input.options, "enable_blood_fury"))
     {
         enable_blood_fury = true;
-    }
-    if (find_string(input.options, "sulfuron_harbinger"))
-    {
-        mode.sulfuron_harbinger = true;
-    }
-    if (find_string(input.options, "golemagg"))
-    {
-        mode.golemagg = true;
-    }
-    if (find_string(input.options, "vaelastrasz"))
-    {
-        mode.vaelastrasz = true;
-    }
-    if (find_string(input.options, "chromaggus"))
-    {
-        mode.chromaggus = true;
     }
     if (find_string(input.options, "use_bt_in_exec_phase"))
     {
@@ -88,7 +69,32 @@ void Combat_simulator_config::get_combat_simulator_config(const T& input)
     {
         combat.heroic_strike_damage = 138;
     }
-    n_sunder_armor_stacks = input.sunder_armor;
+
+    if (find_string(input.options, "multi_target_mode"))
+    {
+        multi_target_mode_ = true;
+    }
+    if (find_string(input.options, "essence_of_the_red"))
+    {
+        essence_of_the_red_ = true;
+    }
+    if (find_string(input.options, "can_trigger_enrage"))
+    {
+        can_trigger_enrage_ = true;
+    }
+    if (find_string(input.options, "first_global_sunder"))
+    {
+        first_global_sunder_ = true;
+    }
+    if (find_string(input.options, "periodic_damage"))
+    {
+        take_periodic_damage_ = true;
+    }
+    if (find_string(input.options, "ability_queue"))
+    {
+        ability_queue_ = true;
+    }
+
     talents.improved_heroic_strike = 2;
     talents.overpower = 1;
     talents.unbridled_wrath = 5;
@@ -98,19 +104,45 @@ void Combat_simulator_config::get_combat_simulator_config(const T& input)
     talents.improved_execute = 2;
     talents.dual_wield_specialization = 5;
 
-    combat.heroic_strike_rage_thresh = input.heroic_strike_rage_thresh;
-    combat.cleave_rage_thresh = input.cleave_rage_thresh;
-    combat.whirlwind_rage_thresh = input.whirlwind_rage_thresh;
-    combat.hamstring_cd_thresh = input.hamstring_cd_thresh;
-    combat.hamstring_thresh_dd = input.hamstring_thresh_dd;
-    combat.initial_rage = input.initial_rage;
+    combat.heroic_strike_rage_thresh =
+        find_value(input.float_options_string, input.float_options_val, "heroic_strike_rage_thresh_dd");
+    combat.cleave_rage_thresh =
+        find_value(input.float_options_string, input.float_options_val, "cleave_rage_thresh_dd");
+    combat.whirlwind_rage_thresh =
+        find_value(input.float_options_string, input.float_options_val, "whirlwind_rage_thresh_dd");
+    combat.hamstring_cd_thresh =
+        find_value(input.float_options_string, input.float_options_val, "hamstring_cd_thresh_dd");
+    combat.hamstring_thresh_dd = find_value(input.float_options_string, input.float_options_val, "hamstring_thresh_dd");
+    combat.initial_rage = find_value(input.float_options_string, input.float_options_val, "initial_rage_dd");
+    combat.whirlwind_bt_cooldown_thresh =
+        find_value(input.float_options_string, input.float_options_val, "whirlwind_bt_cooldown_thresh_dd");
+    combat.overpower_rage_thresh =
+        find_value(input.float_options_string, input.float_options_val, "overpower_rage_thresh_dd");
+    combat.overpower_bt_cooldown_thresh =
+        find_value(input.float_options_string, input.float_options_val, "overpower_bt_cooldown_thresh_dd");
+    combat.overpower_ww_cooldown_thresh =
+        find_value(input.float_options_string, input.float_options_val, "overpower_ww_cooldown_thresh_dd");
 
-    combat.whirlwind_bt_cooldown_thresh = input.whirlwind_bt_cooldown_thresh;
+    sim_time = find_value(input.float_options_string, input.float_options_val, "fight_time_dd");
 
-    combat.overpower_rage_thresh = input.overpower_rage_thresh;
-    combat.overpower_bt_cooldown_thresh = input.overpower_bt_cooldown_thresh;
-    combat.overpower_ww_cooldown_thresh = input.overpower_ww_cooldown_thresh;
+    main_target_level = find_value(input.float_options_string, input.float_options_val, "opponent_level_dd");
+    main_target_initial_armor_ = find_value(input.float_options_string, input.float_options_val, "boss_armor_dd");
+
+    n_sunder_armor_stacks = find_value(input.float_options_string, input.float_options_val, "sunder_armor_dd");
+
+    number_of_extra_targets =
+        find_value(input.float_options_string, input.float_options_val, "number_of_extra_targets_dd");
+    extra_target_initial_armor_ =
+        find_value(input.float_options_string, input.float_options_val, "extra_target_armor_dd");
+    extra_target_level = find_value(input.float_options_string, input.float_options_val, "extra_target_level_dd");
+    periodic_damage_interval_ =
+        find_value(input.float_options_string, input.float_options_val, "periodic_damage_interval_dd");
+    periodic_damage_amount_ =
+        find_value(input.float_options_string, input.float_options_val, "periodic_damage_amount_dd");
+    execute_phase_percentage_ =
+        find_value(input.float_options_string, input.float_options_val, "execute_phase_percentage_dd");
+    ability_queue_rage_thresh_ =
+        find_value(input.float_options_string, input.float_options_val, "re_queue_abilities_dd");
 
     enable_bloodrage = true;
-    use_seed = true;
 }

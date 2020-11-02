@@ -1,62 +1,31 @@
 #ifndef SIM_INPUT_HPP
 #define SIM_INPUT_HPP
 
-#include <vector>
 #include <string>
+#include <vector>
 
 struct Sim_input
 {
     Sim_input() = default;
 
-    Sim_input(std::vector<std::string> race,
-              std::vector<std::string> armor,
-              std::vector<std::string> weapons,
-              std::vector<std::string> buffs,
-              std::vector<std::string> enchants,
-              std::vector<std::string> stat_weights,
-              std::vector<std::string> options,
-              std::vector<std::string> compare_armor,
-              std::vector<std::string> compare_weapons,
-              double fight_time,
-              double target_level,
-              double n_simulations,
-              double n_simulations_stat_weights,
-              int sunder_armor,
-              double heroic_strike_rage_thresh,
-              double cleave_rage_thresh,
-              double whirlwind_rage_thresh,
-              double whirlwind_bt_cooldown_thresh,
-              double hamstring_cd_thresh,
-              double hamstring_thresh_dd,
-              double overpower_rage_thresh,
-              double overpower_bt_cooldown_thresh,
-              double overpower_ww_cooldown_thresh,
-              double initial_rage
-             ) :
-            race(std::move(race)),
-            armor(std::move(armor)),
-            weapons(std::move(weapons)),
-            buffs(std::move(buffs)),
-            enchants(std::move(enchants)),
-            stat_weights(std::move(stat_weights)),
-            options(std::move(options)),
-            compare_armor(std::move(compare_armor)),
-            compare_weapons(std::move(compare_weapons)),
-            fight_time(fight_time),
-            target_level(target_level),
-            n_simulations(n_simulations),
-            n_simulations_stat_weights(n_simulations_stat_weights),
-            sunder_armor(sunder_armor),
-            heroic_strike_rage_thresh(heroic_strike_rage_thresh),
-            cleave_rage_thresh(cleave_rage_thresh),
-            whirlwind_rage_thresh(whirlwind_rage_thresh),
-            whirlwind_bt_cooldown_thresh(whirlwind_bt_cooldown_thresh),
-            hamstring_cd_thresh(hamstring_cd_thresh),
-            hamstring_thresh_dd(hamstring_thresh_dd),
-            overpower_rage_thresh(overpower_rage_thresh),
-            overpower_bt_cooldown_thresh(overpower_bt_cooldown_thresh),
-            overpower_ww_cooldown_thresh(overpower_ww_cooldown_thresh),
-            initial_rage(initial_rage) {}
+    Sim_input(std::vector<std::string> race, std::vector<std::string> armor, std::vector<std::string> weapons,
+              std::vector<std::string> buffs, std::vector<std::string> enchants, std::vector<std::string> stat_weights,
+              std::vector<std::string> options, std::vector<std::string> float_options_string,
+              std::vector<double> float_options_val, std::vector<std::string> compare_armor,
+              std::vector<std::string> compare_weapons)
+        : race(std::move(race))
+        , armor(std::move(armor))
+        , weapons(std::move(weapons))
+        , buffs(std::move(buffs))
+        , enchants(std::move(enchants))
+        , stat_weights(std::move(stat_weights))
+        , options(std::move(options))
+        , float_options_string(std::move(float_options_string))
+        , float_options_val(std::move(float_options_val))
+        , compare_armor(std::move(compare_armor))
+        , compare_weapons(std::move(compare_weapons))
+    {
+    }
 
     std::vector<std::string> race;
     std::vector<std::string> armor;
@@ -65,23 +34,10 @@ struct Sim_input
     std::vector<std::string> enchants;
     std::vector<std::string> stat_weights;
     std::vector<std::string> options;
+    std::vector<std::string> float_options_string;
+    std::vector<double> float_options_val;
     std::vector<std::string> compare_armor;
     std::vector<std::string> compare_weapons;
-    double fight_time{};
-    double target_level{};
-    double n_simulations{};
-    double n_simulations_stat_weights{};
-    double sunder_armor{};
-    double heroic_strike_rage_thresh{};
-    double cleave_rage_thresh{};
-    double whirlwind_rage_thresh{};
-    double whirlwind_bt_cooldown_thresh{};
-    double hamstring_cd_thresh{};
-    double hamstring_thresh_dd{};
-    double overpower_rage_thresh{};
-    double overpower_bt_cooldown_thresh{};
-    double overpower_ww_cooldown_thresh{};
-    double initial_rage{};
 };
 
 #endif // SIM_INPUT_HPP

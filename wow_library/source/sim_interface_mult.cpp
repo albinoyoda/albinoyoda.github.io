@@ -158,6 +158,7 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult& input)
     cumulative_simulations.push_back(cumulative_simulations.back() + batches_per_iteration.back());
     size_t n_sim{};
     size_t performed_iterations{};
+    double max_optimize_time = find_value(input.float_options_string, input.float_options_val, "max_optimize_time_dd");
     for (size_t i = 0; i < batches_per_iteration.size(); i++)
     {
         clock_t optimizer_start_time = clock();
@@ -208,10 +209,10 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult& input)
 
         // Check if max time is exceeded
         double time = double(clock() - start_time_main) / (double)CLOCKS_PER_SEC;
-        if (time > input.max_optimize_time)
+        if (time > max_optimize_time)
         {
             debug_message +=
-                "<b>Maximum time limit (" + string_with_precision(input.max_optimize_time, 3) + ") exceeded! </b><br>";
+                "<b>Maximum time limit (" + string_with_precision(max_optimize_time, 3) + ") exceeded! </b><br>";
             break;
         }
 

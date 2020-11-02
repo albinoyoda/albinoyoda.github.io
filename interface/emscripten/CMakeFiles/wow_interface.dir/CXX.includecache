@@ -7,9 +7,9 @@
 #IncludeRegexTransform: 
 
 ../../wow_library/include/sim_input.hpp
-vector
--
 string
+-
+vector
 -
 
 ../../wow_library/include/sim_input_mult.hpp

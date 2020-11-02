@@ -407,10 +407,11 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     Combat_simulator simulator{};
     simulator.set_config(config);
 
+    double n_simulations_base = find_value(input.float_options_string, input.float_options_val, "n_simulations_dd");
     simulator.simulate(character, 0, true, true);
     const double dps_mean = simulator.get_dps_mean();
     const double dps_sample_std =
-        Statistics::sample_deviation(std::sqrt(simulator.get_dps_variance()), input.n_simulations);
+        Statistics::sample_deviation(std::sqrt(simulator.get_dps_variance()), config.n_batches);
 
     std::vector<double> mean_dps_vec;
     std::vector<double> sample_std_dps_vec;
@@ -520,8 +521,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                     "X)<br>";
         if (config.combat.use_bloodthirst)
         {
-            double avg_bt_casts =
-                static_cast<double>(dmg_dist.bloodthirst_count) / static_cast<double>(input.n_simulations);
+            double avg_bt_casts = static_cast<double>(dmg_dist.bloodthirst_count) / n_simulations_base;
             if (avg_bt_casts > 0.0)
             {
                 config.dpr_settings.compute_dpr_bt_ = true;
@@ -540,8 +540,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         }
         if (config.combat.use_whirlwind)
         {
-            double avg_ww_casts =
-                static_cast<double>(dmg_dist.whirlwind_count) / static_cast<double>(input.n_simulations);
+            double avg_ww_casts = static_cast<double>(dmg_dist.whirlwind_count) / n_simulations_base;
             if (avg_ww_casts > 0.0)
             {
                 config.dpr_settings.compute_dpr_ww_ = true;
@@ -560,8 +559,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         }
         if (config.combat.use_heroic_strike)
         {
-            double avg_hs_casts =
-                static_cast<double>(dmg_dist.heroic_strike_count) / static_cast<double>(input.n_simulations);
+            double avg_hs_casts = static_cast<double>(dmg_dist.heroic_strike_count) / n_simulations_base;
             if (avg_hs_casts > 0.0)
             {
                 config.dpr_settings.compute_dpr_hs_ = true;
@@ -583,7 +581,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         }
         if (config.combat.cleave_if_adds)
         {
-            double avg_cl_casts = static_cast<double>(dmg_dist.cleave_count) / static_cast<double>(input.n_simulations);
+            double avg_cl_casts = static_cast<double>(dmg_dist.cleave_count) / n_simulations_base;
             if (avg_cl_casts > 0.0)
             {
                 config.dpr_settings.compute_dpr_cl_ = true;
@@ -605,8 +603,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         }
         if (config.combat.use_hamstring)
         {
-            double avg_ha_casts =
-                static_cast<double>(dmg_dist.hamstring_count) / static_cast<double>(input.n_simulations);
+            double avg_ha_casts = static_cast<double>(dmg_dist.hamstring_count) / n_simulations_base;
             if (avg_ha_casts > 0.0)
             {
                 config.dpr_settings.compute_dpr_ha_ = true;
@@ -625,8 +622,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         }
         if (config.combat.use_overpower)
         {
-            double avg_op_casts =
-                static_cast<double>(dmg_dist.overpower_count) / static_cast<double>(input.n_simulations);
+            double avg_op_casts = static_cast<double>(dmg_dist.overpower_count) / n_simulations_base;
             if (avg_op_casts > 0.0)
             {
                 config.dpr_settings.compute_dpr_op_ = true;
@@ -646,7 +642,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
             }
         }
 
-        double avg_ex_casts = static_cast<double>(dmg_dist.execute_count) / static_cast<double>(input.n_simulations);
+        double avg_ex_casts = static_cast<double>(dmg_dist.execute_count) / n_simulations_base;
         if (avg_ex_casts > 0.0)
         {
             config.dpr_settings.compute_dpr_ex_ = true;
@@ -664,7 +660,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                         string_with_precision(dmg_per_rage, 4) + "</b><br>";
             config.dpr_settings.compute_dpr_ex_ = false;
         }
-        config.n_batches = input.n_simulations;
+        config.n_batches = static_cast<int>(n_simulations_base);
     }
 
     std::string talents_info = "<br>(Hint: Talent stat-weights can be activated under 'Simulation settings')";
@@ -736,13 +732,18 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
             "<br>Talent: <b>Anger Management</b><br>Value: <b>" + string_with_precision(delta_dps, 4) + "</b> DPS<br>";
         config.talents.anger_management = true;
 
-        config.talents.death_wish = false;
+        config.talents.death_wish = !config.talents.death_wish;
         simulator_talent.set_config(config);
         simulator_talent.simulate(character, 0, false, false);
         delta_dps = dps_mean - simulator_talent.get_dps_mean();
+        if (delta_dps < 0.0)
+        {
+            // Sign depends on if you have the talent or not
+            delta_dps *= -1;
+        }
         talents_info +=
             "<br>Talent: <b>Death wish</b><br>Value: <b>" + string_with_precision(delta_dps, 4) + "</b> DPS<br>";
-        config.talents.death_wish = true;
+        config.talents.death_wish = !config.talents.death_wish;
 
         config.talents.impale--;
         simulator_talent.set_config(config);
@@ -849,7 +850,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         item_strengths_string += "<br><br>";
     }
 
-    config.n_batches = input.n_simulations_stat_weights;
+    config.n_batches = find_value(input.float_options_string, input.float_options_val, "n_simulations_stat_dd");
     simulator.set_config(config);
     std::vector<std::string> stat_weights;
     if (!input.stat_weights.empty())
@@ -922,7 +923,8 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
             {
                 Character char_plus = character;
                 Character char_minus = character;
-                double swing_speed_diff = 0.5;
+                double swing_speed_diff =
+                    find_value(input.float_options_string, input.float_options_val, "stat_weight_mh_speed_dd");
                 double factor_p = (char_plus.weapons[0].swing_speed + 0.5) / char_plus.weapons[0].swing_speed;
                 double factor_n = (char_plus.weapons[0].swing_speed - 0.5) / char_plus.weapons[0].swing_speed;
                 char_plus.weapons[0].min_damage *= factor_p;
@@ -933,17 +935,18 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 char_minus.weapons[0].max_damage *= factor_n;
                 char_minus.weapons[0].swing_speed -= swing_speed_diff;
                 mod_hit_effects(char_minus.weapons[0].hit_effects, factor_n);
-                Stat_weight hit = compute_stat_weight(simulator, char_plus, char_minus, "mh_speed", 0.5, 1, mean_init,
-                                                      sample_std_init);
-                stat_weights.emplace_back("0.5-MH-speed " + std::to_string(hit.dps_plus) + " " +
-                                          std::to_string(hit.std_dps_plus) + " " + std::to_string(hit.dps_minus) + " " +
-                                          std::to_string(hit.std_dps_minus));
+                Stat_weight hit = compute_stat_weight(simulator, char_plus, char_minus, "mh_speed", swing_speed_diff, 1,
+                                                      mean_init, sample_std_init);
+                stat_weights.emplace_back(string_with_precision(swing_speed_diff, 2) + "-MH-speed " +
+                                          std::to_string(hit.dps_plus) + " " + std::to_string(hit.std_dps_plus) + " " +
+                                          std::to_string(hit.dps_minus) + " " + std::to_string(hit.std_dps_minus));
             }
             if (stat_weight == "oh_speed")
             {
                 Character char_plus = character;
                 Character char_minus = character;
-                double swing_speed_diff = 0.5;
+                double swing_speed_diff =
+                    find_value(input.float_options_string, input.float_options_val, "stat_weight_oh_speed_dd");
                 double factor_p = (char_plus.weapons[1].swing_speed + 0.5) / char_plus.weapons[1].swing_speed;
                 double factor_n = (char_plus.weapons[1].swing_speed - 0.5) / char_plus.weapons[1].swing_speed;
                 char_plus.weapons[1].min_damage *= factor_p;
@@ -954,48 +957,50 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 char_minus.weapons[1].max_damage *= factor_n;
                 char_minus.weapons[1].swing_speed -= swing_speed_diff;
                 mod_hit_effects(char_minus.weapons[1].hit_effects, factor_n);
-                Stat_weight hit = compute_stat_weight(simulator, char_plus, char_minus, "oh_speed", 0.5, 1, mean_init,
-                                                      sample_std_init);
-                stat_weights.emplace_back("0.5-OH-speed " + std::to_string(hit.dps_plus) + " " +
-                                          std::to_string(hit.std_dps_plus) + " " + std::to_string(hit.dps_minus) + " " +
-                                          std::to_string(hit.std_dps_minus));
+                Stat_weight hit = compute_stat_weight(simulator, char_plus, char_minus, "oh_speed", swing_speed_diff, 1,
+                                                      mean_init, sample_std_init);
+                stat_weights.emplace_back(string_with_precision(swing_speed_diff, 2) + "-OH-speed " +
+                                          std::to_string(hit.dps_plus) + " " + std::to_string(hit.std_dps_plus) + " " +
+                                          std::to_string(hit.dps_minus) + " " + std::to_string(hit.std_dps_minus));
             }
             if (stat_weight == "skill")
             {
                 Character char_plus = character;
                 Character char_minus = character;
                 std::string name{};
+                int amount = static_cast<int>(
+                    find_value(input.float_options_string, input.float_options_val, "stat_weight_skill_dd"));
                 switch (char_plus.weapons[0].type)
                 {
                 case Weapon_type::axe:
-                    char_plus.total_special_stats.axe_skill += 5;
-                    char_minus.total_special_stats.axe_skill -= 5;
-                    name = "5-axe-skill ";
+                    char_plus.total_special_stats.axe_skill += amount;
+                    char_minus.total_special_stats.axe_skill -= amount;
+                    name = string_with_precision(amount) + "-axe-skill ";
                     break;
                 case Weapon_type::sword:
-                    char_plus.total_special_stats.sword_skill += 5;
-                    char_minus.total_special_stats.sword_skill -= 5;
-                    name = "5-sword-skill ";
+                    char_plus.total_special_stats.sword_skill += amount;
+                    char_minus.total_special_stats.sword_skill -= amount;
+                    name = string_with_precision(amount) + "-sword-skill ";
                     break;
                 case Weapon_type::mace:
-                    char_plus.total_special_stats.mace_skill += 5;
-                    char_minus.total_special_stats.mace_skill -= 5;
-                    name = "5-mace-skill ";
+                    char_plus.total_special_stats.mace_skill += amount;
+                    char_minus.total_special_stats.mace_skill -= amount;
+                    name = string_with_precision(amount) + "-mace-skill ";
                     break;
                 case Weapon_type::dagger:
-                    char_plus.total_special_stats.dagger_skill += 5;
-                    char_minus.total_special_stats.dagger_skill -= 5;
-                    name = "5-dagger-skill ";
+                    char_plus.total_special_stats.dagger_skill += amount;
+                    char_minus.total_special_stats.dagger_skill -= amount;
+                    name = string_with_precision(amount) + "-dagger-skill ";
                     break;
                 case Weapon_type::unarmed:
-                    char_plus.total_special_stats.fist_skill += 5;
-                    char_minus.total_special_stats.fist_skill -= 5;
-                    name = "5-unarmed-skill ";
+                    char_plus.total_special_stats.fist_skill += amount;
+                    char_minus.total_special_stats.fist_skill -= amount;
+                    name = string_with_precision(amount) + "-unarmed-skill ";
                     break;
                 }
 
-                Stat_weight hit =
-                    compute_stat_weight(simulator, char_plus, char_minus, "skill", 5, 1, mean_init, sample_std_init);
+                Stat_weight hit = compute_stat_weight(simulator, char_plus, char_minus, "skill", amount, 1, mean_init,
+                                                      sample_std_init);
                 char_plus.total_special_stats = character.total_special_stats;
                 char_minus.total_special_stats = character.total_special_stats;
 

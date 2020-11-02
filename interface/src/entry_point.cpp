@@ -11,7 +11,7 @@ EMSCRIPTEN_BINDINGS(module)
         .function("simulate", &Sim_interface::simulate)
         .function("simulate_mult", &Sim_interface::simulate_mult);
 
-    register_vector<double>("vector<double>");
+    register_vector<double>("vectorDouble");
     register_vector<int>("vector<int>");
     register_vector<std::vector<double>>("vector<vector<double>>");
     register_vector<std::string>("StringList");
@@ -24,23 +24,10 @@ EMSCRIPTEN_BINDINGS(module)
         .field("enchants", &Sim_input::enchants)
         .field("stat_weights", &Sim_input::stat_weights)
         .field("options", &Sim_input::options)
+        .field("float_options_string", &Sim_input::float_options_string)
+        .field("float_options_val", &Sim_input::float_options_val)
         .field("compare_armor", &Sim_input::compare_armor)
-        .field("compare_weapons", &Sim_input::compare_weapons)
-        .field("target_level", &Sim_input::target_level)
-        .field("fight_time", &Sim_input::fight_time)
-        .field("n_simulations", &Sim_input::n_simulations)
-        .field("n_simulations_stat_weights", &Sim_input::n_simulations_stat_weights)
-        .field("sunder_armor", &Sim_input::sunder_armor)
-        .field("heroic_strike_rage_thresh", &Sim_input::heroic_strike_rage_thresh)
-        .field("cleave_rage_thresh", &Sim_input::cleave_rage_thresh)
-        .field("whirlwind_rage_thresh", &Sim_input::whirlwind_rage_thresh)
-        .field("whirlwind_bt_cooldown_thresh", &Sim_input::whirlwind_bt_cooldown_thresh)
-        .field("hamstring_cd_thresh", &Sim_input::hamstring_cd_thresh)
-        .field("hamstring_thresh_dd", &Sim_input::hamstring_thresh_dd)
-        .field("overpower_rage_thresh", &Sim_input::overpower_rage_thresh)
-        .field("overpower_bt_cooldown_thresh", &Sim_input::overpower_bt_cooldown_thresh)
-        .field("overpower_ww_cooldown_thresh", &Sim_input::overpower_ww_cooldown_thresh)
-        .field("initial_rage", &Sim_input::initial_rage);
+        .field("compare_weapons", &Sim_input::compare_weapons);
 
     value_object<Sim_input_mult>("Sim_input_mult")
         .field("race", &Sim_input_mult::race)
@@ -49,20 +36,8 @@ EMSCRIPTEN_BINDINGS(module)
         .field("buffs", &Sim_input_mult::buffs)
         .field("enchants", &Sim_input_mult::enchants)
         .field("options", &Sim_input_mult::options)
-        .field("target_level", &Sim_input_mult::target_level)
-        .field("fight_time", &Sim_input_mult::fight_time)
-        .field("sunder_armor", &Sim_input_mult::sunder_armor)
-        .field("heroic_strike_rage_thresh", &Sim_input_mult::heroic_strike_rage_thresh)
-        .field("cleave_rage_thresh", &Sim_input_mult::cleave_rage_thresh)
-        .field("whirlwind_rage_thresh", &Sim_input_mult::whirlwind_rage_thresh)
-        .field("whirlwind_bt_cooldown_thresh", &Sim_input_mult::whirlwind_bt_cooldown_thresh)
-        .field("hamstring_cd_thresh", &Sim_input_mult::hamstring_cd_thresh)
-        .field("hamstring_thresh_dd", &Sim_input_mult::hamstring_thresh_dd)
-        .field("overpower_rage_thresh", &Sim_input_mult::overpower_rage_thresh)
-        .field("overpower_bt_cooldown_thresh", &Sim_input_mult::overpower_bt_cooldown_thresh)
-        .field("overpower_ww_cooldown_thresh", &Sim_input_mult::overpower_ww_cooldown_thresh)
-        .field("initial_rage", &Sim_input_mult::initial_rage)
-        .field("max_optimize_time", &Sim_input_mult::max_optimize_time);
+        .field("float_options_string", &Sim_input_mult::float_options_string)
+        .field("float_options_val", &Sim_input_mult::float_options_val);
 
     value_object<Sim_output>("Sim_output")
         .field("hist_x", &Sim_output::hist_x)

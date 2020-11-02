@@ -6,10 +6,10 @@ namespace
 {
 constexpr double rage_factor = 15.0 / 230.6 / 2.0;
 
-// constexpr double rage_from_damage_taken(double damage)
-//{
-//    return damage * 5 / 2 / 230.6;
-//}
+constexpr double rage_from_damage_taken(double damage)
+{
+    return damage * 5 / 2 / 230.6;
+}
 
 constexpr double rage_generation(double damage)
 {
@@ -41,6 +41,23 @@ std::vector<double> create_multipliers(double glancing_factor, double bonus_crit
     return {0.0, 0.0, glancing_factor, 2.0 + bonus_crit_multiplier, 1.0};
 }
 } // namespace
+
+std::string Combat_simulator::hit_result_to_string(const Combat_simulator::Hit_result hit_result)
+{
+    switch (hit_result)
+    {
+    case Hit_result::hit:
+        return " hit";
+    case Hit_result::crit:
+        return " crit";
+    case Hit_result::dodge:
+        return " dodge";
+    case Hit_result::miss:
+        return " miss";
+    default:
+        return " bugs";
+    }
+}
 
 void Combat_simulator::cout_damage_parse(Combat_simulator::Hit_type hit_type, Socket weapon_hand,
                                          Combat_simulator::Hit_outcome hit_outcome)
@@ -226,10 +243,10 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(const Weapon_sim& w
     return hit_outcome;
 }
 
-void Combat_simulator::compute_hit_table(int level_difference, int weapon_skill, Special_stats special_stats,
-                                         Socket weapon_hand)
+void Combat_simulator::compute_hit_table(int weapon_skill, Special_stats special_stats, Socket weapon_hand)
 {
-    int target_defence_level = config.opponent_level * 5;
+    int level_difference = config.main_target_level - 60;
+    int target_defence_level = config.main_target_level * 5;
     int skill_diff = target_defence_level - weapon_skill;
     int base_skill_diff = level_difference * 5;
 
@@ -417,12 +434,12 @@ void Combat_simulator::whirlwind(Weapon_sim& main_hand_weapon, Special_stats& sp
         time_keeper_.global_cd = 1.5;
         return;
     }
-    simulator_cout("Whirlwind! #targets = boss + ", adds_in_melee_range, " adds");
-    simulator_cout("Whirlwind hits: ", std::min(adds_in_melee_range + 1, 4), " targets");
+    simulator_cout("Whirlwind! #targets = boss + ", config.number_of_extra_targets, " adds");
+    simulator_cout("Whirlwind hits: ", std::min(config.number_of_extra_targets + 1, 4), " targets");
     double damage = main_hand_weapon.normalized_swing(special_stats.attack_power);
     std::vector<Hit_outcome> hit_outcomes{};
     hit_outcomes.reserve(4);
-    for (int i = 0; i < std::min(adds_in_melee_range + 1, 4); i++)
+    for (int i = 0; i < std::min(config.number_of_extra_targets + 1, 4); i++)
     {
         hit_outcomes.emplace_back(
             generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats, i == 0));
@@ -549,26 +566,8 @@ void Combat_simulator::hit_effects(Weapon_sim& weapon, Weapon_sim& main_hand_wea
                 damage_sources.add_damage(Damage_source::item_hit_effects, hit.damage, time_keeper_.time);
                 if (config.display_combat_debug)
                 {
-                    std::string result;
-                    switch (hit.hit_result)
-                    {
-                    case Hit_result::hit:
-                        result = " hit";
-                        break;
-                    case Hit_result::crit:
-                        result = " crit";
-                        break;
-                    case Hit_result::dodge:
-                        result = " dodge";
-                        break;
-                    case Hit_result::miss:
-                        result = " miss";
-                        break;
-                    default:
-                        result = " bugs";
-                        break;
-                    }
-                    simulator_cout("PROC: ", hit_effect.name, result, " does ", int(hit.damage), " physical damage");
+                    simulator_cout("PROC: ", hit_effect.name, hit_result_to_string(hit.hit_result), " does ",
+                                   int(hit.damage), " physical damage");
                 }
             }
             break;
@@ -623,11 +622,16 @@ void Combat_simulator::swing_weapon(Weapon_sim& weapon, Weapon_sim& main_hand_we
     if (ability_queue_manager.heroic_strike_queued && weapon.socket == Socket::main_hand &&
         rage >= heroic_strike_rage_cost)
     {
-        simulator_cout("Performing heroic strike");
+        simulator_cout("Performing Heroic Strike");
         swing_damage += config.combat.heroic_strike_damage;
         hit_outcomes.emplace_back(
             generate_hit(main_hand_weapon, swing_damage, Hit_type::yellow, weapon.socket, special_stats));
         ability_queue_manager.heroic_strike_queued = false;
+        if (config.ability_queue_ && rage > config.ability_queue_rage_thresh_)
+        {
+            simulator_cout("Re-queue Heroic Strike!");
+            ability_queue_manager.queue_heroic_strike();
+        }
         if (hit_outcomes[0].hit_result == Hit_result::dodge || hit_outcomes[0].hit_result == Hit_result::miss)
         {
             rage -= 0.2 * heroic_strike_rage_cost; // Refund rage for missed/dodged heroic strikes.
@@ -641,16 +645,21 @@ void Combat_simulator::swing_weapon(Weapon_sim& weapon, Weapon_sim& main_hand_we
     }
     else if (ability_queue_manager.cleave_queued && weapon.socket == Socket::main_hand && rage >= 20)
     {
-        simulator_cout("Performing cleave! #targets = boss + ", adds_in_melee_range, " adds");
-        simulator_cout("Cleave hits: ", std::min(adds_in_melee_range + 1, 2), " targets");
+        simulator_cout("Performing cleave! #targets = boss + ", config.number_of_extra_targets, " adds");
+        simulator_cout("Cleave hits: ", std::min(config.number_of_extra_targets + 1, 2), " targets");
         swing_damage += cleave_bonus_damage_;
 
-        for (int i = 0; i < std::min(adds_in_melee_range + 1, 2); i++)
+        for (int i = 0; i < std::min(config.number_of_extra_targets + 1, 2); i++)
         {
             hit_outcomes.emplace_back(
                 generate_hit(main_hand_weapon, swing_damage, Hit_type::yellow, weapon.socket, special_stats, i == 0));
         }
         ability_queue_manager.cleave_queued = false;
+        if (config.ability_queue_ && rage > config.ability_queue_rage_thresh_)
+        {
+            simulator_cout("Re-queue Cleave!");
+            ability_queue_manager.queue_cleave();
+        }
         rage -= 20;
         double total_damage = 0;
         for (const auto& hit_outcome : hit_outcomes)
@@ -796,8 +805,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         weapons.emplace_back(wep.swing_speed, wep.min_damage, wep.max_damage, wep.socket, wep.type, wep.weapon_socket,
                              wep.hit_effects);
         weapons.back().compute_weapon_damage(wep.buff.bonus_damage + starting_special_stats.bonus_damage);
-        compute_hit_table(config.opponent_level - character.level,
-                          get_weapon_skill(character.total_special_stats, wep.type), starting_special_stats,
+        compute_hit_table(get_weapon_skill(character.total_special_stats, wep.type), starting_special_stats,
                           wep.socket);
     }
 
@@ -859,9 +867,21 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
             Use_effect{"Blood_fury", Use_effect::Effect_socket::unique, {}, {0, 0, ap_boost}, 0, 15, 120, true, {}});
     }
 
-    if (config.mode.vaelastrasz)
+    if (config.essence_of_the_red_)
     {
         over_time_effects.push_back(essence_of_the_red);
+    }
+
+    if (config.take_periodic_damage_)
+    {
+        double rage_per_tick = rage_from_damage_taken(config.periodic_damage_amount_);
+        Over_time_effect rage_from_damage = {"Rage gained from damage taken",
+                                             {},
+                                             rage_per_tick,
+                                             0,
+                                             static_cast<int>(config.periodic_damage_interval_),
+                                             600};
+        over_time_effects.push_back(rage_from_damage);
     }
 
     if (config.talents.anger_management)
@@ -920,9 +940,10 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         }
 
         // Reset, since these might change
-        target_armor_ = 3731 - armor_reduction_from_spells_; // Armor for Warrior class monsters
-        armor_reduction_factor_ = 1 - armor_mitigation(target_armor_, 63);
-        armor_reduction_factor_add = 1 - armor_mitigation(3000, 62);
+        target_armor_ = config.main_target_initial_armor_ - armor_reduction_from_spells_;
+        armor_reduction_factor_ = 1 - armor_mitigation(target_armor_, config.main_target_level);
+        armor_reduction_factor_add =
+            1 - armor_mitigation(config.extra_target_initial_armor_, config.extra_target_level);
         current_armor_red_stacks_ = 0;
 
         int flurry_charges = 0;
@@ -942,21 +963,20 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
 
         // To avoid local max/min results from running a specific run time
         sim_time += averaging_interval / n_damage_batches;
+        double time_execute_phase = sim_time * (100.0 - config.execute_phase_percentage_) / 100.0;
         init_server_time = 50.0 * iter / n_damage_batches;
 
         // Combat configuration
-        adds_in_melee_range = 0;
-        int removed_adds = 0;
-        if (config.mode.golemagg)
+        if (!config.multi_target_mode_)
         {
-            adds_in_melee_range = 2;
-            remove_adds_timer = sim_time * 2;
+            config.number_of_extra_targets = 0;
         }
-        else if (config.mode.sulfuron_harbinger)
+
+        // First global sunder
+        bool first_global_sunder = false;
+        if (config.first_global_sunder_)
         {
-            adds_in_melee_range = 4;
-            remove_adds_timer = sim_time / 2 / 4;
-            buff_manager_.add("sulfuron_demo_shout", {0, 0, -300}, 300);
+            first_global_sunder = true;
         }
 
         while (time_keeper_.time < sim_time)
@@ -979,8 +999,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
             {
                 for (const auto& weapon : weapons)
                 {
-                    compute_hit_table(config.opponent_level - character.level,
-                                      get_weapon_skill(character.total_special_stats, weapon.weapon_type),
+                    compute_hit_table(get_weapon_skill(character.total_special_stats, weapon.weapon_type),
                                       special_stats, weapon.socket);
                 }
                 buff_manager_.need_to_recompute_hittables = false;
@@ -1000,16 +1019,6 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                                ". New mitigation factor: ", target_mitigation, "%.");
                 armor_reduction_factor_ = 1 - target_mitigation;
                 apply_delayed_armor_reduction = false;
-            }
-
-            if (time_keeper_.time > remove_adds_timer * (1 + removed_adds))
-            {
-                if (adds_in_melee_range > 0)
-                {
-                    removed_adds++;
-                    adds_in_melee_range--;
-                    simulator_cout("Add #", removed_adds, " dies. Targets left: boss + ", adds_in_melee_range, "adds");
-                }
             }
 
             bool mh_swing = weapons[0].time_for_swing(dt);
@@ -1040,29 +1049,26 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
             }
 
             // Execute phase
-            if (config.mode.vaelastrasz)
+            if (!execute_phase)
             {
-                if (time_keeper_.time > sim_time * 0.33)
+                if (time_keeper_.time > time_execute_phase)
                 {
-                    if (!execute_phase)
-                    {
-                        simulator_cout("------------ Execute phase! ------------");
-                        execute_phase = true;
-                    }
+                    simulator_cout("------------ Execute phase! ------------");
+                    execute_phase = true;
                 }
             }
-            else
+
+            if (first_global_sunder)
             {
-                if (time_keeper_.time > sim_time * 0.85)
+                if (time_keeper_.global_cd < 0 && rage > 15)
                 {
-                    if (!execute_phase)
-                    {
-                        simulator_cout("------------ Execute phase! ------------");
-                        execute_phase = true;
-                    }
+                    simulator_cout("Sunder Armor!");
+                    time_keeper_.global_cd = 1.5;
+                    rage -= 15;
+                    first_global_sunder = false;
                 }
             }
-            if (execute_phase)
+            else if (execute_phase)
             {
                 if (rage > heroic_strike_rage_cost && !ability_queue_manager.heroic_strike_queued &&
                     config.combat.use_hs_in_exec_phase)
@@ -1154,7 +1160,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                     }
                 }
 
-                if (adds_in_melee_range > 0 && config.combat.cleave_if_adds)
+                if (config.number_of_extra_targets > 0 && config.combat.cleave_if_adds)
                 {
                     if (rage > config.combat.cleave_rage_thresh && !ability_queue_manager.cleave_queued)
                     {
@@ -1229,7 +1235,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
 void Combat_simulator::init_histogram()
 {
     double res = 10.0;
-    for (int i = 0; i < 500; i++)
+    for (int i = 0; i < 1000; i++)
     {
         hist_x.push_back(i * res);
         hist_y.push_back(0);

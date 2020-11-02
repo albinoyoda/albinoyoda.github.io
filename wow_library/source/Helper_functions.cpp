@@ -195,6 +195,23 @@ bool find_string(const std::vector<std::string>& string_vec, const std::string& 
     return false;
 }
 
+double find_value(const std::vector<std::string>& string_vec, const std::vector<double>& double_vec,
+                  const std::string& match_string)
+{
+    size_t index = 0;
+    for (const auto& string : string_vec)
+    {
+        if (string == match_string)
+        {
+            std::cout << match_string << " value: " << double_vec[index];
+            return double_vec[index];
+        }
+        index++;
+    }
+    std::cout << "ERROR: Could not find: " << match_string;
+    return 0.0;
+}
+
 Race get_race(const std::string& race)
 {
     if (race == "human")
