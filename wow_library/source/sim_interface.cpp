@@ -14,16 +14,16 @@ void mod_hit_effects(std::vector<Hit_effect>& hit_effects, double factor)
 {
     for (auto& hit_effect : hit_effects)
     {
-        if (hit_effect.type != Hit_effect::Type::damage_magic_guaranteed)
+        if (hit_effect.type == Hit_effect::Type::damage_magic_guaranteed)
+        {
+            hit_effect.damage *= factor;
+        }
+        else
         {
             if (hit_effect.name != "windfury_totem")
             {
                 hit_effect.probability *= factor;
             }
-        }
-        else
-        {
-            hit_effect.damage *= factor;
         }
     }
 }
@@ -413,17 +413,14 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     const double dps_sample_std =
         Statistics::sample_deviation(std::sqrt(simulator.get_dps_variance()), config.n_batches);
 
-    std::vector<double> mean_dps_vec;
-    std::vector<double> sample_std_dps_vec;
+    std::vector<double> mean_dps_vec{dps_mean};
+    std::vector<double> sample_std_dps_vec{dps_sample_std};
 
     auto hist_x = simulator.get_hist_x();
     auto hist_y = simulator.get_hist_y();
 
     const auto dmg_dist = simulator.get_damage_distribution();
     std::vector<double> dps_dist_raw = get_damage_sources(dmg_dist);
-    double mean_init = simulator.get_dps_mean();
-    double std_init = std::sqrt(simulator.get_dps_variance());
-    double sample_std_init = Statistics::sample_deviation(std_init, config.n_batches);
 
     std::vector<std::string> aura_uptimes = simulator.get_aura_uptimes();
     std::vector<std::string> proc_statistics = simulator.get_proc_statistics();
@@ -454,8 +451,6 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     auto white_oh_ht = simulator.get_hit_probabilities_white_oh();
     auto white_oh_ht_2h = simulator.get_hit_probabilities_white_2h();
 
-    mean_dps_vec.push_back(mean_init);
-    sample_std_dps_vec.push_back(sample_std_init);
     std::string character_stats = get_character_stat(character);
 
     std::string rage_info = "<b>Rage Statistics:</b><br>";
@@ -860,8 +855,8 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
             Character char_minus = character;
             char_plus.total_special_stats.attack_power += 300;
             char_minus.total_special_stats.attack_power -= 300;
-            Stat_weight base_line = compute_stat_weight(simulator, char_plus, char_minus, "attack power", 100, 3,
-                                                        mean_init, sample_std_init);
+            Stat_weight base_line =
+                compute_stat_weight(simulator, char_plus, char_minus, "attack power", 100, 3, dps_mean, dps_sample_std);
             stat_weights.emplace_back(
                 "attack_power: " + std::to_string(base_line.dps_plus) + " " + std::to_string(base_line.std_dps_plus) +
                 " " + std::to_string(base_line.dps_minus) + " " + std::to_string(base_line.std_dps_minus));
@@ -876,7 +871,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 char_plus.total_special_stats.critical_strike += 2;
                 char_minus.total_special_stats.critical_strike -= 2;
                 Stat_weight crit =
-                    compute_stat_weight(simulator, char_plus, char_minus, "crit", 1, 2, mean_init, sample_std_init);
+                    compute_stat_weight(simulator, char_plus, char_minus, "crit", 1, 2, dps_mean, dps_sample_std);
                 stat_weights.emplace_back("1%Crit " + std::to_string(crit.dps_plus) + " " +
                                           std::to_string(crit.std_dps_plus) + " " + std::to_string(crit.dps_minus) +
                                           " " + std::to_string(crit.std_dps_minus));
@@ -889,7 +884,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 char_plus.total_special_stats.hit += 1;
                 char_minus.total_special_stats.hit -= 1;
                 Stat_weight hit =
-                    compute_stat_weight(simulator, char_plus, char_minus, "hit", 1, 1, mean_init, sample_std_init);
+                    compute_stat_weight(simulator, char_plus, char_minus, "hit", 1, 1, dps_mean, dps_sample_std);
                 stat_weights.emplace_back("1%Hit " + std::to_string(hit.dps_plus) + " " +
                                           std::to_string(hit.std_dps_plus) + " " + std::to_string(hit.dps_minus) + " " +
                                           std::to_string(hit.std_dps_minus));
@@ -901,7 +896,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 char_plus.total_special_stats.haste = (char_plus.total_special_stats.haste + 1) * 1.1 - 1;
                 char_minus.total_special_stats.haste = (char_minus.total_special_stats.haste + 1) / 1.1 - 1;
                 Stat_weight hit =
-                    compute_stat_weight(simulator, char_plus, char_minus, "haste", 1, 10, mean_init, sample_std_init);
+                    compute_stat_weight(simulator, char_plus, char_minus, "haste", 1, 10, dps_mean, dps_sample_std);
                 stat_weights.emplace_back("1%Haste " + std::to_string(hit.dps_plus) + " " +
                                           std::to_string(hit.std_dps_plus) + " " + std::to_string(hit.dps_minus) + " " +
                                           std::to_string(hit.std_dps_minus));
@@ -913,8 +908,8 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 Hit_effect extra_hit{"stat_weight_extra_hit", Hit_effect::Type::extra_hit, {}, {}, 0, 0, 0.05};
                 char_plus.weapons[0].hit_effects.emplace_back(extra_hit);
                 char_plus.weapons[1].hit_effects.emplace_back(extra_hit);
-                Stat_weight hit = compute_stat_weight(simulator, char_plus, char_minus, "extra_hit", 1, 5, mean_init,
-                                                      sample_std_init);
+                Stat_weight hit =
+                    compute_stat_weight(simulator, char_plus, char_minus, "extra_hit", 1, 5, dps_mean, dps_sample_std);
                 stat_weights.emplace_back("1%ExtraAttack " + std::to_string(hit.dps_plus) + " " +
                                           std::to_string(hit.std_dps_plus) + " " + std::to_string(hit.dps_minus) + " " +
                                           std::to_string(hit.std_dps_minus));
@@ -925,8 +920,10 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 Character char_minus = character;
                 double swing_speed_diff =
                     find_value(input.float_options_string, input.float_options_val, "stat_weight_mh_speed_dd");
-                double factor_p = (char_plus.weapons[0].swing_speed + 0.5) / char_plus.weapons[0].swing_speed;
-                double factor_n = (char_plus.weapons[0].swing_speed - 0.5) / char_plus.weapons[0].swing_speed;
+                double factor_p =
+                    (char_plus.weapons[0].swing_speed + swing_speed_diff) / char_plus.weapons[0].swing_speed;
+                double factor_n =
+                    (char_plus.weapons[0].swing_speed - swing_speed_diff) / char_plus.weapons[0].swing_speed;
                 char_plus.weapons[0].min_damage *= factor_p;
                 char_plus.weapons[0].max_damage *= factor_p;
                 char_plus.weapons[0].swing_speed += swing_speed_diff;
@@ -936,7 +933,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 char_minus.weapons[0].swing_speed -= swing_speed_diff;
                 mod_hit_effects(char_minus.weapons[0].hit_effects, factor_n);
                 Stat_weight hit = compute_stat_weight(simulator, char_plus, char_minus, "mh_speed", swing_speed_diff, 1,
-                                                      mean_init, sample_std_init);
+                                                      dps_mean, dps_sample_std);
                 stat_weights.emplace_back(string_with_precision(swing_speed_diff, 2) + "-MH-speed " +
                                           std::to_string(hit.dps_plus) + " " + std::to_string(hit.std_dps_plus) + " " +
                                           std::to_string(hit.dps_minus) + " " + std::to_string(hit.std_dps_minus));
@@ -947,8 +944,10 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 Character char_minus = character;
                 double swing_speed_diff =
                     find_value(input.float_options_string, input.float_options_val, "stat_weight_oh_speed_dd");
-                double factor_p = (char_plus.weapons[1].swing_speed + 0.5) / char_plus.weapons[1].swing_speed;
-                double factor_n = (char_plus.weapons[1].swing_speed - 0.5) / char_plus.weapons[1].swing_speed;
+                double factor_p =
+                    (char_plus.weapons[1].swing_speed + swing_speed_diff) / char_plus.weapons[1].swing_speed;
+                double factor_n =
+                    (char_plus.weapons[1].swing_speed - swing_speed_diff) / char_plus.weapons[1].swing_speed;
                 char_plus.weapons[1].min_damage *= factor_p;
                 char_plus.weapons[1].max_damage *= factor_p;
                 char_plus.weapons[1].swing_speed += swing_speed_diff;
@@ -958,7 +957,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 char_minus.weapons[1].swing_speed -= swing_speed_diff;
                 mod_hit_effects(char_minus.weapons[1].hit_effects, factor_n);
                 Stat_weight hit = compute_stat_weight(simulator, char_plus, char_minus, "oh_speed", swing_speed_diff, 1,
-                                                      mean_init, sample_std_init);
+                                                      dps_mean, dps_sample_std);
                 stat_weights.emplace_back(string_with_precision(swing_speed_diff, 2) + "-OH-speed " +
                                           std::to_string(hit.dps_plus) + " " + std::to_string(hit.std_dps_plus) + " " +
                                           std::to_string(hit.dps_minus) + " " + std::to_string(hit.std_dps_minus));
@@ -999,8 +998,8 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                     break;
                 }
 
-                Stat_weight hit = compute_stat_weight(simulator, char_plus, char_minus, "skill", amount, 1, mean_init,
-                                                      sample_std_init);
+                Stat_weight hit =
+                    compute_stat_weight(simulator, char_plus, char_minus, "skill", amount, 1, dps_mean, dps_sample_std);
                 char_plus.total_special_stats = character.total_special_stats;
                 char_minus.total_special_stats = character.total_special_stats;
 
@@ -1023,7 +1022,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         {
             simulator.simulate(character);
             dps = simulator.get_dps_mean();
-            if (std::abs(dps - mean_init) < 5)
+            if (std::abs(dps - dps_mean) < 5)
             {
                 break;
             }

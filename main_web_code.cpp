@@ -395,6 +395,36 @@ int main()
         "use_overpower",
     };
 
+    std::vector<std::string> float_options_string{
+        "cleave_rage_thresh_dd",
+        "whirlwind_rage_thresh_dd",
+        "hamstring_cd_thresh_dd",
+        "hamstring_thresh_dd",
+        "initial_rage_dd",
+        "whirlwind_bt_cooldown_thresh_dd",
+        "overpower_rage_thresh_dd",
+        "overpower_bt_cooldown_thresh_dd",
+        "overpower_ww_cooldown_thresh_dd",
+        "fight_time_dd",
+        "opponent_level_dd",
+        "boss_armor_dd",
+        "sunder_armor_dd",
+        "number_of_extra_targets_dd",
+        "extra_target_armor_dd",
+        "extra_target_level_dd",
+        "periodic_damage_interval_dd",
+        "periodic_damage_amount_dd",
+        "execute_phase_percentage_dd",
+        "re_queue_abilities_dd",
+        "stat_weight_mh_speed_dd",
+        "stat_weight_oh_speed_dd",
+        "n_simulations_dd",
+        "n_simulations_stat_dd"
+    };
+
+    std::vector<double> float_options_val{50.0, 10.0, 2.0, 50.0, 0.0, 2.0, 25.0, 2.0, 2.0, 60.0, 63.0,
+                                          3731, 5,    0,   3731, 63,  1.0, 300,  15,  70,  0.5,  0.5, 5000, 1000};
+
     Sim_input sim_input{{race},
                         armor_vec,
                         weapons_vec,
@@ -402,44 +432,15 @@ int main()
                         ench_vec,
                         {"mh_speed", "oh_speed"},
                         sim_options,
+                        float_options_string,
+                        float_options_val,
                         compare_armor_vec,
-                        compare_weapons_vec,
-                        60,
-                        63,
-                        5000,
-                        1000,
-                        5,
-                        60,
-                        60,
-                        25,
-                        1,
-                        2.0,
-                        80,
-                        50,
-                        2,
-                        1.5,
-                        45};
+                        compare_weapons_vec};
 
-    Sim_input_mult sim_input_mult{{race},
-                                  mult_armor_vec,
-                                  mult_weapons_vec,
-                                  buff_vec,
-                                  ench_vec,
-                                  sim_options,
-                                  30,
-                                  63,
-                                  5,
-                                  60,
-                                  60,
-                                  25,
-                                  1,
-                                  2.0,
-                                  80,
-                                  50,
-                                  2,
-                                  1.5,
-                                  45,
-                                  40};
+    Sim_input_mult sim_input_mult{
+        {race},   mult_armor_vec, mult_weapons_vec,     buff_vec,
+        ench_vec, sim_options,    float_options_string, float_options_val,
+    };
 
     auto sim_output = sim_interface.simulate(sim_input);
     //    auto sim_output = sim_interface.simulate_mult(sim_input_mult);
