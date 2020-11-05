@@ -673,41 +673,44 @@ std::vector<Armor> Item_optimizer::remove_weaker_items(const std::vector<Armor>&
     return filtered_armors;
 }
 
-void Item_optimizer::filter_weaker_items(const Special_stats& special_stats, std::string& debug_message)
+void Item_optimizer::filter_weaker_items(const Special_stats& special_stats, std::string& debug_message,
+                                         int min_removal)
 {
     //    debug_message += "<br>Filtering <b>Shared cooldown use-effects: </b><br>";
     //    find_best_use_effect(special_stats, debug_message);
 
     debug_message += "<br>Filtering <b> Helmets: </b><br>";
-    helmets = remove_weaker_items(helmets, special_stats, debug_message, 1);
+    helmets = remove_weaker_items(helmets, special_stats, debug_message, min_removal);
     debug_message += "<br>Filtering <b> necks: </b><br>";
-    necks = remove_weaker_items(necks, special_stats, debug_message, 1);
+    necks = remove_weaker_items(necks, special_stats, debug_message, min_removal);
     debug_message += "<br>Filtering <b> shoulders: </b><br>";
-    shoulders = remove_weaker_items(shoulders, special_stats, debug_message, 1);
+    shoulders = remove_weaker_items(shoulders, special_stats, debug_message, min_removal);
     debug_message += "<br>Filtering <b> backs: </b><br>";
-    backs = remove_weaker_items(backs, special_stats, debug_message, 1);
+    backs = remove_weaker_items(backs, special_stats, debug_message, min_removal);
     debug_message += "<br>Filtering <b> chests: </b><br>";
-    chests = remove_weaker_items(chests, special_stats, debug_message, 1);
+    chests = remove_weaker_items(chests, special_stats, debug_message, min_removal);
     debug_message += "<br>Filtering <b> wrists: </b><br>";
-    wrists = remove_weaker_items(wrists, special_stats, debug_message, 1);
+    wrists = remove_weaker_items(wrists, special_stats, debug_message, min_removal);
     debug_message += "<br>Filtering <b> hands: </b><br>";
-    hands = remove_weaker_items(hands, special_stats, debug_message, 1);
+    hands = remove_weaker_items(hands, special_stats, debug_message, min_removal);
     debug_message += "<br>Filtering <b> belts: </b><br>";
-    belts = remove_weaker_items(belts, special_stats, debug_message, 1);
+    belts = remove_weaker_items(belts, special_stats, debug_message, min_removal);
     debug_message += "<br>Filtering <b> legs: </b><br>";
-    legs = remove_weaker_items(legs, special_stats, debug_message, 1);
+    legs = remove_weaker_items(legs, special_stats, debug_message, min_removal);
     debug_message += "<br>Filtering <b> boots: </b><br>";
-    boots = remove_weaker_items(boots, special_stats, debug_message, 1);
+    boots = remove_weaker_items(boots, special_stats, debug_message, min_removal);
     debug_message += "<br>Filtering <b> ranged: </b><br>";
-    ranged = remove_weaker_items(ranged, special_stats, debug_message, 1);
+    ranged = remove_weaker_items(ranged, special_stats, debug_message, min_removal);
     debug_message += "<br>Filtering <b> rings: </b><br>";
-    rings = remove_weaker_items(rings, special_stats, debug_message, 2);
+    rings = remove_weaker_items(rings, special_stats, debug_message, min_removal + 1);
     debug_message += "<br>Filtering <b> trinkets: </b><br>";
-    trinkets = remove_weaker_items(trinkets, special_stats, debug_message, 2);
+    trinkets = remove_weaker_items(trinkets, special_stats, debug_message, min_removal + 1);
 
     debug_message += "<br>Filtering <b> weapons: </b><br>";
-    main_hands = remove_weaker_weapons(Weapon_socket::main_hand, main_hands, special_stats, debug_message, 2);
-    off_hands = remove_weaker_weapons(Weapon_socket::off_hand, off_hands, special_stats, debug_message, 2);
+    main_hands =
+        remove_weaker_weapons(Weapon_socket::main_hand, main_hands, special_stats, debug_message, min_removal + 1);
+    off_hands =
+        remove_weaker_weapons(Weapon_socket::off_hand, off_hands, special_stats, debug_message, min_removal + 1);
 }
 
 void Item_optimizer::fill_empty_armor()

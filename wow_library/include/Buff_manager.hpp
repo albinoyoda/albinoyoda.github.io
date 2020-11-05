@@ -5,6 +5,7 @@
 #include "Item.hpp"
 
 #include <cmath>
+#include <map>
 #include <unordered_map>
 #include <vector>
 
@@ -33,10 +34,12 @@ struct Over_time_buff
 
 struct Combat_buff
 {
-    Combat_buff(std::string id, Special_stats special_stats, double duration_left)
-        : id(std::move(id)), special_stats(special_stats), duration_left(duration_left){};
+    Combat_buff() = default;
+    ~Combat_buff() = default;
 
-    std::string id;
+    Combat_buff(Special_stats special_stats, double duration_left)
+        : special_stats(special_stats), duration_left(duration_left){};
+
     Special_stats special_stats;
     double duration_left;
 };
@@ -49,45 +52,9 @@ struct Hit_buff
     double duration_left;
 };
 
-struct Aura_uptime
-{
-    Aura_uptime() = default;
-
-    struct Aura
-    {
-        Aura(std::string id, double duration) : id(std::move(id)), duration(duration){};
-
-        std::string id;
-        double duration;
-    };
-
-    void add(const std::string& name, double duration)
-    {
-        for (auto& aura : auras)
-        {
-            if (name == aura.id)
-            {
-                aura.duration += duration;
-                return;
-            }
-        }
-        auras.emplace_back(name, duration);
-    }
-
-    std::vector<Aura> auras;
-};
-
 class Buff_manager
 {
 public:
-    struct Proc
-    {
-        Proc(std::string id, int counter) : id(std::move(id)), counter(counter){};
-
-        std::string id;
-        int counter;
-    };
-
     void initialize(Special_stats& special_stats, const std::vector<Use_effect>& use_effects_input,
                     std::vector<Hit_effect>& hit_effects_mh_input, std::vector<Hit_effect>& hit_effects_oh_input,
                     bool performance_mode_in)
@@ -115,25 +82,27 @@ public:
         return dt;
     }
 
-    void increment(double dt, double current_time, double time_left, double& rage, double& rage_lost_stance,
-                   double& rage_lost_exec, double& global_cooldown, std::vector<std::string>& status, bool debug)
+    std::vector<std::string> increment(double dt, double current_time, double time_left, double& rage,
+                                       double& rage_lost_stance, double& rage_lost_exec, double& global_cooldown,
+                                       bool debug)
     {
         size_t i = 0;
         next_event = 10;
-        while (i < stat_gains.size())
+        std::vector<std::string> debug_msg{};
+        for (auto it = stat_gains.begin(); it != stat_gains.end();)
         {
             if (!performance_mode)
             {
-                aura_uptime.add(stat_gains[i].id, dt);
+                aura_uptime[it->first] += dt;
             }
-            stat_gains[i].duration_left -= dt;
-            if (stat_gains[i].duration_left < 0.0)
+            it->second.duration_left -= dt;
+            if (it->second.duration_left < 0.0)
             {
                 if (debug)
                 {
-                    status.emplace_back(stat_gains[i].id + " fades.");
+                    debug_msg.emplace_back(it->first + " fades.");
                 }
-                if (stat_gains[i].id == "battle_stance")
+                if (it->first == "battle_stance")
                 {
                     if (rage > 25.0)
                     {
@@ -141,7 +110,7 @@ public:
                         rage = 25;
                     }
                 }
-                else if (stat_gains[i].id == "execute_rage_batch")
+                else if (it->first == "execute_rage_batch")
                 {
                     if (rage > rage_before_execute)
                     {
@@ -149,19 +118,19 @@ public:
                     }
                     rage_spent_executing += rage;
                     rage = 0;
-                    status.emplace_back("Current rage: 0");
+                    debug_msg.emplace_back("Current rage: 0");
                 }
-                if (stat_gains[i].special_stats.hit > 0.0 || stat_gains[i].special_stats.critical_strike > 0.0)
+                if (it->second.special_stats.hit > 0.0 || it->second.special_stats.critical_strike > 0.0)
                 {
                     need_to_recompute_hittables = true;
                 }
-                (*simulation_special_stats) -= stat_gains[i].special_stats;
-                stat_gains.erase(stat_gains.begin() + i);
+                (*simulation_special_stats) -= it->second.special_stats;
+                it = stat_gains.erase(it);
             }
             else
             {
-                next_event = std::min(next_event, stat_gains[i].duration_left);
-                ++i;
+                next_event = std::min(next_event, it->second.duration_left);
+                ++it;
             }
         }
         i = 0;
@@ -169,14 +138,14 @@ public:
         {
             if (!performance_mode)
             {
-                aura_uptime.add(hit_gains[i].id, dt);
+                aura_uptime[hit_gains[i].id] += dt;
             }
             hit_gains[i].duration_left -= dt;
             if (hit_gains[i].duration_left < 0.0)
             {
                 if (debug)
                 {
-                    status.emplace_back(hit_gains[i].id + " fades.");
+                    debug_msg.emplace_back(hit_gains[i].id + " fades.");
                 }
                 for (size_t j = 0; j < (*hit_effects_mh).size(); j++)
                 {
@@ -208,7 +177,7 @@ public:
             {
                 if (debug)
                 {
-                    status.emplace_back("Activating: " + use_effects[i].name);
+                    debug_msg.emplace_back("Activating: " + use_effects[i].name);
                 }
                 if (!use_effects[i].hit_effects.empty())
                 {
@@ -256,17 +225,17 @@ public:
                 {
                     if (over_time_buffs[i].rage_gain > 0)
                     {
-                        status.emplace_back("Over time effect: " + over_time_buffs[i].id +
-                                            " tick. Current rage: " + std::to_string(int(rage)));
+                        debug_msg.emplace_back("Over time effect: " + over_time_buffs[i].id +
+                                               " tick. Current rage: " + std::to_string(int(rage)));
                     }
                     else if (over_time_buffs[i].damage > 0)
                     {
-                        status.emplace_back("Over time effect: " + over_time_buffs[i].id +
-                                            " tick. Damage: " + std::to_string(int(over_time_buffs[i].damage)));
+                        debug_msg.emplace_back("Over time effect: " + over_time_buffs[i].id +
+                                               " tick. Damage: " + std::to_string(int(over_time_buffs[i].damage)));
                     }
                     else
                     {
-                        status.emplace_back("Over time effect: " + over_time_buffs[i].id + " tick.");
+                        debug_msg.emplace_back("Over time effect: " + over_time_buffs[i].id + " tick.");
                     }
                 }
             }
@@ -274,7 +243,7 @@ public:
             {
                 if (debug)
                 {
-                    status.emplace_back("Over time effect: " + over_time_buffs[i].id + " fades.");
+                    debug_msg.emplace_back("Over time effect: " + over_time_buffs[i].id + " fades.");
                 }
                 over_time_buffs.erase(over_time_buffs.begin() + i);
                 if (over_time_buffs.empty())
@@ -294,24 +263,23 @@ public:
                 i++;
             }
         }
+        return debug_msg;
     }
 
     void add(const std::string& name, const Special_stats& special_stats, double duration_left)
     {
-        for (auto& gain : stat_gains)
+        auto it = stat_gains.find(name);
+        if (it != stat_gains.end())
         {
-            if (name == gain.id)
-            {
-                gain.duration_left = duration_left;
-                return;
-            }
+            it->second.duration_left = duration_left;
+            return;
         }
         (*simulation_special_stats) += special_stats;
         if (special_stats.hit > 0.0 || special_stats.critical_strike > 0.0)
         {
             need_to_recompute_hittables = true;
         }
-        stat_gains.emplace_back(name, special_stats, duration_left);
+        stat_gains[name] = {special_stats, duration_left};
     }
 
     void add_hit_effect(const std::string& name, const Hit_effect& hit_effect, double duration_left)
@@ -342,35 +310,16 @@ public:
                                      over_time_effect.duration);
     }
 
-    void increment_proc(const std::string& name)
-    {
-        for (auto& proc : procs)
-        {
-            if (name == proc.id)
-            {
-                proc.counter++;
-                return;
-            }
-        }
-        procs.emplace_back(name, 1);
-    }
-
     bool can_do_overpower()
     {
-        for (auto& gain : stat_gains)
-        {
-            if ("overpower_aura" == gain.id)
-            {
-                return true;
-            }
-        }
-        return false;
+        auto it = stat_gains.find("overpower_aura");
+        return it != stat_gains.end();
     }
 
     bool need_to_recompute_hittables{false};
     bool performance_mode{false};
     Special_stats* simulation_special_stats;
-    std::vector<Combat_buff> stat_gains;
+    std::map<std::string, Combat_buff> stat_gains;
     std::vector<Hit_buff> hit_gains;
     std::vector<Over_time_buff> over_time_buffs;
     std::vector<Hit_effect>* hit_effects_mh;
@@ -380,8 +329,7 @@ public:
     double rage_before_execute{};
     double rage_spent_executing{};
     int min_interval = 10;
-    Aura_uptime aura_uptime;
-    std::vector<Proc> procs;
+    std::map<std::string, double> aura_uptime;
     double deep_wounds_damage{};
     std::vector<double> deep_wounds_timestamps{};
 };

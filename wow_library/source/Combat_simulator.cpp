@@ -536,7 +536,7 @@ void Combat_simulator::hit_effects(Weapon_sim& weapon, Weapon_sim& main_hand_wea
         {
             if (hit_effect.type != Hit_effect::Type::damage_magic_guaranteed)
             {
-                buff_manager_.increment_proc(hit_effect.name);
+                proc_data_[hit_effect.name]++;
             }
             switch (hit_effect.type)
             {
@@ -767,12 +767,6 @@ void Combat_simulator::simulate(const Character& character, size_t n_simulations
     simulate(character, init_simulations, false, false);
 }
 
-void Combat_simulator::simulate(const Character& character, size_t n_simulations)
-{
-    config.n_batches = n_simulations;
-    simulate(character, 0, false, false);
-}
-
 void Combat_simulator::simulate(const Character& character, int init_iteration, bool compute_time_lapse,
                                 bool compute_histogram)
 {
@@ -790,7 +784,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
     {
         init_histogram();
     }
-    buff_manager_.aura_uptime.auras.clear();
+    buff_manager_.aura_uptime.clear();
     damage_distribution_ = Damage_sources{};
     flurry_uptime_mh_ = 0;
     flurry_uptime_oh_ = 0;
@@ -986,10 +980,9 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
             double buff_dt = buff_manager_.get_dt(time_keeper_.time);
             double dt = time_keeper_.get_dynamic_time_step(mh_dt, oh_dt, buff_dt, sim_time);
             time_keeper_.increment(dt);
-            std::vector<std::string> debug_msg;
-            buff_manager_.increment(dt, time_keeper_.time, sim_time - time_keeper_.time, rage, rage_lost_stance_swap_,
-                                    rage_lost_execute_batch_, time_keeper_.global_cd, debug_msg,
-                                    config.display_combat_debug);
+            auto debug_msg = buff_manager_.increment(dt, time_keeper_.time, sim_time - time_keeper_.time, rage,
+                                                     rage_lost_stance_swap_, rage_lost_execute_batch_,
+                                                     time_keeper_.global_cd, config.display_combat_debug);
             for (const auto& msg : debug_msg)
             {
                 simulator_cout(msg);
@@ -1319,11 +1312,10 @@ std::vector<std::string> Combat_simulator::get_aura_uptimes() const
 {
     std::vector<std::string> aura_uptimes;
     double total_sim_time = config.n_batches * config.sim_time;
-    for (const auto& aura : buff_manager_.aura_uptime.auras)
+    for (const auto& aura : buff_manager_.aura_uptime)
     {
-        std::string aura_name = aura.id;
-        double uptime = aura.duration / total_sim_time;
-        aura_uptimes.emplace_back(aura.id + " " + std::to_string(100 * uptime));
+        double uptime = aura.second / total_sim_time;
+        aura_uptimes.emplace_back(aura.first + " " + std::to_string(100 * uptime));
     }
     aura_uptimes.emplace_back("Flurry_main_hand " + std::to_string(100 * flurry_uptime_mh_));
     aura_uptimes.emplace_back("Flurry_off_hand " + std::to_string(100 * flurry_uptime_oh_));
@@ -1334,11 +1326,10 @@ std::vector<std::string> Combat_simulator::get_aura_uptimes() const
 std::vector<std::string> Combat_simulator::get_proc_statistics() const
 {
     std::vector<std::string> proc_counter;
-    for (const auto& proc : buff_manager_.procs)
+    for (const auto& proc : proc_data_)
     {
-        std::string aura_name = proc.id;
-        double counter = static_cast<double>(proc.counter) / config.n_batches;
-        proc_counter.emplace_back(proc.id + " " + std::to_string(counter));
+        double counter = static_cast<double>(proc.second) / config.n_batches;
+        proc_counter.emplace_back(proc.first + " " + std::to_string(counter));
     }
     return proc_counter;
 }

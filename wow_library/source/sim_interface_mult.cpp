@@ -43,16 +43,31 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult& input)
 
     std::cout << "init. Combinations: " << std::to_string(item_optimizer.total_combinations) << "\n";
     debug_message += "Total item combinations: " + std::to_string(item_optimizer.total_combinations) + "<br>";
-    debug_message += "Filtering weaker items.<br>";
     clock_t start_filter = clock();
+    if (item_optimizer.total_combinations > 200)
     {
-        auto character = item_optimizer.construct(0);
-        item_optimizer.filter_weaker_items(character.total_special_stats, debug_message);
+        debug_message += "Applying soft item filter.<br>";
+        {
+            auto character = item_optimizer.construct(0);
+            item_optimizer.filter_weaker_items(character.total_special_stats, debug_message, 2);
+        }
+        item_optimizer.compute_combinations();
+        debug_message +=
+            "soft filter done. Combinations: " + std::to_string(item_optimizer.total_combinations) + "<br>";
+        std::cout << "Item filter done. Combinations: " << std::to_string(item_optimizer.total_combinations) << "\n";
     }
-    item_optimizer.compute_combinations();
-    debug_message += "Item filter done. Combinations: " + std::to_string(item_optimizer.total_combinations) + "<br>";
-    std::cout << "Item filter done. Combinations: " << std::to_string(item_optimizer.total_combinations) << "\n";
-
+    if (item_optimizer.total_combinations > 200)
+    {
+        debug_message += "Applying hard item filter.<br>";
+        {
+            auto character = item_optimizer.construct(0);
+            item_optimizer.filter_weaker_items(character.total_special_stats, debug_message, 1);
+        }
+        item_optimizer.compute_combinations();
+        debug_message +=
+            "hard item filter done. Combinations: " + std::to_string(item_optimizer.total_combinations) + "<br>";
+        std::cout << "Item filter done. Combinations: " << std::to_string(item_optimizer.total_combinations) << "\n";
+    }
     std::vector<Item_optimizer::Sim_result_t> keepers;
     if (item_optimizer.total_combinations > 5000)
     {

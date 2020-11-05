@@ -54,7 +54,7 @@ public:
     std::vector<Armor> remove_weaker_items(const std::vector<Armor>& armors, const Special_stats& special_stats,
                                            std::string& debug_message, int keep_n_stronger_items);
 
-    void filter_weaker_items(const Special_stats& special_stats, std::string& debug_message);
+    void filter_weaker_items(const Special_stats& special_stats, std::string& debug_message, int min_removal);
 
 //    void find_best_use_effect(const Special_stats& special_stats, std::string& debug_message);
 

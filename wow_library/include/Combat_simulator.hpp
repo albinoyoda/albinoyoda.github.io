@@ -242,14 +242,10 @@ public:
     void simulate(const Character& character, size_t n_simulations, double init_mean, double init_variance,
                   size_t init_simulations);
 
-    void simulate(const Character& character, size_t n_simulations);
-
     void simulate(const Character& character, int init_iteration = 0, bool compute_time_lape = false,
                   bool compute_histogram = false);
 
     static double get_uniform_random(double r_max) { return rand() * r_max / RAND_MAX; }
-
-    static double get_uniform_random(double r_min, double r_max) { return r_min + rand() * (r_max - r_min) / RAND_MAX; }
 
     Combat_simulator::Hit_outcome generate_hit(const Weapon_sim& weapon, double damage, Hit_type hit_type,
                                                Socket weapon_hand, const Special_stats& special_stats,
@@ -278,8 +274,6 @@ public:
 
     void add_damage_source_to_time_lapse(std::vector<Damage_instance>& damage_instances);
 
-    Damage_sources get_damage_distribution() { return damage_distribution_; }
-
     std::vector<std::string> get_aura_uptimes() const;
 
     std::vector<std::string> get_proc_statistics() const;
@@ -289,6 +283,8 @@ public:
     std::vector<std::vector<double>> get_damage_time_lapse() const;
 
     std::string get_debug_topic() const;
+
+    Damage_sources get_damage_distribution() { return damage_distribution_; }
 
     constexpr double get_dps_mean() const { return dps_mean_; }
 
@@ -389,6 +385,7 @@ private:
     bool dpr_heroic_strike_queued_{false};
     bool dpr_cleave_queued_{false};
     std::vector<std::vector<double>> damage_time_lapse{};
+    std::map<std::string, int> proc_data_{};
     std::map<Damage_source, int> source_map{
         {Damage_source::white_mh, 0},         {Damage_source::white_oh, 1},      {Damage_source::bloodthirst, 2},
         {Damage_source::execute, 3},          {Damage_source::heroic_strike, 4}, {Damage_source::cleave, 5},
