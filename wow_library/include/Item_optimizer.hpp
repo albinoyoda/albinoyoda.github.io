@@ -56,16 +56,11 @@ public:
 
     void filter_weaker_items(const Special_stats& special_stats, std::string& debug_message, int min_removal);
 
-//    void find_best_use_effect(const Special_stats& special_stats, std::string& debug_message);
-
     void fill_empty_armor();
 
     void fill_empty_weapons();
 
     void fill(std::vector<Armor>& vec, Socket socket, std::string name);
-
-    double get_total_qp_equivalent(const Special_stats& special_stats, const Weapon& wep1, const Weapon& wep2,
-                                   const std::vector<Use_effect>& use_effects);
 
     std::vector<Armor> helmets;
     std::vector<Armor> necks;

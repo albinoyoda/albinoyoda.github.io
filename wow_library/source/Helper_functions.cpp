@@ -1,7 +1,96 @@
 #include "Helper_functions.hpp"
 
-double get_ap_equivalent(const Special_stats& special_stats, int relevant_skill, double swing_speed,
-                         double weapon_damage)
+double get_character_ap_equivalent(const Special_stats& special_stats, const Weapon& mh_wep, const Weapon& oh_wep,
+                                   double sim_time, const std::vector<Use_effect>& use_effects)
+{
+    double attack_power = special_stats.attack_power;
+    int mh_skill = get_skill_of_type(special_stats, mh_wep.type);
+    double mh_hit_crit_skill_ap = get_hit_crit_skill_ap_equivalent(special_stats, mh_skill);
+
+    int oh_skill = get_skill_of_type(special_stats, oh_wep.type);
+    double oh_hit_crit_skill_ap = get_hit_crit_skill_ap_equivalent(special_stats, oh_skill);
+
+    /// Weighted combination of ap from mh and oh, based on the hit-tables
+    double hit_crit_skill_ap = (mh_hit_crit_skill_ap + oh_hit_crit_skill_ap * 0.5) / 1.5;
+
+    double mh_ap = ((mh_wep.max_damage + mh_wep.min_damage) / 2 + special_stats.bonus_damage) / mh_wep.swing_speed * 14;
+    double oh_ap = ((oh_wep.max_damage + oh_wep.min_damage) / 2 + special_stats.bonus_damage) / oh_wep.swing_speed * 14;
+    oh_ap *= 0.625;
+
+    double special_stats_ap = attack_power + hit_crit_skill_ap + mh_ap + oh_ap;
+
+    double use_effects_ap = 0;
+    double use_effects_shared_ap = 0;
+    for (const auto& use_effect : use_effects)
+    {
+        double use_effect_ap = get_use_effect_ap_equivalent(use_effect, special_stats, special_stats_ap, sim_time);
+        if (use_effect.effect_socket == Use_effect::Effect_socket ::shared)
+        {
+            if (use_effect_ap > use_effects_shared_ap)
+            {
+                use_effects_shared_ap = use_effect_ap;
+            }
+        }
+        else
+        {
+            use_effects_ap += use_effect_ap;
+        }
+    }
+
+    double hit_effects_ap = 0;
+    for (const auto& hit_effect : mh_wep.hit_effects)
+    {
+        double hit_effect_ap = get_hit_effect_ap_equivalent(hit_effect, special_stats_ap, mh_wep.swing_speed, 1.0);
+        hit_effects_ap += hit_effect_ap;
+    }
+    for (const auto& hit_effect : oh_wep.hit_effects)
+    {
+        double hit_effect_ap = get_hit_effect_ap_equivalent(hit_effect, special_stats_ap, oh_wep.swing_speed, 0.5);
+        hit_effects_ap += hit_effect_ap;
+    }
+
+    return special_stats_ap + use_effects_ap + use_effects_shared_ap + hit_effects_ap;
+}
+
+double get_hit_effect_ap_equivalent(const Hit_effect& hit_effect, double total_ap, double swing_speed, double factor)
+{
+    double hit_effects_ap = 0.0;
+    if (hit_effect.type == Hit_effect::Type::damage_magic_guaranteed ||
+        hit_effect.type == Hit_effect::Type::damage_magic || hit_effect.type == Hit_effect::Type::damage_physical)
+    {
+        hit_effects_ap += hit_effect.probability * hit_effect.damage * ap_per_coh * swing_speed * factor;
+    }
+    else if (hit_effect.type == Hit_effect::Type::extra_hit)
+    {
+        hit_effects_ap += hit_effect.probability * swing_speed * crit_w * factor;
+    }
+    else if (hit_effect.type == Hit_effect::Type::stat_boost)
+    {
+        // Empyrean demolisher, assume uptime of 25%
+        hit_effects_ap += total_ap * hit_effect.special_stats_boost.haste * 0.25 * factor;
+    }
+    return hit_effects_ap;
+}
+
+double get_use_effect_ap_equivalent(const Use_effect& use_effect, const Special_stats& special_stats, double total_ap,
+                                    double sim_time)
+{
+    double use_effect_ap_boost = use_effect.get_special_stat_equivalent(special_stats).attack_power;
+
+    double use_effect_haste_boost = total_ap * use_effect.special_stats_boost.haste;
+
+    double use_effect_armor_boost{};
+    if (use_effect.name == "badge_of_the_swarmguard")
+    {
+        // TODO this should be based on armor of the boss
+        use_effect_armor_boost = total_ap * 0.07;
+    }
+    double combined_ap = (use_effect_ap_boost + use_effect_haste_boost + use_effect_armor_boost) *
+                         std::min(use_effect.duration / sim_time, 1.0);
+    return combined_ap;
+}
+
+double get_hit_crit_skill_ap_equivalent(const Special_stats& special_stats, int relevant_skill)
 {
     int target_defence_level = 315;
     int skill_diff = target_defence_level - relevant_skill;
@@ -32,45 +121,42 @@ double get_ap_equivalent(const Special_stats& special_stats, int relevant_skill,
     double dodge_chance = std::max(5 + skill_diff * 0.1, 5.0);
     double crit_cap = 100 - (miss_chance + dodge_chance + 40);
 
-    double ap_equiv{};
+    double ap_from_crit{};
     if (crit_chance > crit_cap)
     {
-        ap_equiv = (crit_chance - crit_cap) * crit_w_cap + crit_cap * crit_w;
+        ap_from_crit = (crit_chance - crit_cap) * crit_w_cap + crit_cap * crit_w;
     }
     else
     {
-        ap_equiv = crit_chance * crit_w;
+        ap_from_crit = crit_chance * crit_w;
     }
 
+    double ap_from_hit{};
     if (special_stats.hit > miss_chance_yellow)
     {
-        ap_equiv += (special_stats.hit - miss_chance_yellow) * hit_w_cap + miss_chance_yellow * hit_w;
+        ap_from_hit = (special_stats.hit - miss_chance_yellow) * hit_w_cap + miss_chance_yellow * hit_w;
     }
     else
     {
-        ap_equiv += special_stats.hit * hit_w;
+        ap_from_hit = special_stats.hit * hit_w;
     }
-
-    // ish good estimation
-    ap_equiv += special_stats.chance_for_extra_hit / 2 * hit_w;
 
     int extra_skill = relevant_skill - 300;
-    if (extra_skill > 0)
+    double ap_from_skill{};
+    if (extra_skill > 8)
     {
-        ap_equiv += std::min(5, extra_skill) * skill_w;
+        ap_from_skill = (extra_skill - 8) * skill_w_hard + 3 * skill_w_soft + 5 * skill_w;
     }
-    if (extra_skill > 5)
+    else if (extra_skill > 5)
     {
-        ap_equiv += std::min(5, extra_skill - 5) * skill_w_soft;
+        ap_from_skill = (extra_skill - 5) * skill_w_soft + 5 * skill_w;
     }
-    if (extra_skill > 10)
+    else if (extra_skill > 0)
     {
-        ap_equiv += extra_skill - 10 * skill_w_hard;
+        ap_from_skill = extra_skill * skill_w;
     }
 
-    ap_equiv += (weapon_damage + special_stats.bonus_damage) / swing_speed * 14;
-
-    return ap_equiv;
+    return ap_from_crit + ap_from_hit + ap_from_skill;
 }
 
 bool is_strictly_weaker(Special_stats special_stats1, Special_stats special_stats2)
@@ -203,7 +289,6 @@ double find_value(const std::vector<std::string>& string_vec, const std::vector<
     {
         if (string == match_string)
         {
-            std::cout << match_string << " value: " << double_vec[index];
             return double_vec[index];
         }
         index++;

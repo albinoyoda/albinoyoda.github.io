@@ -74,6 +74,7 @@ struct Combat_simulator_config
     bool enable_bloodrage{false};
     bool enable_recklessness{false};
     bool enable_blood_fury{false};
+    bool enable_berserking{false};
 
     bool display_combat_debug{false};
     bool performance_mode{false};

@@ -162,8 +162,8 @@ public:
         , duration(duration)
         , cooldown(cooldown)
         , triggers_gcd(triggers_gcd)
-        , hit_effects(hit_effects)
-        , over_time_effects(over_time_effects){};
+        , hit_effects(std::move(hit_effects))
+        , over_time_effects(std::move(over_time_effects)){};
 
     inline Special_stats get_special_stat_equivalent(const Special_stats& special_stats) const
     {
@@ -171,9 +171,9 @@ public:
     }
 
     std::string name;
-    Effect_socket effect_socket;
-    Attributes attribute_boost;
-    Special_stats special_stats_boost;
+    Effect_socket effect_socket{};
+    Attributes attribute_boost{};
+    Special_stats special_stats_boost{};
     double rage_boost{};
     double duration{};
     double cooldown{};

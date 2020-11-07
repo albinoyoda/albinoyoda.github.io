@@ -40,6 +40,49 @@ std::vector<double> create_multipliers(double glancing_factor, double bonus_crit
     // Order -> Miss, parry, dodge, block, glancing, crit, hit.
     return {0.0, 0.0, glancing_factor, 2.0 + bonus_crit_multiplier, 1.0};
 }
+
+//std::vector<Use_effect> compute_use_effect_order(std::vector<Use_effect>& use_effects, double sim_time, double ap,
+//                                             int number_of_targets, double extra_target_duration)
+//{
+//    std::vector<Use_effect> shared_effects{};
+//    std::vector<Use_effect> unique_effects{};
+//    for (auto& use_effect : use_effects)
+//    {
+//        if (use_effect.effect_socket == Use_effect::Effect_socket::shared)
+//        {
+//            shared_items.push_back(i);
+//            double value = use_effects_all[i].get_special_stat_equivalent(starting_special_stats).attack_power *
+//                           std::min(use_effects_all[i].duration, config.sim_time);
+//            if (value > best_value)
+//            {
+//                best_idx = i;
+//                best_value = value;
+//            }
+//        }
+//    }
+//
+//    if (number_of_targets > 0)
+//    {
+//    }
+//    else
+//    {
+//    }
+//    std::vector<Use_effect> use_effects;
+//    for (size_t i = 0; i < use_effects_all.size(); i++)
+//    {
+//        if (!(std::find(shared_items.begin(), shared_items.end(), i) != shared_items.end())) // Add if not shared
+//        {
+//            use_effects.emplace_back(use_effects_all[i]);
+//        }
+//        else
+//        {
+//            if (i == best_idx) // Pick the best one
+//            {
+//                use_effects.emplace_back(use_effects_all[i]);
+//            }
+//        }
+//    }
+//} // namespace
 } // namespace
 
 std::string Combat_simulator::hit_result_to_string(const Combat_simulator::Hit_result hit_result)
@@ -858,7 +901,13 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         double ap_boost =
             character.total_attributes.convert_to_special_stats(character.total_special_stats).attack_power * 0.25;
         use_effects_all.emplace_back(
-            Use_effect{"Blood_fury", Use_effect::Effect_socket::unique, {}, {0, 0, ap_boost}, 0, 15, 120, true, {}});
+            Use_effect{"Blood_fury", Use_effect::Effect_socket::unique, {}, {0, 0, ap_boost}, 0, 15, 120, true});
+    }
+
+    if (config.enable_berserking)
+    {
+        use_effects_all.emplace_back(
+            Use_effect{"Berserking", Use_effect::Effect_socket::unique, {}, {}, 0, 10, 180, false});
     }
 
     if (config.essence_of_the_red_)
@@ -972,6 +1021,8 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         {
             first_global_sunder = true;
         }
+
+        //        first_hit_heroic_strike"extra_target_duration_dd
 
         while (time_keeper_.time < sim_time)
         {

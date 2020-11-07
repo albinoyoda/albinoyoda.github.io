@@ -17,8 +17,15 @@ constexpr double skill_w_soft = 70.0 / 5;
 constexpr double skill_w_hard = 20.0 / 5;
 constexpr double ap_per_coh = 20 / 6.2;
 
-double get_ap_equivalent(const Special_stats& special_stats, int relevant_skill, double swing_speed,
-                         double weapon_damage);
+double get_character_ap_equivalent(const Special_stats& special_stats, const Weapon& mh_wep, const Weapon& oh_wep,
+                                   double sim_time, const std::vector<Use_effect>& use_effects);
+
+double get_hit_crit_skill_ap_equivalent(const Special_stats& special_stats, int relevant_skill);
+
+double get_hit_effect_ap_equivalent(const Hit_effect& hit_effect, double total_ap, double swing_speed, double factor);
+
+double get_use_effect_ap_equivalent(const Use_effect& use_effect, const Special_stats& special_stats, double total_ap,
+                                    double sim_time);
 
 bool is_strictly_weaker(Special_stats special_stats1, Special_stats special_stats2);
 

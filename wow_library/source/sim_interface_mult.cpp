@@ -1,7 +1,7 @@
 #include "Armory.hpp"
 #include "Character.hpp"
 #include "Combat_simulator.hpp"
-#include "Helper_functions.cpp"
+#include "Helper_functions.hpp"
 #include "Item_optimizer.hpp"
 #include "Item_popularity.hpp"
 #include "sim_interface.hpp"
@@ -78,8 +78,9 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult& input)
         for (size_t i = 0; i < item_optimizer.total_combinations; ++i)
         {
             Character character = item_optimizer.construct(i);
-            double ap_equivalent = item_optimizer.get_total_qp_equivalent(
-                character.total_special_stats, character.weapons[0], character.weapons[1], character.use_effects);
+            double ap_equivalent =
+                get_character_ap_equivalent(character.total_special_stats, character.weapons[0], character.weapons[1],
+                                            config.sim_time, character.use_effects);
             if (ap_equivalent > highest_attack_power)
             {
                 highest_attack_power = ap_equivalent;
@@ -104,8 +105,9 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult& input)
         for (size_t i = 0; i < item_optimizer.total_combinations; ++i)
         {
             Character character = item_optimizer.construct(i);
-            double ap_equivalent = item_optimizer.get_total_qp_equivalent(
-                character.total_special_stats, character.weapons[0], character.weapons[1], character.use_effects);
+            double ap_equivalent =
+                get_character_ap_equivalent(character.total_special_stats, character.weapons[0], character.weapons[1],
+                                            config.sim_time, character.use_effects);
             if (ap_equivalent > filtering_ap)
             {
                 keepers.emplace_back(i, 0, 0, ap_equivalent);
