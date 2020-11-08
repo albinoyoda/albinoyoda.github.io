@@ -1,1 +1,0 @@
-/emsdk_portable/emscripten/tag-1.39.4/emar rc libwow_lib.a  @CMakeFiles/wow_lib.dir/objects1.rsp

@@ -137,27 +137,7 @@ public:
 
     virtual ~Combat_simulator() = default;
 
-    void set_config(Combat_simulator_config& new_config)
-    {
-        config = new_config;
-
-        heroic_strike_rage_cost = 15.0 - config.talents.improved_heroic_strike;
-        p_unbridled_wrath_ = config.talents.unbridled_wrath * 0.08;
-        execute_rage_cost_ = 15 - static_cast<int>(2.51 * config.talents.improved_execute);
-
-        armor_reduction_from_spells_ = 0.0;
-        armor_reduction_from_spells_ += 450 * config.n_sunder_armor_stacks;
-        armor_reduction_from_spells_ += 640 * config.curse_of_recklessness_active;
-        armor_reduction_from_spells_ += 505 * config.faerie_fire_feral_active;
-        if (config.exposed_armor)
-        {
-            armor_reduction_delayed_ = 1700 * 1.5 - 450 * config.n_sunder_armor_stacks;
-        }
-
-        flurry_haste_factor_ = 0.05 + 0.05 * config.talents.flurry;
-        dual_wield_damage_factor_ = 0.5 + 0.025 * config.talents.dual_wield_specialization;
-        cleave_bonus_damage_ = 50 * (1.0 + 0.4 * config.talents.improved_cleave);
-    }
+    void set_config(const Combat_simulator_config& new_config);
 
     enum class Hit_result
     {
@@ -333,19 +313,20 @@ public:
 
     Combat_simulator_config config;
 
-private:
-    Use_effect deathwish = {
+    const Use_effect deathwish = {
         "Death_wish", Use_effect::Effect_socket::unique, {}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .20}, -10, 30, 180, true};
 
-    Use_effect recklessness = {"Recklessness", Use_effect::Effect_socket::unique, {}, {100, 0, 0}, 0, 15, 900, true};
+    const Use_effect recklessness = {
+        "Recklessness", Use_effect::Effect_socket::unique, {}, {100, 0, 0}, 0, 15, 900, true};
 
-    Use_effect bloodrage = {"Bloodrage", Use_effect::Effect_socket::unique, {}, {}, 10, 10, 60, false,
-                            {},          {{"Bloodrage", {}, 1, 0, 1, 10}}};
+    const Use_effect bloodrage = {"Bloodrage", Use_effect::Effect_socket::unique, {}, {}, 10, 10, 60, false,
+                                  {},          {{"Bloodrage", {}, 1, 0, 1, 10}}};
 
-    Over_time_effect essence_of_the_red = {"Essence of the Red", {}, 20, 0, 1, 600};
+    const Over_time_effect essence_of_the_red = {"Essence of the Red", {}, 20, 0, 1, 600};
 
-    Over_time_effect anger_management = {"Anger Management", {}, 1, 0, 3, 600};
+    const Over_time_effect anger_management = {"Anger Management", {}, 1, 0, 3, 600};
 
+private:
     std::vector<double> hit_table_white_mh_;
     std::vector<double> damage_multipliers_white_mh_;
     std::vector<double> hit_table_white_oh_;
@@ -387,6 +368,8 @@ private:
     bool dpr_cleave_queued_{false};
     std::vector<std::vector<double>> damage_time_lapse{};
     std::map<std::string, int> proc_data_{};
+    std::vector<Use_effect> use_effects_all_{};
+    std::vector<Over_time_effect> over_time_effects_{};
     std::map<Damage_source, int> source_map{
         {Damage_source::white_mh, 0},         {Damage_source::white_oh, 1},      {Damage_source::bloodthirst, 2},
         {Damage_source::execute, 3},          {Damage_source::heroic_strike, 4}, {Damage_source::cleave, 5},
