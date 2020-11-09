@@ -101,8 +101,8 @@ TEST(TestSuite, test_use_effects)
     use_effects.emplace_back(use1.use_effects[0]);
     use_effects.emplace_back(use2.use_effects[0]);
     use_effects.emplace_back(use3.use_effects[0]);
-
-    auto order = compute_use_effect_order(use_effects, Special_stats{}, 320, 1500, 0, 0);
+    double sim_time = 320.0;
+    auto order = compute_use_effect_order(use_effects, Special_stats{}, sim_time, 1500, 0, 0);
     int df = 0;
     int es = 0;
     int ck = 0;
@@ -111,48 +111,29 @@ TEST(TestSuite, test_use_effects)
     int br = 0;
     int bf = 0;
     int bs = 0;
+
+    double activate_time = 1000000.0;
+
     for (const auto& effect : order)
     {
+        EXPECT_TRUE(effect.first <= activate_time);
+        activate_time = effect.first;
         if (effect.second.name == "diamond_flask")
-        {
             df++;
-            continue;
-        }
         if (effect.second.name == "earthstrike")
-        {
             es++;
-            continue;
-        }
         if (effect.second.name == "cloudkeeper_legplates")
-        {
             ck++;
-            continue;
-        }
         if (effect.second.name == "Blood_fury")
-        {
             bf++;
-            continue;
-        }
         if (effect.second.name == "Berserking")
-        {
             bs++;
-            continue;
-        }
         if (effect.second.name == "Bloodrage")
-        {
             br++;
-            continue;
-        }
         if (effect.second.name == "Recklessness")
-        {
             rl++;
-            continue;
-        }
         if (effect.second.name == "Death_wish")
-        {
             dw++;
-            continue;
-        }
     }
     EXPECT_TRUE(df == 1);
     EXPECT_TRUE(es == 3);

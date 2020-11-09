@@ -102,6 +102,7 @@ struct Combat_simulator_config
         double hamstring_thresh_dd{};
         double initial_rage{};
         bool deep_wounds{false};
+        bool first_hit_heroic_strike{false};
     } combat;
 
     struct dpr_t

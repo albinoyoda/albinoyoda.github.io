@@ -63,33 +63,30 @@ void Combat_simulator::set_config(const Combat_simulator_config& new_config)
     dual_wield_damage_factor_ = 0.5 + 0.025 * config.talents.dual_wield_specialization;
     cleave_bonus_damage_ = 50 * (1.0 + 0.4 * config.talents.improved_cleave);
 
-    std::vector<Use_effect> use_effects_all{};
-    std::vector<Over_time_effect> over_time_effects{};
-
     if (config.talents.death_wish)
     {
-        use_effects_all.emplace_back(deathwish);
+        use_effects_all_.emplace_back(deathwish);
     }
 
     if (config.enable_recklessness)
     {
-        use_effects_all.emplace_back(recklessness);
+        use_effects_all_.emplace_back(recklessness);
     }
 
     if (config.enable_bloodrage)
     {
-        use_effects_all.emplace_back(bloodrage);
+        use_effects_all_.emplace_back(bloodrage);
     }
 
     if (config.enable_berserking)
     {
-        use_effects_all.emplace_back(
+        use_effects_all_.emplace_back(
             Use_effect{"Berserking", Use_effect::Effect_socket::unique, {}, {}, 0, 10, 180, false});
     }
 
     if (config.essence_of_the_red_)
     {
-        over_time_effects.push_back(essence_of_the_red);
+        over_time_effects_.push_back(essence_of_the_red);
     }
 
     if (config.take_periodic_damage_)
@@ -101,12 +98,12 @@ void Combat_simulator::set_config(const Combat_simulator_config& new_config)
                                              0,
                                              static_cast<int>(config.periodic_damage_interval_),
                                              600};
-        over_time_effects.push_back(rage_from_damage);
+        over_time_effects_.push_back(rage_from_damage);
     }
 
     if (config.talents.anger_management)
     {
-        over_time_effects.push_back(anger_management);
+        over_time_effects_.push_back(anger_management);
     }
 }
 
@@ -899,11 +896,11 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
     sim_time -= averaging_interval;
 
     // Pick out the best use effect if there are several that shares cooldown
-    std::vector<Use_effect> use_effects_all = character.use_effects;
-    std::vector<Over_time_effect> over_time_effects{};
-    std::vector<size_t> shared_items;
-    size_t best_idx = 0;
-    double best_value = 0;
+    std::vector<Use_effect> use_effects_all = use_effects_all_;
+    for (const auto& use_effect : character.use_effects)
+    {
+        use_effects_all.push_back(use_effect);
+    }
 
     if (config.enable_blood_fury)
     {
@@ -914,36 +911,10 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
             Use_effect{"Blood_fury", Use_effect::Effect_socket::unique, {}, {0, 0, ap_boost}, 0, 15, 120, true});
     }
 
-    for (size_t i = 0; i < use_effects_all.size(); i++)
-    {
-        if (use_effects_all[i].effect_socket == Use_effect::Effect_socket::shared)
-        {
-            shared_items.push_back(i);
-            double value = use_effects_all[i].get_special_stat_equivalent(starting_special_stats).attack_power *
-                           std::min(use_effects_all[i].duration, config.sim_time);
-            if (value > best_value)
-            {
-                best_idx = i;
-                best_value = value;
-            }
-        }
-    }
+    double ap_equiv =
+        get_character_ap_equivalent(starting_special_stats, character.weapons[0], character.weapons[1], sim_time, {});
 
-    std::vector<Use_effect> use_effects;
-    for (size_t i = 0; i < use_effects_all.size(); i++)
-    {
-        if (!(std::find(shared_items.begin(), shared_items.end(), i) != shared_items.end())) // Add if not shared
-        {
-            use_effects.emplace_back(use_effects_all[i]);
-        }
-        else
-        {
-            if (i == best_idx) // Pick the best one
-            {
-                use_effects.emplace_back(use_effects_all[i]);
-            }
-        }
-    }
+    auto use_effect_order = compute_use_effect_order(use_effects_all, starting_special_stats, sim_time, ap_equiv, 0, 0);
 
     for (int iter = init_iteration; iter < n_damage_batches + init_iteration; iter++)
     {
@@ -956,10 +927,10 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         // Reset hit effects
         weapons[0].hit_effects = hit_effects_mh;
         weapons[1].hit_effects = hit_effects_oh;
-        buff_manager_.initialize(special_stats, use_effects, weapons[0].hit_effects, weapons[1].hit_effects,
+        buff_manager_.initialize(special_stats, use_effect_order, weapons[0].hit_effects, weapons[1].hit_effects,
                                  config.performance_mode);
 
-        for (const auto& over_time_effect : over_time_effects)
+        for (const auto& over_time_effect : over_time_effects_)
         {
             buff_manager_.add_over_time_effect(over_time_effect, 0.0);
         }
@@ -1004,18 +975,42 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
             first_global_sunder = true;
         }
 
-        //     TODO   first_hit_heroic_strike"extra_target_duration_dd
+        if (config.combat.first_hit_heroic_strike && rage > heroic_strike_rage_cost)
+        {
+            ability_queue_manager.queue_heroic_strike();
+        }
+
+        // Check if the simulator should use any use effects before the fight
+        if (use_effect_order.back().first < 0.0)
+        {
+            int n_steps = 50;
+            double dt = -use_effect_order.back().first / n_steps;
+            time_keeper_.time = use_effect_order.back().first;
+            for (int i = 0; i < n_steps; ++i)
+            {
+                std::vector<std::string> debug_msg{};
+                buff_manager_.increment_stat_gains(dt, rage, rage_lost_stance_swap_, rage_lost_execute_batch_,
+                                                   config.display_combat_debug, debug_msg);
+                buff_manager_.increment_use_effects(time_keeper_.time, rage, time_keeper_.global_cd,
+                                                    config.display_combat_debug, debug_msg);
+                for (const auto& msg : debug_msg)
+                {
+                    simulator_cout(msg);
+                }
+                time_keeper_.increment(dt);
+            }
+        }
 
         while (time_keeper_.time < sim_time)
         {
             double mh_dt = weapons[0].internal_swing_timer;
-            double oh_dt = (weapons.size() == 2) ? weapons[1].internal_swing_timer : 100.0;
+            double oh_dt = weapons[1].internal_swing_timer;
             double buff_dt = buff_manager_.get_dt(time_keeper_.time);
             double dt = time_keeper_.get_dynamic_time_step(mh_dt, oh_dt, buff_dt, sim_time);
             time_keeper_.increment(dt);
-            auto debug_msg = buff_manager_.increment(dt, time_keeper_.time, sim_time - time_keeper_.time, rage,
-                                                     rage_lost_stance_swap_, rage_lost_execute_batch_,
-                                                     time_keeper_.global_cd, config.display_combat_debug);
+            std::vector<std::string> debug_msg{};
+            buff_manager_.increment(dt, time_keeper_.time, rage, rage_lost_stance_swap_, rage_lost_execute_batch_,
+                                    time_keeper_.global_cd, config.display_combat_debug, debug_msg);
             for (const auto& msg : debug_msg)
             {
                 simulator_cout(msg);

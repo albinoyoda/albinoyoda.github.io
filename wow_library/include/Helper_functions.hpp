@@ -28,6 +28,8 @@ std::vector<std::pair<double, Use_effect>> compute_use_effect_order(std::vector<
                                                                     double ap, int number_of_targets,
                                                                     double extra_target_duration);
 
+void sort_use_effect_order(std::vector<std::pair<double, Use_effect>>& use_effect_order, double sim_time);
+
 std::vector<Use_effect> sort_use_effects_by_power_ascending(std::vector<Use_effect>& shared_effects,
                                                             const Special_stats& special_stats, double total_ap);
 

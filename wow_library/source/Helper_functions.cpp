@@ -41,7 +41,6 @@ std::vector<std::pair<double, Use_effect>> compute_use_effect_order(std::vector<
     std::vector<std::pair<double, Use_effect>> use_effect_timers;
     std::vector<Use_effect> shared_effects{};
     std::vector<Use_effect> unique_effects{};
-    std::vector<Use_effect> use_effect_order{};
 
     for (auto& use_effect : use_effects)
     {
@@ -68,7 +67,7 @@ std::vector<std::pair<double, Use_effect>> compute_use_effect_order(std::vector<
             for (int i = 0; i < 10; i++)
             {
                 test_time = get_next_available_time(use_effect_timers, test_time, use_effect.duration);
-                if (test_time >= sim_time + use_effect.duration)
+                if (test_time >= sim_time)
                 {
                     break;
                 }
@@ -82,7 +81,7 @@ std::vector<std::pair<double, Use_effect>> compute_use_effect_order(std::vector<
             double test_time = 0.0;
             for (int i = 0; i < 10; i++)
             {
-                if (test_time >= sim_time + use_effect.duration)
+                if (test_time >= sim_time)
                 {
                     break;
                 }
@@ -91,7 +90,20 @@ std::vector<std::pair<double, Use_effect>> compute_use_effect_order(std::vector<
             }
         }
     }
+    sort_use_effect_order(use_effect_timers, sim_time);
     return use_effect_timers;
+}
+
+void sort_use_effect_order(std::vector<std::pair<double, Use_effect>>& use_effect_order, double sim_time)
+{
+    for (auto& use_effect : use_effect_order)
+    {
+        use_effect.first = sim_time - use_effect.first - use_effect.second.duration;
+    }
+    std::sort(use_effect_order.begin(), use_effect_order.end(),
+              [](const std::pair<double, Use_effect>& a, const std::pair<double, Use_effect>& b) {
+                  return a.first > b.first;
+              });
 }
 
 std::vector<Use_effect> sort_use_effects_by_power_ascending(std::vector<Use_effect>& shared_effects,

@@ -69,6 +69,10 @@ void Combat_simulator_config::get_combat_simulator_config(const T& input)
     {
         combat.heroic_strike_damage = 138;
     }
+    if (find_string(input.options, "first_hit_heroic_strike"))
+    {
+        combat.first_hit_heroic_strike = true;
+    }
 
     if (find_string(input.options, "multi_target_mode"))
     {
