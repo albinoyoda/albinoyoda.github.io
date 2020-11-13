@@ -407,6 +407,27 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     Combat_simulator simulator{};
     simulator.set_config(config);
 
+    std::vector<std::string> use_effect_order_string{};
+    {
+        auto use_effect_order = simulator.get_use_effect_order(character);
+        for (const auto& use_effect_timing : use_effect_order)
+        {
+            use_effect_order_string.emplace_back(use_effect_timing.second.name + " " +
+                                                 string_with_precision(use_effect_timing.first, 3) + " " +
+                                                 string_with_precision(use_effect_timing.second.duration, 3));
+        }
+    }
+    for (const auto& wep : character.weapons)
+    {
+        simulator.compute_hit_table(get_weapon_skill(character.total_special_stats, wep.type),
+                                    character.total_special_stats, wep.socket);
+    }
+
+    const auto yellow_ht = simulator.get_hit_probabilities_yellow();
+    const auto white_mh_ht = simulator.get_hit_probabilities_white_mh();
+    const auto white_oh_ht = simulator.get_hit_probabilities_white_oh();
+    const auto white_oh_ht_2h = simulator.get_hit_probabilities_white_2h();
+
     double n_simulations_base = find_value(input.float_options_string, input.float_options_val, "n_simulations_dd");
     simulator.simulate(character, 0, true, true);
     const double dps_mean = simulator.get_dps_mean();
@@ -445,11 +466,6 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
             dps_dist.push_back(dps_dist_raw[i]);
         }
     }
-
-    auto yellow_ht = simulator.get_hit_probabilities_yellow();
-    auto white_mh_ht = simulator.get_hit_probabilities_white_mh();
-    auto white_oh_ht = simulator.get_hit_probabilities_white_oh();
-    auto white_oh_ht_2h = simulator.get_hit_probabilities_white_2h();
 
     std::string character_stats = get_character_stat(character);
 
@@ -1068,6 +1084,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
             time_lapse_names,
             damage_time_lapse,
             aura_uptimes,
+            use_effect_order_string,
             proc_statistics,
             stat_weights,
             {item_strengths_string + extra_info_string + rage_info + dpr_info + talents_info, debug_topic},

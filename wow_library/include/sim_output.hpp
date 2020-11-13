@@ -14,6 +14,7 @@ struct Sim_output
             std::vector<std::string> time_lapse_names,
             std::vector<std::vector<double>> damage_time_lapse,
             std::vector<std::string> aura_uptimes,
+            std::vector<std::string> use_effect_order_string,
             std::vector<std::string> proc_counter,
             std::vector<std::string> stat_weights,
             std::vector<std::string> extra_stats,
@@ -27,6 +28,7 @@ struct Sim_output
             time_lapse_names(std::move(time_lapse_names)),
             damage_time_lapse(std::move(damage_time_lapse)),
             aura_uptimes(std::move(aura_uptimes)),
+            use_effect_order_string(std::move(use_effect_order_string)),
             proc_counter(std::move(proc_counter)),
             stat_weights(std::move(stat_weights)),
             extra_stats(std::move(extra_stats)),
@@ -40,6 +42,7 @@ struct Sim_output
     std::vector<std::string> time_lapse_names;
     std::vector<std::vector<double>> damage_time_lapse;
     std::vector<std::string> aura_uptimes;
+    std::vector<std::string> use_effect_order_string;
     std::vector<std::string> proc_counter;
     std::vector<std::string> stat_weights;
     std::vector<std::string> extra_stats;

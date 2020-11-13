@@ -239,6 +239,8 @@ public:
 
     void compute_hit_table(int weapon_skill, Special_stats special_stats, Socket weapon_hand);
 
+    std::vector<std::pair<double, Use_effect>> get_use_effect_order(const Character& character);
+
     const std::vector<double>& get_hit_probabilities_white_mh() const;
 
     const std::vector<double>& get_hit_probabilities_white_oh() const;

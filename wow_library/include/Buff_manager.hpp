@@ -2,8 +2,10 @@
 #define WOW_SIMULATOR_BUFF_MANAGER_HPP
 
 #include "Attributes.hpp"
+#include "Helper_functions.hpp"
 #include "Item.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <map>
 #include <unordered_map>
@@ -131,12 +133,12 @@ public:
         }
     }
 
-    void increment_hit_gains(double dt, bool debug, std::vector<std::string>& debug_msg)
+    void increment_hit_gains(double current_time, double dt, bool debug, std::vector<std::string>& debug_msg)
     {
         size_t i = 0;
         while (i < hit_gains.size())
         {
-            if (!performance_mode)
+            if (!performance_mode && current_time > 0.0)
             {
                 aura_uptime[hit_gains[i].id] += dt;
             }
@@ -158,7 +160,7 @@ public:
                 {
                     if (hit_gains[i].id == (*hit_effects_oh)[j].name)
                     {
-                        (*hit_effects_oh).erase((*hit_effects_oh).begin() + i);
+                        (*hit_effects_oh).erase((*hit_effects_oh).begin() + j);
                     }
                 }
                 hit_gains.erase(hit_gains.begin() + i);
@@ -174,46 +176,48 @@ public:
     void increment_use_effects(double current_time, double& rage, double& global_cooldown, bool debug,
                                std::vector<std::string>& debug_msg)
     {
-        // Try to use the use effect within one GCD of what was planned
-        if (!use_effect_order.empty() && current_time > use_effect_order.back().first - 1.5)
+        // Try to use the use effect within one second of what was planned (compensate some for GCD's)
+        double margin = 0.0;
+        if (current_time > 0.0)
+        {
+            margin = 1.0;
+        }
+        if (!use_effect_order.empty() && current_time > use_effect_order.back().first - margin)
         {
             Use_effect& use_effect = use_effect_order.back().second;
             if (!use_effect.triggers_gcd || (global_cooldown < 0.0))
             {
-                if (rage >= -use_effect.rage_boost)
+                if (debug)
                 {
+                    debug_msg.emplace_back("Activating: " + use_effect.name);
+                }
+                if (!use_effect.hit_effects.empty())
+                {
+                    add_hit_effect(use_effect.name, use_effect.hit_effects[0], use_effect.hit_effects[0].duration);
+                }
+                else if (!use_effect.over_time_effects.empty())
+                {
+                    add_over_time_effect(use_effect.over_time_effects[0], int(current_time + 1));
+                }
+                else
+                {
+                    add(use_effect.name, use_effect.get_special_stat_equivalent(*simulation_special_stats),
+                        use_effect.duration);
+                }
+                if (use_effect.rage_boost != 0.0)
+                {
+                    rage += use_effect.rage_boost;
+                    rage = std::min(100.0, rage);
                     if (debug)
                     {
-                        debug_msg.emplace_back("Activating: " + use_effect.name);
+                        debug_msg.emplace_back("Current rage: " + std::to_string(int(rage)));
                     }
-                    if (!use_effect.hit_effects.empty())
-                    {
-                        add_hit_effect(use_effect.name, use_effect.hit_effects[0], use_effect.hit_effects[0].duration);
-                    }
-                    else if (!use_effect.over_time_effects.empty())
-                    {
-                        add_over_time_effect(use_effect.over_time_effects[0], int(current_time + 1));
-                    }
-                    else
-                    {
-                        add(use_effect.name, use_effect.get_special_stat_equivalent(*simulation_special_stats),
-                            use_effect.duration);
-                    }
-                    if (use_effect.rage_boost != 0.0)
-                    {
-                        rage += use_effect.rage_boost;
-                        rage = std::min(100.0, rage);
-                        if (debug)
-                        {
-                            debug_msg.emplace_back("Current rage: ", int(rage));
-                        }
-                    }
-                    if (use_effect.triggers_gcd)
-                    {
-                        global_cooldown = 1.5;
-                    }
-                    use_effect_order.pop_back();
                 }
+                if (use_effect.triggers_gcd)
+                {
+                    global_cooldown = 1.5;
+                }
+                use_effect_order.pop_back();
             }
         }
     }
@@ -282,9 +286,9 @@ public:
     void increment(double dt, double current_time, double& rage, double& rage_lost_stance, double& rage_lost_exec,
                    double& global_cooldown, bool debug, std::vector<std::string>& debug_msg)
     {
-        next_event = 10;
+        next_event = 100;
         increment_stat_gains(current_time, dt, rage, rage_lost_stance, rage_lost_exec, debug, debug_msg);
-        increment_hit_gains(dt, debug, debug_msg);
+        increment_hit_gains(current_time, dt, debug, debug_msg);
         increment_use_effects(current_time, rage, global_cooldown, debug, debug_msg);
         increment_over_time_buffs(current_time, rage, debug, debug_msg);
     }

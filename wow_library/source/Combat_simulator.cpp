@@ -63,6 +63,9 @@ void Combat_simulator::set_config(const Combat_simulator_config& new_config)
     dual_wield_damage_factor_ = 0.5 + 0.025 * config.talents.dual_wield_specialization;
     cleave_bonus_damage_ = 50 * (1.0 + 0.4 * config.talents.improved_cleave);
 
+    over_time_effects_.clear();
+    use_effects_all_.clear();
+
     if (config.talents.death_wish)
     {
         use_effects_all_.emplace_back(deathwish);
@@ -864,8 +867,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         weapons.emplace_back(wep.swing_speed, wep.min_damage, wep.max_damage, wep.socket, wep.type, wep.weapon_socket,
                              wep.hit_effects);
         weapons.back().compute_weapon_damage(wep.buff.bonus_damage + starting_special_stats.bonus_damage);
-        compute_hit_table(get_weapon_skill(character.total_special_stats, wep.type), starting_special_stats,
-                          wep.socket);
+        compute_hit_table(get_weapon_skill(starting_special_stats, wep.type), starting_special_stats, wep.socket);
     }
 
     for (size_t i = 0; i < 2; i++)
@@ -914,7 +916,9 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
     double ap_equiv =
         get_character_ap_equivalent(starting_special_stats, character.weapons[0], character.weapons[1], sim_time, {});
 
-    auto use_effect_order = compute_use_effect_order(use_effects_all, starting_special_stats, sim_time, ap_equiv, 0, 0);
+    auto use_effect_order =
+        compute_use_effect_order(use_effects_all, starting_special_stats, sim_time + averaging_interval / 2, ap_equiv,
+                                 0, 0, config.combat.initial_rage);
 
     for (int iter = init_iteration; iter < n_damage_batches + init_iteration; iter++)
     {
@@ -929,11 +933,6 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         weapons[1].hit_effects = hit_effects_oh;
         buff_manager_.initialize(special_stats, use_effect_order, weapons[0].hit_effects, weapons[1].hit_effects,
                                  config.performance_mode);
-
-        for (const auto& over_time_effect : over_time_effects_)
-        {
-            buff_manager_.add_over_time_effect(over_time_effect, 0.0);
-        }
 
         // Reset, since these might change
         target_armor_ = config.main_target_initial_armor_ - armor_reduction_from_spells_;
@@ -968,37 +967,37 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
             config.number_of_extra_targets = 0;
         }
 
-        // First global sunder
-        bool first_global_sunder = false;
-        if (config.first_global_sunder_)
-        {
-            first_global_sunder = true;
-        }
-
-        if (config.combat.first_hit_heroic_strike && rage > heroic_strike_rage_cost)
-        {
-            ability_queue_manager.queue_heroic_strike();
-        }
-
         // Check if the simulator should use any use effects before the fight
         if (use_effect_order.back().first < 0.0)
         {
-            int n_steps = 50;
+            int n_steps = 100;
             double dt = -use_effect_order.back().first / n_steps;
             time_keeper_.time = use_effect_order.back().first;
             for (int i = 0; i < n_steps; ++i)
             {
+                time_keeper_.increment(dt);
                 std::vector<std::string> debug_msg{};
-                buff_manager_.increment_stat_gains(dt, rage, rage_lost_stance_swap_, rage_lost_execute_batch_,
-                                                   config.display_combat_debug, debug_msg);
-                buff_manager_.increment_use_effects(time_keeper_.time, rage, time_keeper_.global_cd,
-                                                    config.display_combat_debug, debug_msg);
+                buff_manager_.increment(dt, time_keeper_.time, rage,
+                                        rage_lost_stance_swap_, rage_lost_execute_batch_, time_keeper_.global_cd,
+                                        config.display_combat_debug, debug_msg);
                 for (const auto& msg : debug_msg)
                 {
                     simulator_cout(msg);
                 }
-                time_keeper_.increment(dt);
             }
+        }
+
+        for (const auto& over_time_effect : over_time_effects_)
+        {
+            buff_manager_.add_over_time_effect(over_time_effect, 0);
+        }
+
+        // First global sunder
+        bool first_global_sunder = config.first_global_sunder_;
+
+        if (config.combat.first_hit_heroic_strike && rage > heroic_strike_rage_cost)
+        {
+            ability_queue_manager.queue_heroic_strike();
         }
 
         while (time_keeper_.time < sim_time)
@@ -1009,8 +1008,9 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
             double dt = time_keeper_.get_dynamic_time_step(mh_dt, oh_dt, buff_dt, sim_time);
             time_keeper_.increment(dt);
             std::vector<std::string> debug_msg{};
-            buff_manager_.increment(dt, time_keeper_.time, rage, rage_lost_stance_swap_, rage_lost_execute_batch_,
-                                    time_keeper_.global_cd, config.display_combat_debug, debug_msg);
+            buff_manager_.increment(dt, time_keeper_.time, rage, rage_lost_stance_swap_,
+                                    rage_lost_execute_batch_, time_keeper_.global_cd, config.display_combat_debug,
+                                    debug_msg);
             for (const auto& msg : debug_msg)
             {
                 simulator_cout(msg);
@@ -1253,6 +1253,30 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
     }
 }
 
+std::vector<std::pair<double, Use_effect>> Combat_simulator::get_use_effect_order(const Character& character)
+{
+    // Copy paste from the simulate function
+    std::vector<Use_effect> use_effects_all = use_effects_all_;
+    for (const auto& use_effect : character.use_effects)
+    {
+        use_effects_all.push_back(use_effect);
+    }
+
+    if (config.enable_blood_fury)
+    {
+        double ap_boost =
+            character.total_attributes.convert_to_special_stats(character.total_special_stats).attack_power * 0.25;
+        use_effects_all.emplace_back(
+            Use_effect{"Blood_fury", Use_effect::Effect_socket::unique, {}, {0, 0, ap_boost}, 0, 15, 120, true});
+    }
+
+    double ap_equiv = get_character_ap_equivalent(character.total_special_stats, character.weapons[0],
+                                                  character.weapons[1], config.sim_time, {});
+
+    return compute_use_effect_order(use_effects_all, character.total_special_stats, config.sim_time, ap_equiv, 0, 0,
+                                    config.combat.initial_rage);
+}
+
 void Combat_simulator::init_histogram()
 {
     double res = 10.0;
@@ -1339,7 +1363,7 @@ double Combat_simulator::get_glancing_penalty_oh() const
 std::vector<std::string> Combat_simulator::get_aura_uptimes() const
 {
     std::vector<std::string> aura_uptimes;
-    double total_sim_time = config.n_batches * config.sim_time;
+    double total_sim_time = config.n_batches * (config.sim_time - 1);
     for (const auto& aura : buff_manager_.aura_uptime)
     {
         double uptime = aura.second / total_sim_time;

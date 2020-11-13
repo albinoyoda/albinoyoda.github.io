@@ -4,6 +4,21 @@
 
 #include "gtest/gtest.h"
 
+namespace
+{
+bool is_descending(const std::vector<std::pair<double, Use_effect>>& use_effects)
+{
+    double activate_time = 1000000.0;
+    bool is_descending{true};
+    for (const auto& effect : use_effects)
+    {
+        is_descending &= (effect.first <= activate_time);
+        activate_time = effect.first;
+    }
+    return is_descending;
+}
+} // namespace
+
 TEST(TestSuite, test_ap_estimation)
 {
     Special_stats special_stats{};
@@ -76,11 +91,54 @@ TEST(TestSuite, test_use_effect_ordering)
     use_effect3.effect_socket = Use_effect::Effect_socket::shared;
 
     std::vector<Use_effect> use_effects{use_effect1, use_effect2, use_effect3};
-    auto order = compute_use_effect_order(use_effects, Special_stats{}, 580, 1500, 0, 0);
+    auto order = compute_use_effect_order(use_effects, Special_stats{}, 580, 1500, 0, 0, 0);
     for (const auto& effect : order)
     {
         EXPECT_TRUE(effect.second.name != "should_not_fit");
     }
+}
+
+TEST(TestSuite, test_use_effect_shuffle)
+{
+    Combat_simulator sim{};
+    std::vector<Use_effect> use_effects{};
+    use_effects.emplace_back(sim.deathwish);
+    use_effects.emplace_back(sim.bloodrage);
+    double sim_time = 20.0;
+    auto order_with_rage = compute_use_effect_order(use_effects, Special_stats{}, sim_time, 1500, 0, 0, 10);
+    auto order_without_rage = compute_use_effect_order(use_effects, Special_stats{}, sim_time, 1500, 0, 0, 0);
+
+    EXPECT_TRUE(order_with_rage[0].second.name == "Bloodrage");
+    EXPECT_TRUE(order_with_rage[1].second.name == "Death_wish");
+
+    EXPECT_TRUE(order_without_rage[0].second.name == "Death_wish");
+    EXPECT_TRUE(order_without_rage[1].second.name == "Bloodrage");
+
+    EXPECT_TRUE(is_descending(order_with_rage));
+    EXPECT_TRUE(is_descending(order_without_rage));
+
+    Armory armory;
+    auto use1 = armory.find_armor(Socket::trinket, "diamond_flask");
+    use_effects.clear();
+    use_effects.emplace_back(sim.deathwish);
+    use_effects.emplace_back(sim.bloodrage);
+    use_effects.emplace_back(sim.recklessness);
+    use_effects.emplace_back(use1.use_effects[0]);
+    order_with_rage = compute_use_effect_order(use_effects, Special_stats{}, sim_time, 1500, 0, 0, 10);
+    order_without_rage = compute_use_effect_order(use_effects, Special_stats{}, sim_time, 1500, 0, 0, 0);
+
+    EXPECT_TRUE(order_with_rage[0].second.name == "Bloodrage");
+    EXPECT_TRUE(order_with_rage[1].second.name == "Recklessness");
+    EXPECT_TRUE(order_with_rage[2].second.name == "Death_wish");
+    EXPECT_TRUE(order_with_rage[3].second.name == "diamond_flask");
+
+    EXPECT_TRUE(order_without_rage[0].second.name == "Recklessness");
+    EXPECT_TRUE(order_without_rage[1].second.name == "Death_wish");
+    EXPECT_TRUE(order_without_rage[2].second.name == "Bloodrage");
+    EXPECT_TRUE(order_without_rage[3].second.name == "diamond_flask");
+
+    EXPECT_TRUE(is_descending(order_with_rage));
+    EXPECT_TRUE(is_descending(order_without_rage));
 }
 
 TEST(TestSuite, test_use_effects)
@@ -102,7 +160,8 @@ TEST(TestSuite, test_use_effects)
     use_effects.emplace_back(use2.use_effects[0]);
     use_effects.emplace_back(use3.use_effects[0]);
     double sim_time = 320.0;
-    auto order = compute_use_effect_order(use_effects, Special_stats{}, sim_time, 1500, 0, 0);
+    auto order = compute_use_effect_order(use_effects, Special_stats{}, sim_time, 1500, 0, 0, 0);
+    EXPECT_TRUE(is_descending(order));
     int df = 0;
     int es = 0;
     int ck = 0;
@@ -111,13 +170,8 @@ TEST(TestSuite, test_use_effects)
     int br = 0;
     int bf = 0;
     int bs = 0;
-
-    double activate_time = 1000000.0;
-
     for (const auto& effect : order)
     {
-        EXPECT_TRUE(effect.first <= activate_time);
-        activate_time = effect.first;
         if (effect.second.name == "diamond_flask")
             df++;
         if (effect.second.name == "earthstrike")

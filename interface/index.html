@@ -1584,7 +1584,7 @@
         <input type="checkbox" id="first_global_sunder" checked>
         <label for="first_global_sunder"> First GCD sunder armor.</label><br>
 
-        <input type="checkbox" id="first_hit_heroic_strike" checked>
+        <input type="checkbox" id="first_hit_heroic_strike">
         <label for="first_hit_heroic_strike"> Queue Heroic strike on the first melee hit.</label><br>
 
         <input type="checkbox" id="deep_wounds">
@@ -1678,6 +1678,9 @@
 
     <p></p>
     <canvas id="line-chart-fight-cumulative"></canvas>
+
+    <p></p>
+    <canvas id="bar-chart-cooldowns"></canvas>
 
     <p></p>
     <canvas id="bar-chart-damage"></canvas>
@@ -2192,6 +2195,7 @@
     let line_chart_hist;
     let line_chart_fight;
     let line_chart_fight_cum;
+    let bar_chart_cooldowns;
 
     function clean_charts() {
         try {
@@ -2201,6 +2205,7 @@
             line_chart_hist.destroy();
             line_chart_fight.destroy();
             line_chart_fight_cum.destroy();
+            bar_chart_cooldowns.destroy();
         } catch (error) {
             console.log(error)
         }
@@ -2584,6 +2589,95 @@
                 )
             }
 
+            let use_effect_data = [];
+            for (let i = result['use_effect_order_string'].size() - 1; i >= 0; i--) {
+                let aura_string = result['use_effect_order_string'].get(i);
+                let split_string = aura_string.split(" ");
+                let use_effect_name = split_string[0];
+                let start_time = parseFloat(split_string[1]);
+                let duration = parseFloat(split_string[2]);
+                let found_effect = false;
+                for (let use_effect of use_effect_data) {
+                    if (use_effect['name'] === use_effect_name) {
+                        let sum_times = 0.0;
+                        for (let previous_start_time of use_effect['start_time']) {
+                            if (previous_start_time + duration >= 0.0) {
+                                sum_times += previous_start_time + duration;
+                            }
+                        }
+                        // use_effect['start_time'].push(delta_start_time);
+                        use_effect['start_time'].push(start_time - sum_times);
+                        found_effect = true;
+                    }
+                }
+                if (!found_effect) {
+                    use_effect_data.push(
+                        {
+                            'name': use_effect_name,
+                            'start_time': [start_time],
+                            'duration': duration,
+                        }
+                    );
+                }
+            }
+            let longest_data_set = 0;
+            let n_data_set = use_effect_data.length;
+            for (let use_effect of use_effect_data) {
+                if (use_effect['start_time'].length > longest_data_set) {
+                    longest_data_set = use_effect['start_time'].length;
+                }
+            }
+            let use_effect_plot = [];
+            let use_effect_colors = [];
+            let use_effect_labels = [];
+            for (let i = 0; i < 2 * longest_data_set; ++i) {
+                use_effect_plot.push([]);
+                use_effect_colors.push([]);
+            }
+            for (let i = 0; i < n_data_set; ++i) {
+                use_effect_labels.push(use_effect_data[i]['name']);
+                let j = 0;
+                let duration = use_effect_data[i]['duration'];
+                for (let start_time of use_effect_data[i]['start_time']) {
+                    if (start_time < 0.0) {
+                        if (duration + start_time < 0.0) {
+                            use_effect_plot[j].push(start_time + duration);
+                            use_effect_plot[j + 1].push(-duration);
+                            use_effect_colors[j].push("rgba(255,255,250,0)");
+                            use_effect_colors[j + 1].push(colors[i]);
+                        } else {
+                            use_effect_plot[j].push(start_time);
+                            use_effect_plot[j + 1].push(duration + start_time);
+                            use_effect_colors[j].push(colors[i]);
+                            use_effect_colors[j + 1].push(colors[i]);
+                        }
+                    } else {
+                        use_effect_plot[j].push(start_time);
+                        use_effect_plot[j + 1].push(duration);
+                        use_effect_colors[j].push("rgba(255,255,250,0)");
+                        use_effect_colors[j + 1].push(colors[i]);
+                    }
+                    j += 2;
+                }
+                while (j < 2 * longest_data_set) {
+                    use_effect_plot[j].push(0);
+                    use_effect_plot[j + 1].push(0);
+                    use_effect_colors[j].push("rgba(255,255,250,0)");
+                    use_effect_colors[j + 1].push("rgba(255,255,250,0)");
+                    j += 2;
+                }
+            }
+
+            let use_effect_datasets = [];
+            for (let i = 0; i < use_effect_plot.length; i++) {
+                use_effect_datasets.push(
+                    {
+                        'data': use_effect_plot[i],
+                        'backgroundColor': use_effect_colors[i]
+                    }
+                )
+            }
+
             Chart.defaults.global.defaultFontSize = 36;
             Chart.defaults.global.defaultFontStyle = 'Bold';
             Chart.defaults.scale.gridLines.color = "black";
@@ -2763,6 +2857,67 @@
 
             canvas = document.getElementById("line-chart-fight-cumulative");
             canvas.maintainAspectRatio = true;
+            canvas.style.height = '450px';
+            canvas.style.width = '675px';
+
+            bar_chart_cooldowns = new Chart(document.getElementById("bar-chart-cooldowns").getContext("2d"), {
+                type: 'horizontalBar',
+                data: {
+                    labels: use_effect_labels,
+                    datasets: use_effect_datasets
+                },
+                options: {
+                    legend: {display: false},
+                    title: {
+                        fontSize: 60,
+                        fontColor: "black",
+                        display: true,
+                        text: 'Use Effect Schedule'
+                    },
+                    scales: {
+                        yAxes: [{
+                            stacked: true,
+                            fontColor: "black",
+                            gridLines: {
+                                color: "rgba(0, 0, 0, 0)",
+                            },
+                            scaleLabel: {
+                                fontColor: "black",
+                                display: true,
+                                labelString: 'Use Effect'
+                            },
+                            ticks:
+                                {
+                                    fontColor: "black",
+                                    beginAtZero: true,
+                                    suggestedMin: 0,
+                                }
+                        }],
+                        xAxes: [{
+                            stacked: true,
+                            fontColor: "black",
+                            gridLines: {
+                                color: "rgba(0, 0, 0, 0)",
+                            },
+                            scaleLabel: {
+                                fontColor: "black",
+                                display: false,
+                                labelString: 'Time'
+                            },
+                            ticks:
+                                {
+                                    fontColor: "black",
+                                    beginAtZero: true,
+                                    suggestedMin: 0,
+                                }
+                        }]
+                    }
+                }
+            });
+
+            canvas = document.getElementById("bar-chart-cooldowns");
+            canvas.maintainAspectRatio = true;
+            canvas.responsive = false;
             canvas.style.height = '450px';
             canvas.style.width = '675px';
 

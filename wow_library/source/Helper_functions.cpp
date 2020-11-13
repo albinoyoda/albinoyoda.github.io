@@ -36,7 +36,7 @@ double get_next_available_time(const std::vector<std::pair<double, Use_effect>>&
 std::vector<std::pair<double, Use_effect>> compute_use_effect_order(std::vector<Use_effect>& use_effects,
                                                                     const Special_stats& special_stats, double sim_time,
                                                                     double total_ap, int number_of_targets,
-                                                                    double extra_target_duration)
+                                                                    double extra_target_duration, double init_rage)
 {
     std::vector<std::pair<double, Use_effect>> use_effect_timers;
     std::vector<Use_effect> shared_effects{};
@@ -91,7 +91,44 @@ std::vector<std::pair<double, Use_effect>> compute_use_effect_order(std::vector<
         }
     }
     sort_use_effect_order(use_effect_timers, sim_time);
+    shuffle_bloodrage(use_effect_timers, init_rage);
     return use_effect_timers;
+}
+
+void shuffle_bloodrage(std::vector<std::pair<double, Use_effect>>& use_effect_timers, double init_rage)
+{
+    double projected_rage = init_rage;
+    bool done{false};
+    for (auto reverse_it = use_effect_timers.rbegin(); reverse_it != use_effect_timers.rend(); ++reverse_it)
+    {
+        if (reverse_it->first < 0.0)
+        {
+            projected_rage += reverse_it->second.rage_boost;
+            if (projected_rage < 0.0)
+            {
+                // Reshuffle bloodrage since there is no rage
+                auto bloodrage_reverse_it =
+                    std::find_if(use_effect_timers.rbegin(), use_effect_timers.rend(),
+                                 [](const std::pair<double, Use_effect>& ue) { return ue.second.name == "Bloodrage"; });
+                if (bloodrage_reverse_it != use_effect_timers.rend())
+                {
+                    auto forward_it = --(reverse_it.base());
+                    auto bloodrage_forward_it = --(bloodrage_reverse_it.base());
+                    bloodrage_forward_it->first = reverse_it->first - 1.0;
+                    std::rotate(bloodrage_forward_it, bloodrage_forward_it + 1, forward_it + 1);
+                    done = true;
+                }
+            }
+        }
+        else
+        {
+            done = true;
+        }
+        if (done)
+        {
+            break;
+        }
+    }
 }
 
 void sort_use_effect_order(std::vector<std::pair<double, Use_effect>>& use_effect_order, double sim_time)
