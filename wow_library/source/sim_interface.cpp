@@ -678,7 +678,8 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     if (find_string(input.options, "talents_stat_weights"))
     {
         double delta_dps{};
-        config.n_batches = 5000;
+        config.n_batches = static_cast<int>(
+            find_value(input.float_options_string, input.float_options_val, "n_simulations_talent_dd"));
         Combat_simulator simulator_talent{};
 
         if (!config.combat.cleave_if_adds)

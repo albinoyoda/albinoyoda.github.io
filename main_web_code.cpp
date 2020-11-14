@@ -386,6 +386,7 @@ int main()
         "mighty_rage_potion",
         "debug_on",
         "exposed_armor",
+        "talents_stat_weights",
         //        "cleave_if_adds",
         "use_hamstring",
         //        "compute_dpr",
@@ -421,11 +422,12 @@ int main()
         "stat_weight_mh_speed_dd",
         "stat_weight_oh_speed_dd",
         "n_simulations_dd",
-        "n_simulations_stat_dd"
+        "n_simulations_stat_dd",
+        "n_simulations_talent_dd"
     };
 
     std::vector<double> float_options_val{50.0, 50.0, 10.0, 2.0, 50.0, 0.0, 2.0, 25.0, 2.0, 2.0, 60.0, 63.0,
-                                          3731, 5,    0,   3731, 63,  1.0, 300,  15,  70,  0.5,  0.5, 15000, 1000};
+                                          3731, 5,    0,   3731, 63,  1.0, 300,  15,  70,  0.5,  0.5, 1000, 1000, 1000};
 
     Sim_input sim_input{{race},
                         armor_vec,
