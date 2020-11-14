@@ -46,10 +46,14 @@ struct Combat_simulator_config
     double sim_time{};
 
     int main_target_level{};
-    double main_target_initial_armor_{};
+    int main_target_initial_armor_{};
     int extra_target_level{};
     int number_of_extra_targets{};
-    double extra_target_initial_armor_{};
+    int extra_target_initial_armor_{};
+    int n_sunder_armor_stacks = 0;
+    bool exposed_armor{false};
+    bool curse_of_recklessness_active{false};
+    bool faerie_fire_feral_active{false};
 
     bool take_periodic_damage_{};
     bool can_trigger_enrage_{};
@@ -64,11 +68,6 @@ struct Combat_simulator_config
 
     bool ability_queue_{};
     double ability_queue_rage_thresh_{};
-
-    bool exposed_armor{false};
-    bool curse_of_recklessness_active{false};
-    bool faerie_fire_feral_active{false};
-    int n_sunder_armor_stacks = 0;
 
     // Simulator settings
     bool enable_bloodrage{false};
@@ -224,8 +223,7 @@ public:
     void simulate(const Character& character, size_t n_simulations, double init_mean, double init_variance,
                   size_t init_simulations);
 
-    void simulate(const Character& character, int init_iteration = 0, bool compute_time_lape = false,
-                  bool compute_histogram = false);
+    void simulate(const Character& character, int init_iteration = 0, bool log_data = false);
 
     static double get_uniform_random(double r_max) { return rand() * r_max / RAND_MAX; }
 
@@ -284,7 +282,7 @@ public:
 
     constexpr int get_avg_rage_spent_executing() const { return avg_rage_spent_executing_; }
 
-    std::vector<double>& get_hist_x() { return hist_x; }
+    std::vector<int>& get_hist_x() { return hist_x; }
 
     std::vector<int>& get_hist_y() { return hist_y; }
 
@@ -339,22 +337,26 @@ private:
     std::vector<double> damage_multipliers_yellow_;
     std::vector<double> hit_table_two_hand_;
     Damage_sources damage_distribution_{};
-    double dps_mean_;
-    double dps_variance_;
-    std::vector<double> hist_x{};
-    std::vector<int> hist_y{};
-    double armor_reduction_factor_{};
-    double armor_reduction_factor_add{};
-    double current_armor_red_stacks_{};
-    double armor_penetration_{};
-    bool recompute_mitigation_{false};
     Time_keeper time_keeper_{};
     Buff_manager buff_manager_{};
     Ability_queue_manager ability_queue_manager{};
+    std::vector<int> hist_x{};
+    std::vector<int> hist_y{};
+    std::string debug_topic_{};
+
+    double dps_mean_;
+    double dps_variance_;
+    double armor_reduction_factor_{};
+    double armor_reduction_factor_add{};
+    int current_armor_red_stacks_{};
+    int armor_penetration_{};
+    int armor_reduction_from_spells_{};
+    int armor_reduction_delayed_{};
+    bool recompute_mitigation_{false};
+
     double flurry_uptime_mh_{};
     double flurry_uptime_oh_{};
     double heroic_strike_uptime_{};
-    std::string debug_topic_{};
     double heroic_strike_rage_cost{};
     double cleave_bonus_damage_{};
     double rage_lost_execute_batch_{};
@@ -363,13 +365,12 @@ private:
     double avg_rage_spent_executing_{};
     double p_unbridled_wrath_{};
     double execute_rage_cost_{};
-    double armor_reduction_from_spells_{};
-    double armor_reduction_delayed_{};
     double flurry_haste_factor_{};
     double init_server_time{};
     double dual_wield_damage_factor_;
     bool dpr_heroic_strike_queued_{false};
     bool dpr_cleave_queued_{false};
+
     std::vector<std::vector<double>> damage_time_lapse{};
     std::map<std::string, int> proc_data_{};
     std::vector<Use_effect> use_effects_all_{};

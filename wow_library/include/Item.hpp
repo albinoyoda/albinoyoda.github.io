@@ -101,8 +101,8 @@ public:
     Hit_effect() = default;
 
     Hit_effect(std::string name, Type type, Attributes attribute_boost, Special_stats special_stats_boost,
-               double damage, double duration, double probability, double attack_power_boost = 0, int n_targets = 1,
-               double armor_reduction = 0, int max_stacks = 0, double ppm = 0.0, bool affects_both_weapons = false)
+               double damage, int duration, double probability, double attack_power_boost = 0, int n_targets = 1,
+               int armor_reduction = 0, int max_stacks = 0, double ppm = 0.0, bool affects_both_weapons = false)
         : name(std::move(name))
         , type(type)
         , attribute_boost(attribute_boost)
@@ -127,11 +127,11 @@ public:
     Attributes attribute_boost;
     Special_stats special_stats_boost;
     double damage;
-    double duration;
+    int duration;
     double probability;
     double attack_power_boost;
     int n_targets;
-    double armor_reduction;
+    int armor_reduction;
     double ppm;
     bool affects_both_weapons;
     int max_stacks;

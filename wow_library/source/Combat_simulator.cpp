@@ -16,9 +16,9 @@ constexpr double rage_generation(double damage)
     return damage * rage_factor;
 }
 
-constexpr double armor_mitigation(double target_armor, int target_level)
+constexpr double armor_mitigation(int target_armor, int target_level)
 {
-    return target_armor / (target_armor + 400 + 85 * target_level);
+    return static_cast<double>(target_armor) / static_cast<double>(target_armor + 400 + 85 * target_level);
 }
 
 std::vector<double> create_hit_table(double miss, double dodge, double glancing, double crit)
@@ -651,12 +651,12 @@ void Combat_simulator::hit_effects(Weapon_sim& weapon, Weapon_sim& main_hand_wea
                     recompute_mitigation_ = true;
                     current_armor_red_stacks_++;
                     armor_penetration_ = current_armor_red_stacks_ * hit_effect.armor_reduction;
-                    simulator_cout("PROC: ", hit_effect.name, ", current stacks: ", int(current_armor_red_stacks_));
+                    simulator_cout("PROC: ", hit_effect.name, ", current stacks: ", current_armor_red_stacks_);
                 }
                 else
                 {
                     simulator_cout("PROC: ", hit_effect.name,
-                                   ". At max stacks. Current stacks: ", int(current_armor_red_stacks_));
+                                   ". At max stacks. Current stacks: ", current_armor_red_stacks_);
                 }
             }
             break;
@@ -827,11 +827,10 @@ void Combat_simulator::simulate(const Character& character, size_t n_simulations
     dps_mean_ = init_mean;
     dps_variance_ = init_variance;
     config.n_batches = n_simulations;
-    simulate(character, init_simulations, false, false);
+    simulate(character, init_simulations);
 }
 
-void Combat_simulator::simulate(const Character& character, int init_iteration, bool compute_time_lapse,
-                                bool compute_histogram)
+void Combat_simulator::simulate(const Character& character, int init_iteration, bool log_data)
 {
     int n_damage_batches = config.n_batches;
     if (config.display_combat_debug)
@@ -839,12 +838,9 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         debug_topic_ = "";
         n_damage_batches = 1;
     }
-    if (compute_time_lapse)
+    if (log_data)
     {
         reset_time_lapse();
-    }
-    if (compute_histogram)
-    {
         init_histogram();
     }
     buff_manager_.aura_uptime.clear();
@@ -1038,21 +1034,20 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
 
             if (recompute_mitigation_)
             {
-                double target_armor =
+                int target_armor =
                     config.main_target_initial_armor_ - armor_reduction_from_spells_ - armor_penetration_;
                 if (apply_delayed_armor_reduction)
                 {
                     target_armor -= armor_reduction_delayed_;
                 }
-                target_armor = std::max(target_armor, 0.0);
+                target_armor = std::max(target_armor, 0);
                 armor_reduction_factor_ = 1 - armor_mitigation(target_armor, config.main_target_level);
-                double extra_target_armor = config.extra_target_initial_armor_ - armor_penetration_;
-                extra_target_armor = std::max(extra_target_armor, 0.0);
+                int extra_target_armor = config.extra_target_initial_armor_ - armor_penetration_;
+                extra_target_armor = std::max(extra_target_armor, 0);
                 armor_reduction_factor_add = 1 - armor_mitigation(extra_target_armor, config.extra_target_level);
                 recompute_mitigation_ = false;
-                simulator_cout("Target armor: ", int(target_armor), ". Mitigation factor: ", armor_reduction_factor_,
-                               "%.");
-                simulator_cout("Extra targets armor: ", int(extra_target_armor),
+                simulator_cout("Target armor: ", target_armor, ". Mitigation factor: ", armor_reduction_factor_, "%.");
+                simulator_cout("Extra targets armor: ", extra_target_armor,
                                ". Mitigation factor: ", armor_reduction_factor_add, "%.");
             }
 
@@ -1248,21 +1243,15 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         heroic_strike_uptime_ = Statistics::update_mean(heroic_strike_uptime_, iter + 1, oh_hits_w_heroic / oh_hits);
         avg_rage_spent_executing_ =
             Statistics::update_mean(avg_rage_spent_executing_, iter + 1, buff_manager_.rage_spent_executing);
-        if (compute_time_lapse)
+        if (log_data)
         {
             add_damage_source_to_time_lapse(damage_sources.damage_instances);
-        }
-        if (compute_histogram)
-        {
-            hist_y[new_sample / 10.0]++;
+            hist_y[new_sample / 10]++;
         }
     }
-    if (compute_time_lapse)
+    if (log_data)
     {
         normalize_timelapse();
-    }
-    if (compute_histogram)
-    {
         prune_histogram();
     }
 }
@@ -1293,7 +1282,7 @@ std::vector<std::pair<double, Use_effect>> Combat_simulator::get_use_effect_orde
 
 void Combat_simulator::init_histogram()
 {
-    double res = 10.0;
+    double res = 10;
     for (int i = 0; i < 1000; i++)
     {
         hist_x.push_back(i * res);
@@ -1335,7 +1324,7 @@ void Combat_simulator::prune_histogram()
     {
         auto first = hist_x.begin() + start_idx;
         auto last = hist_x.begin() + end_idx + 1;
-        hist_x = std::vector<double>(first, last);
+        hist_x = std::vector<int>(first, last);
     }
     {
         auto first = hist_y.begin() + start_idx;

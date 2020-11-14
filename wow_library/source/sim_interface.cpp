@@ -429,7 +429,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     const auto white_oh_ht_2h = simulator.get_hit_probabilities_white_2h();
 
     double n_simulations_base = find_value(input.float_options_string, input.float_options_val, "n_simulations_dd");
-    simulator.simulate(character, 0, true, true);
+    simulator.simulate(character, 0, true);
     const double dps_mean = simulator.get_dps_mean();
     const double dps_sample_std =
         Statistics::sample_deviation(std::sqrt(simulator.get_dps_variance()), config.n_batches);
@@ -538,7 +538,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 config.dpr_settings.compute_dpr_bt_ = true;
                 Combat_simulator simulator_dpr{};
                 simulator_dpr.set_config(config);
-                simulator_dpr.simulate(character, 0, false, false);
+                simulator_dpr.simulate(character, 0);
                 double delta_dps = dps_mean - simulator_dpr.get_dps_mean();
                 double dmg_tot = delta_dps * (config.sim_time - 1);
                 double dmg_per_hit = dmg_tot / avg_bt_casts;
@@ -557,7 +557,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 config.dpr_settings.compute_dpr_ww_ = true;
                 Combat_simulator simulator_dpr{};
                 simulator_dpr.set_config(config);
-                simulator_dpr.simulate(character, 0, false, false);
+                simulator_dpr.simulate(character, 0);
                 double delta_dps = dps_mean - simulator_dpr.get_dps_mean();
                 double dmg_tot = delta_dps * (config.sim_time - 1);
                 double dmg_per_hit = dmg_tot / avg_ww_casts;
@@ -576,7 +576,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 config.dpr_settings.compute_dpr_hs_ = true;
                 Combat_simulator simulator_dpr{};
                 simulator_dpr.set_config(config);
-                simulator_dpr.simulate(character, 0, false, false);
+                simulator_dpr.simulate(character, 0);
                 double delta_dps = dps_mean - simulator_dpr.get_dps_mean();
                 double dmg_tot = delta_dps * (config.sim_time - 1);
                 double dmg_per_hs = dmg_tot / avg_hs_casts;
@@ -598,7 +598,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 config.dpr_settings.compute_dpr_cl_ = true;
                 Combat_simulator simulator_dpr{};
                 simulator_dpr.set_config(config);
-                simulator_dpr.simulate(character, 0, false, false);
+                simulator_dpr.simulate(character, 0);
                 double delta_dps = dps_mean - simulator_dpr.get_dps_mean();
                 double dmg_tot = delta_dps * (config.sim_time - 1);
                 double dmg_per_hs = dmg_tot / avg_cl_casts;
@@ -620,7 +620,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 config.dpr_settings.compute_dpr_ha_ = true;
                 Combat_simulator simulator_dpr{};
                 simulator_dpr.set_config(config);
-                simulator_dpr.simulate(character, 0, false, false);
+                simulator_dpr.simulate(character, 0);
                 double delta_dps = dps_mean - simulator_dpr.get_dps_mean();
                 double dmg_tot = delta_dps * (config.sim_time - 1);
                 double dmg_per_ha = dmg_tot / avg_ha_casts;
@@ -639,7 +639,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 config.dpr_settings.compute_dpr_op_ = true;
                 Combat_simulator simulator_dpr{};
                 simulator_dpr.set_config(config);
-                simulator_dpr.simulate(character, 0, false, false);
+                simulator_dpr.simulate(character, 0);
                 double delta_dps = dps_mean - simulator_dpr.get_dps_mean();
                 double dmg_tot = delta_dps * (config.sim_time - 1);
                 double dmg_per_hit = dmg_tot / avg_op_casts;
@@ -659,7 +659,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
             config.dpr_settings.compute_dpr_ex_ = true;
             Combat_simulator simulator_dpr{};
             simulator_dpr.set_config(config);
-            simulator_dpr.simulate(character, 0, false, false);
+            simulator_dpr.simulate(character, 0);
             double delta_dps = dps_mean - simulator_dpr.get_dps_mean();
             double dmg_tot = delta_dps * (config.sim_time - 1);
             double dmg_per_hit = dmg_tot / avg_ex_casts;
@@ -687,7 +687,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
             talents_info = "<br><b>Value per 1 talent point:</b>";
             config.talents.improved_heroic_strike -= 2;
             simulator_talent.set_config(config);
-            simulator_talent.simulate(character, 0, false, false);
+            simulator_talent.simulate(character, 0);
             delta_dps = (dps_mean - simulator_talent.get_dps_mean()) / 2;
             talents_info += "<br>Talent: <b>Improved Heroic Strike</b><br>Value: <b>" +
                             string_with_precision(delta_dps, 3) + "</b> DPS<br>";
@@ -697,7 +697,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         {
             config.talents.improved_cleave += 3;
             simulator_talent.set_config(config);
-            simulator_talent.simulate(character, 0, false, false);
+            simulator_talent.simulate(character, 0);
             delta_dps = -(dps_mean - simulator_talent.get_dps_mean()) / 3;
             talents_info += "<br>Talent: <b>Improved Cleave</b><br>Value: <b>" + string_with_precision(delta_dps, 3) +
                             "</b> DPS<br>";
@@ -706,7 +706,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
 
         config.talents.overpower--;
         simulator_talent.set_config(config);
-        simulator_talent.simulate(character, 0, false, false);
+        simulator_talent.simulate(character, 0);
         delta_dps = dps_mean - simulator_talent.get_dps_mean();
         talents_info += "<br>Talent: <b>Improved Overpower</b><br>Value: <b>" + string_with_precision(delta_dps, 4) +
                         "</b> DPS<br>";
@@ -714,7 +714,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
 
         config.talents.improved_execute -= 2;
         simulator_talent.set_config(config);
-        simulator_talent.simulate(character, 0, false, false);
+        simulator_talent.simulate(character, 0);
         delta_dps = (dps_mean - simulator_talent.get_dps_mean()) / 2;
         talents_info +=
             "<br>Talent: <b>Improved Execute</b><br>Value: <b>" + string_with_precision(delta_dps, 4) + "</b> DPS<br>";
@@ -722,7 +722,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
 
         config.talents.unbridled_wrath -= 5;
         simulator_talent.set_config(config);
-        simulator_talent.simulate(character, 0, false, false);
+        simulator_talent.simulate(character, 0);
         delta_dps = (dps_mean - simulator_talent.get_dps_mean()) / 5;
         talents_info +=
             "<br>Talent: <b>Unbridled Wrath</b><br>Value: <b>" + string_with_precision(delta_dps, 4) + "</b> DPS<br>";
@@ -730,7 +730,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
 
         config.talents.flurry -= 2;
         simulator_talent.set_config(config);
-        simulator_talent.simulate(character, 0, false, false);
+        simulator_talent.simulate(character, 0);
         delta_dps = (dps_mean - simulator_talent.get_dps_mean()) / 2;
         talents_info +=
             "<br>Talent: <b>Flurry</b><br>Value: <b>" + string_with_precision(delta_dps, 4) + "</b> DPS<br>";
@@ -738,7 +738,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
 
         config.talents.anger_management = false;
         simulator_talent.set_config(config);
-        simulator_talent.simulate(character, 0, false, false);
+        simulator_talent.simulate(character, 0);
         delta_dps = dps_mean - simulator_talent.get_dps_mean();
         talents_info +=
             "<br>Talent: <b>Anger Management</b><br>Value: <b>" + string_with_precision(delta_dps, 4) + "</b> DPS<br>";
@@ -746,7 +746,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
 
         config.talents.death_wish = !config.talents.death_wish;
         simulator_talent.set_config(config);
-        simulator_talent.simulate(character, 0, false, false);
+        simulator_talent.simulate(character, 0);
         delta_dps = dps_mean - simulator_talent.get_dps_mean();
         if (delta_dps < 0.0)
         {
@@ -759,7 +759,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
 
         config.talents.impale--;
         simulator_talent.set_config(config);
-        simulator_talent.simulate(character, 0, false, false);
+        simulator_talent.simulate(character, 0);
         delta_dps = dps_mean - simulator_talent.get_dps_mean();
         talents_info +=
             "<br>Talent: <b>Impale</b><br>Value: <b>" + string_with_precision(delta_dps, 4) + "</b> DPS<br>";
@@ -767,7 +767,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
 
         config.talents.dual_wield_specialization -= 2;
         simulator_talent.set_config(config);
-        simulator_talent.simulate(character, 0, false, false);
+        simulator_talent.simulate(character, 0);
         delta_dps = (dps_mean - simulator_talent.get_dps_mean()) / 2;
         talents_info += "<br>Talent: <b>Dual Wield Specialization</b><br>Value: <b>" +
                         string_with_precision(delta_dps, 4) + "</b> DPS<br>";

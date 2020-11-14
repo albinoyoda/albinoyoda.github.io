@@ -8,7 +8,7 @@ struct Sim_output
     Sim_output() = default;
 
     Sim_output(
-            std::vector<double> hist_x,
+            std::vector<int> hist_x,
             std::vector<int> hist_y,
             std::vector<double> dmg_sources,
             std::vector<std::string> time_lapse_names,
@@ -36,7 +36,7 @@ struct Sim_output
             std_dps(std::move(std_dps)),
             messages(std::move(messages)) {}
 
-    std::vector<double> hist_x;
+    std::vector<int> hist_x;
     std::vector<int> hist_y;
     std::vector<double> dmg_sources;
     std::vector<std::string> time_lapse_names;
