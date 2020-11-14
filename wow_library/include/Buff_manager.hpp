@@ -164,6 +164,7 @@ public:
                     }
                 }
                 hit_gains.erase(hit_gains.begin() + i);
+                reset_armor_reduction = true;
             }
             else
             {
@@ -344,6 +345,7 @@ public:
     }
 
     bool need_to_recompute_hittables{false};
+    bool reset_armor_reduction{false};
     bool performance_mode{false};
     Special_stats* simulation_special_stats;
     std::map<std::string, Combat_buff> stat_gains;

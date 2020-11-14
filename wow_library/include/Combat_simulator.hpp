@@ -344,9 +344,10 @@ private:
     std::vector<double> hist_x{};
     std::vector<int> hist_y{};
     double armor_reduction_factor_{};
-    double target_armor_{};
     double armor_reduction_factor_add{};
     double current_armor_red_stacks_{};
+    double armor_penetration_{};
+    bool recompute_mitigation_{false};
     Time_keeper time_keeper_{};
     Buff_manager buff_manager_{};
     Ability_queue_manager ability_queue_manager{};

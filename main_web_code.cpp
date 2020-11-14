@@ -385,6 +385,7 @@ int main()
         "death_wish",
         "mighty_rage_potion",
         "debug_on",
+        "exposed_armor",
         //        "cleave_if_adds",
         "use_hamstring",
         //        "compute_dpr",

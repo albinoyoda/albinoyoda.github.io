@@ -648,20 +648,15 @@ void Combat_simulator::hit_effects(Weapon_sim& weapon, Weapon_sim& main_hand_wea
             {
                 if (current_armor_red_stacks_ < hit_effect.max_stacks)
                 {
-                    target_armor_ -= hit_effect.armor_reduction;
-                    target_armor_ = std::max(target_armor_, 0.0);
+                    recompute_mitigation_ = true;
                     current_armor_red_stacks_++;
-                    double target_mitigation = armor_mitigation(target_armor_, 63);
-                    armor_reduction_factor_ = 1 - target_mitigation;
-                    simulator_cout("PROC: ", hit_effect.name, " armor reduced by ", int(hit_effect.armor_reduction),
-                                   ". Target armor: ", int(target_armor_),
-                                   ". New mitigation factor: ", target_mitigation,
-                                   "%. Current stacks: ", int(current_armor_red_stacks_));
+                    armor_penetration_ = current_armor_red_stacks_ * hit_effect.armor_reduction;
+                    simulator_cout("PROC: ", hit_effect.name, ", current stacks: ", int(current_armor_red_stacks_));
                 }
                 else
                 {
                     simulator_cout("PROC: ", hit_effect.name,
-                                   ". Cant add more stacks. Current stacks: ", int(current_armor_red_stacks_));
+                                   ". At max stacks. Current stacks: ", int(current_armor_red_stacks_));
                 }
             }
             break;
@@ -934,15 +929,12 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         buff_manager_.initialize(special_stats, use_effect_order, weapons[0].hit_effects, weapons[1].hit_effects,
                                  config.performance_mode);
 
-        // Reset, since these might change
-        target_armor_ = config.main_target_initial_armor_ - armor_reduction_from_spells_;
-        armor_reduction_factor_ = 1 - armor_mitigation(target_armor_, config.main_target_level);
-        armor_reduction_factor_add =
-            1 - armor_mitigation(config.extra_target_initial_armor_, config.extra_target_level);
+        recompute_mitigation_ = true;
         current_armor_red_stacks_ = 0;
+        armor_penetration_ = 0;
 
         int flurry_charges = 0;
-        bool apply_delayed_armor_reduction = true;
+        bool apply_delayed_armor_reduction = false;
         bool execute_phase = false;
 
         double mh_hits = 0;
@@ -977,9 +969,8 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
             {
                 time_keeper_.increment(dt);
                 std::vector<std::string> debug_msg{};
-                buff_manager_.increment(dt, time_keeper_.time, rage,
-                                        rage_lost_stance_swap_, rage_lost_execute_batch_, time_keeper_.global_cd,
-                                        config.display_combat_debug, debug_msg);
+                buff_manager_.increment(dt, time_keeper_.time, rage, rage_lost_stance_swap_, rage_lost_execute_batch_,
+                                        time_keeper_.global_cd, config.display_combat_debug, debug_msg);
                 for (const auto& msg : debug_msg)
                 {
                     simulator_cout(msg);
@@ -1008,12 +999,16 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
             double dt = time_keeper_.get_dynamic_time_step(mh_dt, oh_dt, buff_dt, sim_time);
             time_keeper_.increment(dt);
             std::vector<std::string> debug_msg{};
-            buff_manager_.increment(dt, time_keeper_.time, rage, rage_lost_stance_swap_,
-                                    rage_lost_execute_batch_, time_keeper_.global_cd, config.display_combat_debug,
-                                    debug_msg);
+            buff_manager_.increment(dt, time_keeper_.time, rage, rage_lost_stance_swap_, rage_lost_execute_batch_,
+                                    time_keeper_.global_cd, config.display_combat_debug, debug_msg);
             for (const auto& msg : debug_msg)
             {
                 simulator_cout(msg);
+            }
+
+            if (sim_time - time_keeper_.time < 0.0)
+            {
+                break;
             }
 
             if (buff_manager_.need_to_recompute_hittables)
@@ -1026,20 +1021,39 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                 buff_manager_.need_to_recompute_hittables = false;
             }
 
-            if (sim_time - time_keeper_.time < 0.0)
+            if (buff_manager_.reset_armor_reduction)
             {
-                break;
+                recompute_mitigation_ = true;
+                current_armor_red_stacks_ = 0;
+                armor_penetration_ = 0;
+                buff_manager_.reset_armor_reduction = false;
             }
 
-            if (time_keeper_.time > 6 && config.exposed_armor && apply_delayed_armor_reduction)
+            if (!apply_delayed_armor_reduction && time_keeper_.time > 6.0 && config.exposed_armor)
             {
-                target_armor_ -= armor_reduction_delayed_; // Armor for Warrior class monsters
-                target_armor_ = std::max(target_armor_, 0.0);
-                double target_mitigation = armor_mitigation(target_armor_, 63);
-                simulator_cout("Improved expose armor applied. Target armor: ", int(target_armor_),
-                               ". New mitigation factor: ", target_mitigation, "%.");
-                armor_reduction_factor_ = 1 - target_mitigation;
-                apply_delayed_armor_reduction = false;
+                apply_delayed_armor_reduction = true;
+                recompute_mitigation_ = true;
+                simulator_cout("Applying improved exposed armor!");
+            }
+
+            if (recompute_mitigation_)
+            {
+                double target_armor =
+                    config.main_target_initial_armor_ - armor_reduction_from_spells_ - armor_penetration_;
+                if (apply_delayed_armor_reduction)
+                {
+                    target_armor -= armor_reduction_delayed_;
+                }
+                target_armor = std::max(target_armor, 0.0);
+                armor_reduction_factor_ = 1 - armor_mitigation(target_armor, config.main_target_level);
+                double extra_target_armor = config.extra_target_initial_armor_ - armor_penetration_;
+                extra_target_armor = std::max(extra_target_armor, 0.0);
+                armor_reduction_factor_add = 1 - armor_mitigation(extra_target_armor, config.extra_target_level);
+                recompute_mitigation_ = false;
+                simulator_cout("Target armor: ", int(target_armor), ". Mitigation factor: ", armor_reduction_factor_,
+                               "%.");
+                simulator_cout("Extra targets armor: ", int(extra_target_armor),
+                               ". Mitigation factor: ", armor_reduction_factor_add, "%.");
             }
 
             bool mh_swing = weapons[0].time_for_swing(dt);
