@@ -8,7 +8,7 @@ include_directories(wow_library/include)
 
 # 'Google_Tests_run' is the target name
 # 'test1.cpp tests2.cpp' are source files with tests
-add_executable(Google_Tests_run test_ap_estimation.cpp)
+add_executable(Google_Tests_run test_ap_estimation.cpp test_item_optimizer.cpp)
 
 target_link_libraries(Google_Tests_run gtest gtest_main)
 target_link_libraries(Google_Tests_run gtest wow_library)

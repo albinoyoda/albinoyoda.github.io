@@ -68,7 +68,7 @@ struct Over_time_effect
     ~Over_time_effect() = default;
 
     Over_time_effect(std::string name, Special_stats special_stats, double rage_gain, double damage, int interval,
-                     double duration)
+                     int duration)
         : name(std::move(name))
         , special_stats(special_stats)
         , rage_gain(rage_gain)
@@ -81,7 +81,7 @@ struct Over_time_effect
     double rage_gain;
     double damage;
     int interval;
-    double duration;
+    int duration;
 };
 
 class Hit_effect

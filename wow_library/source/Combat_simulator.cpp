@@ -8,7 +8,7 @@ constexpr double rage_factor = 15.0 / 230.6 / 2.0;
 
 constexpr double rage_from_damage_taken(double damage)
 {
-    return damage * 5 / 2 / 230.6;
+    return damage * 5.0 / 2.0 / 230.6;
 }
 
 constexpr double rage_generation(double damage)
@@ -46,8 +46,8 @@ void Combat_simulator::set_config(const Combat_simulator_config& new_config)
 {
     config = new_config;
 
-    heroic_strike_rage_cost = 15.0 - config.talents.improved_heroic_strike;
-    p_unbridled_wrath_ = config.talents.unbridled_wrath * 0.08;
+    heroic_strike_rage_cost = 15 - config.talents.improved_heroic_strike;
+    p_unbridled_wrath_ = 0.08 * config.talents.unbridled_wrath;
     execute_rage_cost_ = 15 - static_cast<int>(2.51 * config.talents.improved_execute);
 
     armor_reduction_from_spells_ = 0.0;
@@ -56,7 +56,7 @@ void Combat_simulator::set_config(const Combat_simulator_config& new_config)
     armor_reduction_from_spells_ += 505 * config.faerie_fire_feral_active;
     if (config.exposed_armor)
     {
-        armor_reduction_delayed_ = 1700 * 1.5 - 450 * config.n_sunder_armor_stacks;
+        armor_reduction_delayed_ = 2550 - 450 * config.n_sunder_armor_stacks;
     }
 
     flurry_haste_factor_ = 0.05 + 0.05 * config.talents.flurry;
@@ -95,12 +95,8 @@ void Combat_simulator::set_config(const Combat_simulator_config& new_config)
     if (config.take_periodic_damage_)
     {
         double rage_per_tick = rage_from_damage_taken(config.periodic_damage_amount_);
-        Over_time_effect rage_from_damage = {"Rage gained from damage taken",
-                                             {},
-                                             rage_per_tick,
-                                             0,
-                                             static_cast<int>(config.periodic_damage_interval_),
-                                             600};
+        Over_time_effect rage_from_damage = {"Rage gained from damage taken",  {}, rage_per_tick, 0,
+                                             config.periodic_damage_interval_, 600};
         over_time_effects_.push_back(rage_from_damage);
     }
 
@@ -311,7 +307,7 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(const Weapon_sim& w
     return hit_outcome;
 }
 
-void Combat_simulator::compute_hit_table(int weapon_skill, Special_stats special_stats, Socket weapon_hand)
+void Combat_simulator::compute_hit_table(int weapon_skill, const Special_stats& special_stats, Socket weapon_hand)
 {
     int level_difference = config.main_target_level - 60;
     int target_defence_level = config.main_target_level * 5;

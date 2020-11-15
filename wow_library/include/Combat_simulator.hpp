@@ -57,8 +57,8 @@ struct Combat_simulator_config
 
     bool take_periodic_damage_{};
     bool can_trigger_enrage_{};
-    double periodic_damage_amount_{};
-    double periodic_damage_interval_{};
+    int periodic_damage_amount_{};
+    int periodic_damage_interval_{};
     bool essence_of_the_red_{};
 
     double execute_phase_percentage_{};
@@ -235,7 +235,7 @@ public:
 
     Combat_simulator::Hit_outcome generate_hit_mh(double damage, Hit_type hit_type, bool is_overpower = false);
 
-    void compute_hit_table(int weapon_skill, Special_stats special_stats, Socket weapon_hand);
+    void compute_hit_table(int weapon_skill, const Special_stats& special_stats, Socket weapon_hand);
 
     std::vector<std::pair<double, Use_effect>> get_use_effect_order(const Character& character);
 
@@ -357,14 +357,16 @@ private:
     double flurry_uptime_mh_{};
     double flurry_uptime_oh_{};
     double heroic_strike_uptime_{};
-    double heroic_strike_rage_cost{};
+
+    int execute_rage_cost_{};
+    int heroic_strike_rage_cost{};
+
     double cleave_bonus_damage_{};
     double rage_lost_execute_batch_{};
     double rage_lost_stance_swap_{};
     double rage_lost_capped_{};
     double avg_rage_spent_executing_{};
     double p_unbridled_wrath_{};
-    double execute_rage_cost_{};
     double flurry_haste_factor_{};
     double init_server_time{};
     double dual_wield_damage_factor_;

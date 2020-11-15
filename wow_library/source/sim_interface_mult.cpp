@@ -16,13 +16,6 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult& input)
     Buffs buffs{};
     Item_optimizer item_optimizer;
 
-    Race race = get_race(input.race[0]);
-    item_optimizer.race = race;
-    item_optimizer.buffs = buffs;
-    item_optimizer.buffs_vec = input.buffs;
-    item_optimizer.ench_vec = input.enchants;
-    item_optimizer.item_setup(input.armor, input.weapons);
-
     // Combat settings
     auto temp_buffs = input.buffs;
 
@@ -32,14 +25,18 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult& input)
         temp_buffs.emplace_back("mighty_rage_potion");
     }
 
+    Race race = get_race(input.race[0]);
+    item_optimizer.race = race;
+    item_optimizer.buffs = buffs;
+    item_optimizer.buffs_vec = temp_buffs;
+    item_optimizer.ench_vec = input.enchants;
+    item_optimizer.item_setup(input.armor, input.weapons);
+
     // Simulator & Combat settings
     Combat_simulator_config config{input};
-    Combat_simulator simulator{};
-    simulator.set_config(config);
 
     std::string debug_message;
     item_optimizer.compute_combinations();
-    item_optimizer.sim_time = config.sim_time;
 
     std::cout << "init. Combinations: " << std::to_string(item_optimizer.total_combinations) << "\n";
     debug_message += "Total item combinations: " + std::to_string(item_optimizer.total_combinations) + "<br>";
@@ -176,6 +173,8 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult& input)
     size_t n_sim{};
     size_t performed_iterations{};
     double max_optimize_time = find_value(input.float_options_string, input.float_options_val, "max_optimize_time_dd");
+    Combat_simulator simulator{};
+    simulator.set_config(config);
     for (size_t i = 0; i < batches_per_iteration.size(); i++)
     {
         clock_t optimizer_start_time = clock();
