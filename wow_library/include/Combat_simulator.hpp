@@ -93,19 +93,24 @@ struct Combat_simulator_config
         double heroic_strike_damage{};
         bool cleave_if_adds{false};
         bool use_hamstring{false};
+        bool use_slam{false};
         bool use_bloodthirst{false};
         bool use_whirlwind{false};
         bool use_overpower{false};
         bool use_heroic_strike{false};
         double hamstring_cd_thresh{};
+        double slam_cd_thresh{};
         double hamstring_thresh_dd{};
         double initial_rage{};
         bool deep_wounds{false};
         bool first_hit_heroic_strike{false};
+        double slam_spam_rage{false};
+        double slam_spam_max_time{false};
     } combat;
 
     struct dpr_t
     {
+        bool compute_dpr_sl_{false};
         bool compute_dpr_bt_{false};
         bool compute_dpr_op_{false};
         bool compute_dpr_ww_{false};
@@ -127,6 +132,7 @@ struct Combat_simulator_config
         int improved_execute = 0;
         int dual_wield_specialization = 0;
         int improved_cleave = 0;
+        int improved_slam = 5;
     } talents;
 };
 
@@ -181,6 +187,38 @@ public:
         bool cleave_queued{false};
     };
 
+    struct Slam_manager
+    {
+        Slam_manager() = default;
+
+        void reset()
+        {
+            slam_queued_ = false;
+            slam_queue_time_stamp_ = 0.0;
+        };
+
+        bool is_slam_queued() { return slam_queued_; }
+
+        void queue_slam(double time_stamp)
+        {
+            slam_queued_ = true;
+            slam_queue_time_stamp_ = time_stamp;
+        }
+
+        void un_queue_slam() { slam_queued_ = false; }
+
+        double time_left(double current_time)
+        {
+            return slam_queued_ ? slam_cast_time_ - (current_time - slam_queue_time_stamp_) : 100.0;
+        }
+
+        double slam_cast_time_ = 0.0;
+
+    private:
+        bool slam_queued_{false};
+        double slam_queue_time_stamp_ = 0.0;
+    };
+
     struct Hit_outcome
     {
         Hit_outcome()
@@ -207,6 +245,9 @@ public:
 
     void overpower(Weapon_sim& main_hand_weapon, Special_stats& special_stats, double& rage,
                    Damage_sources& damage_sources, int& flurry_charges);
+
+    void slam(Weapon_sim& main_hand_weapon, Special_stats& special_stats, double& rage, Damage_sources& damage_sources,
+              int& flurry_charges);
 
     void bloodthirst(Weapon_sim& main_hand_weapon, Special_stats& special_stats, double& rage,
                      Damage_sources& damage_sources, int& flurry_charges);
@@ -235,7 +276,8 @@ public:
 
     Combat_simulator::Hit_outcome generate_hit_mh(double damage, Hit_type hit_type, bool is_overpower = false);
 
-    void compute_hit_table(int weapon_skill, const Special_stats& special_stats, Socket weapon_hand);
+    void compute_hit_table(int weapon_skill, const Special_stats& special_stats, Socket weapon_hand,
+                           Weapon_socket weapon_socket);
 
     std::vector<std::pair<double, Use_effect>> get_use_effect_order(const Character& character);
 
@@ -340,6 +382,7 @@ private:
     Time_keeper time_keeper_{};
     Buff_manager buff_manager_{};
     Ability_queue_manager ability_queue_manager{};
+    Slam_manager slam_manager{};
     std::vector<int> hist_x{};
     std::vector<int> hist_y{};
     std::string debug_topic_{};

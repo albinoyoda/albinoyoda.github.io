@@ -496,11 +496,20 @@ struct Armory
                                                                                                      0},   1.6, 70,    131,   Weapon_socket::one_hand,  Weapon_type::sword},
             };
 
-//    std::vector<Weapon> two_handed_swords_t
-//            {
-//                    {"ashkandi", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0,
-//                                                                     86.0}, 3.5, 229.0, 344.0, Weapon_socket::two_hand, Weapon_type::sword},
-//            };
+
+
+    std::vector<Weapon> two_handed_swords_t
+            {
+                    {"ashkandi,_greatsword_of_the_brotherhood", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0,
+                                                                     86.0}, 3.5, 229.0, 344.0, Weapon_socket::two_hand, Weapon_type::sword},
+                    {"the_untamed_blade", Attributes{0.0, 22.0}, Special_stats{0.0, 0.0,
+                     0.0}, 3.4, 192.0, 289.0, Weapon_socket::two_hand, Weapon_type::sword, {{"the_untamed_blade", Hit_effect::Type::stat_boost, Attributes{300, 0}, {}, 0, 8, 3.4/60.0,0}}},
+                    {"corrupted_ashbringer", Attributes{0.0, 0.0}, Special_stats{2.0, 1.0,
+                                                                                                    0.0}, 3.6, 259.0, 389.0, Weapon_socket::two_hand, Weapon_type::sword, {{"corrupted_ashbringer", Hit_effect::Type::damage_magic, {}, {}, 200, 0, 3.6/60.0,0}}},
+                    {"kalimdors_revenge", Attributes{24.0, 0.0}, Special_stats{0.0, 0.0,
+                                                                                                    0.0}, 3.2, 209.0, 315.0, Weapon_socket::two_hand, Weapon_type::sword, {{"kalimdors_revenge", Hit_effect::Type::damage_magic, {}, {}, 258, 0, 3.2/60.0,0}}},
+
+            };
 
     std::vector<Weapon> axes_t
             {
@@ -641,7 +650,7 @@ struct Armory
 
     Armor find_armor(Socket socket, const std::string &name) const;
 
-    Weapon find_weapon(const std::string &name) const;
+    Weapon find_weapon(Weapon_socket weapon_socket, const std::string &name) const;
 
     std::vector<Set_bonus> get_set_bonuses() const;
 

@@ -139,7 +139,7 @@ void Item_optimizer::extract_weapons(const std::vector<std::string>& weapon_vec)
 {
     for (const auto& weapon_name : weapon_vec)
     {
-        auto weapon = armory.find_weapon(weapon_name);
+        auto weapon = armory.find_weapon(Weapon_socket::one_hand, weapon_name);
         if (is_armor_valid(weapon.name))
         {
             if (weapon.weapon_socket == Weapon_socket::one_hand)
@@ -352,7 +352,8 @@ std::vector<Weapon> Item_optimizer::remove_weaker_weapons(const Weapon_socket we
         weapon_struct_vec.push_back(wep_struct);
     }
 
-    std::string wep_socket = weapon_socket == Weapon_socket::main_hand ? "main-hands" : "off-hands";
+    std::string wep_socket{};
+    wep_socket = wep_socket + weapon_socket;
     for (auto& wep1 : weapon_struct_vec)
     {
         if (wep1.can_be_estimated)
@@ -619,11 +620,11 @@ void Item_optimizer::fill_empty_weapons()
 {
     if (main_hands.empty())
     {
-        main_hands.emplace_back(armory.find_weapon("none"));
+        main_hands.emplace_back(armory.find_weapon(Weapon_socket::one_hand, "none"));
     }
     if (off_hands.empty())
     {
-        off_hands.emplace_back(armory.find_weapon("none"));
+        off_hands.emplace_back(armory.find_weapon(Weapon_socket::one_hand, "none"));
     }
 }
 

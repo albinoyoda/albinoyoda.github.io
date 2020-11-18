@@ -216,6 +216,45 @@ double get_character_ap_equivalent(const Special_stats& special_stats, const Wea
     return special_stats_ap + use_effects_ap + use_effects_shared_ap + hit_effects_ap;
 }
 
+double get_character_ap_equivalent(const Special_stats& special_stats, const Weapon& mh_wep, double sim_time,
+                                   const std::vector<Use_effect>& use_effects)
+{
+    double attack_power = special_stats.attack_power;
+    int mh_skill = get_skill_of_type(special_stats, mh_wep.type);
+    double hit_crit_skill_ap = get_hit_crit_skill_ap_equivalent(special_stats, mh_skill);
+
+    double mh_ap = ((mh_wep.max_damage + mh_wep.min_damage) / 2 + special_stats.bonus_damage) / mh_wep.swing_speed * 14;
+
+    double special_stats_ap = attack_power + hit_crit_skill_ap + mh_ap;
+
+    double use_effects_ap = 0;
+    double use_effects_shared_ap = 0;
+    for (const auto& use_effect : use_effects)
+    {
+        double use_effect_ap = get_use_effect_ap_equivalent(use_effect, special_stats, special_stats_ap, sim_time);
+        if (use_effect.effect_socket == Use_effect::Effect_socket ::shared)
+        {
+            if (use_effect_ap > use_effects_shared_ap)
+            {
+                use_effects_shared_ap = use_effect_ap;
+            }
+        }
+        else
+        {
+            use_effects_ap += use_effect_ap;
+        }
+    }
+
+    double hit_effects_ap = 0;
+    for (const auto& hit_effect : mh_wep.hit_effects)
+    {
+        double hit_effect_ap = get_hit_effect_ap_equivalent(hit_effect, special_stats_ap, mh_wep.swing_speed, 1.0);
+        hit_effects_ap += hit_effect_ap;
+    }
+
+    return special_stats_ap + use_effects_ap + use_effects_shared_ap + hit_effects_ap;
+}
+
 double get_hit_effect_ap_equivalent(const Hit_effect& hit_effect, double total_ap, double swing_speed, double factor)
 {
     double hit_effects_ap = 0.0;
@@ -226,7 +265,8 @@ double get_hit_effect_ap_equivalent(const Hit_effect& hit_effect, double total_a
     }
     else if (hit_effect.type == Hit_effect::Type::extra_hit)
     {
-        hit_effects_ap += hit_effect.probability * swing_speed * crit_w * factor;
+        // Estimate extra hit as 75% the value of crit, since abilities might reset swing to early
+        hit_effects_ap += 100.0 * hit_effect.probability * swing_speed * crit_w * factor * 0.75;
     }
     else if (hit_effect.type == Hit_effect::Type::stat_boost)
     {

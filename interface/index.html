@@ -194,13 +194,13 @@
 <body style="background-color:#bfbfbf;"
       onload="openTab('event', 'Simulator');open_armor();show_div('cleave_if_adds', 'cleave_div');
       show_div('use_hamstring', 'hamstring_div');show_div('multi_target_mode', 'multi_target_div');
-      show_div('periodic_damage', 'periodic_damage_div');show_div('ability_queue', 'ability_queue_div')">
+      show_div('periodic_damage', 'periodic_damage_div');show_div('ability_queue', 'ability_queue_div');
+      show_div('dual_wield_mode', 'dual_wield_div')">
 
 <div class="tab">
     <button class="tablinks" onclick="openTab(event, 'Simulator')">Simulator</button>
     <button class="tablinks" onclick="openTab(event, 'Discord')">Discord/Patch-notes</button>
     <button class="tablinks" onclick="openTab(event, 'About')">About</button>
-    <!--    <button class="tablinks" onclick="openTab(event, 'Armory')">Equations</button>-->
 </div>
 
 <div id="Discord" class="tabcontent">
@@ -289,7 +289,7 @@
             <button onclick="load_p5pvebis()">P5 PvE-BiS</button>
             <button onclick="load_p6pvebis()">P6 PvE-BiS</button>
             <br><br>
-            <!--armor begin-->
+            <!--armor begin1-->
             <span class="left_select">helmet</span><span class="middle_select">neck</span><span class="right_select">shoulder</span><br>
             <select id="helmet_dd" class="item-select">
                 <option value="none" selected disabled></option>
@@ -640,150 +640,180 @@
 
             <p></p>
 
+            <!--armor stop1-->
+            <p></p>
+
             <p class="select-title">Select weapons:</p><br>
-            <select id="main_hand_dd" class="weapon-select">
-                <option value="none" selected disabled></option>
-                <option value="none" disabled> --- SWORDS ---</option>
-                <option value="ancient_qiraji_ripper">Ancient qiraji ripper</option>
-                <option value="assassination_blade">Assassination blade</option>
-                <option value="blackguard">Blackguard</option>
-                <option value="brutality_blade">Brutality blade</option>
-                <option value="chromatically_tempered_sword">Chromatically tempered sword</option>
-                <option value="dal_rends_sacred_charge">Dal rends sacred charge</option>
-                <option value="gressil_dawn_of_ruin">Gressil dawn of ruin</option>
-                <option value="iblis_blade_of_the_fallen_seraph">Iblis blade of the fallen seraph</option>
-                <option value="maladath">Maladath</option>
-                <option value="mirahs_song">Mirahs song</option>
-                <option value="nightmare_blade">Nightmare blade</option>
-                <option value="protectors_sword">Protectors sword</option>
-                <option value="quel_serrar">Quel serrar</option>
-                <option value="r14_longsword">R14 longsword</option>
-                <option value="r14_swiftblade">R14 swiftblade</option>
-                <option value="ravencrests_legacy">Ravencrests legacy</option>
-                <option value="ravenholdt_slicer">Ravenholdt slicer</option>
-                <option value="teebus_blazing_longsword">Teebus blazing longsword</option>
-                <option value="the_hungering_cold">The hungering cold</option>
-                <option value="thrash_blade">Thrash blade</option>
-                <option value="thunderfury_blessed_blade">Thunderfury blessed blade</option>
-                <option value="viskag">Viskag</option>
-                <option value="warblade_hakkari_mh">Warblade hakkari mh</option>
-                <option value="widows_remorse">Widows remorse</option>
-                <option value="zulian_slicer">Zulian slicer</option>
-                <option value="none" disabled> --- AXES ---</option>
-                <option value="ancient_hakkari_manslayer">Ancient hakkari manslayer</option>
-                <option value="axe_of_the_deep_woods">Axe of the deep woods</option>
-                <option value="blessed_qiraji_war_axe">Blessed qiraji war axe</option>
-                <option value="bone_slicing_hatchet">Bone slicing hatchet</option>
-                <option value="crul_shorukh_edge_of_chaos">Crul shorukh edge of chaos</option>
-                <option value="deathbringer">Deathbringer</option>
-                <option value="dooms_edge">Dooms edge</option>
-                <option value="flurry_axe">Flurry axe</option>
-                <option value="frostbite">Frostbite</option>
-                <option value="hatchet_of_sundered_bone">Hatchet of sundered bone</option>
-                <option value="r14_handaxe">R14 handaxe</option>
-                <option value="sickle_on_unyielding_strength">Sickle on unyielding strength</option>
-                <option value="zulian_hacker_of_strength">Zulian hacker of strength</option>
-                <option value="zulian_hacker_of_the_tiger">Zulian hacker of the tiger</option>
-                <option value="none" disabled> --- DAGGERS ---</option>
-                <option value="alcors_sunrazor">Alcors sunrazor</option>
-                <option value="blessed_qiraji_pugio">Blessed qiraji pugio</option>
-                <option value="core_hound_tooth">Core hound tooth</option>
-                <option value="deaths_sting">Deaths sting</option>
-                <option value="dragonfang_blade">Dragonfang blade</option>
-                <option value="fang_of_the_faceless">Fang of the faceless</option>
-                <option value="finkles_skinner">Finkles skinner</option>
-                <option value="harbinger_of_doom">Harbinger of doom</option>
-                <option value="kingsfall">Kingsfall</option>
-                <option value="maexxnas_fang">Maexxnas fang</option>
-                <option value="perditions_blade">Perditions blade</option>
-                <option value="r14_dagger">R14 dagger</option>
-                <option value="none" disabled> --- MACES ---</option>
-                <option value="anubisath_warhammer">Anubisath warhammer</option>
-                <option value="blessed_qiraji_warhammer">Blessed qiraji warhammer</option>
-                <option value="ebon_hand">Ebon hand</option>
-                <option value="empyrean_demolisher">Empyrean demolisher</option>
-                <option value="ironfoe">Ironfoe</option>
-                <option value="mass_of_mcgowan">Mass of mcgowan</option>
-                <option value="misplaced_servo_arm">Misplaced servo arm</option>
-                <option value="persuader">Persuader</option>
-                <option value="r14_mace">R14 mace</option>
-                <option value="sand_polished_hammer">Sand polished hammer</option>
-                <option value="sceptre_of_smiting">Sceptre of smiting</option>
-                <option value="spineshatter">Spineshatter</option>
-                <option value="stormstike_hammer">Stormstike hammer</option>
-                <option value="the_castigator">The castigator</option>
-                <option value="none" disabled> --- FISTS ---</option>
-                <option value="claw_of_the_black_drake">Claw of the black drake</option>
-                <option value="silithid_claw">Silithid claw</option>
-            </select>
-            <select id="off_hand_dd" class="weapon-select">
-                <option value="none" selected disabled></option>
-                <option value="none" disabled> --- SWORDS ---</option>
-                <option value="ancient_qiraji_ripper">Ancient qiraji ripper</option>
-                <option value="assassination_blade">Assassination blade</option>
-                <option value="blackguard">Blackguard</option>
-                <option value="brutality_blade">Brutality blade</option>
-                <option value="chromatically_tempered_sword">Chromatically tempered sword</option>
-                <option value="dal_rends_tribal_guardian">Dal rends tribal guardian</option>
-                <option value="gressil_dawn_of_ruin">Gressil dawn of ruin</option>
-                <option value="iblis_blade_of_the_fallen_seraph">Iblis blade of the fallen seraph</option>
-                <option value="maladath">Maladath</option>
-                <option value="mirahs_song">Mirahs song</option>
-                <option value="nightmare_blade">Nightmare blade</option>
-                <option value="protectors_sword">Protectors sword</option>
-                <option value="r14_longsword">R14 longsword</option>
-                <option value="r14_swiftblade">R14 swiftblade</option>
-                <option value="ravencrests_legacy">Ravencrests legacy</option>
-                <option value="ravenholdt_slicer">Ravenholdt slicer</option>
-                <option value="the_hungering_cold">The hungering cold</option>
-                <option value="thrash_blade">Thrash blade</option>
-                <option value="thunderfury_blessed_blade">Thunderfury blessed blade</option>
-                <option value="viskag">Viskag</option>
-                <option value="warblade_hakkari_oh">Warblade hakkari oh</option>
-                <option value="widows_remorse">Widows remorse</option>
-                <option value="zulian_slicer">Zulian slicer</option>
-                <option value="none" disabled> --- AXES ---</option>
-                <option value="ancient_hakkari_manslayer">Ancient hakkari manslayer</option>
-                <option value="axe_of_the_deep_woods">Axe of the deep woods</option>
-                <option value="blessed_qiraji_war_axe">Blessed qiraji war axe</option>
-                <option value="bone_slicing_hatchet">Bone slicing hatchet</option>
-                <option value="crul_shorukh_edge_of_chaos">Crul shorukh edge of chaos</option>
-                <option value="deathbringer">Deathbringer</option>
-                <option value="dooms_edge">Dooms edge</option>
-                <option value="flurry_axe">Flurry axe</option>
-                <option value="frostbite">Frostbite</option>
-                <option value="hatchet_of_sundered_bone">Hatchet of sundered bone</option>
-                <option value="r14_handaxe">R14 handaxe</option>
-                <option value="sickle_on_unyielding_strength">Sickle on unyielding strength</option>
-                <option value="zulian_hacker_of_strength">Zulian hacker of strength</option>
-                <option value="zulian_hacker_of_the_tiger">Zulian hacker of the tiger</option>
-                <option value="none" disabled> --- DAGGERS ---</option>
-                <option value="alcors_sunrazor">Alcors sunrazor</option>
-                <option value="blessed_qiraji_pugio">Blessed qiraji pugio</option>
-                <option value="core_hound_tooth">Core hound tooth</option>
-                <option value="deaths_sting">Deaths sting</option>
-                <option value="dragonfang_blade">Dragonfang blade</option>
-                <option value="fang_of_the_faceless">Fang of the faceless</option>
-                <option value="harbinger_of_doom">Harbinger of doom</option>
-                <option value="kingsfall">Kingsfall</option>
-                <option value="maexxnas_fang">Maexxnas fang</option>
-                <option value="perditions_blade">Perditions blade</option>
-                <option value="r14_dagger">R14 dagger</option>
-                <option value="none" disabled> --- MACES ---</option>
-                <option value="anubisath_warhammer">Anubisath warhammer</option>
-                <option value="blessed_qiraji_warhammer">Blessed qiraji warhammer</option>
-                <option value="ebon_hand">Ebon hand</option>
-                <option value="mass_of_mcgowan">Mass of mcgowan</option>
-                <option value="misplaced_servo_arm">Misplaced servo arm</option>
-                <option value="r14_mace">R14 mace</option>
-                <option value="sand_polished_hammer">Sand polished hammer</option>
-                <option value="sceptre_of_smiting">Sceptre of smiting</option>
-                <option value="stormstike_hammer">Stormstike hammer</option>
-                <option value="the_castigator">The castigator</option>
-                <option value="none" disabled> --- FISTS ---</option>
-                <option value="claw_of_the_frost_wyrm">Claw of the frost wyrm</option>
-            </select>
-            <!--armor stop-->
+            <input type="checkbox" id="dual_wield_mode" checked
+                   onclick="unique_checkboxes('dual_wield_mode', ['dual_wield_mode', 'two_hand_mode']);
+                        unique_div(['dual_wield_div'],['two_hand_div'])">
+            <label for="dual_wield_mode"> <b>Dual Wield</b></label>
+
+            <input type="checkbox" id="two_hand_mode" onclick="unique_checkboxes('two_hand_mode', ['dual_wield_mode', 'two_hand_mode']);
+                        unique_div(['two_hand_div'],['dual_wield_div'])">
+            <label for="two_hand_mode"> <b>Two Hand</b></label><br>
+
+            <div id="dual_wield_div" style="display:none">
+                <!--armor begin2-->
+                <select id="main_hand_dd" class="weapon-select">
+                    <option value="none" selected disabled></option>
+                    <option value="none" disabled> --- SWORDS ---</option>
+                    <option value="ancient_qiraji_ripper">Ancient qiraji ripper</option>
+                    <option value="assassination_blade">Assassination blade</option>
+                    <option value="blackguard">Blackguard</option>
+                    <option value="brutality_blade">Brutality blade</option>
+                    <option value="chromatically_tempered_sword">Chromatically tempered sword</option>
+                    <option value="dal_rends_sacred_charge">Dal rends sacred charge</option>
+                    <option value="gressil_dawn_of_ruin">Gressil dawn of ruin</option>
+                    <option value="iblis_blade_of_the_fallen_seraph">Iblis blade of the fallen seraph</option>
+                    <option value="maladath">Maladath</option>
+                    <option value="mirahs_song">Mirahs song</option>
+                    <option value="nightmare_blade">Nightmare blade</option>
+                    <option value="protectors_sword">Protectors sword</option>
+                    <option value="quel_serrar">Quel serrar</option>
+                    <option value="r14_longsword">R14 longsword</option>
+                    <option value="r14_swiftblade">R14 swiftblade</option>
+                    <option value="ravencrests_legacy">Ravencrests legacy</option>
+                    <option value="ravenholdt_slicer">Ravenholdt slicer</option>
+                    <option value="teebus_blazing_longsword">Teebus blazing longsword</option>
+                    <option value="the_hungering_cold">The hungering cold</option>
+                    <option value="thrash_blade">Thrash blade</option>
+                    <option value="thunderfury_blessed_blade">Thunderfury blessed blade</option>
+                    <option value="viskag">Viskag</option>
+                    <option value="warblade_hakkari_mh">Warblade hakkari mh</option>
+                    <option value="widows_remorse">Widows remorse</option>
+                    <option value="zulian_slicer">Zulian slicer</option>
+                    <option value="none" disabled> --- AXES ---</option>
+                    <option value="ancient_hakkari_manslayer">Ancient hakkari manslayer</option>
+                    <option value="axe_of_the_deep_woods">Axe of the deep woods</option>
+                    <option value="blessed_qiraji_war_axe">Blessed qiraji war axe</option>
+                    <option value="bone_slicing_hatchet">Bone slicing hatchet</option>
+                    <option value="crul_shorukh_edge_of_chaos">Crul shorukh edge of chaos</option>
+                    <option value="deathbringer">Deathbringer</option>
+                    <option value="dooms_edge">Dooms edge</option>
+                    <option value="flurry_axe">Flurry axe</option>
+                    <option value="frostbite">Frostbite</option>
+                    <option value="hatchet_of_sundered_bone">Hatchet of sundered bone</option>
+                    <option value="r14_handaxe">R14 handaxe</option>
+                    <option value="sickle_on_unyielding_strength">Sickle on unyielding strength</option>
+                    <option value="zulian_hacker_of_strength">Zulian hacker of strength</option>
+                    <option value="zulian_hacker_of_the_tiger">Zulian hacker of the tiger</option>
+                    <option value="none" disabled> --- DAGGERS ---</option>
+                    <option value="alcors_sunrazor">Alcors sunrazor</option>
+                    <option value="blessed_qiraji_pugio">Blessed qiraji pugio</option>
+                    <option value="core_hound_tooth">Core hound tooth</option>
+                    <option value="deaths_sting">Deaths sting</option>
+                    <option value="dragonfang_blade">Dragonfang blade</option>
+                    <option value="fang_of_the_faceless">Fang of the faceless</option>
+                    <option value="finkles_skinner">Finkles skinner</option>
+                    <option value="harbinger_of_doom">Harbinger of doom</option>
+                    <option value="kingsfall">Kingsfall</option>
+                    <option value="maexxnas_fang">Maexxnas fang</option>
+                    <option value="perditions_blade">Perditions blade</option>
+                    <option value="r14_dagger">R14 dagger</option>
+                    <option value="none" disabled> --- MACES ---</option>
+                    <option value="anubisath_warhammer">Anubisath warhammer</option>
+                    <option value="blessed_qiraji_warhammer">Blessed qiraji warhammer</option>
+                    <option value="ebon_hand">Ebon hand</option>
+                    <option value="empyrean_demolisher">Empyrean demolisher</option>
+                    <option value="ironfoe">Ironfoe</option>
+                    <option value="mass_of_mcgowan">Mass of mcgowan</option>
+                    <option value="misplaced_servo_arm">Misplaced servo arm</option>
+                    <option value="persuader">Persuader</option>
+                    <option value="r14_mace">R14 mace</option>
+                    <option value="sand_polished_hammer">Sand polished hammer</option>
+                    <option value="sceptre_of_smiting">Sceptre of smiting</option>
+                    <option value="spineshatter">Spineshatter</option>
+                    <option value="stormstike_hammer">Stormstike hammer</option>
+                    <option value="the_castigator">The castigator</option>
+                    <option value="none" disabled> --- FISTS ---</option>
+                    <option value="claw_of_the_black_drake">Claw of the black drake</option>
+                    <option value="silithid_claw">Silithid claw</option>
+                </select>
+                <select id="off_hand_dd" class="weapon-select">
+                    <option value="none" selected disabled></option>
+                    <option value="none" disabled> --- SWORDS ---</option>
+                    <option value="ancient_qiraji_ripper">Ancient qiraji ripper</option>
+                    <option value="assassination_blade">Assassination blade</option>
+                    <option value="blackguard">Blackguard</option>
+                    <option value="brutality_blade">Brutality blade</option>
+                    <option value="chromatically_tempered_sword">Chromatically tempered sword</option>
+                    <option value="dal_rends_tribal_guardian">Dal rends tribal guardian</option>
+                    <option value="gressil_dawn_of_ruin">Gressil dawn of ruin</option>
+                    <option value="iblis_blade_of_the_fallen_seraph">Iblis blade of the fallen seraph</option>
+                    <option value="maladath">Maladath</option>
+                    <option value="mirahs_song">Mirahs song</option>
+                    <option value="nightmare_blade">Nightmare blade</option>
+                    <option value="protectors_sword">Protectors sword</option>
+                    <option value="r14_longsword">R14 longsword</option>
+                    <option value="r14_swiftblade">R14 swiftblade</option>
+                    <option value="ravencrests_legacy">Ravencrests legacy</option>
+                    <option value="ravenholdt_slicer">Ravenholdt slicer</option>
+                    <option value="the_hungering_cold">The hungering cold</option>
+                    <option value="thrash_blade">Thrash blade</option>
+                    <option value="thunderfury_blessed_blade">Thunderfury blessed blade</option>
+                    <option value="viskag">Viskag</option>
+                    <option value="warblade_hakkari_oh">Warblade hakkari oh</option>
+                    <option value="widows_remorse">Widows remorse</option>
+                    <option value="zulian_slicer">Zulian slicer</option>
+                    <option value="none" disabled> --- AXES ---</option>
+                    <option value="ancient_hakkari_manslayer">Ancient hakkari manslayer</option>
+                    <option value="axe_of_the_deep_woods">Axe of the deep woods</option>
+                    <option value="blessed_qiraji_war_axe">Blessed qiraji war axe</option>
+                    <option value="bone_slicing_hatchet">Bone slicing hatchet</option>
+                    <option value="crul_shorukh_edge_of_chaos">Crul shorukh edge of chaos</option>
+                    <option value="deathbringer">Deathbringer</option>
+                    <option value="dooms_edge">Dooms edge</option>
+                    <option value="flurry_axe">Flurry axe</option>
+                    <option value="frostbite">Frostbite</option>
+                    <option value="hatchet_of_sundered_bone">Hatchet of sundered bone</option>
+                    <option value="r14_handaxe">R14 handaxe</option>
+                    <option value="sickle_on_unyielding_strength">Sickle on unyielding strength</option>
+                    <option value="zulian_hacker_of_strength">Zulian hacker of strength</option>
+                    <option value="zulian_hacker_of_the_tiger">Zulian hacker of the tiger</option>
+                    <option value="none" disabled> --- DAGGERS ---</option>
+                    <option value="alcors_sunrazor">Alcors sunrazor</option>
+                    <option value="blessed_qiraji_pugio">Blessed qiraji pugio</option>
+                    <option value="core_hound_tooth">Core hound tooth</option>
+                    <option value="deaths_sting">Deaths sting</option>
+                    <option value="dragonfang_blade">Dragonfang blade</option>
+                    <option value="fang_of_the_faceless">Fang of the faceless</option>
+                    <option value="harbinger_of_doom">Harbinger of doom</option>
+                    <option value="kingsfall">Kingsfall</option>
+                    <option value="maexxnas_fang">Maexxnas fang</option>
+                    <option value="perditions_blade">Perditions blade</option>
+                    <option value="r14_dagger">R14 dagger</option>
+                    <option value="none" disabled> --- MACES ---</option>
+                    <option value="anubisath_warhammer">Anubisath warhammer</option>
+                    <option value="blessed_qiraji_warhammer">Blessed qiraji warhammer</option>
+                    <option value="ebon_hand">Ebon hand</option>
+                    <option value="mass_of_mcgowan">Mass of mcgowan</option>
+                    <option value="misplaced_servo_arm">Misplaced servo arm</option>
+                    <option value="r14_mace">R14 mace</option>
+                    <option value="sand_polished_hammer">Sand polished hammer</option>
+                    <option value="sceptre_of_smiting">Sceptre of smiting</option>
+                    <option value="stormstike_hammer">Stormstike hammer</option>
+                    <option value="the_castigator">The castigator</option>
+                    <option value="none" disabled> --- FISTS ---</option>
+                    <option value="claw_of_the_frost_wyrm">Claw of the frost wyrm</option>
+                </select>
+                <!--armor stop2-->
+            </div>
+
+            <div id="two_hand_div" style="display:none">
+                <!--armor begin3-->
+                <select id="two_hand_dd" class="weapon-select">
+                    <option value="none" selected disabled></option>
+                    <option value="none" disabled> --- TWO_HANDED_SWORDS ---</option>
+                    <option value="ashkandi,_greatsword_of_the_brotherhood">Ashkandi, greatsword of the brotherhood
+                    </option>
+                    <option value="corrupted_ashbringer">Corrupted ashbringer</option>
+                    <option value="kalimdors_revenge">Kalimdors revenge</option>
+                    <option value="the_untamed_blade">The untamed blade</option>
+                </select>
+                <!--armor stop3-->
+            </div>
+
 
         </div>
         <div id="armor_multiple" style="display:none">
@@ -798,7 +828,7 @@
             The optimization takes between: 1-"Max optimization time" seconds. <br>
             If you selected a lot of items leave it running in another tab<br><br>
 
-            <!--armor begin2-->
+            <!--armor begin4-->
             <span class="left_select">Helmet</span><span class="middle_select">Neck</span><span class="right_select">Shoulder</span><br>
             <select id="helmet_dd_mult" size="10" class="item-select" multiple>
                 <option value="circlet_of_restless_dreams">Circlet of restless dreams</option>
@@ -1118,6 +1148,11 @@
                 <option value="warblade_hakkari_oh">Warblade hakkari oh</option>
                 <option value="widows_remorse">Widows remorse</option>
                 <option value="zulian_slicer">Zulian slicer</option>
+                <option value="none" disabled> --- TWO_HANDED_SWORDS ---</option>
+                <option value="ashkandi,_greatsword_of_the_brotherhood">Ashkandi, greatsword of the brotherhood</option>
+                <option value="corrupted_ashbringer">Corrupted ashbringer</option>
+                <option value="kalimdors_revenge">Kalimdors revenge</option>
+                <option value="the_untamed_blade">The untamed blade</option>
                 <option value="none" disabled> --- AXES ---</option>
                 <option value="ancient_hakkari_manslayer">Ancient hakkari manslayer</option>
                 <option value="axe_of_the_deep_woods">Axe of the deep woods</option>
@@ -1166,10 +1201,10 @@
                 <option value="claw_of_the_frost_wyrm">Claw of the frost wyrm</option>
                 <option value="silithid_claw">Silithid claw</option>
             </select>
-            <!--armor stop2-->
+            <!--armor stop4-->
 
         </div>
-        <br><br>
+        <br>
 
         <p class="select-title">Select mode:</p><br>
         <input type="checkbox" id="normal_mode" checked
@@ -1485,6 +1520,17 @@
             <input type="number" id="whirlwind_bt_cooldown_thresh_dd" name="quantity" min="0" max="6" value="1.5"><br>
         </div>
 
+        <input type="checkbox" id="use_slam" checked onclick="show_div('use_slam', 'slam_div')">
+        <label for="use_slam"><b> Use slam</b></label><br>
+        <div class="description" id="slam_div">
+            <label for="slam_spam_rage_dd">Spam slam when rage is above:</label>
+            <input type="number" id="slam_spam_rage_dd" name="quantity" min="0" max="100" value="50"><br>
+            <label for="slam_cd_thresh_dd">Cast slam when bloodthirst/whirlwind CD is above:</label>
+            <input type="number" id="slam_cd_thresh_dd" name="quantity" min="0" max="6.0" value="2.0"><br>
+            <label for="slam_spam_max_time_dd">Cast slam when weapon swing timer is greater than:</label>
+            <input type="number" id="slam_spam_max_time_dd" name="quantity" min="1.0" max="4.0" value="1.5"><br>
+        </div>
+
         <input type="checkbox" id="use_overpower" checked onclick="show_div('use_overpower', 'overpower_div')">
         <label for="use_overpower"><b> Use overpower</b></label><br>
         <div class="description" id="overpower_div">
@@ -1774,7 +1820,7 @@
         "boots_dd", "ring1_dd", "ring2_dd", "trinket1_dd", "trinket2_dd", "ranged_dd"];
     let armor_input = [];
 
-    let weapons = ["main_hand_dd", "off_hand_dd"];
+    let weapons = ["main_hand_dd", "off_hand_dd", "two_hand_dd"];
     let weapons_input = [];
 
     let armor_mult = ["helmet_dd_mult", "neck_dd_mult", "shoulder_dd_mult", "back_dd_mult",
@@ -1797,14 +1843,15 @@
         "overpower_ww_cooldown_thresh_dd", "hamstring_cd_thresh_dd", "initial_rage_dd", "hamstring_thresh_dd",
         "max_optimize_time_dd", "number_of_extra_targets_dd", "extra_target_armor_dd", "extra_target_level_dd",
         "periodic_damage_interval_dd", "periodic_damage_amount_dd", "execute_phase_percentage_dd",
-        "re_queue_abilities_dd", "stat_weight_skill_dd", "stat_weight_mh_speed_dd", "stat_weight_oh_speed_dd"];
+        "re_queue_abilities_dd", "stat_weight_skill_dd", "stat_weight_mh_speed_dd", "stat_weight_oh_speed_dd",
+        "slam_spam_max_time_dd", "slam_cd_thresh_dd", "slam_spam_rage_dd"];
 
     let sim_options = ["faerie_fire", "exposed_armor", "curse_of_recklessness", "death_wish", "enable_blood_fury",
         "recklessness", "mighty_rage_potion", "debug_on", "use_bt_in_exec_phase", "use_hs_in_exec_phase",
         "cleave_if_adds", "use_hamstring", "use_bloodthirst", "use_whirlwind", "use_overpower", "use_heroic_strike",
         "item_strengths", "wep_strengths", "deep_wounds", "heroic_strike_aq", "compute_dpr", "talents_stat_weights",
         "multi_target_mode", "essence_of_the_red", "periodic_damage", "can_trigger_enrage", "first_global_sunder",
-        "ability_queue", "first_hit_heroic_strike"];
+        "ability_queue", "first_hit_heroic_strike", "use_slam"];
 
     let stat_weigths = ["stat_weight_hit", "stat_weight_crit", "stat_weight_haste",
         "stat_weight_extra_hit", "stat_weight_skill", "stat_weight_mh_speed", "stat_weight_oh_speed"];
@@ -2162,7 +2209,11 @@
         weapons_input = [];
         for (let i = 0; i < weapons.length; i++) {
             let temp = document.getElementById(weapons[i]);
-            weapons_input.push(temp.options[temp.selectedIndex].value);
+            if (temp.selectedIndex === -1) {
+                weapons_input.push("none");
+            } else {
+                weapons_input.push(temp.options[temp.selectedIndex].value);
+            }
         }
 
         armor_input_mult = [];
@@ -2242,8 +2293,11 @@
         }
 
         let weapons_vec = new Module.StringList();
-        for (let wep of weapons_input) {
-            weapons_vec.push_back(wep);
+        if (document.getElementById("two_hand_mode").checked) {
+            weapons_vec.push_back(weapons_input[2]);
+        } else {
+            weapons_vec.push_back(weapons_input[0]);
+            weapons_vec.push_back(weapons_input[1]);
         }
 
         let compare_armor_vec = new Module.StringList();
@@ -2375,6 +2429,8 @@
             };
 
             let result = obj.simulate(wow_input);
+
+            obj.delete();
 
             let mean_dps = [];
             let std_dps = [];
@@ -3106,3 +3162,4 @@
     }
 </script>
 </body>
+</html>

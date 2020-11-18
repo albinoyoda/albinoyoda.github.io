@@ -15,10 +15,7 @@ public:
         return internal_swing_timer < 0.0;
     }
 
-    constexpr double swing(double attack_power) const
-    {
-        return average_damage + attack_power * swing_speed / 14;
-    }
+    constexpr double swing(double attack_power) const { return average_damage + attack_power * swing_speed / 14; }
 
     constexpr double normalized_swing(double attack_power)
     {
@@ -32,10 +29,6 @@ public:
         average_damage = (min_damage + max_damage) / 2;
     }
 
-    double random_swing(double attack_power);
-
-    double random_normalized_swing(double attack_power);
-
     double swing_speed;
     double normalized_swing_speed;
     double internal_swing_timer;
@@ -44,8 +37,9 @@ public:
     double average_damage;
     Socket socket;
     Weapon_type weapon_type;
+    Weapon_socket weapon_socket;
     std::vector<Hit_effect> hit_effects;
     std::string socket_name;
 };
 
-#endif //WOW_SIMULATOR_WEAPON_SIM_HPP
+#endif // WOW_SIMULATOR_WEAPON_SIM_HPP

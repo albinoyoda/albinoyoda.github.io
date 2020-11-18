@@ -12,7 +12,7 @@ if (EMSCRIPTEN)
     )
 
     target_link_libraries(wow_interface wow_library)
-    set_target_properties(wow_interface PROPERTIES LINK_FLAGS "-s ERROR_ON_UNDEFINED_SYMBOLS=0 -s DEMANGLE_SUPPORT=1 -s TOTAL_MEMORY=640MB -s ASSERTIONS=1 --bind")
+    set_target_properties(wow_interface PROPERTIES LINK_FLAGS "-s ERROR_ON_UNDEFINED_SYMBOLS=0 -s DEMANGLE_SUPPORT=1 -s TOTAL_MEMORY=640MB -s ALLOW_MEMORY_GROWTH=1 -s ASSERTIONS=1 --bind")
 
 else ()
 

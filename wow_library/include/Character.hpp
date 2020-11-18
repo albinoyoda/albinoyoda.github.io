@@ -64,6 +64,7 @@ public:
             if (socket == wep.socket)
             {
                 wep.enchant = Enchant{type};
+                return;
             }
         }
         for (auto& item : armor)
@@ -80,19 +81,28 @@ public:
 
     void add_weapon_buff(const Socket socket, const Weapon_buff& buff)
     {
-        if (socket == Socket::main_hand)
+        for (auto& wep : weapons)
         {
-            weapons[0].buff = buff;
-        }
-        else if (socket == Socket::off_hand)
-        {
-            if (weapons.size() <= 1)
+            if (socket == wep.socket)
             {
-                std::cout << "cant buff offhand with only 1 weapon equipped \n";
-                assert(false);
+                wep.buff = buff;
+                return;
             }
-            weapons[1].buff = buff;
         }
+    }
+
+    bool is_dual_wield() const { return weapons.size() == 2; }
+
+    bool has_weapon_of_type(Weapon_type weapon_type) const
+    {
+        for (const auto& wep : weapons)
+        {
+            if (wep.type == weapon_type)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     bool has_item(const std::string& item_name)

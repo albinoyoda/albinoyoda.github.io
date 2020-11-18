@@ -130,7 +130,9 @@ void item_upgrades_wep(std::string& item_strengths_string, Character character_n
                        double dps_sample_std, Weapon_socket weapon_socket)
 {
     std::string dummy;
-    Socket socket = (weapon_socket == Weapon_socket::main_hand) ? Socket::main_hand : Socket::off_hand;
+    Socket socket = ((weapon_socket == Weapon_socket::main_hand) || (weapon_socket == Weapon_socket::two_hand)) ?
+                        Socket::main_hand :
+                        Socket::off_hand;
     item_strengths_string =
         item_strengths_string + socket + ": " + "<b>" + character_new.get_weapon_from_socket(socket).name + "</b>";
     auto items = armory.get_weapon_in_socket(weapon_socket);
@@ -323,26 +325,27 @@ std::string get_character_stat(const Character& character)
     out_string += print_stat("Crit (spellbook): ", character.total_special_stats.critical_strike);
     out_string += print_stat("Attack Power: ", character.total_special_stats.attack_power);
     out_string += print_stat("Haste factor: ", 1 + character.total_special_stats.haste);
-    if (character.weapons[0].type == Weapon_type::sword || character.weapons[1].type == Weapon_type::sword)
+    if (character.has_weapon_of_type(Weapon_type::sword))
     {
         out_string += print_stat("Sword skill: ", character.total_special_stats.sword_skill);
     }
-    if (character.weapons[0].type == Weapon_type::axe || character.weapons[1].type == Weapon_type::axe)
+    if (character.has_weapon_of_type(Weapon_type::axe))
     {
         out_string += print_stat("Axe skill: ", character.total_special_stats.axe_skill);
     }
-    if (character.weapons[0].type == Weapon_type::dagger || character.weapons[1].type == Weapon_type::dagger)
+    if (character.has_weapon_of_type(Weapon_type::dagger))
     {
         out_string += print_stat("Dagger skill: ", character.total_special_stats.dagger_skill);
     }
-    if (character.weapons[0].type == Weapon_type::mace || character.weapons[1].type == Weapon_type::mace)
+    if (character.has_weapon_of_type(Weapon_type::mace))
     {
         out_string += print_stat("Mace skill: ", character.total_special_stats.mace_skill);
     }
-    if (character.weapons[0].type == Weapon_type::unarmed || character.weapons[1].type == Weapon_type::unarmed)
+    if (character.has_weapon_of_type(Weapon_type::unarmed))
     {
         out_string += print_stat("Unarmed skill: ", character.total_special_stats.fist_skill);
     }
+
     out_string += "<br />";
 
     out_string += "Set bonuses:<br />";
@@ -376,7 +379,15 @@ Character character_setup(const Armory& armory, const std::string& race, const s
     character.equip_armor(armory.find_armor(Socket::trinket, armor_vec[13]));
     character.equip_armor(armory.find_armor(Socket::ranged, armor_vec[14]));
 
-    character.equip_weapon(armory.find_weapon(weapons_vec[0]), armory.find_weapon(weapons_vec[1]));
+    if (weapons_vec.size() > 1)
+    {
+        character.equip_weapon(armory.find_weapon(Weapon_socket::one_hand, weapons_vec[0]),
+                               armory.find_weapon(Weapon_socket::one_hand, weapons_vec[1]));
+    }
+    else
+    {
+        character.equip_weapon(armory.find_weapon(Weapon_socket::two_hand, weapons_vec[0]));
+    }
 
     armory.add_enchants_to_character(character, ench_vec);
     armory.add_buffs_to_character(character, buffs_vec);
@@ -420,20 +431,20 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     for (const auto& wep : character.weapons)
     {
         simulator.compute_hit_table(get_weapon_skill(character.total_special_stats, wep.type),
-                                    character.total_special_stats, wep.socket);
+                                    character.total_special_stats, wep.socket, wep.weapon_socket);
     }
-
+    const bool is_two_handed = !character.is_dual_wield();
     const auto yellow_ht = simulator.get_hit_probabilities_yellow();
     const auto white_mh_ht = simulator.get_hit_probabilities_white_mh();
     const auto white_oh_ht = simulator.get_hit_probabilities_white_oh();
     const auto white_oh_ht_2h = simulator.get_hit_probabilities_white_2h();
-
     double n_simulations_base = find_value(input.float_options_string, input.float_options_val, "n_simulations_dd");
+
     simulator.simulate(character, 0, true);
+
     const double dps_mean = simulator.get_dps_mean();
     const double dps_sample_std =
         Statistics::sample_deviation(std::sqrt(simulator.get_dps_variance()), config.n_batches);
-
     std::vector<double> mean_dps_vec{dps_mean};
     std::vector<double> sample_std_dps_vec{dps_sample_std};
 
@@ -484,40 +495,47 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
 
     std::string extra_info_string = "<b>Fight stats vs. target:</b> <br/>";
     extra_info_string += "<b>Hit:</b> <br/>";
-    double yellow_miss_chance = yellow_ht[0];
-    double white_mh_miss_chance = white_mh_ht[0];
-    double white_oh_miss_chance = white_oh_ht[0];
-    double white_oh_2h_miss_chance = white_oh_ht_2h[0];
-    extra_info_string += percent_to_str("Yellow hits", yellow_miss_chance, "chance to miss");
-    extra_info_string += percent_to_str("Main-hand, white hits", white_mh_miss_chance, "chance to miss");
-    extra_info_string += percent_to_str("off-hand, white hits", white_oh_miss_chance, "chance to miss");
-    extra_info_string += percent_to_str("off-hand, while ability queued", white_oh_2h_miss_chance, "chance to miss");
+    extra_info_string += percent_to_str("Yellow hits", yellow_ht[0], "chance to miss");
+    extra_info_string += percent_to_str("Main-hand, white hits", white_mh_ht[0], "chance to miss");
+    if (!is_two_handed)
+    {
+        extra_info_string += percent_to_str("off-hand, white hits", white_oh_ht[0], "chance to miss");
+        extra_info_string += percent_to_str("off-hand, while ability queued", white_oh_ht_2h[0], "chance to miss");
+    }
 
     extra_info_string += "<b>Crit chance:</b> <br/>";
     double white_mh_crit = std::min(white_mh_ht[3], 100.0) - white_mh_ht[2];
     double left_to_crit_cap_white_mh = std::max(100.0 - white_mh_ht.back(), 0.0);
     double yellow_crit = std::min(yellow_ht[3], 100.0) - yellow_ht[2];
-    double white_oh_crit = std::min(white_oh_ht[3], 100.0) - white_oh_ht[2];
-    double left_to_crit_cap_white_oh = std::max(100.0 - white_oh_ht.back(), 0.0);
     extra_info_string += percent_to_str("Yellow", yellow_crit, "chance to crit per cast (double roll suppression)",
-                                        100 - white_mh_crit, "left to crit-cap");
+                                        100 - yellow_crit * (1 + yellow_ht[1] / 100.0), "left to crit-cap");
     extra_info_string += percent_to_str("White main hand", white_mh_crit, "chance to crit", left_to_crit_cap_white_mh,
                                         "left to crit-cap");
-    extra_info_string += percent_to_str("White off hand", white_oh_crit, "chance to crit", left_to_crit_cap_white_oh,
-                                        "left to crit-cap");
 
+    if (!is_two_handed)
+    {
+        double white_oh_crit = std::min(white_oh_ht[3], 100.0) - white_oh_ht[2];
+        double left_to_crit_cap_white_oh = std::max(100.0 - white_oh_ht.back(), 0.0);
+
+        extra_info_string += percent_to_str("White off hand", white_oh_crit, "chance to crit",
+                                            left_to_crit_cap_white_oh, "left to crit-cap");
+    }
     extra_info_string += "<b>Glancing blows:</b><br/>";
-    double glancing_probability = white_oh_ht[2] - white_oh_ht[1];
+    double glancing_probability = white_mh_ht[2] - white_mh_ht[1];
     double glancing_penalty_mh = 100 * simulator.get_glancing_penalty_mh();
-    double glancing_penalty_oh = 100 * simulator.get_glancing_penalty_oh();
     extra_info_string += percent_to_str("Chance to occur", glancing_probability, "(based on level difference)");
     extra_info_string +=
         percent_to_str("Glancing damage main-hand", glancing_penalty_mh, "(based on skill difference)");
-    extra_info_string += percent_to_str("Glancing damage off-hand", glancing_penalty_oh, "(based on skill difference)");
-
+    if (!is_two_handed)
+    {
+        double glancing_penalty_oh = 100 * simulator.get_glancing_penalty_oh();
+        extra_info_string +=
+            percent_to_str("Glancing damage off-hand", glancing_penalty_oh, "(based on skill difference)");
+    }
     extra_info_string += "<b>Other:</b><br/>";
     double dodge_chance = yellow_ht[1] - yellow_ht[0];
-    extra_info_string += percent_to_str("Target dodge chance", dodge_chance, "(based on skill difference)") + "<br><"
+    extra_info_string += percent_to_str("Target dodge chance", dodge_chance, "(based on skill difference)") + "<br>"
+                                                                                                              "<"
                                                                                                               "br>";
 
     std::string dpr_info = "<br>(Hint: Ability damage per rage computations can be turned on under 'Simulation "
@@ -814,20 +832,8 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
             character_setup(armory, input.race[0], input.armor, input.weapons, temp_buffs, input.enchants);
         std::string dummy{};
         std::vector<Socket> all_sockets = {
-            Socket::head,
-            Socket::neck,
-            Socket::shoulder,
-            Socket::back,
-            Socket::chest,
-            Socket::wrist,
-            Socket::hands,
-            Socket::belt,
-            Socket::legs,
-            Socket::boots,
-            Socket::ring,
-            Socket::trinket,
-            //                        Socket::main_hand, Socket::off_hand,
-            Socket::ranged,
+            Socket::head, Socket::neck, Socket::shoulder, Socket::back, Socket::chest,   Socket::wrist,  Socket::hands,
+            Socket::belt, Socket::legs, Socket::boots,    Socket::ring, Socket::trinket, Socket::ranged,
         };
 
         if (find_string(input.options, "item_strengths"))
@@ -853,12 +859,21 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         }
         if (find_string(input.options, "wep_strengths"))
         {
-            item_upgrades_wep(item_strengths_string, character_new, item_optimizer, armory, batches_per_iteration,
-                              cumulative_simulations, simulator, dps_mean, dps_sample_std, Weapon_socket::main_hand);
-            item_upgrades_wep(item_strengths_string, character_new, item_optimizer, armory, batches_per_iteration,
-                              cumulative_simulations, simulator, dps_mean, dps_sample_std, Weapon_socket::off_hand);
+            if (is_two_handed)
+            {
+                item_upgrades_wep(item_strengths_string, character_new, item_optimizer, armory, batches_per_iteration,
+                                  cumulative_simulations, simulator, dps_mean, dps_sample_std,
+                                  Weapon_socket::two_hand);
+            }
+            else
+            {
+                item_upgrades_wep(item_strengths_string, character_new, item_optimizer, armory, batches_per_iteration,
+                                  cumulative_simulations, simulator, dps_mean, dps_sample_std,
+                                  Weapon_socket::main_hand);
+                item_upgrades_wep(item_strengths_string, character_new, item_optimizer, armory, batches_per_iteration,
+                                  cumulative_simulations, simulator, dps_mean, dps_sample_std, Weapon_socket::off_hand);
+            }
         }
-        //        item_strengths_string += "<b>Weapon</b> proposals coming soon!<br>";
         item_strengths_string += "<br><br>";
     }
 
@@ -924,7 +939,10 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 Character char_minus = character;
                 Hit_effect extra_hit{"stat_weight_extra_hit", Hit_effect::Type::extra_hit, {}, {}, 0, 0, 0.05};
                 char_plus.weapons[0].hit_effects.emplace_back(extra_hit);
-                char_plus.weapons[1].hit_effects.emplace_back(extra_hit);
+                if (char_plus.is_dual_wield())
+                {
+                    char_plus.weapons[1].hit_effects.emplace_back(extra_hit);
+                }
                 Stat_weight hit =
                     compute_stat_weight(simulator, char_plus, char_minus, "extra_hit", 1, 5, dps_mean, dps_sample_std);
                 stat_weights.emplace_back("1%ExtraAttack " + std::to_string(hit.dps_plus) + " " +
@@ -955,7 +973,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                                           std::to_string(hit.dps_plus) + " " + std::to_string(hit.std_dps_plus) + " " +
                                           std::to_string(hit.dps_minus) + " " + std::to_string(hit.std_dps_minus));
             }
-            if (stat_weight == "oh_speed")
+            if (stat_weight == "oh_speed" && !is_two_handed)
             {
                 Character char_plus = character;
                 Character char_minus = character;

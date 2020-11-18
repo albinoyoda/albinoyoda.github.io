@@ -24,7 +24,7 @@ public:
         time = 0.0;
     }
 
-    constexpr double get_dynamic_time_step(double mh_dt, double oh_dt, double buff_dt, double sim_dt)
+    constexpr double get_dynamic_time_step(double mh_dt, double oh_dt, double buff_dt, double sim_dt, double slam_dt)
     {
         double dt = 100.0;
         if (overpower_cd > 0.0)
@@ -42,6 +42,10 @@ public:
         if (global_cd > 0.0)
         {
             dt = std::min(global_cd, dt);
+        }
+        if (slam_dt > 0.0)
+        {
+            dt = std::min(slam_dt, dt);
         }
         dt = std::min(mh_dt, dt);
         dt = std::min(oh_dt, dt);

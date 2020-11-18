@@ -26,8 +26,9 @@ int main()
     armor_vec.emplace_back("nerubian_slavemaker");
 
     std::vector<std::string> weapons_vec;
-    weapons_vec.emplace_back("gressil_dawn_of_ruin");
-    weapons_vec.emplace_back("the_hungering_cold");
+//    weapons_vec.emplace_back("the_hungering_cold");
+//    weapons_vec.emplace_back("the_hungering_cold");
+    weapons_vec.emplace_back("ashkandi,_greatsword_of_the_brotherhood");
 
     //    mult_weapons_vec.emplace_back("persuader");
     //    mult_weapons_vec.emplace_back("gressil_dawn_of_ruin");
@@ -364,6 +365,8 @@ int main()
     buff_vec.emplace_back("sayges_fortune");
     buff_vec.emplace_back("windfury_totem");
     buff_vec.emplace_back("blessing_of_kings");
+    buff_vec.emplace_back("dense_stone_off_hand");
+    buff_vec.emplace_back("elemental_stone_main_hand");
     //    buff_vec.emplace_back("strength_of_earth_totem");
     //    buff_vec.emplace_back("grace_of_air_totem");
 
@@ -395,6 +398,8 @@ int main()
         "use_heroic_strike",
         "use_hamstring",
         "use_overpower",
+        "use_slam",
+        "wep_strengths",
     };
 
     std::vector<std::string> float_options_string{
@@ -423,11 +428,15 @@ int main()
         "stat_weight_oh_speed_dd",
         "n_simulations_dd",
         "n_simulations_stat_dd",
-        "n_simulations_talent_dd"
+        "n_simulations_talent_dd",
+        "slam_cd_thresh_dd",
+        "slam_spam_max_time_dd",
+        "slam_spam_rage_dd"
     };
 
     std::vector<double> float_options_val{50.0, 50.0, 10.0, 2.0, 50.0, 0.0, 2.0, 25.0, 2.0, 2.0, 60.0, 63.0,
-                                          3731, 5,    0,   3731, 63,  1.0, 300,  15,  70,  0.5,  0.5, 20000, 1000, 1000};
+                                          3731, 5,    0,   3731, 63,  1.0, 300,  15,  70,  0.5,  0.5, 20000, 1000, 1000,
+                                          1.0, 1.5, 60.0};
 
     Sim_input sim_input{{race},
                         armor_vec,

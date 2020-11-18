@@ -188,7 +188,10 @@ void Armory::compute_total_stats(Character& character) const
     character.total_special_stats = {};
     character.set_bonuses = {};
     clean_weapon(character.weapons[0]);
-    clean_weapon(character.weapons[1]);
+    if (character.is_dual_wield())
+    {
+        clean_weapon(character.weapons[1]);
+    }
     Attributes total_attributes{};
     Special_stats total_special_stats{};
 
@@ -372,11 +375,9 @@ bool Armory::check_if_weapons_valid(std::vector<Weapon>& weapons) const
 void Armory::change_weapon(std::vector<Weapon>& current_weapons, const Weapon& equip_weapon, const Socket& socket) const
 {
     // TODO fix twohanded -> dual wield item swap!
-    assert(socket == Socket::main_hand || socket == Socket::off_hand);
     if (equip_weapon.weapon_socket == Weapon_socket::two_hand)
     {
         Weapon& current_wep = current_weapons[0];
-        current_weapons.erase(current_weapons.begin() + 1);
         Weapon weapon_copy = equip_weapon;
         weapon_copy.buff = current_wep.buff;
         weapon_copy.enchant = current_wep.enchant;
@@ -461,40 +462,48 @@ std::vector<Weapon> Armory::get_weapon_in_socket(const Weapon_socket socket) con
     }
     case Weapon_socket::off_hand:
     {
-        std::vector<Weapon> mh_weapons{};
+        std::vector<Weapon> oh_weapons{};
         for (const auto& wep : swords_t)
         {
             if (wep.weapon_socket == Weapon_socket::off_hand || wep.weapon_socket == Weapon_socket::one_hand)
             {
-                mh_weapons.emplace_back(wep);
+                oh_weapons.emplace_back(wep);
             }
         }
         for (const auto& wep : axes_t)
         {
             if (wep.weapon_socket == Weapon_socket::main_hand || wep.weapon_socket == Weapon_socket::one_hand)
             {
-                mh_weapons.emplace_back(wep);
+                oh_weapons.emplace_back(wep);
             }
         }
         for (const auto& wep : maces_t)
         {
             if (wep.weapon_socket == Weapon_socket::main_hand || wep.weapon_socket == Weapon_socket::one_hand)
             {
-                mh_weapons.emplace_back(wep);
+                oh_weapons.emplace_back(wep);
             }
         }
         for (const auto& wep : daggers_t)
         {
             if (wep.weapon_socket == Weapon_socket::main_hand || wep.weapon_socket == Weapon_socket::one_hand)
             {
-                mh_weapons.emplace_back(wep);
+                oh_weapons.emplace_back(wep);
             }
         }
-        return mh_weapons;
+        return oh_weapons;
+    }
+    case Weapon_socket ::two_hand:
+    {
+        std::vector<Weapon> th_weapons{};
+        for (const auto& wep : two_handed_swords_t)
+        {
+            th_weapons.emplace_back(wep);
+        }
+        return th_weapons;
     }
     default:
         std::cout << "ERROR: incorrect weapon socket provided!\n";
-        assert(false);
         return swords_t;
     }
 }
@@ -594,8 +603,19 @@ Armor Armory::find_armor(const Socket socket, const std::string& name) const
     return {"item_not_found: " + name, {}, {}, socket};
 }
 
-Weapon Armory::find_weapon(const std::string& name) const
+Weapon Armory::find_weapon(Weapon_socket socket, const std::string& name) const
 {
+    if (socket == Weapon_socket::two_hand)
+    {
+        for (const auto& item : two_handed_swords_t)
+        {
+            if (item.name == name)
+            {
+                return item;
+            }
+        }
+        return {"item_not_found: " + name, {}, {}, 3.0, 0, 0, Weapon_socket::two_hand, Weapon_type::unarmed};
+    }
     for (const auto& item : swords_t)
     {
         if (item.name == name)

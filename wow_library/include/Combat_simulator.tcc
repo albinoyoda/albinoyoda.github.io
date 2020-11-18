@@ -45,6 +45,10 @@ void Combat_simulator_config::get_combat_simulator_config(const T& input)
     {
         combat.use_bloodthirst = true;
     }
+    if (find_string(input.options, "use_slam"))
+    {
+        combat.use_slam = true;
+    }
     if (find_string(input.options, "use_whirlwind"))
     {
         combat.use_whirlwind = true;
@@ -126,6 +130,10 @@ void Combat_simulator_config::get_combat_simulator_config(const T& input)
         find_value(input.float_options_string, input.float_options_val, "overpower_bt_cooldown_thresh_dd");
     combat.overpower_ww_cooldown_thresh =
         find_value(input.float_options_string, input.float_options_val, "overpower_ww_cooldown_thresh_dd");
+    combat.slam_cd_thresh = find_value(input.float_options_string, input.float_options_val, "slam_cd_thresh_dd");
+    combat.slam_spam_max_time =
+        find_value(input.float_options_string, input.float_options_val, "slam_spam_max_time_dd");
+    combat.slam_spam_rage = find_value(input.float_options_string, input.float_options_val, "slam_spam_rage_dd");
 
     sim_time = find_value(input.float_options_string, input.float_options_val, "fight_time_dd");
 
