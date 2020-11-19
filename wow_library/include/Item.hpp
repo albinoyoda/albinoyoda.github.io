@@ -280,7 +280,8 @@ struct Weapon
 {
     Weapon(std::string name, Attributes attributes, Special_stats special_stats, double swing_speed, double min_damage,
            double max_damage, Weapon_socket weapon_socket, Weapon_type weapon_type,
-           std::vector<Hit_effect> hit_effects = std::vector<Hit_effect>(), Set set_name = Set::none)
+           std::vector<Hit_effect> hit_effects = std::vector<Hit_effect>(), Set set_name = Set::none,
+           std::vector<Use_effect> use_effects = std::vector<Use_effect>())
         : name(std::move(name))
         , attributes(attributes)
         , special_stats(special_stats)
@@ -290,7 +291,8 @@ struct Weapon
         , weapon_socket(weapon_socket)
         , type(weapon_type)
         , hit_effects(std::move(hit_effects))
-        , set_name(set_name){};
+        , set_name(set_name)
+        , use_effects(std::move(use_effects)){};
 
     std::string name;
     Attributes attributes;
@@ -302,6 +304,7 @@ struct Weapon
     Weapon_type type;
     std::vector<Hit_effect> hit_effects;
     Set set_name;
+    std::vector<Use_effect> use_effects;
     Socket socket;
     Enchant enchant;
     Weapon_buff buff;

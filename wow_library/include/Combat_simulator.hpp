@@ -106,6 +106,7 @@ struct Combat_simulator_config
         bool first_hit_heroic_strike{false};
         double slam_spam_rage{false};
         double slam_spam_max_time{false};
+        double slam_rage_dd{false};
     } combat;
 
     struct dpr_t
@@ -424,7 +425,7 @@ private:
         {Damage_source::white_mh, 0},         {Damage_source::white_oh, 1},      {Damage_source::bloodthirst, 2},
         {Damage_source::execute, 3},          {Damage_source::heroic_strike, 4}, {Damage_source::cleave, 5},
         {Damage_source::whirlwind, 6},        {Damage_source::hamstring, 7},     {Damage_source::deep_wounds, 8},
-        {Damage_source::item_hit_effects, 9}, {Damage_source::overpower, 10}};
+        {Damage_source::item_hit_effects, 9}, {Damage_source::overpower, 10},    {Damage_source::slam, 11}};
 };
 
 #include "Combat_simulator.tcc"

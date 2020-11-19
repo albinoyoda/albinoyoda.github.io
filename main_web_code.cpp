@@ -28,7 +28,7 @@ int main()
     std::vector<std::string> weapons_vec;
 //    weapons_vec.emplace_back("the_hungering_cold");
 //    weapons_vec.emplace_back("the_hungering_cold");
-    weapons_vec.emplace_back("ashkandi,_greatsword_of_the_brotherhood");
+    weapons_vec.emplace_back("bonereavers_edge");
 
     //    mult_weapons_vec.emplace_back("persuader");
     //    mult_weapons_vec.emplace_back("gressil_dawn_of_ruin");
@@ -392,7 +392,7 @@ int main()
         "talents_stat_weights",
         //        "cleave_if_adds",
         "use_hamstring",
-        //        "compute_dpr",
+                "compute_dpr",
         "use_bloodthirst",
         "use_whirlwind",
         "use_heroic_strike",
@@ -431,12 +431,13 @@ int main()
         "n_simulations_talent_dd",
         "slam_cd_thresh_dd",
         "slam_spam_max_time_dd",
-        "slam_spam_rage_dd"
+        "slam_spam_rage_dd",
+        "slam_rage_dd"
     };
 
     std::vector<double> float_options_val{50.0, 50.0, 10.0, 2.0, 50.0, 0.0, 2.0, 25.0, 2.0, 2.0, 60.0, 63.0,
                                           3731, 5,    0,   3731, 63,  1.0, 300,  15,  70,  0.5,  0.5, 20000, 1000, 1000,
-                                          1.0, 1.5, 60.0};
+                                          1.0, 1.5, 60.0, 15};
 
     Sim_input sim_input{{race},
                         armor_vec,

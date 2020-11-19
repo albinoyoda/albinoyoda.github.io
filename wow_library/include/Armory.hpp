@@ -497,7 +497,6 @@ struct Armory
             };
 
 
-
     std::vector<Weapon> two_handed_swords_t
             {
                     {"ashkandi,_greatsword_of_the_brotherhood", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0,
@@ -508,8 +507,53 @@ struct Armory
                                                                                                     0.0}, 3.6, 259.0, 389.0, Weapon_socket::two_hand, Weapon_type::sword, {{"corrupted_ashbringer", Hit_effect::Type::damage_magic, {}, {}, 200, 0, 3.6/60.0,0}}},
                     {"kalimdors_revenge", Attributes{24.0, 0.0}, Special_stats{0.0, 0.0,
                                                                                                     0.0}, 3.2, 209.0, 315.0, Weapon_socket::two_hand, Weapon_type::sword, {{"kalimdors_revenge", Hit_effect::Type::damage_magic, {}, {}, 258, 0, 3.2/60.0,0}}},
+                    {"claymore_of_unholy_might", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0,
+                                                                                                    98.0}, 3.6, 235.0, 354.0, Weapon_socket::two_hand, Weapon_type::sword},
+                    {"obsidian_edged_blade", Attributes{42.0, 0.0}, Special_stats{0.0, 0.0,
+                                                                                     0.0, 0, 0, 8}, 3.4, 176.0, 264.0, Weapon_socket::two_hand, Weapon_type::sword},
+                    {"bonereavers_edge", Attributes{0.0, 0.0}, Special_stats{1.0, 0.0,
+                                                                                  0.0},3.4, 206.0, 310.0, Weapon_socket::two_hand, Weapon_type::sword, {{"bonereavers_edge", Hit_effect::Type::reduce_armor, {}, {}, 0, 10, 2.0*3.4/60.0,0, 1, 700, 3}}},
+                    {"manslayer_of_the_qiraji", Attributes{35.0, 15.0}, Special_stats{0.0, 0.0,
+                                                                                  0.0}, 3.6, 180.0, 270.0, Weapon_socket::two_hand, Weapon_type::sword},
+                    {"zinrokh,_destroyer_of_worlds", Attributes{.0, .0}, Special_stats{0.0, 0.0,
+                                                                                      72.0}, 3.8, 196.0, 295.0, Weapon_socket::two_hand, Weapon_type::sword},
+                    {"destiny", Attributes{.0, .0}, Special_stats{0.0, 0.0,
+                                                                                       .0}, 2.6, 112.0, 168.0, Weapon_socket::two_hand, Weapon_type::sword, {{"destiny", Hit_effect::Type::stat_boost, Attributes{200, 0}, {}, 0, 10, 2.6/60.0,0}}},
+                    {"zinrokh,_destroyer_of_worlds", Attributes{.0, .0}, Special_stats{0.0, 0.0,
+                                                                                       72.0}, 3.8, 196.0, 295.0, Weapon_socket::two_hand, Weapon_type::sword},
 
             };
+
+    std::vector<Weapon> two_handed_axes_t
+    {
+        {"severance", Attributes{43.0, 0.0}, Special_stats{2.0, 0.0, 0.0}, 3.6, 235.0, 354.0, Weapon_socket::two_hand,
+         Weapon_type::axe},
+        {"dark_edge_of_insanity", Attributes{35.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, 3.5, 242.0, 364.0, Weapon_socket::two_hand,
+         Weapon_type::axe},
+        {"drake_talon_cleaver", Attributes{22.0, 0.0}, Special_stats{2.0, 0.0, 0.0}, 3.4, 199.0, 300.0, Weapon_socket::two_hand,
+            Weapon_type::axe, {{"drake_talon_cleaver", Hit_effect::Type::damage_physical, {}, {}, 240, 0, 3.4/60.0,0}}},
+        {"spinal_reaper", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 34.0}, 3.4, 203.0, 305.0, Weapon_socket::two_hand,
+            Weapon_type::axe},
+        {"treants_bane", Attributes{25.0, 0.0}, Special_stats{2.0, 0.0, 0.0}, 2.7, 128.0, 193.0, Weapon_socket::two_hand,
+            Weapon_type::axe},
+        {"neretzek,_the_blood_drinker", Attributes{21.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, 3.7, 202.0, 303.0, Weapon_socket::two_hand,
+            Weapon_type::axe, {{"neretzek,_the_blood_drinker", Hit_effect::Type::damage_magic, {}, {}, 152, 0, 3.7/60.0,0}}},
+        {"draconic_avenger", Attributes{21.0, 0.0}, Special_stats{.0, 0.0, 0.0}, 3.2, 174.0, 262.0, Weapon_socket::two_hand, Weapon_type::axe},
+    };
+
+    std::vector<Weapon> two_handed_maces_t
+    {
+        {"might_of_menethil", Attributes{20.0, 0.0}, Special_stats{2.0, 0.0, 0.0}, 3.8, 289.0, 435.0, Weapon_socket::two_hand,
+         Weapon_type::mace},
+        {"sulfuras,_hand_of_ragnaros", Attributes{12.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, 3.7, 223.0, 372.0, Weapon_socket::two_hand,
+            Weapon_type::mace, {{"sulfuras,_hand_of_ragnaros", Hit_effect::Type::damage_magic, {}, {}, 378, 0, 0.7*3.4/60.0,0}}},
+        {"herald_of_woe", Attributes{31.0, 0.0}, Special_stats{0.0, 0.0, 0.0}, 3.3, 199.0, 300.0, Weapon_socket::two_hand,Weapon_type::mace},
+        {"draconic_maul", Attributes{27.0, 0.0}, Special_stats{2.0, 0.0, 0.0}, 3.5, 187.0, 282.0, Weapon_socket::two_hand,Weapon_type::mace},
+        {"jekliks_crusher", Attributes{.0, 0.0}, Special_stats{.0, 0.0, 0.0}, 3.6, 159.0, 248.0, Weapon_socket::two_hand,Weapon_type::mace,
+         {{"jekliks_crusher", Hit_effect::Type::damage_physical, {}, {}, 210, 0, 4*3.6/60.0,0}}},
+        {"manual_crowd_pummeler", Attributes{16.0, 5.0}, Special_stats{.0, 0.0, 0.0},
+         2.0, 46.0, 70.0, Weapon_socket::two_hand,Weapon_type::mace, {}, Set::none, {{"manual_crowd_pummeler", Use_effect::Effect_socket::unique, {}, {0,0,0,0,0.5}, 0, 30, 1000,false}}},
+    };
 
     std::vector<Weapon> axes_t
             {

@@ -25,6 +25,10 @@ void Combat_simulator_config::get_combat_simulator_config(const T& input)
     {
         enable_blood_fury = true;
     }
+    if (find_string(input.options, "enable_berserking"))
+    {
+        enable_berserking = true;
+    }
     if (find_string(input.options, "use_bt_in_exec_phase"))
     {
         combat.use_bt_in_exec_phase = true;
@@ -134,6 +138,7 @@ void Combat_simulator_config::get_combat_simulator_config(const T& input)
     combat.slam_spam_max_time =
         find_value(input.float_options_string, input.float_options_val, "slam_spam_max_time_dd");
     combat.slam_spam_rage = find_value(input.float_options_string, input.float_options_val, "slam_spam_rage_dd");
+    combat.slam_rage_dd = find_value(input.float_options_string, input.float_options_val, "slam_rage_dd");
 
     sim_time = find_value(input.float_options_string, input.float_options_val, "fight_time_dd");
 

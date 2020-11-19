@@ -349,6 +349,10 @@ std::vector<Weapon> Item_optimizer::remove_weaker_weapons(const Weapon_socket we
                 }
             }
         }
+        if (!weapon_vec[i].use_effects.empty())
+        {
+            wep_struct.can_be_estimated = false;
+        }
         weapon_struct_vec.push_back(wep_struct);
     }
 

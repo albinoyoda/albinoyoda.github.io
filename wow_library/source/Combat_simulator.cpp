@@ -450,7 +450,7 @@ void Combat_simulator::slam(Weapon_sim& main_hand_weapon, Special_stats& special
         hit_effects(main_hand_weapon, main_hand_weapon, special_stats, rage, damage_sources, flurry_charges);
     }
     manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges, true);
-    damage_sources.add_damage(Damage_source::bloodthirst, hit_outcome.damage, time_keeper_.time);
+    damage_sources.add_damage(Damage_source::slam, hit_outcome.damage, time_keeper_.time);
     simulator_cout("Current rage: ", int(rage));
 }
 
@@ -662,6 +662,8 @@ void Combat_simulator::hit_effects(Weapon_sim& weapon, Weapon_sim& main_hand_wea
                     simulator_cout("PROC: ", hit_effect.name, hit_result_to_string(hit.hit_result), " does ",
                                    int(hit.damage), " physical damage");
                 }
+                hit_effects(weapon, main_hand_weapon, special_stats, rage, damage_sources, flurry_charges,
+                            is_extra_attack);
             }
             break;
             case Hit_effect::Type::stat_boost:
@@ -1183,14 +1185,15 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
             }
             else
             {
-                if (weapons[0].weapon_socket == Weapon_socket::two_hand && config.combat.use_slam)
+                if (weapons[0].weapon_socket == Weapon_socket::two_hand && config.combat.use_slam &&
+                    time_keeper_.global_cd < 0.0)
                 {
                     if (!slam_manager.is_slam_queued())
                     {
                         if ((time_keeper_.blood_thirst_cd > config.combat.slam_cd_thresh) &&
                             (time_keeper_.whirlwind_cd > config.combat.slam_cd_thresh))
                         {
-                            if ((mh_swing && rage > 15.0) ||
+                            if ((mh_swing && rage > config.combat.slam_rage_dd) ||
                                 (weapons[0].internal_swing_timer > config.combat.slam_spam_max_time &&
                                  rage > config.combat.slam_spam_rage))
                             {
@@ -1204,6 +1207,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                     {
                         slam(weapons[0], special_stats, rage, damage_sources, flurry_charges);
                         slam_manager.un_queue_slam();
+                        weapons[0].internal_swing_timer = weapons[0].swing_speed / (1 + special_stats.haste);
                     }
                     else
                     {

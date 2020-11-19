@@ -807,9 +807,30 @@
                     <option value="none" disabled> --- TWO_HANDED_SWORDS ---</option>
                     <option value="ashkandi,_greatsword_of_the_brotherhood">Ashkandi, greatsword of the brotherhood
                     </option>
+                    <option value="bonereavers_edge">Bonereavers edge</option>
+                    <option value="claymore_of_unholy_might">Claymore of unholy might</option>
                     <option value="corrupted_ashbringer">Corrupted ashbringer</option>
+                    <option value="destiny">Destiny</option>
                     <option value="kalimdors_revenge">Kalimdors revenge</option>
+                    <option value="manslayer_of_the_qiraji">Manslayer of the qiraji</option>
+                    <option value="obsidian_edged_blade">Obsidian edged blade</option>
                     <option value="the_untamed_blade">The untamed blade</option>
+                    <option value="zinrokh,_destroyer_of_worlds">Zinrokh, destroyer of worlds</option>
+                    <option value="none" disabled> --- TWO_HANDED_AXES ---</option>
+                    <option value="dark_edge_of_insanity">Dark edge of insanity</option>
+                    <option value="draconic_avenger">Draconic avenger</option>
+                    <option value="drake_talon_cleaver">Drake talon cleaver</option>
+                    <option value="neretzek,_the_blood_drinker">Neretzek, the blood drinker</option>
+                    <option value="severance">Severance</option>
+                    <option value="spinal_reaper">Spinal reaper</option>
+                    <option value="treants_bane">Treants bane</option>
+                    <option value="none" disabled> --- TWO_HANDED_MACES ---</option>
+                    <option value="draconic_maul">Draconic maul</option>
+                    <option value="herald_of_woe">Herald of woe</option>
+                    <option value="jekliks_crusher">Jekliks crusher</option>
+                    <option value="manual_crowd_pummeler">Manual crowd pummeler</option>
+                    <option value="might_of_menethil">Might of menethil</option>
+                    <option value="sulfuras,_hand_of_ragnaros">Sulfuras, hand of ragnaros</option>
                 </select>
                 <!--armor stop3-->
             </div>
@@ -1150,9 +1171,30 @@
                 <option value="zulian_slicer">Zulian slicer</option>
                 <option value="none" disabled> --- TWO_HANDED_SWORDS ---</option>
                 <option value="ashkandi,_greatsword_of_the_brotherhood">Ashkandi, greatsword of the brotherhood</option>
+                <option value="bonereavers_edge">Bonereavers edge</option>
+                <option value="claymore_of_unholy_might">Claymore of unholy might</option>
                 <option value="corrupted_ashbringer">Corrupted ashbringer</option>
+                <option value="destiny">Destiny</option>
                 <option value="kalimdors_revenge">Kalimdors revenge</option>
+                <option value="manslayer_of_the_qiraji">Manslayer of the qiraji</option>
+                <option value="obsidian_edged_blade">Obsidian edged blade</option>
                 <option value="the_untamed_blade">The untamed blade</option>
+                <option value="zinrokh,_destroyer_of_worlds">Zinrokh, destroyer of worlds</option>
+                <option value="none" disabled> --- TWO_HANDED_AXES ---</option>
+                <option value="dark_edge_of_insanity">Dark edge of insanity</option>
+                <option value="draconic_avenger">Draconic avenger</option>
+                <option value="drake_talon_cleaver">Drake talon cleaver</option>
+                <option value="neretzek,_the_blood_drinker">Neretzek, the blood drinker</option>
+                <option value="severance">Severance</option>
+                <option value="spinal_reaper">Spinal reaper</option>
+                <option value="treants_bane">Treants bane</option>
+                <option value="none" disabled> --- TWO_HANDED_MACES ---</option>
+                <option value="draconic_maul">Draconic maul</option>
+                <option value="herald_of_woe">Herald of woe</option>
+                <option value="jekliks_crusher">Jekliks crusher</option>
+                <option value="manual_crowd_pummeler">Manual crowd pummeler</option>
+                <option value="might_of_menethil">Might of menethil</option>
+                <option value="sulfuras,_hand_of_ragnaros">Sulfuras, hand of ragnaros</option>
                 <option value="none" disabled> --- AXES ---</option>
                 <option value="ancient_hakkari_manslayer">Ancient hakkari manslayer</option>
                 <option value="axe_of_the_deep_woods">Axe of the deep woods</option>
@@ -1498,6 +1540,8 @@
         <label for="death_wish"> Use death wish</label><br>
         <input type="checkbox" id="enable_blood_fury">
         <label for="enable_blood_fury" style="color: #cc0000"> Use blood fury</label><br>
+        <input type="checkbox" id="enable_berserking">
+        <label for="enable_berserking" style="color: #cc0000"> Use berserking</label><br>
         <input type="checkbox" id="mighty_rage_potion">
         <label for="mighty_rage_potion"> Use mighty rage potion</label><br>
         <input type="checkbox" id="recklessness">
@@ -1521,13 +1565,15 @@
         </div>
 
         <input type="checkbox" id="use_slam" checked onclick="show_div('use_slam', 'slam_div')">
-        <label for="use_slam"><b> Use slam</b></label><br>
+        <label for="use_slam"><b> Use slam (Two-handed weapons only)</b></label><br>
         <div class="description" id="slam_div">
-            <label for="slam_spam_rage_dd">Spam slam when rage is above:</label>
-            <input type="number" id="slam_spam_rage_dd" name="quantity" min="0" max="100" value="50"><br>
             <label for="slam_cd_thresh_dd">Cast slam when bloodthirst/whirlwind CD is above:</label>
             <input type="number" id="slam_cd_thresh_dd" name="quantity" min="0" max="6.0" value="2.0"><br>
-            <label for="slam_spam_max_time_dd">Cast slam when weapon swing timer is greater than:</label>
+            <label for="slam_rage_dd">Cast slam after a melee hit if rage is above:</label>
+            <input type="number" id="slam_rage_dd" name="quantity" min="15" max="100" value="15"><br>
+            <label for="slam_spam_rage_dd">Spam slam when rage is above:</label>
+            <input type="number" id="slam_spam_rage_dd" name="quantity" min="0" max="100" value="50"><br>
+            <label for="slam_spam_max_time_dd">Never cast slam when weapon swing timer is less than:</label>
             <input type="number" id="slam_spam_max_time_dd" name="quantity" min="1.0" max="4.0" value="1.5"><br>
         </div>
 
@@ -1844,10 +1890,10 @@
         "max_optimize_time_dd", "number_of_extra_targets_dd", "extra_target_armor_dd", "extra_target_level_dd",
         "periodic_damage_interval_dd", "periodic_damage_amount_dd", "execute_phase_percentage_dd",
         "re_queue_abilities_dd", "stat_weight_skill_dd", "stat_weight_mh_speed_dd", "stat_weight_oh_speed_dd",
-        "slam_spam_max_time_dd", "slam_cd_thresh_dd", "slam_spam_rage_dd"];
+        "slam_spam_max_time_dd", "slam_cd_thresh_dd", "slam_spam_rage_dd", "slam_rage_dd"];
 
     let sim_options = ["faerie_fire", "exposed_armor", "curse_of_recklessness", "death_wish", "enable_blood_fury",
-        "recklessness", "mighty_rage_potion", "debug_on", "use_bt_in_exec_phase", "use_hs_in_exec_phase",
+        "enable_berserking", "recklessness", "mighty_rage_potion", "debug_on", "use_bt_in_exec_phase", "use_hs_in_exec_phase",
         "cleave_if_adds", "use_hamstring", "use_bloodthirst", "use_whirlwind", "use_overpower", "use_heroic_strike",
         "item_strengths", "wep_strengths", "deep_wounds", "heroic_strike_aq", "compute_dpr", "talents_stat_weights",
         "multi_target_mode", "essence_of_the_red", "periodic_damage", "can_trigger_enrage", "first_global_sunder",
@@ -2079,7 +2125,7 @@
             "flameguard_gauntlets", "onslaught_girdle", "legguards_of_the_fallen_crusader",
             "chromatic_boots", "quick_strike_ring", "circle_of_applied_force",
             "diamond_flask", "hand_of_justice", "strikers_mark"];
-        let selected_weapons = ["chromatically_tempered_sword", "maladath"];
+        let selected_weapons = ["chromatically_tempered_sword", "maladath", "the_untamed_blade"];
         let selected_enchants = ["+8 strength", "+30 attack_power", "+3 agility", "+4 stats", "+9 strength",
             "+7 strength", "+8 strength", "+7 agility", "crusader", "crusader"];
         select_prebis(selected_items, selected_weapons, selected_enchants);
@@ -2091,7 +2137,7 @@
             "flameguard_gauntlets", "onslaught_girdle", "legguards_of_the_fallen_crusader",
             "chromatic_boots", "quick_strike_ring", "circle_of_applied_force",
             "diamond_flask", "hand_of_justice", "strikers_mark"];
-        let selected_weapons = ["chromatically_tempered_sword", "maladath"];
+        let selected_weapons = ["chromatically_tempered_sword", "maladath", "the_untamed_blade"];
         let selected_enchants = ["+8 strength", "shoulder", "+3 agility", "+4 stats", "+9 strength",
             "+7 strength", "+8 strength", "+7 agility", "crusader", "crusader"];
         select_prebis(selected_items, selected_weapons, selected_enchants);
@@ -2103,7 +2149,7 @@
             "devilsaur_gauntlets", "omokks_girth_restrainer", "devilsaur_leggings",
             "battlechasers_greaves", "magnis_will", "blackstone_ring",
             "blackhands_breadth", "hand_of_justice", "satyrs_bow"];
-        let selected_weapons = ["dal_rends_sacred_charge", "dal_rends_tribal_guardian"];
+        let selected_weapons = ["dal_rends_sacred_charge", "dal_rends_tribal_guardian", "treants_bane"];
         let selected_enchants = ["+8 strength", "shoulder", "+3 agility", "+4 stats", "+9 strength",
             "+7 strength", "+8 strength", "boots", "crusader", "crusader"];
         select_prebis(selected_items, selected_weapons, selected_enchants);
@@ -2466,10 +2512,10 @@
             if (result['stat_weights'].size() > 0) {
                 let ap_string = result['stat_weights'].get(0);
                 ap_string = ap_string.split(" ");
-                let p_val_p = parseFloat(ap_string[1]) + parseFloat(ap_string[2]);
-                let p_val_n = parseFloat(ap_string[1]) - parseFloat(ap_string[2]);
-                let n_val_p = parseFloat(ap_string[3]) - parseFloat(ap_string[4]);
-                let n_val_n = parseFloat(ap_string[3]) + parseFloat(ap_string[4]);
+                let p_val_p = parseFloat(ap_string[1]) + 1.96 * parseFloat(ap_string[2]);
+                let p_val_n = parseFloat(ap_string[1]) - 1.96 * parseFloat(ap_string[2]);
+                let n_val_p = parseFloat(ap_string[3]) - 1.96 * parseFloat(ap_string[4]);
+                let n_val_n = parseFloat(ap_string[3]) + 1.96 * parseFloat(ap_string[4]);
                 stat_weights.push({
                     'name': "100 AP",
                     'value_max': Math.max(p_val_p, p_val_n),
@@ -2477,15 +2523,14 @@
                     'negative_value_max': Math.max(n_val_p, n_val_n),
                     'negative_value_min': Math.min(n_val_p, n_val_n)
                 });
-                let dps_per_ap_max = (parseFloat(ap_string[1]) + parseFloat(ap_string[2])) / 100;
-                let dps_per_ap_min = (parseFloat(ap_string[1]) - parseFloat(ap_string[2])) / 100;
+                let dps_per_ap = parseFloat(ap_string[1]) / 100;
                 for (let i = 1; i < result['stat_weights'].size(); i++) {
                     let stat_string = result['stat_weights'].get(i);
                     stat_string = stat_string.split(" ");
-                    let p_val_p = (parseFloat(stat_string[1]) + parseFloat(stat_string[2])) / dps_per_ap_min;
-                    let p_val_n = (parseFloat(stat_string[1]) - parseFloat(stat_string[2])) / dps_per_ap_max;
-                    let n_val_p = (parseFloat(stat_string[3]) - parseFloat(stat_string[4])) / dps_per_ap_min;
-                    let n_val_n = (parseFloat(stat_string[3]) + parseFloat(stat_string[4])) / dps_per_ap_max;
+                    let p_val_p = (parseFloat(stat_string[1]) + 1.96 * parseFloat(stat_string[2])) / dps_per_ap;
+                    let p_val_n = (parseFloat(stat_string[1]) - 1.96 * parseFloat(stat_string[2])) / dps_per_ap;
+                    let n_val_p = (parseFloat(stat_string[3]) - 1.96 * parseFloat(stat_string[4])) / dps_per_ap;
+                    let n_val_n = (parseFloat(stat_string[3]) + 1.96 * parseFloat(stat_string[4])) / dps_per_ap;
                     stat_weights.push({
                         'name': stat_string[0],
                         'value_max': Math.max(p_val_p, p_val_n),

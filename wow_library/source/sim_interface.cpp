@@ -171,7 +171,7 @@ void item_upgrades_wep(std::string& item_strengths_string, Character character_n
                 double dps_increase = simulator.get_dps_mean() - dps_mean;
                 double dps_increase_std = Statistics::add_standard_deviations(sample_std, dps_sample_std);
                 item_strengths_string += "<br> Proposed upgrade: <b>" + item.name + "</b> ( +<b>" +
-                                         string_with_precision(dps_increase, 2) + " &plusmn " +
+                                         string_with_precision(dps_increase, 3) + " &plusmn " +
                                          string_with_precision(dps_increase_std, 2) + "</b> DPS).";
                 break;
             }
@@ -245,7 +245,8 @@ std::vector<double> get_damage_sources(const Damage_sources& damage_sources_vect
             damage_sources_vector.hamstring_damage / damage_sources_vector.sum_damage_sources(),
             damage_sources_vector.deep_wounds_damage / damage_sources_vector.sum_damage_sources(),
             damage_sources_vector.item_hit_effects_damage / damage_sources_vector.sum_damage_sources(),
-            damage_sources_vector.overpower_damage / damage_sources_vector.sum_damage_sources()};
+            damage_sources_vector.overpower_damage / damage_sources_vector.sum_damage_sources(),
+            damage_sources_vector.slam_damage / damage_sources_vector.sum_damage_sources()};
 }
 
 std::string print_stat(const std::string& stat_name, double amount)
@@ -462,7 +463,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     std::vector<double> dps_dist;
     std::vector<std::string> damage_names = {"White MH",      "White OH",         "Bloodthirst", "Execute",
                                              "Heroic Strike", "Cleave",           "Whirlwind",   "Hamstring",
-                                             "Deep Wounds",   "Item Hit Effects", "Overpower"};
+                                             "Deep Wounds",   "Item Hit Effects", "Overpower",   "Slam"};
     for (size_t i = 0; i < damage_time_lapse_raw.size(); i++)
     {
         double total_damage = 0;
@@ -543,7 +544,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     config.performance_mode = true;
     if (find_string(input.options, "compute_dpr"))
     {
-        config.n_batches = 5000;
+        config.n_batches = 10000;
         dpr_info = "<br><b>Ability damage per rage:</b><br>";
         dpr_info += "DPR for ability X is computed as following:<br> "
                     "((Normal DPS) - (DPS where ability X costs rage but has no effect)) / (rage cost of ability "
@@ -584,6 +585,25 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                             "</b><br>Average rage cost: <b>" + string_with_precision(25.0, 3) + "</b><br>DPR: <b>" +
                             string_with_precision(dmg_per_rage, 4) + "</b><br>";
                 config.dpr_settings.compute_dpr_ww_ = false;
+            }
+        }
+        if (config.combat.use_slam)
+        {
+            double avg_sl_casts = static_cast<double>(dmg_dist.slam_count) / n_simulations_base;
+            if (avg_sl_casts > 0.0)
+            {
+                config.dpr_settings.compute_dpr_sl_ = true;
+                Combat_simulator simulator_dpr{};
+                simulator_dpr.set_config(config);
+                simulator_dpr.simulate(character, 0);
+                double delta_dps = dps_mean - simulator_dpr.get_dps_mean();
+                double dmg_tot = delta_dps * (config.sim_time - 1);
+                double dmg_per_hit = dmg_tot / avg_sl_casts;
+                double dmg_per_rage = dmg_per_hit / 15.0;
+                dpr_info += "<b>Slam</b>: <br>Damage per cast: <b>" + string_with_precision(dmg_per_hit, 4) +
+                            "</b><br>Average rage cost: <b>" + string_with_precision(15.0, 3) + "</b><br>DPR: <b>" +
+                            string_with_precision(dmg_per_rage, 4) + "</b><br>";
+                config.dpr_settings.compute_dpr_sl_ = false;
             }
         }
         if (config.combat.use_heroic_strike)
@@ -730,6 +750,17 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                         "</b> DPS<br>";
         config.talents.overpower++;
 
+        if (config.combat.use_slam && !is_two_handed)
+        {
+            config.talents.improved_slam -= 5;
+            simulator_talent.set_config(config);
+            simulator_talent.simulate(character, 0);
+            delta_dps = (dps_mean - simulator_talent.get_dps_mean()) / 5;
+            talents_info +=
+                "<br>Talent: <b>Improved Slam</b><br>Value: <b>" + string_with_precision(delta_dps, 4) + "</b> DPS<br>";
+            config.talents.improved_slam += 5;
+        }
+
         config.talents.improved_execute -= 2;
         simulator_talent.set_config(config);
         simulator_talent.simulate(character, 0);
@@ -783,13 +814,16 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
             "<br>Talent: <b>Impale</b><br>Value: <b>" + string_with_precision(delta_dps, 4) + "</b> DPS<br>";
         config.talents.impale++;
 
-        config.talents.dual_wield_specialization -= 2;
-        simulator_talent.set_config(config);
-        simulator_talent.simulate(character, 0);
-        delta_dps = (dps_mean - simulator_talent.get_dps_mean()) / 2;
-        talents_info += "<br>Talent: <b>Dual Wield Specialization</b><br>Value: <b>" +
-                        string_with_precision(delta_dps, 4) + "</b> DPS<br>";
-        config.talents.dual_wield_specialization += 2;
+        if (is_two_handed)
+        {
+            config.talents.dual_wield_specialization -= 2;
+            simulator_talent.set_config(config);
+            simulator_talent.simulate(character, 0);
+            delta_dps = (dps_mean - simulator_talent.get_dps_mean()) / 2;
+            talents_info += "<br>Talent: <b>Dual Wield Specialization</b><br>Value: <b>" +
+                            string_with_precision(delta_dps, 4) + "</b> DPS<br>";
+            config.talents.dual_wield_specialization += 2;
+        }
     }
 
     if (input.compare_armor.size() == 15 && input.compare_weapons.size() == 2)
@@ -862,8 +896,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
             if (is_two_handed)
             {
                 item_upgrades_wep(item_strengths_string, character_new, item_optimizer, armory, batches_per_iteration,
-                                  cumulative_simulations, simulator, dps_mean, dps_sample_std,
-                                  Weapon_socket::two_hand);
+                                  cumulative_simulations, simulator, dps_mean, dps_sample_std, Weapon_socket::two_hand);
             }
             else
             {
@@ -1074,6 +1107,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         debug_topic += "DPS white OH: " + std::to_string(dist.white_oh_damage / config.sim_time) + "<br>";
         debug_topic += "DPS bloodthirst: " + std::to_string(dist.bloodthirst_damage / config.sim_time) + "<br>";
         debug_topic += "DPS overpower: " + std::to_string(dist.overpower_damage / config.sim_time) + "<br>";
+        debug_topic += "DPS slam: " + std::to_string(dist.slam_damage / config.sim_time) + "<br>";
         debug_topic += "DPS execute: " + std::to_string(dist.execute_damage / config.sim_time) + "<br>";
         debug_topic += "DPS heroic strike: " + std::to_string(dist.heroic_strike_damage / config.sim_time) + "<br>";
         debug_topic += "DPS cleave: " + std::to_string(dist.cleave_damage / config.sim_time) + "<br>";
@@ -1088,6 +1122,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         debug_topic += "#Hits white OH: " + std::to_string(dist.white_oh_count) + "<br>";
         debug_topic += "#Hits bloodthirst: " + std::to_string(dist.bloodthirst_count) + "<br>";
         debug_topic += "#Hits overpower: " + std::to_string(dist.overpower_count) + "<br>";
+        debug_topic += "#Hits slam: " + std::to_string(dist.slam_count) + "<br>";
         debug_topic += "#Hits execute: " + std::to_string(dist.execute_count) + "<br>";
         debug_topic += "#Hits heroic strike: " + std::to_string(dist.heroic_strike_count) + "<br>";
         debug_topic += "#Hits cleave: " + std::to_string(dist.cleave_count) + "<br>";

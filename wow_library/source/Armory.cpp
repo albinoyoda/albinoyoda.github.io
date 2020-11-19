@@ -229,6 +229,10 @@ void Armory::compute_total_stats(Character& character) const
         total_attributes += get_enchant_attributes(weapon.socket, weapon.enchant.type);
         total_special_stats += get_enchant_special_stats(weapon.socket, weapon.enchant.type);
 
+        for (const auto& use_effect : weapon.use_effects)
+        {
+            use_effects.emplace_back(use_effect);
+        }
         auto hit_effect = enchant_hit_effect(weapon.swing_speed, weapon.enchant.type);
         if (hit_effect.type != Hit_effect::Type::none)
         {
@@ -495,8 +499,17 @@ std::vector<Weapon> Armory::get_weapon_in_socket(const Weapon_socket socket) con
     }
     case Weapon_socket ::two_hand:
     {
+
         std::vector<Weapon> th_weapons{};
         for (const auto& wep : two_handed_swords_t)
+        {
+            th_weapons.emplace_back(wep);
+        }
+        for (const auto& wep : two_handed_maces_t)
+        {
+            th_weapons.emplace_back(wep);
+        }
+        for (const auto& wep : two_handed_axes_t)
         {
             th_weapons.emplace_back(wep);
         }
@@ -608,6 +621,20 @@ Weapon Armory::find_weapon(Weapon_socket socket, const std::string& name) const
     if (socket == Weapon_socket::two_hand)
     {
         for (const auto& item : two_handed_swords_t)
+        {
+            if (item.name == name)
+            {
+                return item;
+            }
+        }
+        for (const auto& item : two_handed_maces_t)
+        {
+            if (item.name == name)
+            {
+                return item;
+            }
+        }
+        for (const auto& item : two_handed_axes_t)
         {
             if (item.name == name)
             {
