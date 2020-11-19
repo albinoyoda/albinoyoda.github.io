@@ -349,7 +349,6 @@ struct Armory
                     {"boots_of_heroism",          Attributes{20, 0},  Special_stats{0, 1,
                                                                                     0},        Socket::boots, Set::battlegear_of_heroism},
                     {"boots_of_the_fallen_hero",  Attributes{20, 14}, Special_stats{0, 1, 0},  Socket::boots},
-                    {"boots_of_the_vanguard",     Attributes{22, 22}, Special_stats{0, 0, 0},  Socket::boots},
                     {"conquerors_greaves",        Attributes{21, 17}, Special_stats{0, 0, 0},  Socket::boots},
                     {"slime_kickers",             Attributes{18, 12}, Special_stats{0, 1, 0},  Socket::boots},
                     {"blooddrenched_footpads",    Attributes{0, 21},  Special_stats{0, 1, 0},  Socket::boots},
