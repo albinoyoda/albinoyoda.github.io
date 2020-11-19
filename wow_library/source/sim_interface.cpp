@@ -750,7 +750,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                         "</b> DPS<br>";
         config.talents.overpower++;
 
-        if (config.combat.use_slam && !is_two_handed)
+        if (config.combat.use_slam && is_two_handed)
         {
             config.talents.improved_slam -= 5;
             simulator_talent.set_config(config);
@@ -814,7 +814,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
             "<br>Talent: <b>Impale</b><br>Value: <b>" + string_with_precision(delta_dps, 4) + "</b> DPS<br>";
         config.talents.impale++;
 
-        if (is_two_handed)
+        if (!is_two_handed)
         {
             config.talents.dual_wield_specialization -= 2;
             simulator_talent.set_config(config);
