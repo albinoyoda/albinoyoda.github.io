@@ -1538,12 +1538,17 @@
         (Cooldowns are used towards the end of the fight, with a one second precision)
         <input type="checkbox" id="death_wish" checked>
         <label for="death_wish"> Use death wish</label><br>
+
         <input type="checkbox" id="enable_blood_fury">
         <label for="enable_blood_fury" style="color: #cc0000"> Use blood fury</label><br>
+
         <input type="checkbox" id="enable_berserking">
-        <label for="enable_berserking" style="color: #cc0000"> Use berserking</label><br>
+        <label for="enable_berserking" style="color: #cc0000"> Use berserking (increases haste by
+            <input type="number" id="berserking_haste_dd" name="quantity" min="10" max="30" value="10"> %).</label><br>
+
         <input type="checkbox" id="mighty_rage_potion">
         <label for="mighty_rage_potion"> Use mighty rage potion</label><br>
+
         <input type="checkbox" id="recklessness">
         <label for="recklessness"> Use recklessness</label><br><br>
 
@@ -1561,20 +1566,22 @@
             <label for="whirlwind_rage_thresh_dd">Whirlwind when rage is above:</label>
             <input type="number" id="whirlwind_rage_thresh_dd" name="quantity" min="0" max="100" value="0"><br>
             <label for="whirlwind_bt_cooldown_thresh_dd">Whirlwind when bloodthirst CD is above:</label>
-            <input type="number" id="whirlwind_bt_cooldown_thresh_dd" name="quantity" min="0" max="6" value="1.5"><br>
+            <input type="number" id="whirlwind_bt_cooldown_thresh_dd" name="quantity" min="0" max="6" value="1.5"
+                   step="0.1"><br>
         </div>
 
         <input type="checkbox" id="use_slam" checked onclick="show_div('use_slam', 'slam_div')">
         <label for="use_slam"><b> Use slam (Two-handed weapons only)</b></label><br>
         <div class="description" id="slam_div">
             <label for="slam_cd_thresh_dd">Cast slam when bloodthirst/whirlwind CD is above:</label>
-            <input type="number" id="slam_cd_thresh_dd" name="quantity" min="0" max="6.0" value="2.0"><br>
+            <input type="number" id="slam_cd_thresh_dd" name="quantity" min="0" max="6.0" value="2.0" step="0.1"><br>
             <label for="slam_rage_dd">Cast slam after a melee hit if rage is above:</label>
             <input type="number" id="slam_rage_dd" name="quantity" min="15" max="100" value="15"><br>
             <label for="slam_spam_rage_dd">Spam slam when rage is above:</label>
-            <input type="number" id="slam_spam_rage_dd" name="quantity" min="0" max="100" value="50"><br>
+            <input type="number" id="slam_spam_rage_dd" name="quantity" min="15" max="100" value="50"><br>
             <label for="slam_spam_max_time_dd">Never cast slam when weapon swing timer is less than:</label>
-            <input type="number" id="slam_spam_max_time_dd" name="quantity" min="1.0" max="4.0" value="1.5"><br>
+            <input type="number" id="slam_spam_max_time_dd" name="quantity" min="1.0" max="4.0" value="1.5"
+                   step="0.1"><br>
         </div>
 
         <input type="checkbox" id="use_overpower" checked onclick="show_div('use_overpower', 'overpower_div')">
@@ -1583,9 +1590,11 @@
             <label for="overpower_rage_thresh_dd">Overpower when rage is below:</label>
             <input type="number" id="overpower_rage_thresh_dd" name="quantity" min="0" max="100" value="50"><br>
             <label for="overpower_bt_cooldown_thresh_dd">Overpower when bloodthirst CD is above:</label>
-            <input type="number" id="overpower_bt_cooldown_thresh_dd" name="quantity" min="0" max="6" value="3.0"><br>
+            <input type="number" id="overpower_bt_cooldown_thresh_dd" name="quantity" min="0" max="6" value="3.0"
+                   step="0.1"><br>
             <label for="overpower_ww_cooldown_thresh_dd">Overpower when whirlwind CD is above:</label>
-            <input type="number" id="overpower_ww_cooldown_thresh_dd" name="quantity" min="0" max="10" value="3.0"><br>
+            <input type="number" id="overpower_ww_cooldown_thresh_dd" name="quantity" min="0" max="10" value="3.0"
+                   step="0.1"><br>
         </div>
 
         <input type="checkbox" id="use_heroic_strike" checked
@@ -1609,7 +1618,7 @@
         <label for="use_hamstring"><b> Use hamstring</b></label><br>
         <div class="description" id="hamstring_div">
             <label for="hamstring_cd_thresh_dd">Hamstring when bloodthirst/Whirlwind CD is above:</label>
-            <input type="number" id="hamstring_cd_thresh_dd" name="quantity" min="0" max="6" value="2.0"><br>
+            <input type="number" id="hamstring_cd_thresh_dd" name="quantity" min="0" max="6" value="2.0" step="0.1"><br>
             <label for="hamstring_thresh_dd">Hamstring when rage is above:</label>
             <input type="number" id="hamstring_thresh_dd" name="quantity" min="0" max="100" value="70"><br>
         </div>
@@ -1721,13 +1730,13 @@
 
         <input type="checkbox" id="stat_weight_mh_speed">
         <label for="stat_weight_mh_speed"> &plusmn <input type="number" id="stat_weight_mh_speed_dd" name="quantity"
-                                                          min=".1" max="1.0" value="0.5"> seconds main-hand weapon
-            speed. (0,1s-1,0s) </label><br>
+                                                          min=".1" max="1.0" value="0.5" step="0.1"> seconds main-hand
+            weapon speed. (0,1s-1,0s) </label><br>
 
         <input type="checkbox" id="stat_weight_oh_speed">
         <label for="stat_weight_oh_speed"> &plusmn <input type="number" id="stat_weight_oh_speed_dd" name="quantity"
-                                                          min=".1" max="1.0" value="0.5"> seconds off-hand weapon
-            speed. (0,1s-1,0s) </label><br><br>
+                                                          min=".1" max="1.0" value="0.5" step="0.1"> seconds off-hand
+            weapon speed. (0,1s-1,0s) </label><br><br>
 
         <b>Other settings:</b><br>
         <input type="checkbox" id="compute_dpr">
@@ -1890,7 +1899,7 @@
         "max_optimize_time_dd", "number_of_extra_targets_dd", "extra_target_armor_dd", "extra_target_level_dd",
         "periodic_damage_interval_dd", "periodic_damage_amount_dd", "execute_phase_percentage_dd",
         "re_queue_abilities_dd", "stat_weight_skill_dd", "stat_weight_mh_speed_dd", "stat_weight_oh_speed_dd",
-        "slam_spam_max_time_dd", "slam_cd_thresh_dd", "slam_spam_rage_dd", "slam_rage_dd"];
+        "slam_spam_max_time_dd", "slam_cd_thresh_dd", "slam_spam_rage_dd", "slam_rage_dd", "berserking_haste_dd"];
 
     let sim_options = ["faerie_fire", "exposed_armor", "curse_of_recklessness", "death_wish", "enable_blood_fury",
         "enable_berserking", "recklessness", "mighty_rage_potion", "debug_on", "use_bt_in_exec_phase", "use_hs_in_exec_phase",

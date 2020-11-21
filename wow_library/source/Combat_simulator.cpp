@@ -84,8 +84,14 @@ void Combat_simulator::set_config(const Combat_simulator_config& new_config)
 
     if (config.enable_berserking)
     {
-        use_effects_all_.emplace_back(
-            Use_effect{"Berserking", Use_effect::Effect_socket::unique, {}, {}, 0, 10, 180, false});
+        use_effects_all_.emplace_back(Use_effect{"Berserking",
+                                                 Use_effect::Effect_socket::unique,
+                                                 {},
+                                                 {0, 0, 0, 0, config.berserking_haste_ / 100.0},
+                                                 0,
+                                                 10,
+                                                 180,
+                                                 false});
     }
 
     if (config.essence_of_the_red_)
@@ -427,6 +433,30 @@ void Combat_simulator::manage_flurry(Hit_result hit_result, Special_stats& speci
         }
         simulator_cout(flurry_charges, " flurry charges");
     }
+}
+
+bool Combat_simulator::start_cast_slam(bool mh_swing, double rage, double swing_time_left)
+{
+    bool use_sl = true;
+    if (config.combat.use_bloodthirst)
+    {
+        use_sl &= time_keeper_.blood_thirst_cd > config.combat.slam_cd_thresh;
+    }
+    if (config.combat.use_whirlwind)
+    {
+        use_sl &= time_keeper_.whirlwind_cd > config.combat.slam_cd_thresh;
+    }
+    if (use_sl)
+    {
+        if ((mh_swing && rage > config.combat.slam_rage_dd) ||
+            (swing_time_left > config.combat.slam_spam_max_time && rage > config.combat.slam_spam_rage))
+        {
+            simulator_cout("Starting to channel slam.");
+            slam_manager.queue_slam(time_keeper_.time);
+            return true;
+        }
+    }
+    return false;
 }
 
 void Combat_simulator::slam(Weapon_sim& main_hand_weapon, Special_stats& special_stats, double& rage,
@@ -1171,7 +1201,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                         }
                     }
                 }
-                if (config.combat.use_bt_in_exec_phase)
+                if (config.combat.use_bloodthirst && config.combat.use_bt_in_exec_phase)
                 {
                     if (time_keeper_.blood_thirst_cd < 0.0 && time_keeper_.global_cd < 0 && rage > 30)
                     {
@@ -1190,24 +1220,20 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                 {
                     if (!slam_manager.is_slam_queued())
                     {
-                        if ((time_keeper_.blood_thirst_cd > config.combat.slam_cd_thresh) &&
-                            (time_keeper_.whirlwind_cd > config.combat.slam_cd_thresh))
+                        if (start_cast_slam(mh_swing, rage, weapons[0].internal_swing_timer))
                         {
-                            if ((mh_swing && rage > config.combat.slam_rage_dd) ||
-                                (weapons[0].internal_swing_timer > config.combat.slam_spam_max_time &&
-                                 rage > config.combat.slam_spam_rage))
-                            {
-                                simulator_cout("Starting to channel slam.");
-                                slam_manager.queue_slam(time_keeper_.time);
-                                continue;
-                            }
+                            continue;
                         }
                     }
-                    else if (slam_manager.time_left(time_keeper_.time) < 0.0)
+                    else if (slam_manager.time_left(time_keeper_.time) <= 0.0)
                     {
                         slam(weapons[0], special_stats, rage, damage_sources, flurry_charges);
                         slam_manager.un_queue_slam();
                         weapons[0].internal_swing_timer = weapons[0].swing_speed / (1 + special_stats.haste);
+                        if (start_cast_slam(mh_swing, rage, weapons[0].internal_swing_timer))
+                        {
+                            continue;
+                        }
                     }
                     else
                     {
@@ -1272,6 +1298,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                     }
                 }
 
+                // Heroic strike or Cleave
                 if (config.number_of_extra_targets > 0 && config.combat.cleave_if_adds)
                 {
                     if (rage > config.combat.cleave_rage_thresh && !ability_queue_manager.cleave_queued)

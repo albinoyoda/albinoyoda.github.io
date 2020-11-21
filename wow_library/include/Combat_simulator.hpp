@@ -68,6 +68,7 @@ struct Combat_simulator_config
 
     bool ability_queue_{};
     double ability_queue_rage_thresh_{};
+    double berserking_haste_{};
 
     // Simulator settings
     bool enable_bloodrage{false};
@@ -246,6 +247,8 @@ public:
 
     void overpower(Weapon_sim& main_hand_weapon, Special_stats& special_stats, double& rage,
                    Damage_sources& damage_sources, int& flurry_charges);
+
+    bool start_cast_slam(bool mh_swing, double rage, double swing_time_left);
 
     void slam(Weapon_sim& main_hand_weapon, Special_stats& special_stats, double& rage, Damage_sources& damage_sources,
               int& flurry_charges);

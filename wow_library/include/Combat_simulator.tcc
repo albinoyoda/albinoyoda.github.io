@@ -160,6 +160,8 @@ void Combat_simulator_config::get_combat_simulator_config(const T& input)
         find_value(input.float_options_string, input.float_options_val, "execute_phase_percentage_dd");
     ability_queue_rage_thresh_ =
         find_value(input.float_options_string, input.float_options_val, "re_queue_abilities_dd");
+    berserking_haste_ =
+        find_value(input.float_options_string, input.float_options_val, "berserking_haste_dd");
 
     enable_bloodrage = true;
 }
