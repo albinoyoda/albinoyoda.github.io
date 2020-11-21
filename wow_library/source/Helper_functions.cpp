@@ -2,6 +2,46 @@
 
 #include <algorithm>
 
+int get_weapon_skill(const Special_stats& special_stats, Weapon_type weapon_type, Weapon_socket weapon_socket)
+{
+    if (weapon_socket == Weapon_socket::two_hand)
+    {
+        switch (weapon_type)
+        {
+        case Weapon_type::sword:
+            return special_stats.two_hand_sword_skill;
+        case Weapon_type::axe:
+            return special_stats.two_hand_axe_skill;
+        case Weapon_type::mace:
+            return special_stats.two_hand_mace_skill;
+        default:
+            std::cout << "Attempted to retrieve two hand skill which is not axe/sword/mace. Aborting!\n";
+            assert(false);
+            return 0;
+        }
+    }
+    else
+    {
+        switch (weapon_type)
+        {
+        case Weapon_type::sword:
+            return special_stats.sword_skill;
+        case Weapon_type::axe:
+            return special_stats.axe_skill;
+        case Weapon_type::dagger:
+            return special_stats.dagger_skill;
+        case Weapon_type::mace:
+            return special_stats.mace_skill;
+        case Weapon_type::unarmed:
+            return special_stats.fist_skill;
+        default:
+            std::cout << "Attempted to retrieve skill which is not axe/sword/mace. Aborting!\n";
+            assert(false);
+            return 0;
+        }
+    }
+}
+
 double is_time_available(const std::vector<std::pair<double, Use_effect>>& use_effect_timers, double check_time,
                          double duration)
 {
@@ -168,10 +208,10 @@ double get_character_ap_equivalent(const Special_stats& special_stats, const Wea
                                    double sim_time, const std::vector<Use_effect>& use_effects)
 {
     double attack_power = special_stats.attack_power;
-    int mh_skill = get_skill_of_type(special_stats, mh_wep.type);
+    int mh_skill = get_weapon_skill(special_stats, mh_wep.type, mh_wep.weapon_socket);
     double mh_hit_crit_skill_ap = get_hit_crit_skill_ap_equivalent(special_stats, mh_skill);
 
-    int oh_skill = get_skill_of_type(special_stats, oh_wep.type);
+    int oh_skill = get_weapon_skill(special_stats, oh_wep.type, mh_wep.weapon_socket);
     double oh_hit_crit_skill_ap = get_hit_crit_skill_ap_equivalent(special_stats, oh_skill);
 
     /// Weighted combination of ap from mh and oh, based on the hit-tables
@@ -220,7 +260,7 @@ double get_character_ap_equivalent(const Special_stats& special_stats, const Wea
                                    const std::vector<Use_effect>& use_effects)
 {
     double attack_power = special_stats.attack_power;
-    int mh_skill = get_skill_of_type(special_stats, mh_wep.type);
+    int mh_skill = get_weapon_skill(special_stats, mh_wep.type, mh_wep.weapon_socket);
     double hit_crit_skill_ap = get_hit_crit_skill_ap_equivalent(special_stats, mh_skill);
 
     double mh_ap = ((mh_wep.max_damage + mh_wep.min_damage) / 2 + special_stats.bonus_damage) / mh_wep.swing_speed * 14;
@@ -377,7 +417,10 @@ bool is_strictly_weaker(Special_stats special_stats1, Special_stats special_stat
                (special_stats2.sword_skill >= special_stats1.sword_skill) &&
                (special_stats2.mace_skill >= special_stats1.mace_skill) &&
                (special_stats2.dagger_skill >= special_stats1.dagger_skill) &&
-               (special_stats2.bonus_damage >= special_stats1.bonus_damage);
+               (special_stats2.bonus_damage >= special_stats1.bonus_damage) &&
+               (special_stats2.two_hand_sword_skill >= special_stats1.two_hand_sword_skill) &&
+               (special_stats2.two_hand_mace_skill >= special_stats1.two_hand_mace_skill) &&
+               (special_stats2.two_hand_axe_skill >= special_stats1.two_hand_axe_skill);
     bool gre = (special_stats2.hit > special_stats1.hit) ||
                (special_stats2.critical_strike > special_stats1.critical_strike) ||
                (special_stats2.attack_power > special_stats1.attack_power) ||
@@ -385,7 +428,10 @@ bool is_strictly_weaker(Special_stats special_stats1, Special_stats special_stat
                (special_stats2.sword_skill > special_stats1.sword_skill) ||
                (special_stats2.mace_skill > special_stats1.mace_skill) ||
                (special_stats2.dagger_skill > special_stats1.dagger_skill) ||
-               (special_stats2.bonus_damage > special_stats1.bonus_damage);
+               (special_stats2.bonus_damage > special_stats1.bonus_damage) ||
+               (special_stats2.two_hand_sword_skill > special_stats1.two_hand_sword_skill) ||
+               (special_stats2.two_hand_mace_skill > special_stats1.two_hand_mace_skill) ||
+               (special_stats2.two_hand_axe_skill > special_stats1.two_hand_axe_skill);
     return geq && gre;
 }
 
@@ -395,6 +441,9 @@ double estimate_special_stats_high(const Special_stats& special_stats)
     max_skill = std::max(special_stats.sword_skill, max_skill);
     max_skill = std::max(special_stats.mace_skill, max_skill);
     max_skill = std::max(special_stats.dagger_skill, max_skill);
+    max_skill = std::max(special_stats.two_hand_sword_skill, max_skill);
+    max_skill = std::max(special_stats.two_hand_mace_skill, max_skill);
+    max_skill = std::max(special_stats.two_hand_axe_skill, max_skill);
 
     double ap_from_skill = max_skill <= 5 ? max_skill * skill_w : 5 * skill_w + (max_skill - 5) * skill_w_soft;
 
@@ -412,6 +461,9 @@ double estimate_special_stats_low(const Special_stats& special_stats)
     max_skill = std::max(special_stats.sword_skill, max_skill);
     max_skill = std::max(special_stats.mace_skill, max_skill);
     max_skill = std::max(special_stats.dagger_skill, max_skill);
+    max_skill = std::max(special_stats.two_hand_sword_skill, max_skill);
+    max_skill = std::max(special_stats.two_hand_mace_skill, max_skill);
+    max_skill = std::max(special_stats.two_hand_axe_skill, max_skill);
 
     // Assume 2.6 speed for the low estimation
     double low_estimation = special_stats.bonus_damage / 2.6 * 14;
@@ -450,6 +502,12 @@ double estimate_stat_diff(Special_stats special_stats1, Special_stats special_st
     diff.sword_skill > 0 ? res_2.sword_skill = diff.sword_skill : res_1.sword_skill = -diff.sword_skill;
     diff.mace_skill > 0 ? res_2.mace_skill = diff.mace_skill : res_1.mace_skill = -diff.mace_skill;
     diff.dagger_skill > 0 ? res_2.dagger_skill = diff.dagger_skill : res_1.dagger_skill = -diff.dagger_skill;
+    diff.two_hand_sword_skill > 0 ? res_2.two_hand_sword_skill = diff.two_hand_sword_skill :
+                                    res_1.two_hand_sword_skill = -diff.two_hand_sword_skill;
+    diff.two_hand_axe_skill > 0 ? res_2.two_hand_axe_skill = diff.two_hand_axe_skill :
+                                  res_1.two_hand_axe_skill = -diff.two_hand_axe_skill;
+    diff.two_hand_mace_skill > 0 ? res_2.two_hand_mace_skill = diff.two_hand_mace_skill :
+                                   res_1.two_hand_mace_skill = -diff.two_hand_mace_skill;
     double ap_1 = estimate_special_stats_high(res_1);
     double ap_2 = estimate_special_stats_low(res_2);
     return ap_2 - ap_1;

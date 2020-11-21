@@ -316,6 +316,4 @@ std::string operator+(std::string& string, const Socket& socket);
 
 std::string operator+(std::string& string, const Weapon_socket& socket);
 
-int get_weapon_skill(const Special_stats& special_stats, Weapon_type weapon_type);
-
 #endif // WOW_SIMULATOR_ITEM_HPP

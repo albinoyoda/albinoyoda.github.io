@@ -915,8 +915,8 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         weapons.emplace_back(wep.swing_speed, wep.min_damage, wep.max_damage, wep.socket, wep.type, wep.weapon_socket,
                              wep.hit_effects);
         weapons.back().compute_weapon_damage(wep.buff.bonus_damage + starting_special_stats.bonus_damage);
-        compute_hit_table(get_weapon_skill(starting_special_stats, wep.type), starting_special_stats, wep.socket,
-                          wep.weapon_socket);
+        compute_hit_table(get_weapon_skill(starting_special_stats, wep.type, wep.weapon_socket), starting_special_stats,
+                          wep.socket, wep.weapon_socket);
     }
 
     if (character.is_dual_wield())
@@ -944,11 +944,11 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
     }
 
     const bool is_dual_wield = character.is_dual_wield();
-    auto hit_effects_mh_copy = weapons[0].hit_effects;
+    const auto hit_effects_mh_copy = weapons[0].hit_effects;
     auto hit_effects_oh_copy = is_dual_wield ? weapons[1].hit_effects : std::vector<Hit_effect>{};
 
     double sim_time = config.sim_time;
-    double averaging_interval = 2.0; // Duration of the uniform interval that is evaluated
+    const double averaging_interval = 2.0; // Duration of the uniform interval that is evaluated
     sim_time -= averaging_interval;
 
     // Configure use effects
@@ -1092,7 +1092,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
             {
                 for (const auto& weapon : weapons)
                 {
-                    compute_hit_table(get_weapon_skill(character.total_special_stats, weapon.weapon_type),
+                    compute_hit_table(get_weapon_skill(special_stats, weapon.weapon_type, weapon.weapon_socket),
                                       special_stats, weapon.socket, weapon.weapon_socket);
                 }
                 buff_manager_.need_to_recompute_hittables = false;

@@ -217,7 +217,10 @@ bool is_strictly_weaker_wep(const Weapon_struct& wep_struct1, const Weapon_struc
                       (special_stats2.axe_skill >= special_stats1.axe_skill) &&
                       (special_stats2.sword_skill >= special_stats1.sword_skill) &&
                       (special_stats2.mace_skill >= special_stats1.mace_skill) &&
-                      (special_stats2.dagger_skill >= special_stats1.dagger_skill);
+                      (special_stats2.dagger_skill >= special_stats1.dagger_skill) &&
+                      (special_stats2.two_hand_sword_skill >= special_stats1.two_hand_sword_skill) &&
+                      (special_stats2.two_hand_mace_skill >= special_stats1.two_hand_mace_skill) &&
+                      (special_stats2.two_hand_axe_skill >= special_stats1.two_hand_axe_skill);
 
     if (socket == Weapon_socket::main_hand)
     {
@@ -236,7 +239,10 @@ bool is_strictly_weaker_wep(const Weapon_struct& wep_struct1, const Weapon_struc
                    (special_stats2.axe_skill > special_stats1.axe_skill) ||
                    (special_stats2.sword_skill > special_stats1.sword_skill) ||
                    (special_stats2.mace_skill > special_stats1.mace_skill) ||
-                   (special_stats2.dagger_skill > special_stats1.dagger_skill);
+                   (special_stats2.dagger_skill > special_stats1.dagger_skill) ||
+                   (special_stats2.two_hand_sword_skill > special_stats1.two_hand_sword_skill) ||
+                   (special_stats2.two_hand_mace_skill > special_stats1.two_hand_mace_skill) ||
+                   (special_stats2.two_hand_axe_skill > special_stats1.two_hand_axe_skill);
 
     if (socket == Weapon_socket::main_hand)
     {
@@ -280,12 +286,15 @@ std::vector<Weapon> Item_optimizer::remove_weaker_weapons(const Weapon_socket we
         {
         case Weapon_type::sword:
             wep_special_stats.sword_skill += racial_stats.sword_skill - 300;
+            wep_special_stats.two_hand_sword_skill += racial_stats.two_hand_sword_skill - 300;
             break;
         case Weapon_type::axe:
             wep_special_stats.axe_skill += racial_stats.axe_skill - 300;
+            wep_special_stats.two_hand_axe_skill += racial_stats.two_hand_axe_skill - 300;
             break;
         case Weapon_type::mace:
             wep_special_stats.mace_skill += racial_stats.mace_skill - 300;
+            wep_special_stats.two_hand_mace_skill += racial_stats.two_hand_mace_skill - 300;
             break;
         default:
             break;

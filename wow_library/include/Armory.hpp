@@ -509,7 +509,7 @@ struct Armory
                     {"claymore_of_unholy_might", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0,
                                                                                                     98.0}, 3.6, 235.0, 354.0, Weapon_socket::two_hand, Weapon_type::sword},
                     {"obsidian_edged_blade", Attributes{42.0, 0.0}, Special_stats{0.0, 0.0,
-                                                                                     0.0, 0, 0, 8}, 3.4, 176.0, 264.0, Weapon_socket::two_hand, Weapon_type::sword},
+                                                                                     0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8}, 3.4, 176.0, 264.0, Weapon_socket::two_hand, Weapon_type::sword},
                     {"bonereavers_edge", Attributes{0.0, 0.0}, Special_stats{1.0, 0.0,
                                                                                   0.0},3.4, 206.0, 310.0, Weapon_socket::two_hand, Weapon_type::sword, {{"bonereavers_edge", Hit_effect::Type::reduce_armor, {}, {}, 0, 10, 2.0*3.4/60.0,0, 1, 700, 3}}},
                     {"manslayer_of_the_qiraji", Attributes{35.0, 15.0}, Special_stats{0.0, 0.0,

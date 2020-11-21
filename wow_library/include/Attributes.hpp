@@ -13,81 +13,79 @@ struct Special_stats
     Special_stats() = default;
 
     Special_stats(double critical_strike, double hit, double attack_power, double chance_for_extra_hit = 0.0,
-                  double haste = 0.0, int sword_skill = 0, int axe_skill = 0, int dagger_skill = 0,
-                  int mace_skill = 0, int fist_skill = 0, double damage_multiplier = 0, double stat_multiplier = 0,
-                  double bonus_damage = 0) :
-            critical_strike{critical_strike},
-            hit{hit},
-            attack_power{attack_power},
-            chance_for_extra_hit(chance_for_extra_hit),
-            haste(haste),
-            sword_skill(sword_skill),
-            axe_skill(axe_skill),
-            dagger_skill(dagger_skill),
-            mace_skill(mace_skill),
-            fist_skill(fist_skill),
-            damage_multiplier(damage_multiplier),
-            stat_multiplier(stat_multiplier),
-            bonus_damage(bonus_damage) {}
-
-    void clear()
+                  double haste = 0.0, int sword_skill = 0, int axe_skill = 0, int dagger_skill = 0, int mace_skill = 0,
+                  int fist_skill = 0, double damage_multiplier = 0, double stat_multiplier = 0, double bonus_damage = 0,
+                  int two_hand_sword_skill = 0, int two_hand_axe_skill = 0, int two_hand_mace_skill = 0)
+        : critical_strike{critical_strike}
+        , hit{hit}
+        , attack_power{attack_power}
+        , chance_for_extra_hit(chance_for_extra_hit)
+        , haste(haste)
+        , sword_skill(sword_skill)
+        , axe_skill(axe_skill)
+        , dagger_skill(dagger_skill)
+        , mace_skill(mace_skill)
+        , fist_skill(fist_skill)
+        , damage_multiplier(damage_multiplier)
+        , stat_multiplier(stat_multiplier)
+        , bonus_damage(bonus_damage)
+        , two_hand_sword_skill(two_hand_sword_skill)
+        , two_hand_axe_skill(two_hand_axe_skill)
+        , two_hand_mace_skill(two_hand_mace_skill)
     {
-        critical_strike = 0;
-        hit = 0;
-        attack_power = 0;
-        chance_for_extra_hit = 0;
-        haste = 0;
-        sword_skill = 0;
-        axe_skill = 0;
-        dagger_skill = 0;
-        mace_skill = 0;
-        damage_multiplier = 0;
-        stat_multiplier = 0;
     }
 
-    Special_stats operator+(const Special_stats &rhs) const
+    Special_stats operator+(const Special_stats& rhs) const
     {
-        return {critical_strike + rhs.critical_strike,
-                hit + rhs.hit,
-                attack_power + rhs.attack_power,
-                chance_for_extra_hit + rhs.chance_for_extra_hit,
-                multiplicative_addition(haste, rhs.haste),
-                sword_skill + rhs.sword_skill,
-                axe_skill + rhs.axe_skill,
-                dagger_skill + rhs.dagger_skill,
-                mace_skill + rhs.mace_skill,
-                fist_skill + rhs.fist_skill,
-                multiplicative_addition(damage_multiplier, rhs.damage_multiplier),
-                multiplicative_addition(stat_multiplier, rhs.stat_multiplier),
-                bonus_damage + rhs.bonus_damage,
+        return {
+            critical_strike + rhs.critical_strike,
+            hit + rhs.hit,
+            attack_power + rhs.attack_power,
+            chance_for_extra_hit + rhs.chance_for_extra_hit,
+            multiplicative_addition(haste, rhs.haste),
+            sword_skill + rhs.sword_skill,
+            axe_skill + rhs.axe_skill,
+            dagger_skill + rhs.dagger_skill,
+            mace_skill + rhs.mace_skill,
+            fist_skill + rhs.fist_skill,
+            multiplicative_addition(damage_multiplier, rhs.damage_multiplier),
+            multiplicative_addition(stat_multiplier, rhs.stat_multiplier),
+            bonus_damage + rhs.bonus_damage,
+            two_hand_sword_skill + rhs.two_hand_sword_skill,
+            two_hand_axe_skill + rhs.two_hand_axe_skill,
+            two_hand_mace_skill + rhs.two_hand_mace_skill,
         };
     }
 
-    Special_stats operator-(const Special_stats &rhs) const
+    Special_stats operator-(const Special_stats& rhs) const
     {
-        return {critical_strike - rhs.critical_strike,
-                hit - rhs.hit,
-                attack_power - rhs.attack_power,
-                chance_for_extra_hit - rhs.chance_for_extra_hit,
-                multiplicative_subtraction(haste, rhs.haste),
-                sword_skill - rhs.sword_skill,
-                axe_skill - rhs.axe_skill,
-                dagger_skill - rhs.dagger_skill,
-                mace_skill - rhs.mace_skill,
-                fist_skill - rhs.fist_skill,
-                multiplicative_subtraction(damage_multiplier, rhs.damage_multiplier),
-                multiplicative_subtraction(stat_multiplier, rhs.stat_multiplier),
-                stat_multiplier - rhs.bonus_damage,
+        return {
+            critical_strike - rhs.critical_strike,
+            hit - rhs.hit,
+            attack_power - rhs.attack_power,
+            chance_for_extra_hit - rhs.chance_for_extra_hit,
+            multiplicative_subtraction(haste, rhs.haste),
+            sword_skill - rhs.sword_skill,
+            axe_skill - rhs.axe_skill,
+            dagger_skill - rhs.dagger_skill,
+            mace_skill - rhs.mace_skill,
+            fist_skill - rhs.fist_skill,
+            multiplicative_subtraction(damage_multiplier, rhs.damage_multiplier),
+            multiplicative_subtraction(stat_multiplier, rhs.stat_multiplier),
+            bonus_damage - rhs.bonus_damage,
+            two_hand_sword_skill - rhs.two_hand_sword_skill,
+            two_hand_axe_skill - rhs.two_hand_axe_skill,
+            two_hand_mace_skill - rhs.two_hand_mace_skill,
         };
     }
 
-    Special_stats &operator+=(const Special_stats &rhs)
+    Special_stats& operator+=(const Special_stats& rhs)
     {
         *this = *this + rhs;
         return *this;
     }
 
-    Special_stats &operator-=(const Special_stats &rhs)
+    Special_stats& operator-=(const Special_stats& rhs)
     {
         *this = *this - rhs;
         return *this;
@@ -106,6 +104,9 @@ struct Special_stats
     double damage_multiplier{};
     double stat_multiplier{};
     double bonus_damage{};
+    int two_hand_sword_skill{};
+    int two_hand_axe_skill{};
+    int two_hand_mace_skill{};
 };
 
 class Attributes
@@ -121,35 +122,29 @@ public:
         agility = 0;
     }
 
-    Attributes multiply(const Special_stats &special_stats) const
+    Attributes multiply(const Special_stats& special_stats) const
     {
         double multiplier = special_stats.stat_multiplier + 1;
         return {strength * multiplier, agility * multiplier};
     }
 
-    Special_stats convert_to_special_stats(const Special_stats &special_stats) const
+    Special_stats convert_to_special_stats(const Special_stats& special_stats) const
     {
         double multiplier = special_stats.stat_multiplier + 1;
         return {agility / 20 * multiplier, 0, strength * 2 * multiplier};
     }
 
-    Attributes operator+(const Attributes &rhs)
-    {
-        return {strength + rhs.strength, agility + rhs.agility};
-    }
+    Attributes operator+(const Attributes& rhs) { return {strength + rhs.strength, agility + rhs.agility}; }
 
-    Attributes &operator+=(const Attributes &rhs)
+    Attributes& operator+=(const Attributes& rhs)
     {
         *this = *this + rhs;
         return *this;
     }
 
-    Attributes operator*(double rhs)
-    {
-        return {this->strength * rhs, this->agility * rhs};
-    }
+    Attributes operator*(double rhs) { return {this->strength * rhs, this->agility * rhs}; }
 
-    Attributes &operator*=(double rhs)
+    Attributes& operator*=(double rhs)
     {
         *this = *this * rhs;
         return *this;
@@ -159,9 +154,8 @@ public:
     double agility;
 };
 
-std::ostream &operator<<(std::ostream &os, Special_stats const &special_stats);
+std::ostream& operator<<(std::ostream& os, Special_stats const& special_stats);
 
-std::ostream &operator<<(std::ostream &os, Attributes const &stats);
+std::ostream& operator<<(std::ostream& os, Attributes const& stats);
 
-
-#endif //WOW_SIMULATOR_STATS_HPP
+#endif // WOW_SIMULATOR_STATS_HPP
