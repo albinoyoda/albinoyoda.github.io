@@ -448,12 +448,14 @@ bool Combat_simulator::start_cast_slam(bool mh_swing, double rage, double swing_
     }
     if (use_sl)
     {
-        if ((mh_swing && rage > config.combat.slam_rage_dd) ||
-            (swing_time_left > config.combat.slam_spam_max_time && rage > config.combat.slam_spam_rage))
+        if (swing_time_left > config.combat.slam_spam_max_time)
         {
-            simulator_cout("Starting to channel slam.");
-            slam_manager.queue_slam(time_keeper_.time);
-            return true;
+            if ((mh_swing && rage > config.combat.slam_rage_dd) || rage > config.combat.slam_spam_rage)
+            {
+                simulator_cout("Starting to channel slam.");
+                slam_manager.queue_slam(time_keeper_.time);
+                return true;
+            }
         }
     }
     return false;

@@ -179,6 +179,49 @@
         left: 240px;
         /*margin-left: 50px;*/
     }
+
+    .icon {
+        width: 35px;
+        height: 35px;
+        position: relative;
+        margin: 3px;
+        user-select: none;
+        border: 1px solid #525252;
+        display: inline-block;
+        vertical-align: top;
+        cursor: pointer;
+        transition: border-color .2s ease-in;
+    }
+
+    .icon:before {
+        content: attr(data-disp);
+        position: absolute;
+        right: -4px;
+        bottom: -4px;
+        background: #000;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        text-align: center;
+        z-index: 3;
+        font-size: 11px;
+        padding: 1px 3px;
+        color: #00fcff;
+    }
+
+    .icon:after {
+        content: "";
+        width: 39px;
+        height: 39px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        border-radius: 4px;
+    }
+
+    .talents {
+        display: inline-block;
+        border-right: thin solid #A9A9A9;
+    }
 </style>
 
 <head>
@@ -195,7 +238,7 @@
       onload="openTab('event', 'Simulator');open_armor();show_div('cleave_if_adds', 'cleave_div');
       show_div('use_hamstring', 'hamstring_div');show_div('multi_target_mode', 'multi_target_div');
       show_div('periodic_damage', 'periodic_damage_div');show_div('ability_queue', 'ability_queue_div');
-      show_div('dual_wield_mode', 'dual_wield_div')">
+      show_div('dual_wield_mode', 'dual_wield_div');displayTalentBootup();calcTotalTalents();">
 
 <div class="tab">
     <button class="tablinks" onclick="openTab(event, 'Simulator')">Simulator</button>
@@ -1374,6 +1417,325 @@
     </div>
     <br><br>
 
+    <button type="button" class="collapsible">Talents</button>
+    <div class="content">
+        <b>Presets:</b><br>
+        <button onclick="load_p1prebisitems()">Standard Fury</button>
+        <button onclick="load_p5pvebismult()">Cleave Fury</button>
+        <button onclick="load_p6pvebismult()">Two Hand Fury</button>
+        <button onclick="load_p6pvebismult()">Clear</button>
+        <br><br>
+        <!--    TODO tooltips https://www.w3schools.com/css/css_tooltip.asp-->
+        <table class="talents arms">
+            <tbody>
+            <tr>
+                <th id="arms_title" colspan="4">Arms</th>
+            </tr>
+            <tr>
+                <td>
+                    <div class="icon" data-count="3" data-x="0" data-y="0" id="improved_heroic_strike" data-max="3">
+                        <img src="images/ability_rogue_ambush.jpg" alt="Improved Heroic Strike"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="5" data-x="1" data-y="0" id="deflection" data-max="5">
+                        <img src="images/ability_parry.jpg" alt="Deflection"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="3" data-x="2" data-y="0" id="improved_rend" data-max="3">
+                        <img src="images/ability_gouge.jpg" alt="Improved Rend"></div>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="icon" data-count="2" data-x="0" data-y="1" id="improved_charge" data-max="2">
+                        <img src="images/ability_warrior_charge.jpg" alt="Improved Charge"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="5" data-x="1" data-y="1" id="tactical_mastery" data-max="5"><img
+                            src="images/spell_nature_enchantarmor.jpg" alt="Tactical Mastery"></div>
+                </td>
+                <td></td>
+                <td>
+                    <div class="icon" data-count="0" data-x="3" data-y="1" id="improved_thunder_clap" data-max="3">
+                        <img src="images/ability_thunderclap.jpg" alt="Improved Thunder Clap"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="icon" data-count="0" data-x="0" data-y="2" id="improved_overpower" data-max="2">
+                        <img src="images/inv_sword_05.jpg" alt="Improved Overpower"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="1" data-x="1" data-y="2" id="anger_management" data-max="1">
+                        <img src="images/spell_holy_blessingofstamina.jpg" alt="Anger Management"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="3" data-x="2" data-y="2" id="deep_wounds_talent" data-max="3">
+                        <img src="images/ability_backstab.jpg" alt="Deep Wounds"></div>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <div class="icon" data-count="0" data-x="1" data-y="3" id="two_handed_weapon_specialization"
+                         data-max="5">
+                        <img src="images/inv_axe_09.jpg" alt="Two-Handed Weapon Specialization"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="2" data-x="2" data-y="3" id="impale" data-max="2">
+                        <img src="images/ability_searingarrow.jpg" alt="Impale"></div>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="icon" data-count="0" data-x="0" data-y="4" id="axe_specialization" data-max="5">
+                        <img src="images/inv_axe_06.jpg" alt="Axe Specialization"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="0" data-x="1" data-y="4" id="sweeping_strikes" data-max="1">
+                        <img src="images/ability_rogue_slicedice.jpg" alt="Sweeping Strikes"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="0" data-x="2" data-y="4" id="mace_specialization" data-max="5">
+                        <img src="images/inv_mace_01.jpg" alt="Mace Specialization"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="0" data-x="3" data-y="4" id="sword_specialization" data-max="5">
+                        <img src="images/inv_sword_27.jpg" alt="Sword Specialization"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="icon" data-count="0" data-x="0" data-y="5" id="polearm_specialization" data-max="5">
+                        <img src="images/inv_weapon_halbard_01.jpg" alt="Polearm Specialization"></div>
+                </td>
+                <td></td>
+                <td>
+                    <div class="icon" data-count="0" data-x="2" data-y="5" id="improved_hamstring" data-max="3">
+                        <img src="images/ability_shockwave.jpg" alt="Improved Hamstring"></div>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <div class="icon" data-count="0" data-x="1" data-y="6" id="mortal_strike" data-max="1">
+                        <img src="images/ability_warrior_savageblow.jpg" alt="Mortal Strike"></div>
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+        <table class="talents fury">
+            <tbody>
+            <tr>
+                <th id="fury_title" colspan="4">Fury</th>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <div class="icon" data-count="0" data-x="1" data-y="0" id="booming_voice" data-max="5">
+                        <img src="images/spell_nature_purge.jpg" alt="Booming Voice"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="5" data-x="2" data-y="0" id="cruelty" data-max="5">
+                        <img src="images/ability_rogue_eviscerate.jpg" alt="Cruelty"></div>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <div class="icon" data-count="0" data-x="1" data-y="1" id="improved_demoralizing_shout"
+                         data-max="5">
+                        <img src="images/ability_warrior_warcry.jpg" alt="Improved Demoralizing Shout"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="5" data-x="2" data-y="1" id="unbridled_wrath" data-max="5">
+                        <img src="images/spell_nature_stoneclawtotem.jpg" alt="Unbridled Wrath"></div>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="icon" data-count="0" data-x="0" data-y="2" id="improved_cleave" data-max="3">
+                        <img src="images/ability_warrior_cleave.jpg" alt="Improved Cleave"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="0" data-x="1" data-y="2" id="peircing_howl" data-max="1">
+                        <img src="images/spell_shadow_deathscream.jpg" alt="Piercing Howl"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="0" data-x="2" data-y="2" id="blood_craze" data-max="3">
+                        <img src="images/spell_shadow_summonimp.jpg" alt="Blood Craze"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="5" data-x="3" data-y="2" id="improved_battle_shout" data-max="5">
+                        <img src="images/ability_warrior_battleshout.jpg" alt="Improved Battle Shout"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="icon" data-count="5" data-x="0" data-y="3" id="dual_wield_specialization" data-max="5">
+                        <img src="images/ability_dualwield.jpg" alt="Dual Wield Specialization"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="2" data-x="1" data-y="3" id="improved_execute" data-max="2">
+                        <img src="images/inv_sword_48.jpg" alt="Improved Execute"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="5" data-x="2" data-y="3" id="enrage" data-max="5">
+                        <img src="images/spell_shadow_unholyfrenzy.jpg" alt="Enrage"></div>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="icon" data-count="0" data-x="0" data-y="4" id="improved_slam" data-max="5">
+                        <img src="images/ability_warrior_decisivestrike.jpg" alt="Improved Slam"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="1" data-x="1" data-y="4" id="death_wish_talent" data-max="1">
+                        <img src="images/spell_shadow_deathpact.jpg" alt="Death Wish"></div>
+                </td>
+                <td></td>
+                <td>
+                    <div class="icon" data-count="0" data-x="3" data-y="4" id="improved_intercept" data-max="2">
+                        <img src="images/ability_rogue_sprint.jpg" alt="Improved Intercept"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="icon" data-count="0" data-x="0" data-y="5" id="improved_berserker_rage" data-max="2">
+                        <img src="images/spell_nature_ancestralguardian.jpg" alt="Improved Berserker Rage"></div>
+                </td>
+                <td></td>
+                <td>
+                    <div class="icon" data-count="5" data-x="2" data-y="5" id="flurry" data-max="5">
+                        <img src="images/ability_ghoulfrenzy.jpg" alt="Flurry">
+                    </div>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <div class="icon" data-count="1" data-x="1" data-y="6" id="bloodthirst" data-max="1">
+                        <img src="images/spell_nature_bloodlust.jpg" alt="Bloodthirst"></div>
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+        <table class="talents prot">
+            <tbody>
+            <tr>
+                <th id="prot_title" colspan="4">Protection</th>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <div class="icon" data-count="0" data-x="1" data-y="0" id="shield_specialization" data-max="5">
+                        <img src="images/inv_shield_06.jpg" alt="Shield Specialization"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="0" data-x="2" data-y="0" id="anticipation" data-max="5">
+                        <img src="images/spell_nature_mirrorimage.jpg" alt="Anticipation"></div>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="icon" data-count="0" data-x="0" data-y="1" id="improved_bloodrage" data-max="2">
+                        <img src="images/ability_racial_bloodrage.jpg" alt="Improved Bloodrage"></div>
+                </td>
+                <td></td>
+                <td>
+                    <div class="icon" data-count="0" data-x="2" data-y="1" id="toughness" data-max="5">
+                        <img src="images/spell_holy_devotion.jpg" alt="Toughness"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="0" data-x="3" data-y="1" id="iron_will" data-max="5">
+                        <img src="images/spell_magic_magearmor.jpg" alt="Iron Will"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="icon" data-count="0" data-x="0" data-y="2" id="last_stand" data-max="1">
+                        <img src="images/spell_holy_ashestoashes.jpg" alt="Last Stand"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="0" data-x="1" data-y="2" id="improved_shield_block" data-max="3">
+                        <img src="images/ability_defend.jpg" alt="Improved Shield Block"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="0" data-x="2" data-y="2" id="improved_revenge" data-max="3">
+                        <img src="images/ability_warrior_revenge.jpg" alt="Improved Revenge"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="0" data-x="3" data-y="2" id="defiance" data-max="5">
+                        <img src="images/ability_warrior_innerrage.jpg" alt="Defiance"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="icon" data-count="0" data-x="0" data-y="3" id="improved_sunder_armor" data-max="3">
+                        <img src="images/ability_warrior_sunder.jpg" alt="Improved Sunder Armor"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="0" data-x="1" data-y="3" id="improved_disarm" data-max="3">
+                        <img src="images/ability_warrior_disarm.jpg" alt="Improved Disarm"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="0" data-x="2" data-y="3" id="improved_taunt" data-max="2">
+                        <img src="images/spell_nature_reincarnation.jpg" alt="Improved Taunt"></div>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="icon" data-count="0" data-x="0" data-y="4" id="improved_shield_wall" data-max="2">
+                        <img src="images/ability_warrior_shieldwall.jpg" alt="Improved Shield Wall"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="0" data-x="1" data-y="4" id="concussion_blow" data-max="1">
+                        <img src="images/ability_thunderbolt.jpg" alt="Concussion Blow"></div>
+                </td>
+                <td>
+                    <div class="icon" data-count="0" data-x="2" data-y="4" id="improved_shield_bash" data-max="2">
+                        <img src="images/ability_warrior_shieldbash.jpg" alt="Improved Shield Bash"></div>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td>
+                    <div class="icon" data-count="0" data-x="2" data-y="5" id="one_handed_weapon_specialzation"
+                         data-max="5">
+                        <img src="images/inv_sword_20.jpg" alt="One-Handed Weapon Specialization"></div>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <div class="icon" data-count="0" data-x="1" data-y="6" id="shield_slam" data-max="1">
+                        <img src="images/inv_shield_05.jpg" alt="Shield Slam"></div>
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <br><br>
+
     <button type="button" class="collapsible">Buffs and Consumables</button>
     <div class="content">
         <p class="select-title">World buffs:</p><br>
@@ -2220,6 +2582,53 @@
         } else {
             location.replace(uri);
         }
+    }
+
+    function recuriveChildCall(node, n_talent_points) {
+        for (let i = 0; i < node.childNodes.length; i++) {
+            let child = node.childNodes[i];
+            if (child.className === "icon") {
+                n_talent_points[0] += parseFloat(child.getAttribute("data-count"));
+            }
+            recuriveChildCall(child, n_talent_points);
+        }
+    }
+
+    function calcTotalTalents() {
+        let talent_trees = ["Arms", "Fury", "Prot"];
+        for (let tree of talent_trees) {
+            let tree_name = tree.toLowerCase();
+            let arms_node = document.getElementsByClassName(tree_name)[0];
+            let n_talent_points = [0];
+            recuriveChildCall(arms_node, n_talent_points);
+            let title_elem = document.getElementById(tree_name + "_title");
+            title_elem.innerHTML = tree + " (" + n_talent_points[0].toString() + ")"
+        }
+    }
+
+    function displayTalentBootup() {
+        let icon_vec = document.getElementsByClassName("icon");
+        for (let i = 0; i < icon_vec.length; i++) {
+            let talent_button = icon_vec[i];
+            let current_val = parseFloat(talent_button.getAttribute("data-count"));
+            let max_val = parseFloat(talent_button.getAttribute("data-max"));
+            let show_string = current_val.toString() + '/' + max_val.toString();
+            talent_button.setAttribute("data-disp", show_string);
+            talent_button.setAttribute("onclick", "IncrementTalent(this.id);");
+        }
+    }
+
+    function IncrementTalent(talent_name) {
+        let talent_button = document.getElementById(talent_name);
+        let next_val = parseFloat(talent_button.getAttribute("data-count")) + 1;
+        let max_val = parseFloat(talent_button.getAttribute("data-max"));
+        if (next_val > max_val) {
+            next_val = 0
+        }
+        talent_button.setAttribute("data-count", next_val);
+        let show_string = next_val.toString() + '/' + max_val.toString();
+        talent_button.setAttribute("data-disp", show_string);
+        calcTotalTalents();
     }
 
     function openTab(evt, cityName) {
