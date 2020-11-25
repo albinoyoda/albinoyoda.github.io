@@ -59,7 +59,7 @@ class Buff_manager
 public:
     void initialize(Special_stats& special_stats, const std::vector<std::pair<double, Use_effect>>& use_effects_order,
                     std::vector<Hit_effect>& hit_effects_mh_input, std::vector<Hit_effect>& hit_effects_oh_input,
-                    bool performance_mode_in)
+                    double tactical_mastery_rage, bool performance_mode_in)
     {
         performance_mode = performance_mode_in;
         stat_gains.clear();
@@ -73,6 +73,7 @@ public:
         rage_spent_executing = 0.0;
         deep_wounds_timestamps.clear();
         need_to_recompute_hittables = true;
+        tactical_mastery_rage_ = tactical_mastery_rage;
     };
 
     double get_dt(double sim_time)
@@ -102,10 +103,10 @@ public:
                 }
                 if (it->first == "battle_stance")
                 {
-                    if (rage > 25.0)
+                    if (rage > tactical_mastery_rage_)
                     {
-                        rage_lost_stance += rage - 25;
-                        rage = 25;
+                        rage_lost_stance += rage - tactical_mastery_rage_;
+                        rage = tactical_mastery_rage_;
                     }
                 }
                 else if (it->first == "execute_rage_batch")
@@ -360,6 +361,7 @@ public:
     int min_interval = 10;
     std::map<std::string, double> aura_uptime;
     double deep_wounds_damage{};
+    double tactical_mastery_rage_{};
     std::vector<double> deep_wounds_timestamps{};
 };
 

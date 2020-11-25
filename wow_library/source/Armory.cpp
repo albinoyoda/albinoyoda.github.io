@@ -309,7 +309,24 @@ void Armory::compute_total_stats(Character& character) const
         }
     }
 
-    total_special_stats.critical_strike += 5; // crit from talent
+    for (auto& use_effect : use_effects)
+    {
+        if (use_effect.name == "battle_shout" || use_effect.name == "battle_shout_aq")
+        {
+            if (character.booming_voice_talent)
+            {
+                use_effect.duration = 180.0;
+            }
+            if (character.improved_battle_shout_talent > 0)
+            {
+                use_effect.special_stats_boost.attack_power *= 1.0 + 0.05 * character.improved_battle_shout_talent;
+            }
+            break;
+        }
+    }
+
+    // Cruelty etc.
+    total_special_stats += character.talent_special_stats;
     total_special_stats.critical_strike += 3; // crit from berserker stance
 
     total_special_stats += total_attributes.convert_to_special_stats(total_special_stats);
@@ -499,7 +516,6 @@ std::vector<Weapon> Armory::get_weapon_in_socket(const Weapon_socket socket) con
     }
     case Weapon_socket ::two_hand:
     {
-
         std::vector<Weapon> th_weapons{};
         for (const auto& wep : two_handed_swords_t)
         {
@@ -931,4 +947,56 @@ void Armory::add_buffs_to_character(Character& character, const std::vector<std:
     {
         character.add_buff(buffs.consecrated_sharpening_stone);
     }
+}
+
+void Armory::add_talents_to_character(Character& character, const std::vector<std::string>& talent_string,
+                                      const std::vector<int>& talent_val) const
+{
+    Find_values<int> fv{talent_string, talent_val};
+    int val = fv.find("cruelty_talent");
+    if (val > 0)
+    {
+        character.talent_special_stats.critical_strike += val;
+    }
+    val = fv.find("two_handed_weapon_specialization_talent");
+    if (val > 0)
+    {
+        if (!character.is_dual_wield())
+        {
+            double amount = double(val) / 100.0;
+            character.talent_special_stats += Special_stats{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, amount};
+        }
+    }
+    val = fv.find("axe_specialization_talent");
+    if (val > 0)
+    {
+        if (character.weapons[0].type == Weapon_type::axe)
+        {
+            character.talent_special_stats.critical_strike += val;
+        }
+    }
+    val = fv.find("booming_voice_talent");
+    if (val > 0)
+    {
+        character.booming_voice_talent = true;
+    }
+    val = fv.find("improved_battle_shout_talent");
+    if (val > 0)
+    {
+        character.improved_battle_shout_talent = val;
+    }
+
+    //    val = fv.find("sword_specialization_talent");
+    //    if (val > 0)
+    //    {
+    //        if (character.weapons[0].type == Weapon_type::sword)
+    //        {
+    // TODO
+    //            character.talent_special_stats.critical_strike += val;
+    //        }
+    //    }
+
+    //    "mace_specialization_talent"
+    //    ""
+    //    "polearm_specialization_talent"
 }

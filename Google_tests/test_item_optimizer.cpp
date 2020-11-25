@@ -1,11 +1,12 @@
 #include "gtest/gtest.h"
-#include <Armory.hpp>
+//#include <Armory.hpp>
 #include <Attributes.hpp>
-#include <Item_optimizer.hpp>
+//#include <Item_optimizer.hpp>
+#include <Helper_functions.hpp>
 #include <sim_input_mult.hpp>
-#include <sim_output_mult.hpp>
+//#include <sim_output_mult.hpp>
 
-TEST(TestSuite, test_ap_estimation)
+TEST(TestSuite, test_find_value_class)
 {
     std::vector<std::string> mult_armor_vec;
     mult_armor_vec.emplace_back("lionheart_helm");
@@ -18,88 +19,129 @@ TEST(TestSuite, test_ap_estimation)
     mult_armor_vec.emplace_back("onslaught_girdle");
     mult_armor_vec.emplace_back("cloudkeeper_legplates");
     mult_armor_vec.emplace_back("chromatic_boots");
-    mult_armor_vec.emplace_back("might_of_cenarius");
-    mult_armor_vec.emplace_back("master_dragonslayers_ring");
-    mult_armor_vec.emplace_back("badge_of_the_swarmguard");
-    mult_armor_vec.emplace_back("diamond_flask");
-    mult_armor_vec.emplace_back("blastershot");
 
-    mult_armor_vec.emplace_back("expert_goldminers_head");
-    mult_armor_vec.emplace_back("mask_of_the_unforgiven");
-    mult_armor_vec.emplace_back("crown_of_destruction");
-    mult_armor_vec.emplace_back("helm_of_endless_rage");
-    mult_armor_vec.emplace_back("r13_plate_helm");
-    mult_armor_vec.emplace_back("eye_of_rend");
-    mult_armor_vec.emplace_back("fury_visor");
-    mult_armor_vec.emplace_back("helm_of_the_executioner");
-    mult_armor_vec.emplace_back("helm_of_valor");
-    mult_armor_vec.emplace_back("r10_commanders_plate_helm");
-    mult_armor_vec.emplace_back("circlet_of_restless_dreams");
-    mult_armor_vec.emplace_back("conquerors_crown");
-    mult_armor_vec.emplace_back("helm_of_domination");
-    mult_armor_vec.emplace_back("helm_of_heroism");
-
-    std::vector<std::string> mult_weapons_vec;
-    mult_weapons_vec.emplace_back("thunderfury_blessed_blade");
-    mult_weapons_vec.emplace_back("brutality_blade");
-
-    std::vector<std::string> buff_vec;
-    buff_vec.emplace_back("rallying_cry");
-    buff_vec.emplace_back("dire_maul");
-    buff_vec.emplace_back("songflower");
-    buff_vec.emplace_back("warchiefs_blessing");
-    buff_vec.emplace_back("spirit_of_zandalar");
-    buff_vec.emplace_back("sayges_fortune");
-    buff_vec.emplace_back("windfury_totem");
-    buff_vec.emplace_back("blessing_of_kings");
-    buff_vec.emplace_back("strength_of_earth_totem");
-    buff_vec.emplace_back("grace_of_air_totem");
-
-    std::vector<std::string> ench_vec;
-    ench_vec.emplace_back("e+8 strength");
-    ench_vec.emplace_back("s+30 attack power");
-    ench_vec.emplace_back("mcrusader");
-    ench_vec.emplace_back("ocrusader");
-
-    Special_stats special_stats{};
-    special_stats.critical_strike = 50;
-    special_stats.hit = 12;
-    special_stats.attack_power = 2500;
-    special_stats.chance_for_extra_hit = 0;
-    special_stats.haste = 0;
-    special_stats.sword_skill = 311;
-    special_stats.axe_skill = 311;
-    special_stats.dagger_skill = 311;
-    special_stats.mace_skill = 311;
-    special_stats.fist_skill = 311;
-    special_stats.damage_multiplier = 0.1;
-    special_stats.stat_multiplier = 0.265;
-    special_stats.bonus_damage = 10;
-
-    Buffs buffs{};
-    Item_optimizer item_optimizer;
-
-    Race race = Race::night_elf;
-    item_optimizer.race = race;
-    item_optimizer.buffs = buffs;
-    item_optimizer.buffs_vec = ench_vec;
-    item_optimizer.ench_vec = ench_vec;
-    item_optimizer.item_setup(mult_armor_vec, mult_weapons_vec);
-
-    std::cout << "init. Combinations: " << std::to_string(item_optimizer.total_combinations) << "\n";
-    std::string debug_message{};
-    if (item_optimizer.total_combinations > 200)
     {
-        {
-            auto character = item_optimizer.construct(0);
-            item_optimizer.filter_weaker_items(character.total_special_stats, debug_message);
-            item_optimizer.filter_set_items(character.total_special_stats, debug_message);
-
-        }
-        item_optimizer.compute_combinations();
-        std::cout << "Item filter done. Combinations: " << std::to_string(item_optimizer.total_combinations) << "\n";
+        std::vector<size_t> values{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        Find_values<size_t> fv(mult_armor_vec, values);
+        EXPECT_TRUE(fv.find("lionheart_helm") == 0);
+        EXPECT_TRUE(fv.find("onyxia_tooth_pendant") == 1);
+        EXPECT_TRUE(fv.find("truestrike_shoulders") == 2);
+        EXPECT_TRUE(fv.find("cape_of_the_black_baron") == 3);
+        EXPECT_TRUE(fv.find("savage_gladiator_chain") == 4);
+        EXPECT_TRUE(fv.find("wristguards_of_stability") == 5);
+        EXPECT_TRUE(fv.find("flameguard_gauntlets") == 6);
+        EXPECT_TRUE(fv.find("onslaught_girdle") == 7);
+        EXPECT_TRUE(fv.find("cloudkeeper_legplates") == 8);
+        EXPECT_TRUE(fv.find("chromatic_boots") == 9);
+    }
+    {
+        std::vector<double> values{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+        Find_values<double> fv(mult_armor_vec, values);
+        EXPECT_TRUE(fv.find("lionheart_helm") == 0.0);
+        EXPECT_TRUE(fv.find("onyxia_tooth_pendant") == 1.0);
+        EXPECT_TRUE(fv.find("truestrike_shoulders") == 2.0);
+        EXPECT_TRUE(fv.find("cape_of_the_black_baron") == 3.0);
+        EXPECT_TRUE(fv.find("savage_gladiator_chain") == 4.0);
+        EXPECT_TRUE(fv.find("wristguards_of_stability") == 5.0);
+        EXPECT_TRUE(fv.find("flameguard_gauntlets") == 6.0);
+        EXPECT_TRUE(fv.find("onslaught_girdle") == 7.0);
+        EXPECT_TRUE(fv.find("cloudkeeper_legplates") == 8.0);
+        EXPECT_TRUE(fv.find("chromatic_boots") == 9.0);
     }
 }
+//    std::vector<std::string> mult_armor_vec;
+//    mult_armor_vec.emplace_back("lionheart_helm");
+//    mult_armor_vec.emplace_back("onyxia_tooth_pendant");
+//    mult_armor_vec.emplace_back("truestrike_shoulders");
+//    mult_armor_vec.emplace_back("cape_of_the_black_baron");
+//    mult_armor_vec.emplace_back("savage_gladiator_chain");
+//    mult_armor_vec.emplace_back("wristguards_of_stability");
+//    mult_armor_vec.emplace_back("flameguard_gauntlets");
+//    mult_armor_vec.emplace_back("onslaught_girdle");
+//    mult_armor_vec.emplace_back("cloudkeeper_legplates");
+//    mult_armor_vec.emplace_back("chromatic_boots");
+//    mult_armor_vec.emplace_back("might_of_cenarius");
+//    mult_armor_vec.emplace_back("master_dragonslayers_ring");
+//    mult_armor_vec.emplace_back("badge_of_the_swarmguard");
+//    mult_armor_vec.emplace_back("diamond_flask");
+//    mult_armor_vec.emplace_back("blastershot");
+//
+//    mult_armor_vec.emplace_back("expert_goldminers_head");
+//    mult_armor_vec.emplace_back("mask_of_the_unforgiven");
+//    mult_armor_vec.emplace_back("crown_of_destruction");
+//    mult_armor_vec.emplace_back("helm_of_endless_rage");
+//    mult_armor_vec.emplace_back("r13_plate_helm");
+//    mult_armor_vec.emplace_back("eye_of_rend");
+//    mult_armor_vec.emplace_back("fury_visor");
+//    mult_armor_vec.emplace_back("helm_of_the_executioner");
+//    mult_armor_vec.emplace_back("helm_of_valor");
+//    mult_armor_vec.emplace_back("r10_commanders_plate_helm");
+//    mult_armor_vec.emplace_back("circlet_of_restless_dreams");
+//    mult_armor_vec.emplace_back("conquerors_crown");
+//    mult_armor_vec.emplace_back("helm_of_domination");
+//    mult_armor_vec.emplace_back("helm_of_heroism");
+//
+//    std::vector<std::string> mult_weapons_vec;
+//    mult_weapons_vec.emplace_back("thunderfury_blessed_blade");
+//    mult_weapons_vec.emplace_back("brutality_blade");
+//
+//    std::vector<std::string> buff_vec;
+//    buff_vec.emplace_back("rallying_cry");
+//    buff_vec.emplace_back("dire_maul");
+//    buff_vec.emplace_back("songflower");
+//    buff_vec.emplace_back("warchiefs_blessing");
+//    buff_vec.emplace_back("spirit_of_zandalar");
+//    buff_vec.emplace_back("sayges_fortune");
+//    buff_vec.emplace_back("windfury_totem");
+//    buff_vec.emplace_back("blessing_of_kings");
+//    buff_vec.emplace_back("strength_of_earth_totem");
+//    buff_vec.emplace_back("grace_of_air_totem");
+//
+//    std::vector<std::string> ench_vec;
+//    ench_vec.emplace_back("e+8 strength");
+//    ench_vec.emplace_back("s+30 attack power");
+//    ench_vec.emplace_back("mcrusader");
+//    ench_vec.emplace_back("ocrusader");
+//
+//    Special_stats special_stats{};
+//    special_stats.critical_strike = 50;
+//    special_stats.hit = 12;
+//    special_stats.attack_power = 2500;
+//    special_stats.chance_for_extra_hit = 0;
+//    special_stats.haste = 0;
+//    special_stats.sword_skill = 311;
+//    special_stats.axe_skill = 311;
+//    special_stats.dagger_skill = 311;
+//    special_stats.mace_skill = 311;
+//    special_stats.fist_skill = 311;
+//    special_stats.damage_multiplier = 0.1;
+//    special_stats.stat_multiplier = 0.265;
+//    special_stats.bonus_damage = 10;
+//
+//    Buffs buffs{};
+//    Item_optimizer item_optimizer;
+//
+//    Race race = Race::night_elf;
+//    item_optimizer.race = race;
+//    item_optimizer.buffs = buffs;
+//    item_optimizer.buffs_vec = ench_vec;
+//    item_optimizer.ench_vec = ench_vec;
+//    item_optimizer.item_setup(mult_armor_vec, mult_weapons_vec);
+//
+//    std::cout << "init. Combinations: " << std::to_string(item_optimizer.total_combinations) << "\n";
+//    std::string debug_message{};
+//    if (item_optimizer.total_combinations > 200)
+//    {
+//        {
+//            auto character = item_optimizer.construct(0);
+//            item_optimizer.filter_weaker_items(character.total_special_stats, debug_message);
+//            item_optimizer.filter_set_items(character.total_special_stats, debug_message);
+//
+//        }
+//        item_optimizer.compute_combinations();
+//        std::cout << "Item filter done. Combinations: " << std::to_string(item_optimizer.total_combinations) << "\n";
+//    }
+//}
 //
 ////    mult_weapons_vec.emplace_back("persuader");
 ////    mult_weapons_vec.emplace_back("gressil_dawn_of_ruin");

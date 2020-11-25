@@ -59,15 +59,18 @@ void Combat_simulator::set_config(const Combat_simulator_config& new_config)
         armor_reduction_delayed_ = 2550 - 450 * config.n_sunder_armor_stacks;
     }
 
-    flurry_haste_factor_ = 0.05 + 0.05 * config.talents.flurry;
+    flurry_haste_factor_ = (config.talents.flurry > 0) ? 0.05 + 0.05 * config.talents.flurry : 0.0;
     dual_wield_damage_factor_ = 0.5 + 0.025 * config.talents.dual_wield_specialization;
     cleave_bonus_damage_ = 50 * (1.0 + 0.4 * config.talents.improved_cleave);
     slam_manager.slam_cast_time_ = 1.5 - 0.1 * config.talents.improved_slam;
 
+    tactical_mastery_rage_ = 5.0 * config.talents.tactical_mastery;
+    deep_wounds_ = config.talents.deep_wounds && config.combat.deep_wounds;
+
     over_time_effects_.clear();
     use_effects_all_.clear();
 
-    if (config.talents.death_wish)
+    if (config.talents.death_wish && config.combat.use_death_wish)
     {
         use_effects_all_.emplace_back(deathwish);
     }
@@ -292,7 +295,7 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(const Weapon_sim& w
         }
         cout_damage_parse(hit_type, weapon_hand, hit_outcome);
     }
-    if (config.combat.deep_wounds)
+    if (deep_wounds_)
     {
         if (hit_outcome.hit_result == Combat_simulator::Hit_result::crit)
         {
@@ -520,7 +523,11 @@ void Combat_simulator::overpower(Weapon_sim& main_hand_weapon, Special_stats& sp
 {
     if (config.dpr_settings.compute_dpr_op_)
     {
-        rage > 25 ? rage = 20 : rage -= 5;
+        if (rage > tactical_mastery_rage_)
+        {
+            rage = tactical_mastery_rage_;
+        }
+        rage -= 5;
         buff_manager_.add("battle_stance", {-3.0, 0, 0}, 1.5);
         time_keeper_.overpower_cd = 5.0;
         time_keeper_.global_cd = 1.5;
@@ -532,10 +539,10 @@ void Combat_simulator::overpower(Weapon_sim& main_hand_weapon, Special_stats& sp
     double damage = main_hand_weapon.normalized_swing(special_stats.attack_power) + 35;
     auto hit_outcome =
         generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats, true, true);
-    if (rage > 25)
+    if (rage > tactical_mastery_rage_)
     {
-        rage_lost_stance_swap_ += rage - 25;
-        rage = 25;
+        rage_lost_stance_swap_ += rage - tactical_mastery_rage_;
+        rage = tactical_mastery_rage_;
     }
     rage -= 5;
     if (hit_outcome.hit_result != Hit_result::miss)
@@ -999,12 +1006,12 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         {
             weapons[1].hit_effects = hit_effects_oh_copy;
             buff_manager_.initialize(special_stats, use_effect_order, weapons[0].hit_effects, weapons[1].hit_effects,
-                                     config.performance_mode);
+                                     tactical_mastery_rage_, config.performance_mode);
         }
         else
         {
             buff_manager_.initialize(special_stats, use_effect_order, weapons[0].hit_effects, hit_effects_oh_copy,
-                                     config.performance_mode);
+                                     tactical_mastery_rage_, config.performance_mode);
         }
 
         recompute_mitigation_ = true;
@@ -1337,7 +1344,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                 }
             }
         }
-        if (config.combat.deep_wounds)
+        if (deep_wounds_)
         {
             double dw_average_damage = buff_manager_.deep_wounds_damage / buff_manager_.deep_wounds_timestamps.size();
             for (double deep_wounds_timestamp : buff_manager_.deep_wounds_timestamps)

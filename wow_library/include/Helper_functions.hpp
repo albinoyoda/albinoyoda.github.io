@@ -76,9 +76,20 @@ double find_value(const std::vector<std::string>& string_vec, const std::vector<
                   const std::string& match_string);
 
 template <typename T>
-bool does_vector_contain(const std::vector<T>& vec, const T& match);
+class Find_values
+{
+public:
+    Find_values(const std::vector<std::string>& string_vec, const std::vector<T>& value_vec);
 
-bool find_string(const std::vector<std::string>& string_vec, const std::string& match_string);
+    T find(const std::string& name);
+
+private:
+    const std::vector<std::string>& string_vec;
+    const std::vector<T>& value_vec;
+};
+
+template <typename T>
+bool does_vector_contain(const std::vector<T>& vec, const T& match);
 
 Race get_race(const std::string& race);
 

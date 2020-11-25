@@ -12,7 +12,7 @@ EMSCRIPTEN_BINDINGS(module)
         .function("simulate_mult", &Sim_interface::simulate_mult);
 
     register_vector<double>("vectorDouble");
-    register_vector<int>("vector<int>");
+    register_vector<int>("vectorInt");
     register_vector<std::vector<double>>("vector<vector<double>>");
     register_vector<std::string>("StringList");
 
@@ -26,6 +26,8 @@ EMSCRIPTEN_BINDINGS(module)
         .field("options", &Sim_input::options)
         .field("float_options_string", &Sim_input::float_options_string)
         .field("float_options_val", &Sim_input::float_options_val)
+        .field("talent_string", &Sim_input::talent_string)
+        .field("talent_val", &Sim_input::talent_val)
         .field("compare_armor", &Sim_input::compare_armor)
         .field("compare_weapons", &Sim_input::compare_weapons);
 
@@ -37,7 +39,9 @@ EMSCRIPTEN_BINDINGS(module)
         .field("enchants", &Sim_input_mult::enchants)
         .field("options", &Sim_input_mult::options)
         .field("float_options_string", &Sim_input_mult::float_options_string)
-        .field("float_options_val", &Sim_input_mult::float_options_val);
+        .field("float_options_val", &Sim_input_mult::float_options_val)
+        .field("talent_string", &Sim_input_mult::talent_string)
+        .field("talent_val", &Sim_input_mult::talent_val);
 
     value_object<Sim_output>("Sim_output")
         .field("hist_x", &Sim_output::hist_x)

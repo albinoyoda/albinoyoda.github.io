@@ -26,8 +26,8 @@ int main()
     armor_vec.emplace_back("nerubian_slavemaker");
 
     std::vector<std::string> weapons_vec;
-//    weapons_vec.emplace_back("the_hungering_cold");
-//    weapons_vec.emplace_back("the_hungering_cold");
+    //    weapons_vec.emplace_back("the_hungering_cold");
+    //    weapons_vec.emplace_back("the_hungering_cold");
     weapons_vec.emplace_back("bonereavers_edge");
 
     //    mult_weapons_vec.emplace_back("persuader");
@@ -367,6 +367,8 @@ int main()
     buff_vec.emplace_back("blessing_of_kings");
     buff_vec.emplace_back("dense_stone_off_hand");
     buff_vec.emplace_back("elemental_stone_main_hand");
+    buff_vec.emplace_back("battle_shout");
+//    buff_vec.emplace_back("battle_shout_aq");
     //    buff_vec.emplace_back("strength_of_earth_totem");
     //    buff_vec.emplace_back("grace_of_air_totem");
 
@@ -392,7 +394,7 @@ int main()
         "talents_stat_weights",
         //        "cleave_if_adds",
         "use_hamstring",
-                "compute_dpr",
+        "compute_dpr",
         "use_bloodthirst",
         "use_whirlwind",
         "use_heroic_strike",
@@ -402,42 +404,60 @@ int main()
         "wep_strengths",
     };
 
-    std::vector<std::string> float_options_string{
-        "heroic_strike_rage_thresh_dd",
-        "cleave_rage_thresh_dd",
-        "whirlwind_rage_thresh_dd",
-        "hamstring_cd_thresh_dd",
-        "hamstring_thresh_dd",
-        "initial_rage_dd",
-        "whirlwind_bt_cooldown_thresh_dd",
-        "overpower_rage_thresh_dd",
-        "overpower_bt_cooldown_thresh_dd",
-        "overpower_ww_cooldown_thresh_dd",
-        "fight_time_dd",
-        "opponent_level_dd",
-        "boss_armor_dd",
-        "sunder_armor_dd",
-        "number_of_extra_targets_dd",
-        "extra_target_armor_dd",
-        "extra_target_level_dd",
-        "periodic_damage_interval_dd",
-        "periodic_damage_amount_dd",
-        "execute_phase_percentage_dd",
-        "re_queue_abilities_dd",
-        "stat_weight_mh_speed_dd",
-        "stat_weight_oh_speed_dd",
-        "n_simulations_dd",
-        "n_simulations_stat_dd",
-        "n_simulations_talent_dd",
-        "slam_cd_thresh_dd",
-        "slam_spam_max_time_dd",
-        "slam_spam_rage_dd",
-        "slam_rage_dd"
+    std::vector<std::string> float_options_string{"heroic_strike_rage_thresh_dd",
+                                                  "cleave_rage_thresh_dd",
+                                                  "whirlwind_rage_thresh_dd",
+                                                  "hamstring_cd_thresh_dd",
+                                                  "hamstring_thresh_dd",
+                                                  "initial_rage_dd",
+                                                  "whirlwind_bt_cooldown_thresh_dd",
+                                                  "overpower_rage_thresh_dd",
+                                                  "overpower_bt_cooldown_thresh_dd",
+                                                  "overpower_ww_cooldown_thresh_dd",
+                                                  "fight_time_dd",
+                                                  "opponent_level_dd",
+                                                  "boss_armor_dd",
+                                                  "sunder_armor_dd",
+                                                  "number_of_extra_targets_dd",
+                                                  "extra_target_armor_dd",
+                                                  "extra_target_level_dd",
+                                                  "periodic_damage_interval_dd",
+                                                  "periodic_damage_amount_dd",
+                                                  "execute_phase_percentage_dd",
+                                                  "re_queue_abilities_dd",
+                                                  "stat_weight_mh_speed_dd",
+                                                  "stat_weight_oh_speed_dd",
+                                                  "n_simulations_dd",
+                                                  "n_simulations_stat_dd",
+                                                  "n_simulations_talent_dd",
+                                                  "slam_cd_thresh_dd",
+                                                  "slam_spam_max_time_dd",
+                                                  "slam_spam_rage_dd",
+                                                  "slam_rage_dd"};
+
+    std::vector<double> float_options_val{50.0, 50.0, 10.0, 2.0,   50.0, 0.0,  2.0, 25.0, 2.0,  2.0,
+                                          60.0, 63.0, 3731, 5,     0,    3731, 63,  1.0,  300,  15,
+                                          70,   0.5,  0.5,  20000, 1000, 1000, 1.0, 1.5,  60.0, 15};
+
+    std::vector<std::string> talents_string{
+        "improved_heroic_strike_talent",
+        "improved_rend_talent",
+        "tactical_mastery_talent",
+        "anger_management_talent",
+        "deep_wounds_talent",
+        "impale_talent",
+        "cruelty_talent",
+        "unbridled_wrath_talent",
+        "improved_battle_shout_talent",
+        "dual_wield_specialization_talent",
+        "improved_execute_talent",
+        "enrage_talent",
+        "death_wish_talent",
+        "flurry_talent",
+        "bloodthirst_talent",
     };
 
-    std::vector<double> float_options_val{50.0, 50.0, 10.0, 2.0, 50.0, 0.0, 2.0, 25.0, 2.0, 2.0, 60.0, 63.0,
-                                          3731, 5,    0,   3731, 63,  1.0, 300,  15,  70,  0.5,  0.5, 20000, 1000, 1000,
-                                          1.0, 1.5, 60.0, 15};
+    std::vector<int> talents_val{3, 3, 5, 1, 3, 2, 5, 5, 5, 5, 2, 5, 1, 5, 1};
 
     Sim_input sim_input{{race},
                         armor_vec,
@@ -448,13 +468,13 @@ int main()
                         sim_options,
                         float_options_string,
                         float_options_val,
+                        talents_string,
+                        talents_val,
                         compare_armor_vec,
                         compare_weapons_vec};
 
-    Sim_input_mult sim_input_mult{
-        {race},   mult_armor_vec, mult_weapons_vec,     buff_vec,
-        ench_vec, sim_options,    float_options_string, float_options_val,
-    };
+    Sim_input_mult sim_input_mult{{race},      mult_armor_vec,       mult_weapons_vec,  buff_vec,       ench_vec,
+                                  sim_options, float_options_string, float_options_val, talents_string, talents_val};
 
     auto sim_output = sim_interface.simulate(sim_input);
     //    auto sim_output = sim_interface.simulate_mult(sim_input_mult);

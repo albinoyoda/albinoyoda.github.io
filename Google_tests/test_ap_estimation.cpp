@@ -37,8 +37,8 @@ TEST(TestSuite, test_ap_estimation)
     special_stats.bonus_damage = 10;
 
     Armory armory;
-    auto wep1 = armory.find_weapon("thunderfury_blessed_blade");
-    auto wep2 = armory.find_weapon("brutality_blade");
+    auto wep1 = armory.find_weapon(Weapon_socket::one_hand, "thunderfury_blessed_blade");
+    auto wep2 = armory.find_weapon(Weapon_socket::one_hand, "brutality_blade");
 
     Weapon wep3{"test_oh", {10, 10}, {2, 1, 40}, 1.5, 75, 120, Weapon_socket::main_hand, Weapon_type::sword};
 

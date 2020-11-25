@@ -30,6 +30,8 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult& input)
     item_optimizer.buffs = buffs;
     item_optimizer.buffs_vec = temp_buffs;
     item_optimizer.ench_vec = input.enchants;
+    item_optimizer.talent_vec = input.talent_string;
+    item_optimizer.talent_val_vec = input.talent_val;
     item_optimizer.item_setup(input.armor, input.weapons);
 
     // Simulator & Combat settings

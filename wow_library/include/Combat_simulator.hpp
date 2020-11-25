@@ -108,6 +108,7 @@ struct Combat_simulator_config
         double slam_spam_rage{false};
         double slam_spam_max_time{false};
         double slam_rage_dd{false};
+        bool use_death_wish{false};
     } combat;
 
     struct dpr_t
@@ -134,7 +135,9 @@ struct Combat_simulator_config
         int improved_execute = 0;
         int dual_wield_specialization = 0;
         int improved_cleave = 0;
-        int improved_slam = 5;
+        int improved_slam = 0;
+        int tactical_mastery = 0;
+        int deep_wounds = 0;
     } talents;
 };
 
@@ -320,13 +323,13 @@ public:
 
     constexpr int get_n_simulations() const { return config.n_batches; }
 
-    constexpr int get_rage_lost_stance() const { return rage_lost_stance_swap_; }
+    constexpr double get_rage_lost_stance() const { return rage_lost_stance_swap_; }
 
-    constexpr int get_rage_lost_exec() const { return rage_lost_execute_batch_; }
+    constexpr double get_rage_lost_exec() const { return rage_lost_execute_batch_; }
 
-    constexpr int get_rage_lost_capped() const { return rage_lost_capped_; }
+    constexpr double get_rage_lost_capped() const { return rage_lost_capped_; }
 
-    constexpr int get_avg_rage_spent_executing() const { return avg_rage_spent_executing_; }
+    constexpr double get_avg_rage_spent_executing() const { return avg_rage_spent_executing_; }
 
     std::vector<int>& get_hist_x() { return hist_x; }
 
@@ -338,9 +341,9 @@ public:
 
     void normalize_timelapse();
 
-    std::string hit_result_to_string(const Combat_simulator::Hit_result hit_result);
+    std::string hit_result_to_string(Combat_simulator::Hit_result hit_result);
 
-    void print_statement(std::string t) { debug_topic_ += t; }
+    void print_statement(const std::string& t) { debug_topic_ += t; }
 
     void print_statement(int t) { debug_topic_ += std::to_string(t); }
 
@@ -419,6 +422,9 @@ private:
     double dual_wield_damage_factor_;
     bool dpr_heroic_strike_queued_{false};
     bool dpr_cleave_queued_{false};
+
+    double tactical_mastery_rage_{0};
+    bool deep_wounds_{false};
 
     std::vector<std::vector<double>> damage_time_lapse{};
     std::map<std::string, int> proc_data_{};

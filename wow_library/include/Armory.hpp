@@ -17,8 +17,8 @@ struct Buffs
     Buff traces_of_silithyst{"traces_of_silithyst", Attributes{0, 0}, Special_stats{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .05}};
 
     // Player_buffs
-    Buff battle_shout{"battle_shout", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 241.0}};
-    Buff battle_shout_aq{"battle_shout_aq", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 290.0}};
+    Buff battle_shout{"battle_shout", {}, {}, 0, {}, {{"battle_shout", Use_effect::Effect_socket::unique, {}, {0, 0, 193}, 0, 120, 120, true}}};
+    Buff battle_shout_aq{"battle_shout_aq", {}, {}, 0, {}, {{"battle_shout_aq", Use_effect::Effect_socket::unique, {}, {0, 0, 232}, 0, 120, 120, true}}};
     Buff blessing_of_kings{"blessing_of_kings", Attributes{0.0, 0.0},
                            Special_stats{0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0.1}};
     Buff blessing_of_might{"blessing_of_might", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0, 186}};
@@ -718,6 +718,9 @@ struct Armory
     void add_enchants_to_character(Character& character, const std::vector<std::string>& ench_vec) const;
 
     void add_buffs_to_character(Character& character, const std::vector<std::string>& buffs_vec) const;
+
+    void add_talents_to_character(Character& character, const std::vector<std::string>& talent_string,
+                                  const std::vector<int>& talent_val) const;
 
     Buffs buffs;
 };

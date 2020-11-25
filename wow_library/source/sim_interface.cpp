@@ -378,6 +378,7 @@ std::string get_character_stat(const Character& character)
 
 Character character_setup(const Armory& armory, const std::string& race, const std::vector<std::string>& armor_vec,
                           const std::vector<std::string>& weapons_vec, const std::vector<std::string>& buffs_vec,
+                          const std::vector<std::string>& talent_string, const std::vector<int>& talent_val,
                           const std::vector<std::string>& ench_vec)
 {
     auto character = get_character_of_race(race);
@@ -410,6 +411,7 @@ Character character_setup(const Armory& armory, const std::string& race, const s
 
     armory.add_enchants_to_character(character, ench_vec);
     armory.add_buffs_to_character(character, buffs_vec);
+    armory.add_talents_to_character(character, talent_string, talent_val);
 
     armory.compute_total_stats(character);
 
@@ -429,8 +431,8 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         temp_buffs.emplace_back("mighty_rage_potion");
     }
 
-    Character character =
-        character_setup(armory, input.race[0], input.armor, input.weapons, temp_buffs, input.enchants);
+    Character character = character_setup(armory, input.race[0], input.armor, input.weapons, temp_buffs,
+                                          input.talent_string, input.talent_val, input.enchants);
 
     // Simulator & Combat settings
     Combat_simulator_config config{input};
@@ -849,7 +851,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         Combat_simulator simulator_compare{};
         simulator_compare.set_config(config);
         Character character2 = character_setup(armory, input.race[0], input.compare_armor, input.compare_weapons,
-                                               temp_buffs, input.enchants);
+                                               temp_buffs, input.talent_string, input.talent_val, input.enchants);
 
         simulator_compare.simulate(character2);
 
@@ -880,8 +882,8 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         Combat_simulator simulator_strength{};
         simulator_strength.set_config(config);
         Item_optimizer item_optimizer{};
-        Character character_new =
-            character_setup(armory, input.race[0], input.armor, input.weapons, temp_buffs, input.enchants);
+        Character character_new = character_setup(armory, input.race[0], input.armor, input.weapons, temp_buffs,
+                                                  input.talent_string, input.talent_val, input.enchants);
         std::string dummy{};
         std::vector<Socket> all_sockets = {
             Socket::head, Socket::neck, Socket::shoulder, Socket::back, Socket::chest,   Socket::wrist,  Socket::hands,
