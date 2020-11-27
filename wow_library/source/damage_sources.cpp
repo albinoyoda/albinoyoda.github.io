@@ -11,6 +11,7 @@ Damage_sources& Damage_sources::operator+(const Damage_sources& rhs)
     overpower_damage = overpower_damage + rhs.overpower_damage;
     slam_damage = slam_damage + rhs.slam_damage;
     bloodthirst_damage = bloodthirst_damage + rhs.bloodthirst_damage;
+    mortal_strike_damage = mortal_strike_damage + rhs.mortal_strike_damage;
     execute_damage = execute_damage + rhs.execute_damage;
     white_mh_damage = white_mh_damage + rhs.white_mh_damage;
     white_oh_damage = white_oh_damage + rhs.white_oh_damage;
@@ -24,6 +25,7 @@ Damage_sources& Damage_sources::operator+(const Damage_sources& rhs)
     overpower_count = overpower_count + rhs.overpower_count;
     slam_count = slam_count + rhs.slam_count;
     bloodthirst_count = bloodthirst_count + rhs.bloodthirst_count;
+    mortal_strike_count = mortal_strike_count + rhs.mortal_strike_count;
     execute_count = execute_count + rhs.execute_count;
     white_mh_count = white_mh_count + rhs.white_mh_count;
     white_oh_count = white_oh_count + rhs.white_oh_count;
@@ -54,6 +56,10 @@ void Damage_sources::add_damage(Damage_source source, double damage, double time
     case Damage_source::bloodthirst:
         bloodthirst_damage += damage;
         bloodthirst_count++;
+        break;
+    case Damage_source::mortal_strike:
+        mortal_strike_damage += damage;
+        mortal_strike_count++;
         break;
     case Damage_source::slam:
         slam_damage += damage;

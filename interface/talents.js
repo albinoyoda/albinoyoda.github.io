@@ -49,7 +49,7 @@ let talents_vec = [
     "improved_shield_wall_talent",
     "concussion_blow_talent",
     "improved_shield_bash_talent",
-    "one_handed_weapon_specialzation_talent",
+    "one_handed_weapon_specialization_talent",
     "shield_slam_talent"];
 
 function load_talent_clear() {
@@ -84,6 +84,7 @@ function load_talent_standard_fury() {
 
 function load_talent_cleave_fury() {
     load_talent_standard_fury();
+    document.getElementById("improved_battle_shout_talent").setAttribute("data-count", 3);
     document.getElementById("improved_heroic_strike_talent").setAttribute("data-count", 2);
     document.getElementById("improved_cleave_talent").setAttribute("data-count", 3);
 
@@ -129,14 +130,33 @@ function calcTotalTalents() {
     }
     let total_points_elem = document.getElementById("total_points");
     total_points_elem.innerHTML = "Total points: " + total_points.toString() + "/51";
+    showHideTalentDiv();
+}
+
+function showHideTalentDiv() {
+    let ms_talent = document.getElementById("mortal_strike_talent");
+    let current_val = parseInt(ms_talent.getAttribute("data-count"));
+    if (current_val === 1) {
+        document.getElementById("mortal_strike_talent_div").style.display = "block";
+    } else {
+        document.getElementById("mortal_strike_talent_div").style.display = "none";
+    }
+
+    let bt_talent = document.getElementById("bloodthirst_talent");
+    current_val = parseInt(bt_talent.getAttribute("data-count"));
+    if (current_val === 1) {
+        document.getElementById("bloodthirst_talent_div").style.display = "block";
+    } else {
+        document.getElementById("bloodthirst_talent_div").style.display = "none";
+    }
 }
 
 function displayTalentBootup() {
     let icon_vec = document.getElementsByClassName("icon");
     for (let i = 0; i < icon_vec.length; i++) {
         let talent_button = icon_vec[i];
-        let current_val = parseFloat(talent_button.getAttribute("data-count"));
-        let max_val = parseFloat(talent_button.getAttribute("data-max"));
+        let current_val = parseInt(talent_button.getAttribute("data-count"));
+        let max_val = parseInt(talent_button.getAttribute("data-max"));
         let show_string = current_val.toString() + '/' + max_val.toString();
         if (current_val === 0) {
             show_string = "";

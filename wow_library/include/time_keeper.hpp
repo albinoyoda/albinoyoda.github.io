@@ -8,6 +8,8 @@ public:
 
     void increment(double dt)
     {
+        mortal_strike_cd -= dt;
+        sweeping_strikes_cd -= dt;
         blood_thirst_cd -= dt;
         overpower_cd -= dt;
         whirlwind_cd -= dt;
@@ -17,6 +19,8 @@ public:
 
     void reset()
     {
+        mortal_strike_cd = -1e-10;
+        sweeping_strikes_cd = -1e-10;
         blood_thirst_cd = -1e-10;
         overpower_cd = -1e-10;
         whirlwind_cd = -1e-10;
@@ -30,6 +34,14 @@ public:
         if (overpower_cd > 0.0)
         {
             dt = std::min(overpower_cd, dt);
+        }
+        if (sweeping_strikes_cd > 0.0)
+        {
+            dt = std::min(sweeping_strikes_cd, dt);
+        }
+        if (mortal_strike_cd > 0.0)
+        {
+            dt = std::min(mortal_strike_cd, dt);
         }
         if (blood_thirst_cd > 0.0)
         {
@@ -56,6 +68,8 @@ public:
     }
 
     double blood_thirst_cd;
+    double mortal_strike_cd;
+    double sweeping_strikes_cd;
     double overpower_cd;
     double whirlwind_cd;
     double global_cd;

@@ -66,6 +66,9 @@ void Combat_simulator::set_config(const Combat_simulator_config& new_config)
 
     tactical_mastery_rage_ = 5.0 * config.talents.tactical_mastery;
     deep_wounds_ = config.talents.deep_wounds && config.combat.deep_wounds;
+    use_bloodthirst_ = config.talents.bloodthirst && config.combat.use_bloodthirst;
+    use_mortal_strike_ = config.talents.mortal_strike && config.combat.use_mortal_strike;
+    use_sweeping_strikes_ = config.talents.sweeping_strikes && config.combat.use_sweeping_strikes;
 
     over_time_effects_.clear();
     use_effects_all_.clear();
@@ -441,9 +444,13 @@ void Combat_simulator::manage_flurry(Hit_result hit_result, Special_stats& speci
 bool Combat_simulator::start_cast_slam(bool mh_swing, double rage, double swing_time_left)
 {
     bool use_sl = true;
-    if (config.combat.use_bloodthirst)
+    if (use_bloodthirst_)
     {
         use_sl &= time_keeper_.blood_thirst_cd > config.combat.slam_cd_thresh;
+    }
+    if (use_mortal_strike_)
+    {
+        use_sl &= time_keeper_.mortal_strike_cd > config.combat.slam_cd_thresh;
     }
     if (config.combat.use_whirlwind)
     {
@@ -486,6 +493,33 @@ void Combat_simulator::slam(Weapon_sim& main_hand_weapon, Special_stats& special
     }
     manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges, true);
     damage_sources.add_damage(Damage_source::slam, hit_outcome.damage, time_keeper_.time);
+    simulator_cout("Current rage: ", int(rage));
+}
+
+void Combat_simulator::mortal_strike(Weapon_sim& main_hand_weapon, Special_stats& special_stats, double& rage,
+                                     Damage_sources& damage_sources, int& flurry_charges)
+{
+    if (config.dpr_settings.compute_dpr_ms_)
+    {
+        get_uniform_random(100) < hit_table_yellow_[1] ? rage -= 6 : rage -= 30;
+        return;
+    }
+    simulator_cout("Mortal Strike!");
+    double damage = main_hand_weapon.normalized_swing(special_stats.attack_power) + 160;
+    auto hit_outcome = generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats);
+    if (hit_outcome.hit_result == Hit_result::dodge || hit_outcome.hit_result == Hit_result::miss)
+    {
+        rage -= 6;
+    }
+    else
+    {
+        rage -= 30;
+        hit_effects(main_hand_weapon, main_hand_weapon, special_stats, rage, damage_sources, flurry_charges);
+    }
+    time_keeper_.mortal_strike_cd = 6.0;
+    time_keeper_.global_cd = 1.5;
+    manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges, true);
+    damage_sources.add_damage(Damage_source::mortal_strike, hit_outcome.damage, time_keeper_.time);
     simulator_cout("Current rage: ", int(rage));
 }
 
@@ -1169,13 +1203,20 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                 swing_weapon(weapons[1], weapons[0], special_stats, rage, damage_sources, flurry_charges);
             }
 
-            // Execute phase
             if (!execute_phase)
             {
                 if (time_keeper_.time > time_execute_phase)
                 {
                     simulator_cout("------------ Execute phase! ------------");
                     execute_phase = true;
+                }
+            }
+
+            if (use_sweeping_strikes_)
+            {
+                if (rage > 30.0)
+                {
+                    sweeping_strikes_charges_ = 5;
                 }
             }
 
@@ -1210,11 +1251,18 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                         }
                     }
                 }
-                if (config.combat.use_bloodthirst && config.combat.use_bt_in_exec_phase)
+                if (use_bloodthirst_ && config.combat.use_bt_in_exec_phase)
                 {
                     if (time_keeper_.blood_thirst_cd < 0.0 && time_keeper_.global_cd < 0 && rage > 30)
                     {
                         bloodthirst(weapons[0], special_stats, rage, damage_sources, flurry_charges);
+                    }
+                }
+                if (use_mortal_strike_ && config.combat.use_ms_in_exec_phase)
+                {
+                    if (time_keeper_.mortal_strike_cd < 0.0 && time_keeper_.global_cd < 0 && rage > 30)
+                    {
+                        mortal_strike(weapons[0], special_stats, rage, damage_sources, flurry_charges);
                     }
                 }
                 if (time_keeper_.global_cd < 0 && rage > execute_rage_cost_)
@@ -1250,7 +1298,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                     }
                 }
 
-                if (config.combat.use_bloodthirst)
+                if (use_bloodthirst_)
                 {
                     if (time_keeper_.blood_thirst_cd < 0.0 && time_keeper_.global_cd < 0 && rage > 30)
                     {
@@ -1258,12 +1306,24 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                     }
                 }
 
+                if (use_mortal_strike_)
+                {
+                    if (time_keeper_.mortal_strike_cd < 0.0 && time_keeper_.global_cd < 0 && rage > 30)
+                    {
+                        mortal_strike(weapons[0], special_stats, rage, damage_sources, flurry_charges);
+                    }
+                }
+
                 if (config.combat.use_whirlwind)
                 {
                     bool use_ww = true;
-                    if (config.combat.use_bloodthirst)
+                    if (use_bloodthirst_)
                     {
                         use_ww = time_keeper_.blood_thirst_cd > config.combat.whirlwind_bt_cooldown_thresh;
+                    }
+                    if (use_mortal_strike_)
+                    {
+                        use_ww &= time_keeper_.mortal_strike_cd > config.combat.whirlwind_bt_cooldown_thresh;
                     }
                     if (time_keeper_.whirlwind_cd < 0.0 && rage > config.combat.whirlwind_rage_thresh && rage > 25 &&
                         time_keeper_.global_cd < 0 && use_ww)
@@ -1275,9 +1335,13 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                 if (config.combat.use_overpower)
                 {
                     bool use_op = true;
-                    if (config.combat.use_bloodthirst)
+                    if (use_bloodthirst_)
                     {
                         use_op &= time_keeper_.blood_thirst_cd > config.combat.overpower_bt_cooldown_thresh;
+                    }
+                    if (use_mortal_strike_)
+                    {
+                        use_op &= time_keeper_.mortal_strike_cd > config.combat.overpower_bt_cooldown_thresh;
                     }
                     if (config.combat.use_whirlwind)
                     {
@@ -1293,9 +1357,13 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                 if (config.combat.use_hamstring)
                 {
                     bool use_ham = true;
-                    if (config.combat.use_bloodthirst)
+                    if (use_bloodthirst_)
                     {
                         use_ham &= time_keeper_.blood_thirst_cd > config.combat.hamstring_cd_thresh;
+                    }
+                    if (use_mortal_strike_)
+                    {
+                        use_ham &= time_keeper_.mortal_strike_cd > config.combat.hamstring_cd_thresh;
                     }
                     if (config.combat.use_whirlwind)
                     {
@@ -1308,6 +1376,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                 }
 
                 // Heroic strike or Cleave
+                // TODO move to the top of sim loop, enables 'continue' after casting spells for performance
                 if (config.number_of_extra_targets > 0 && config.combat.cleave_if_adds)
                 {
                     if (rage > config.combat.cleave_rage_thresh && !ability_queue_manager.cleave_queued)

@@ -154,13 +154,19 @@ public:
         return weapons[0];
     }
 
+    struct
+    {
+        bool booming_voice_talent{false};
+        int improved_battle_shout_talent{0};
+        int sword_specialization{0};
+        int one_handed_weapon_specialization{0};
+    } talents;
+
     Attributes base_attributes;
     Attributes total_attributes;
     Special_stats base_special_stats;
     Special_stats total_special_stats;
     Special_stats talent_special_stats;
-    bool booming_voice_talent{false};
-    int improved_battle_shout_talent{0};
     std::vector<Armor> armor;
     std::vector<Weapon> weapons;
     std::vector<Buff> buffs;

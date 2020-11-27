@@ -1,5 +1,7 @@
 #include "../include/Armory.hpp"
 
+#include <Character.hpp>
+
 Attributes Armory::get_enchant_attributes(Socket socket, Enchant::Type type) const
 {
     switch (socket)
@@ -187,10 +189,9 @@ void Armory::compute_total_stats(Character& character) const
     character.total_attributes = {};
     character.total_special_stats = {};
     character.set_bonuses = {};
-    clean_weapon(character.weapons[0]);
-    if (character.is_dual_wield())
+    for (auto& wep : character.weapons)
     {
-        clean_weapon(character.weapons[1]);
+        clean_weapon(wep);
     }
     Attributes total_attributes{};
     Special_stats total_special_stats{};
@@ -309,20 +310,40 @@ void Armory::compute_total_stats(Character& character) const
         }
     }
 
+    // Effects gained from talents
     for (auto& use_effect : use_effects)
     {
         if (use_effect.name == "battle_shout" || use_effect.name == "battle_shout_aq")
         {
-            if (character.booming_voice_talent)
+            if (character.talents.booming_voice_talent)
             {
                 use_effect.duration = 180.0;
             }
-            if (character.improved_battle_shout_talent > 0)
+            if (character.talents.improved_battle_shout_talent > 0)
             {
-                use_effect.special_stats_boost.attack_power *= 1.0 + 0.05 * character.improved_battle_shout_talent;
+                use_effect.special_stats_boost.attack_power *=
+                    1.0 + 0.05 * character.talents.improved_battle_shout_talent;
             }
             break;
         }
+    }
+
+    if (character.talents.sword_specialization > 0)
+    {
+        for (auto& wep : character.weapons)
+        {
+            if (wep.type == Weapon_type::sword)
+            {
+                double prob = double(character.talents.sword_specialization) / 100.0;
+                wep.hit_effects.push_back({"sword_specialization", Hit_effect::Type::extra_hit, {}, {}, 0, 0, prob});
+            }
+        }
+    }
+
+    if (character.talents.one_handed_weapon_specialization > 0 && character.is_dual_wield())
+    {
+        double multiplier = double(character.talents.one_handed_weapon_specialization) / 50.0;
+        character.talent_special_stats += {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, multiplier};
     }
 
     // Cruelty etc.
@@ -978,25 +999,23 @@ void Armory::add_talents_to_character(Character& character, const std::vector<st
     val = fv.find("booming_voice_talent");
     if (val > 0)
     {
-        character.booming_voice_talent = true;
+        character.talents.booming_voice_talent = true;
     }
     val = fv.find("improved_battle_shout_talent");
     if (val > 0)
     {
-        character.improved_battle_shout_talent = val;
+        character.talents.improved_battle_shout_talent = val;
     }
 
-    //    val = fv.find("sword_specialization_talent");
-    //    if (val > 0)
-    //    {
-    //        if (character.weapons[0].type == Weapon_type::sword)
-    //        {
-    // TODO
-    //            character.talent_special_stats.critical_strike += val;
-    //        }
-    //    }
+    val = fv.find("sword_specialization_talent");
+    if (val > 0)
+    {
+        character.talents.sword_specialization = val;
+    }
 
-    //    "mace_specialization_talent"
-    //    ""
-    //    "polearm_specialization_talent"
+    val = fv.find("one_handed_weapon_specialization_talent");
+    if (val > 0)
+    {
+        character.talents.one_handed_weapon_specialization = val;
+    }
 }

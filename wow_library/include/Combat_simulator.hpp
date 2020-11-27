@@ -83,6 +83,7 @@ struct Combat_simulator_config
     struct combat_t
     {
         bool use_bt_in_exec_phase{false};
+        bool use_ms_in_exec_phase{false};
         bool use_hs_in_exec_phase{false};
         double whirlwind_rage_thresh{};
         double overpower_rage_thresh{};
@@ -96,6 +97,8 @@ struct Combat_simulator_config
         bool use_hamstring{false};
         bool use_slam{false};
         bool use_bloodthirst{false};
+        bool use_mortal_strike{false};
+        bool use_sweeping_strikes{false};
         bool use_whirlwind{false};
         bool use_overpower{false};
         bool use_heroic_strike{false};
@@ -114,6 +117,7 @@ struct Combat_simulator_config
     struct dpr_t
     {
         bool compute_dpr_sl_{false};
+        bool compute_dpr_ms_{false};
         bool compute_dpr_bt_{false};
         bool compute_dpr_op_{false};
         bool compute_dpr_ww_{false};
@@ -138,6 +142,9 @@ struct Combat_simulator_config
         int improved_slam = 0;
         int tactical_mastery = 0;
         int deep_wounds = 0;
+        int bloodthirst = 0;
+        int mortal_strike = 0;
+        int sweeping_strikes = 0;
     } talents;
 };
 
@@ -255,6 +262,9 @@ public:
 
     void slam(Weapon_sim& main_hand_weapon, Special_stats& special_stats, double& rage, Damage_sources& damage_sources,
               int& flurry_charges);
+
+    void mortal_strike(Weapon_sim& main_hand_weapon, Special_stats& special_stats, double& rage,
+                       Damage_sources& damage_sources, int& flurry_charges);
 
     void bloodthirst(Weapon_sim& main_hand_weapon, Special_stats& special_stats, double& rage,
                      Damage_sources& damage_sources, int& flurry_charges);
@@ -425,6 +435,10 @@ private:
 
     double tactical_mastery_rage_{0};
     bool deep_wounds_{false};
+    bool use_bloodthirst_{false};
+    bool use_mortal_strike_{false};
+    bool use_sweeping_strikes_{false};
+    int sweeping_strikes_charges_ = 0;
 
     std::vector<std::vector<double>> damage_time_lapse{};
     std::map<std::string, int> proc_data_{};
@@ -434,7 +448,8 @@ private:
         {Damage_source::white_mh, 0},         {Damage_source::white_oh, 1},      {Damage_source::bloodthirst, 2},
         {Damage_source::execute, 3},          {Damage_source::heroic_strike, 4}, {Damage_source::cleave, 5},
         {Damage_source::whirlwind, 6},        {Damage_source::hamstring, 7},     {Damage_source::deep_wounds, 8},
-        {Damage_source::item_hit_effects, 9}, {Damage_source::overpower, 10},    {Damage_source::slam, 11}};
+        {Damage_source::item_hit_effects, 9}, {Damage_source::overpower, 10},    {Damage_source::slam, 11},
+        {Damage_source::mortal_strike, 12}};
 };
 
 #include "Combat_simulator.tcc"

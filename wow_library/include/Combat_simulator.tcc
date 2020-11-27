@@ -33,6 +33,10 @@ void Combat_simulator_config::get_combat_simulator_config(const T& input)
     {
         combat.use_bt_in_exec_phase = true;
     }
+    if (find_string(input.options, "use_ms_in_exec_phase"))
+    {
+        combat.use_ms_in_exec_phase = true;
+    }
     if (find_string(input.options, "use_hs_in_exec_phase"))
     {
         combat.use_hs_in_exec_phase = true;
@@ -48,6 +52,10 @@ void Combat_simulator_config::get_combat_simulator_config(const T& input)
     if (find_string(input.options, "use_bloodthirst"))
     {
         combat.use_bloodthirst = true;
+    }
+    if (find_string(input.options, "use_mortal_strike"))
+    {
+        combat.use_mortal_strike = true;
     }
     if (find_string(input.options, "use_slam"))
     {
@@ -157,12 +165,12 @@ void Combat_simulator_config::get_combat_simulator_config(const T& input)
         talents.death_wish = fv.find("death_wish_talent");
         talents.tactical_mastery = fv.find("tactical_mastery_talent");
         talents.deep_wounds = fv.find("deep_wounds_talent");
+        talents.bloodthirst = fv.find("bloodthirst_talent");
+        talents.mortal_strike = fv.find("mortal_strike_talent");
+        talents.sweeping_strikes = fv.find("sweeping_strikes_talent");
 
-        //        " improved_berserker_rage_talent"
-        //        " bloodthirst_talent"
-        //        " enrage_talent"
-        //        " sweeping_strikes_talent"
-        //        " mortal_strike_talent"
+        //        "improved_berserker_rage_talent"
+        //        "enrage_talent"
     }
     //    "deflection_talent"
     //    "improved_rend_talent"
@@ -188,6 +196,5 @@ void Combat_simulator_config::get_combat_simulator_config(const T& input)
     //    "improved_shield_wall_talent"
     //    "concussion_blow_talent"
     //    "improved_shield_bash_talent"
-    //    "one_handed_weapon_specialzation_talent"
     //    "shield_slam_talent"
 }

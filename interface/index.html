@@ -162,6 +162,9 @@
         margin-left: 25px;
     }
 
+    div.hide_description {
+    }
+
     .left_select {
         position: relative;
         left: 00px;
@@ -221,6 +224,58 @@
     .talents {
         display: inline-block;
         border-right: thin solid #A9A9A9;
+    }
+
+    .tooltip {
+        position: relative;
+        display: inline-block;
+        border-bottom: 1px dotted black;
+    }
+
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: #555;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -60px;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .tooltip .tooltiptext::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #555 transparent transparent transparent;
+    }
+
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .tooltipicon {
+        width: 35px;
+        height: 35px;
+        position: relative;
+        margin: 3px;
+        user-select: none;
+        border: 1px solid #525252;
+        display: inline-block;
+        vertical-align: top;
+        cursor: pointer;
+        transition: border-color .2s ease-in;
     }
 </style>
 
@@ -1735,7 +1790,7 @@
                 <td></td>
                 <td></td>
                 <td>
-                    <div class="icon" data-count="0" data-x="2" data-y="5" id="one_handed_weapon_specialzation_talent"
+                    <div class="icon" data-count="0" data-x="2" data-y="5" id="one_handed_weapon_specialization_talent"
                          data-max="5">
                         <img src="images/inv_sword_20.jpg" alt="One-Handed Weapon Specialization"></div>
                 </td>
@@ -1913,7 +1968,7 @@
     </div>
     <br><br>
 
-    <button type="button" class="collapsible">Combat settings</button>
+    <button type="button" class="collapsible">Cooldowns and Rotation</button>
     <div class="content">
         <b>Cooldowns:</b><br>
         (Cooldowns are used towards the end of the fight, with a one second precision)
@@ -1934,11 +1989,24 @@
         <label for="recklessness"> Use recklessness</label><br><br>
 
         <b>Combat policy:</b><br>
-        <input type="checkbox" id="use_bloodthirst" checked onclick="show_div('use_bloodthirst', 'bloodthirst_div')">
-        <label for="use_bloodthirst"><b> Use bloodthirst</b></label><br>
-        <div class="description" id="bloodthirst_div">
-            <input type="checkbox" id="use_bt_in_exec_phase">
-            <label for="use_bt_in_exec_phase"> Use bloodthirst in execute phase</label><br>
+        <div class="hide_description" id="bloodthirst_talent_div">
+            <input type="checkbox" id="use_bloodthirst" checked
+                   onclick="show_div('use_bloodthirst', 'bloodthirst_div')">
+            <label for="use_bloodthirst"><b> Use bloodthirst</b></label><br>
+            <div class="description" id="bloodthirst_div">
+                <input type="checkbox" id="use_bt_in_exec_phase">
+                <label for="use_bt_in_exec_phase"> Use bloodthirst in execute phase</label><br>
+            </div>
+        </div>
+
+        <div class="hide_description" id="mortal_strike_talent_div">
+            <input type="checkbox" id="use_mortal_strike" checked
+                   onclick="show_div('use_mortal_strike', 'mortal_strike_div')">
+            <label for="use_mortal_strike"><b> Use mortal strike</b></label><br>
+            <div class="description" id="mortal_strike_div">
+                <input type="checkbox" id="use_ms_in_exec_phase">
+                <label for="use_ms_in_exec_phase"> Use mortal strike in execute phase</label><br>
+            </div>
         </div>
 
         <input type="checkbox" id="use_whirlwind" checked onclick="show_div('use_whirlwind', 'whirlwind_div')">
@@ -2013,24 +2081,34 @@
             the extra attack.<br>
         </div>
         <br>
+        <b>Other: </b><br>
+        <input type="checkbox" id="first_global_sunder" checked>
+        <label for="first_global_sunder"> Sunder armor the first GCD.</label><br>
 
-        <b>Armor reduction:</b><br>
-        <label for="sunder_armor_dd">Sunder armor stacks: (0-5):</label>
-        <input type="number" id="sunder_armor_dd" name="quantity" min="0" max="5" value="5"><br>
-        <input type="checkbox" id="exposed_armor">
-        <label for="exposed_armor"> Improved exposed armor applied after 6-7 seconds (replaces sunder armor)</label><br>
-        <input type="checkbox" id="faerie_fire" checked>
-        <label for="faerie_fire"> Faerie fire active</label><br>
-        <input type="checkbox" id="curse_of_recklessness" checked>
-        <label for="curse_of_recklessness"> Curse of recklessness active</label><br><br>
+        <input type="checkbox" id="first_hit_heroic_strike">
+        <label for="first_hit_heroic_strike"> Queue Heroic strike on the first melee hit.</label><br>
+
+    </div>
+    <br><br>
+
+    <button type="button" class="collapsible">Target and miscellaneous</button>
+    <div class="content">
+        <b>Fight length:</b><br>
+        <label for="fight_time_dd">Fight duration: (10-300s):</label>
+        <input type="number" id="fight_time_dd" name="quantity" min="10" max="300" value="60"><br>
+
+        <label for="execute_phase_percentage_dd">Execute phase duration (% of fight) </label>
+        <input type="number" id="execute_phase_percentage_dd" name="quantity" min="0" max="100" value="15"><br><br>
 
         <b>Target settings:</b><br>
         <label for="boss_armor_dd">Boss armor (default 3731): </label>
         <input type="number" id="boss_armor_dd" name="quantity" min="0" max="10000" value="3731"><br>
         <label for="opponent_level_dd">Opponent level: (60-63):</label>
-        <input type="number" id="opponent_level_dd" name="quantity" min="60" max="63" value="63"><br>
+        <input type="number" id="opponent_level_dd" name="quantity" min="60" max="63" value="63"><br><br>
+
+        <b>Multi target mode:</b><br>
         <input type="checkbox" id="multi_target_mode" onclick="show_div('multi_target_mode', 'multi_target_div')">
-        <label for="multi_target_mode">Multi-target mode</label><br>
+        <label for="multi_target_mode">Multi-target mode enabled</label><br>
         <div class="description" id="multi_target_div">
             <label for="number_of_extra_targets_dd">Number of extra targets (1-4):</label>
             <input type="number" id="number_of_extra_targets_dd" name="quantity" min="1" max="4" value="2"><br>
@@ -2042,6 +2120,16 @@
             <!--            <input type="number" id="extra_target_duration_dd" name="quantity" min="1" max="100" value="50"><br>-->
         </div>
         <br>
+
+        <b>Armor reduction:</b><br>
+        <label for="sunder_armor_dd">Sunder armor stacks: (0-5):</label>
+        <input type="number" id="sunder_armor_dd" name="quantity" min="0" max="5" value="5"><br>
+        <input type="checkbox" id="exposed_armor">
+        <label for="exposed_armor"> Improved exposed armor applied after 6-7 seconds (replaces sunder armor)</label><br>
+        <input type="checkbox" id="faerie_fire" checked>
+        <label for="faerie_fire"> Faerie fire active</label><br>
+        <input type="checkbox" id="curse_of_recklessness" checked>
+        <label for="curse_of_recklessness"> Curse of recklessness active</label><br><br>
 
         <b>Rage settings:</b><br>
         <label for="initial_rage_dd">Initial rage when fight starts:</label>
@@ -2063,25 +2151,13 @@
         <br>
 
         <b>Other combat settings:</b><br>
-        <input type="checkbox" id="first_global_sunder" checked>
-        <label for="first_global_sunder"> First GCD sunder armor.</label><br>
-
-        <input type="checkbox" id="first_hit_heroic_strike">
-        <label for="first_hit_heroic_strike"> Queue Heroic strike on the first melee hit.</label><br>
-
         <input type="checkbox" id="deep_wounds">
         <label for="deep_wounds"> Enable deep wounds.</label><br>
-
-        <label for="fight_time_dd">Fight duration: (10-300s):</label>
-        <input type="number" id="fight_time_dd" name="quantity" min="10" max="300" value="60"><br>
-
-        <label for="execute_phase_percentage_dd">Execute phase duration (% of fight) </label>
-        <input type="number" id="execute_phase_percentage_dd" name="quantity" min="0" max="100" value="15"><br>
 
     </div>
     <br><br>
 
-    <button type="button" class="collapsible">Simulation settings</button>
+    <button type="button" class="collapsible">Simulator settings</button>
     <div class="content">
         <label for="n_simulations_dd">Number of simulations (DPS): (1 - 1.000.000):</label>
         <input type="number" id="n_simulations_dd" name="quantity" min="1" max="1000000" value="50000"><br>
@@ -2286,7 +2362,7 @@
         "cleave_if_adds", "use_hamstring", "use_bloodthirst", "use_whirlwind", "use_overpower", "use_heroic_strike",
         "item_strengths", "wep_strengths", "deep_wounds", "heroic_strike_aq", "compute_dpr", "talents_stat_weights",
         "multi_target_mode", "essence_of_the_red", "periodic_damage", "can_trigger_enrage", "first_global_sunder",
-        "ability_queue", "first_hit_heroic_strike", "use_slam"];
+        "ability_queue", "first_hit_heroic_strike", "use_slam", "use_ms_in_exec_phase", "use_mortal_strike"];
 
     let stat_weigths = ["stat_weight_hit", "stat_weight_crit", "stat_weight_haste",
         "stat_weight_extra_hit", "stat_weight_skill", "stat_weight_mh_speed", "stat_weight_oh_speed"];
@@ -2654,8 +2730,7 @@
                 console.log("NaN value when reading talents.");
                 val = 0;
             }
-            if (val > 0)
-            {
+            if (val > 0) {
                 console.log(element, val);
             }
             val = Math.min(Math.max(val, 0), max_val);
@@ -2697,7 +2772,7 @@
                 float_options_string: float_options_string,
                 float_options_val: float_options_val,
                 talent_string: talent_string,
-                talent_val : talent_val,
+                talent_val: talent_val,
             };
 
             let result = obj.simulate_mult(wow_input);
@@ -2721,7 +2796,7 @@
                 float_options_string: float_options_string,
                 float_options_val: float_options_val,
                 talent_string: talent_string,
-                talent_val : talent_val,
+                talent_val: talent_val,
                 compare_armor: compare_armor_vec,
                 compare_weapons: compare_weapons_vec,
                 mult_armor: mult_armor_vec,
