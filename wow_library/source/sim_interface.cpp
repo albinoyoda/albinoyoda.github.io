@@ -422,6 +422,50 @@ Character character_setup(const Armory& armory, const std::string& race, const s
     return character;
 }
 
+void compute_talent_weight(Combat_simulator& combat_simulator, const Character& character, std::string& talents_info,
+                           const std::string& talent_name, Combat_simulator_config config,
+                           int Combat_simulator_config::talents_t::*talent, int n_points)
+{
+    config.talents.*talent = 0;
+    combat_simulator.set_config(config);
+    combat_simulator.simulate(character, 0);
+    double dps_without = combat_simulator.get_dps_mean();
+    double var_without = combat_simulator.get_dps_variance();
+
+    config.talents.*talent = n_points;
+    combat_simulator.set_config(config);
+    combat_simulator.simulate(character, 0);
+    double dps_with = combat_simulator.get_dps_mean();
+    double var_with = combat_simulator.get_dps_variance();
+
+    double delta_dps = (dps_with - dps_without) / n_points;
+    double std_dps = std::sqrt(var_without + var_with) / n_points / std::sqrt(config.n_batches);
+    talents_info += "<br>Talent: <b>" + talent_name + "</b><br>Value: <b>" + string_with_precision(delta_dps, 4) +
+                    " &plusmn " + string_with_precision(std_dps, 3) + " DPS</b><br>";
+}
+
+void compute_talent_weight(Combat_simulator& combat_simulator, const Character& character, std::string& talents_info,
+                           const std::string& talent_name, Combat_simulator_config config,
+                           bool Combat_simulator_config::talents_t::*talent)
+{
+    config.talents.*talent = false;
+    combat_simulator.set_config(config);
+    combat_simulator.simulate(character, 0);
+    double dps_without = combat_simulator.get_dps_mean();
+    double var_without = combat_simulator.get_dps_variance();
+
+    config.talents.*talent = true;
+    combat_simulator.set_config(config);
+    combat_simulator.simulate(character, 0);
+    double dps_with = combat_simulator.get_dps_mean();
+    double var_with = combat_simulator.get_dps_variance();
+
+    double delta_dps = dps_with - dps_without;
+    double std_dps = std::sqrt(var_without + var_with) / std::sqrt(config.n_batches);
+    talents_info += "<br>Talent: <b>" + talent_name + "</b><br>Value: <b>" + string_with_precision(delta_dps, 4) +
+                    " &plusmn " + string_with_precision(std_dps, 3) + " DPS</b><br>";
+}
+
 Sim_output Sim_interface::simulate(const Sim_input& input)
 {
     Armory armory{};
@@ -435,8 +479,8 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         temp_buffs.emplace_back("mighty_rage_potion");
     }
 
-    Character character = character_setup(armory, input.race[0], input.armor, input.weapons, temp_buffs,
-                                          input.talent_string, input.talent_val, input.enchants);
+    const Character character = character_setup(armory, input.race[0], input.armor, input.weapons, temp_buffs,
+                                                input.talent_string, input.talent_val, input.enchants);
 
     // Simulator & Combat settings
     Combat_simulator_config config{input};
@@ -740,114 +784,53 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     std::string talents_info = "<br>(Hint: Talent stat-weights can be activated under 'Simulation settings')";
     if (find_string(input.options, "talents_stat_weights"))
     {
-        double delta_dps{};
         config.n_batches = static_cast<int>(
             find_value(input.float_options_string, input.float_options_val, "n_simulations_talent_dd"));
         Combat_simulator simulator_talent{};
 
+        talents_info = "<br><b>Value per 1 talent point:</b>";
         if (!config.combat.cleave_if_adds)
         {
-            talents_info = "<br><b>Value per 1 talent point:</b>";
-            config.talents.improved_heroic_strike -= 2;
-            simulator_talent.set_config(config);
-            simulator_talent.simulate(character, 0);
-            delta_dps = (dps_mean - simulator_talent.get_dps_mean()) / 2;
-            talents_info += "<br>Talent: <b>Improved Heroic Strike</b><br>Value: <b>" +
-                            string_with_precision(delta_dps, 3) + "</b> DPS<br>";
-            config.talents.improved_heroic_strike += 2;
+            compute_talent_weight(simulator_talent, character, talents_info, "Improved Heroic Strike", config,
+                                  &Combat_simulator_config::talents_t::improved_heroic_strike, 3);
         }
         else
         {
-            config.talents.improved_cleave += 3;
-            simulator_talent.set_config(config);
-            simulator_talent.simulate(character, 0);
-            delta_dps = -(dps_mean - simulator_talent.get_dps_mean()) / 3;
-            talents_info += "<br>Talent: <b>Improved Cleave</b><br>Value: <b>" + string_with_precision(delta_dps, 3) +
-                            "</b> DPS<br>";
-            config.talents.improved_cleave -= 3;
+            compute_talent_weight(simulator_talent, character, talents_info, "Improved Cleave", config,
+                                  &Combat_simulator_config::talents_t::improved_cleave, 3);
         }
 
-        config.talents.overpower--;
-        simulator_talent.set_config(config);
-        simulator_talent.simulate(character, 0);
-        delta_dps = dps_mean - simulator_talent.get_dps_mean();
-        talents_info += "<br>Talent: <b>Improved Overpower</b><br>Value: <b>" + string_with_precision(delta_dps, 4) +
-                        "</b> DPS<br>";
-        config.talents.overpower++;
+        compute_talent_weight(simulator_talent, character, talents_info, "Improved Overpower", config,
+                              &Combat_simulator_config::talents_t::overpower, 2);
 
         if (config.combat.use_slam && is_two_handed)
         {
-            config.talents.improved_slam -= 5;
-            simulator_talent.set_config(config);
-            simulator_talent.simulate(character, 0);
-            delta_dps = (dps_mean - simulator_talent.get_dps_mean()) / 5;
-            talents_info +=
-                "<br>Talent: <b>Improved Slam</b><br>Value: <b>" + string_with_precision(delta_dps, 4) + "</b> DPS<br>";
-            config.talents.improved_slam += 5;
+            compute_talent_weight(simulator_talent, character, talents_info, "Improved Slam", config,
+                                  &Combat_simulator_config::talents_t::improved_slam, 5);
         }
 
-        config.talents.improved_execute -= 2;
-        simulator_talent.set_config(config);
-        simulator_talent.simulate(character, 0);
-        delta_dps = (dps_mean - simulator_talent.get_dps_mean()) / 2;
-        talents_info +=
-            "<br>Talent: <b>Improved Execute</b><br>Value: <b>" + string_with_precision(delta_dps, 4) + "</b> DPS<br>";
-        config.talents.improved_execute += 2;
+        compute_talent_weight(simulator_talent, character, talents_info, "Improved Execute", config,
+                              &Combat_simulator_config::talents_t::improved_execute, 2);
 
-        config.talents.unbridled_wrath -= 5;
-        simulator_talent.set_config(config);
-        simulator_talent.simulate(character, 0);
-        delta_dps = (dps_mean - simulator_talent.get_dps_mean()) / 5;
-        talents_info +=
-            "<br>Talent: <b>Unbridled Wrath</b><br>Value: <b>" + string_with_precision(delta_dps, 4) + "</b> DPS<br>";
-        config.talents.unbridled_wrath += 5;
+        compute_talent_weight(simulator_talent, character, talents_info, "Unbridled Wrath", config,
+                              &Combat_simulator_config::talents_t::unbridled_wrath, 5);
 
-        config.talents.flurry -= 2;
-        simulator_talent.set_config(config);
-        simulator_talent.simulate(character, 0);
-        delta_dps = (dps_mean - simulator_talent.get_dps_mean()) / 2;
-        talents_info +=
-            "<br>Talent: <b>Flurry</b><br>Value: <b>" + string_with_precision(delta_dps, 4) + "</b> DPS<br>";
-        config.talents.flurry += 2;
+        compute_talent_weight(simulator_talent, character, talents_info, "Flurry", config,
+                              &Combat_simulator_config::talents_t::flurry, 5);
 
-        config.talents.anger_management = false;
-        simulator_talent.set_config(config);
-        simulator_talent.simulate(character, 0);
-        delta_dps = dps_mean - simulator_talent.get_dps_mean();
-        talents_info +=
-            "<br>Talent: <b>Anger Management</b><br>Value: <b>" + string_with_precision(delta_dps, 4) + "</b> DPS<br>";
-        config.talents.anger_management = true;
+        compute_talent_weight(simulator_talent, character, talents_info, "Impale", config,
+                              &Combat_simulator_config::talents_t::impale, 2);
 
-        config.talents.death_wish = !config.talents.death_wish;
-        simulator_talent.set_config(config);
-        simulator_talent.simulate(character, 0);
-        delta_dps = dps_mean - simulator_talent.get_dps_mean();
-        if (delta_dps < 0.0)
-        {
-            // Sign depends on if you have the talent or not
-            delta_dps *= -1;
-        }
-        talents_info +=
-            "<br>Talent: <b>Death wish</b><br>Value: <b>" + string_with_precision(delta_dps, 4) + "</b> DPS<br>";
-        config.talents.death_wish = !config.talents.death_wish;
+        compute_talent_weight(simulator_talent, character, talents_info, "Anger Management", config,
+                              &Combat_simulator_config::talents_t::anger_management);
 
-        config.talents.impale--;
-        simulator_talent.set_config(config);
-        simulator_talent.simulate(character, 0);
-        delta_dps = dps_mean - simulator_talent.get_dps_mean();
-        talents_info +=
-            "<br>Talent: <b>Impale</b><br>Value: <b>" + string_with_precision(delta_dps, 4) + "</b> DPS<br>";
-        config.talents.impale++;
+        compute_talent_weight(simulator_talent, character, talents_info, "Death wish", config,
+                              &Combat_simulator_config::talents_t::death_wish);
 
         if (!is_two_handed)
         {
-            config.talents.dual_wield_specialization -= 2;
-            simulator_talent.set_config(config);
-            simulator_talent.simulate(character, 0);
-            delta_dps = (dps_mean - simulator_talent.get_dps_mean()) / 2;
-            talents_info += "<br>Talent: <b>Dual Wield Specialization</b><br>Value: <b>" +
-                            string_with_precision(delta_dps, 4) + "</b> DPS<br>";
-            config.talents.dual_wield_specialization += 2;
+            compute_talent_weight(simulator_talent, character, talents_info, "Dual Wield Specialization", config,
+                                  &Combat_simulator_config::talents_t::dual_wield_specialization, 5);
         }
     }
 

@@ -410,7 +410,8 @@ struct Armory
                     {"kiss_of_the_spider",               Attributes{0, 0}, Special_stats{1, 1,
                                                                                   0},        Socket::trinket, Set::none, {}, {{"kiss_of_the_spider",             Use_effect::Effect_socket::shared, {0,  0}, {0, 0, 0, 0, .2}, 0, 15, 120, true}}},
                     {"mark_of_the_champion",       Attributes{0, 0}, Special_stats{0, 0, 150}, Socket::trinket},
-                    {"slayers_crest",               Attributes{0, 0}, Special_stats{0, 0,
+                    {"seal_of_the_dawn",           Attributes{0, 0}, Special_stats{0, 0, 81}, Socket::trinket},
+                    {"slayers_crest",              Attributes{0, 0}, Special_stats{0, 0,
                                                                                   64},        Socket::trinket, Set::none, {}, {{"slayers_crest",             Use_effect::Effect_socket::shared, {0,  0}, {0, 0, 260}, 0, 20, 120, true}}},
             };
 
