@@ -368,7 +368,7 @@ int main()
     buff_vec.emplace_back("dense_stone_off_hand");
     buff_vec.emplace_back("elemental_stone_main_hand");
     buff_vec.emplace_back("battle_shout");
-//    buff_vec.emplace_back("battle_shout_aq");
+    //    buff_vec.emplace_back("battle_shout_aq");
     //    buff_vec.emplace_back("strength_of_earth_totem");
     //    buff_vec.emplace_back("grace_of_air_totem");
 
@@ -401,6 +401,8 @@ int main()
         "use_hamstring",
         "use_overpower",
         "use_slam",
+        "use_sweeping_strikes",
+        "multi_target_mode",
         "wep_strengths",
     };
 
@@ -435,9 +437,9 @@ int main()
                                                   "slam_spam_rage_dd",
                                                   "slam_rage_dd"};
 
-    std::vector<double> float_options_val{50.0, 50.0, 10.0, 2.0,   50.0, 0.0,  2.0, 25.0, 2.0,  2.0,
-                                          60.0, 63.0, 3731, 5,     0,    3731, 63,  1.0,  300,  15,
-                                          70,   0.5,  0.5,  20000, 1000, 1000, 1.0, 1.5,  60.0, 15};
+    std::vector<double> float_options_val{50.0, 50.0, 10.0, 2.0,  50.0, 0.0,  2.0, 25.0, 2.0,  2.0,
+                                          60.0, 63.0, 3731, 5,    0,    3731, 63,  1.0,  300,  15,
+                                          70,   0.5,  0.5,  2000, 1000, 1000, 1.0, 1.5,  60.0, 15};
 
     std::vector<std::string> talents_string{
         "improved_heroic_strike_talent",
@@ -455,9 +457,10 @@ int main()
         "death_wish_talent",
         "flurry_talent",
         "bloodthirst_talent",
+        "sweeping_strikes_talent",
     };
 
-    std::vector<int> talents_val{3, 3, 5, 1, 3, 2, 5, 5, 5, 5, 2, 5, 1, 5, 1};
+    std::vector<int> talents_val{3, 3, 5, 1, 3, 2, 5, 5, 5, 5, 2, 5, 1, 5, 1, 1};
 
     Sim_input sim_input{{race},
                         armor_vec,

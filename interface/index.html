@@ -81,6 +81,8 @@
         font-size: 16px;
         margin: 4px 2px;
         cursor: pointer;
+        width: 600px;
+        height: 60px;
     }
 
     /* Change background color of buttons on hover */
@@ -93,7 +95,8 @@
         color: white;
         cursor: pointer;
         padding: 18px;
-        width: 600px;
+        width: 666px;
+        height: 60px;
         border: 1px solid black;
         text-align: center;
         outline: none;
@@ -109,7 +112,7 @@
         display: none;
         overflow-y: scroll;
         max-height: 480px;
-        width: 600px;
+        width: 630px;
         background-color: #d9d9d9;
     }
 
@@ -153,7 +156,6 @@
         color: white;
         width: 600px;
         height: 400px;
-        overflow-x: hidden;
         overflow-x: auto;
         text-align: justify;
     }
@@ -184,12 +186,12 @@
     }
 
     .icon {
-        width: 35px;
-        height: 35px;
+        width: 36px;
+        height: 36px;
         position: relative;
-        margin: 3px;
+        margin: 1px;
         user-select: none;
-        border: 1px solid #525252;
+        border: 2px solid #fcfff9;
         display: inline-block;
         vertical-align: top;
         cursor: pointer;
@@ -223,7 +225,12 @@
 
     .talents {
         display: inline-block;
-        border-right: thin solid #A9A9A9;
+        border-right: thin solid #404040;
+    }
+
+    .checkbox_div {
+        vertical-align: top;
+        display: inline-block;
     }
 
     .tooltip {
@@ -1484,8 +1491,7 @@
         <br><br>
         <b id="total_points">Total points: </b>
         <br>
-
-        <!--    TODO tooltips https://www.w3schools.com/css/css_tooltip.asp-->
+        (Talents with dotted black lines around them is not implemented.)
 
         <table class="talents arms">
             <tbody>
@@ -1812,166 +1818,171 @@
 
     <button type="button" class="collapsible">Buffs and Consumables</button>
     <div class="content">
-        <p class="select-title">World buffs:</p><br>
-        <input type="checkbox" id="rallying_cry" checked>
-        <label for="rallying_cry"> Rallying Cry of the Dragon Slayer</label><br>
+        <div class="checkbox_div">
+            <p class="select-title">World buffs:</p><br>
+            <input type="checkbox" id="rallying_cry" checked>
+            <label for="rallying_cry"> Rallying Cry of the Dragon Slayer</label><br>
 
-        <input type="checkbox" id="dire_maul" checked>
-        <label for="dire_maul"> Fengus' Ferocity</label><br>
+            <input type="checkbox" id="dire_maul" checked>
+            <label for="dire_maul"> Fengus' Ferocity</label><br>
 
-        <input type="checkbox" id="songflower">
-        <label for="songflower"> Songflower Serenade</label><br>
+            <input type="checkbox" id="songflower">
+            <label for="songflower"> Songflower Serenade</label><br>
 
-        <input type="checkbox" id="warchiefs_blessing">
-        <label for="warchiefs_blessing"> Warchiefs Blessing</label><br>
+            <input type="checkbox" id="warchiefs_blessing">
+            <label for="warchiefs_blessing"> Warchiefs Blessing</label><br>
 
-        <input type="checkbox" id="spirit_of_zandalar" checked>
-        <label for="spirit_of_zandalar"> Spirit of Zandalar</label><br>
+            <input type="checkbox" id="spirit_of_zandalar" checked>
+            <label for="spirit_of_zandalar"> Spirit of Zandalar</label><br>
 
-        <input type="checkbox" id="sayges_fortune">
-        <label for="sayges_fortune"> Sayges Fortune</label><br>
+            <input type="checkbox" id="sayges_fortune">
+            <label for="sayges_fortune"> Sayges Fortune</label><br>
 
-        <input type="checkbox" id="traces_of_silithyst">
-        <label for="traces_of_silithyst"> Traces of Silithyst</label><br><br>
+            <input type="checkbox" id="traces_of_silithyst">
+            <label for="traces_of_silithyst"> Traces of Silithyst</label><br><br>
 
-        <b> Player buffs:</b><br>
-        <input type="checkbox" id="battle_shout" checked>
-        <label for="battle_shout"> Battle Shout</label><br>
+            <b> Player buffs:</b><br>
+            <input type="checkbox" id="battle_shout" checked>
+            <label for="battle_shout"> Battle Shout</label><br>
 
-        <input type="checkbox" id="gift_of_the_wild" checked>
-        <label for="gift_of_the_wild"> Gift of the Wild</label><br>
+            <input type="checkbox" id="gift_of_the_wild" checked>
+            <label for="gift_of_the_wild"> Gift of the Wild</label><br>
 
-        <input type="checkbox" id="leader_of_the_pack">
-        <label for="leader_of_the_pack"> Leader of the Pack</label><br>
+            <input type="checkbox" id="leader_of_the_pack">
+            <label for="leader_of_the_pack"> Leader of the Pack</label><br>
 
-        <input type="checkbox" id="trueshot_aura" checked>
-        <label for="trueshot_aura"> Trueshot Aura</label><br>
+            <input type="checkbox" id="trueshot_aura" checked>
+            <label for="trueshot_aura"> Trueshot Aura</label><br>
 
-        <input type="checkbox" id="blessing_of_kings" checked>
-        <label for="blessing_of_kings" style="color: #003d99"> Blessing of Kings</label><br>
+            <input type="checkbox" id="blessing_of_kings" checked>
+            <label for="blessing_of_kings" style="color: #003d99"> Blessing of Kings</label><br>
 
-        <input type="checkbox" id="blessing_of_might" checked>
-        <label for="blessing_of_might" style="color: #003d99"> Blessing of Might</label><br>
+            <input type="checkbox" id="blessing_of_might" checked>
+            <label for="blessing_of_might" style="color: #003d99"> Blessing of Might</label><br>
 
-        <input type="checkbox" id="windfury_totem">
-        <label for="windfury_totem" style="color: #cc0000"> Windfury totem</label><br>
+            <input type="checkbox" id="windfury_totem">
+            <label for="windfury_totem" style="color: #cc0000"> Windfury totem</label><br>
 
-        <input type="checkbox" id="strength_of_earth_totem">
-        <label for="strength_of_earth_totem" style="color: #cc0000"> Strength of earth Totem</label><br>
+            <input type="checkbox" id="strength_of_earth_totem">
+            <label for="strength_of_earth_totem" style="color: #cc0000"> Strength of earth Totem</label><br>
 
-        <input type="checkbox" id="grace_of_air_totem">
-        <label for="grace_of_air_totem" style="color: #cc0000"> Grace of Air Totem</label><br><br>
+            <input type="checkbox" id="grace_of_air_totem">
+            <label for="grace_of_air_totem" style="color: #cc0000"> Grace of Air Totem</label><br><br>
 
-        <b> AQ-books:</b><br>
-        <input type="checkbox" id="battle_shout_aq" checked>
-        <label for="battle_shout_aq"> Battle shout</label><br>
+            <b> AQ-books:</b><br>
+            <input type="checkbox" id="battle_shout_aq" checked>
+            <label for="battle_shout_aq"> Battle shout</label><br>
 
-        <input type="checkbox" id="blessing_of_might_aq">
-        <label for="blessing_of_might_aq" style="color: #003d99"> Blessing of Might</label><br>
+            <input type="checkbox" id="blessing_of_might_aq">
+            <label for="blessing_of_might_aq" style="color: #003d99"> Blessing of Might</label><br>
 
-        <input type="checkbox" id="strength_of_earth_totem_aq">
-        <label for="strength_of_earth_totem_aq" style="color: #cc0000"> Strength of earth Totem</label><br>
+            <input type="checkbox" id="strength_of_earth_totem_aq">
+            <label for="strength_of_earth_totem_aq" style="color: #cc0000"> Strength of earth Totem</label><br>
 
-        <input type="checkbox" id="grace_of_air_totem_aq">
-        <label for="grace_of_air_totem_aq" style="color: #cc0000"> Grace of Air Totem</label><br>
+            <input type="checkbox" id="grace_of_air_totem_aq">
+            <label for="grace_of_air_totem_aq" style="color: #cc0000"> Grace of Air Totem</label><br>
 
-        <input type="checkbox" id="heroic_strike_aq" checked>
-        <label for="heroic_strike_aq"> Heroic Strike</label><br><br>
+            <input type="checkbox" id="heroic_strike_aq" checked>
+            <label for="heroic_strike_aq"> Heroic Strike</label><br><br>
+        </div>
 
-        <b> Talents:</b><br>
-        <input type="checkbox" id="improved_weapon_totems">
-        <label for="improved_weapon_totems" style="color: #cc0000"> Improved Weapon Totems</label><br>
+        <div class="checkbox_div">
+            <p class="select-title">Consumables:</p><br>
+            <input type="checkbox" id="elixir_mongoose" checked>
+            <label for="elixir_mongoose"> Elixir of the Mongoose</label><br>
 
-        <input type="checkbox" id="enhancing_totems">
-        <label for="enhancing_totems" style="color: #cc0000"> Enhancing Totems</label><br><br>
-
-        <b> Consumables:</b><br>
-        <input type="checkbox" id="elixir_mongoose" checked>
-        <label for="elixir_mongoose"> Elixir of the Mongoose</label><br>
-
-        <input type="checkbox" id="blessed_sunfruit" onclick=
-                "if (document.getElementById('smoked_dessert_dumplings').checked)
+            <input type="checkbox" id="blessed_sunfruit" onclick=
+                    "if (document.getElementById('smoked_dessert_dumplings').checked)
                 {
                     document.getElementById('smoked_dessert_dumplings').checked = false;
                 }" checked>
-        <label for="blessed_sunfruit"> Blessed Sunfruit</label><br>
+            <label for="blessed_sunfruit"> Blessed Sunfruit</label><br>
 
-        <input type="checkbox" id="smoked_dessert_dumplings" onclick=
-                "if (document.getElementById('blessed_sunfruit').checked)
+            <input type="checkbox" id="smoked_dessert_dumplings" onclick=
+                    "if (document.getElementById('blessed_sunfruit').checked)
                 {
                     document.getElementById('blessed_sunfruit').checked = false;
                 }">
-        <label for="smoked_dessert_dumplings"> Smoked Dessert Dumplings</label><br>
+            <label for="smoked_dessert_dumplings"> Smoked Dessert Dumplings</label><br>
 
-        <input type="checkbox" id="juju_might" onclick=
-                "if (document.getElementById('winterfall_firewater').checked)
+            <input type="checkbox" id="juju_might" onclick=
+                    "if (document.getElementById('winterfall_firewater').checked)
                 {
                     document.getElementById('winterfall_firewater').checked = false;
                 }">
-        <label for="juju_might"> Juju Might</label><br>
+            <label for="juju_might"> Juju Might</label><br>
 
-        <input type="checkbox" id="winterfall_firewater" onclick=
-                "if (document.getElementById('juju_might').checked)
+            <input type="checkbox" id="winterfall_firewater" onclick=
+                    "if (document.getElementById('juju_might').checked)
                 {
                     document.getElementById('juju_might').checked = false;
                 }">
-        <label for="winterfall_firewater"> Winterfall Firewater</label><br>
+            <label for="winterfall_firewater"> Winterfall Firewater</label><br>
 
-        <input type="checkbox" id="juju_power" onclick=
-                "if (document.getElementById('elixir_of_giants').checked)
+            <input type="checkbox" id="juju_power" onclick=
+                    "if (document.getElementById('elixir_of_giants').checked)
                 {
                     document.getElementById('elixir_of_giants').checked = false;
                 }" checked>
-        <label for="juju_power"> Juju Power</label><br>
+            <label for="juju_power"> Juju Power</label><br>
 
-        <input type="checkbox" id="elixir_of_giants" onclick=
-                "if (document.getElementById('juju_power').checked)
+            <input type="checkbox" id="elixir_of_giants" onclick=
+                    "if (document.getElementById('juju_power').checked)
                 {
                     document.getElementById('juju_power').checked = false;
                 }">
-        <label for="elixir_of_giants"> Elixir of Giants</label><br>
+            <label for="elixir_of_giants"> Elixir of Giants</label><br>
 
-        <input type="checkbox" id="roids">
-        <label for="roids"> R.O.I.D.S</label><br>
+            <input type="checkbox" id="roids">
+            <label for="roids"> R.O.I.D.S</label><br>
 
-        <input type="checkbox" id="fire_toasted_bun">
-        <label for="fire_toasted_bun"> Fire-Toasted Bun</label><br><br>
+            <input type="checkbox" id="fire_toasted_bun">
+            <label for="fire_toasted_bun"> Fire-Toasted Bun</label><br><br>
 
-        <b>Weapon Stones:</b><br>
-        Main-hand:<br>
-        <input type="checkbox" id="dense_stone_main_hand"
-               onclick="unique_checkboxes_unselect('dense_stone_main_hand', ['elemental_stone_main_hand', 'consecrated_sharpening_stone_main_hand'] )"
-               checked>
-        <label for="dense_stone_main_hand"> Dense Stone</label><br>
+            <b>Weapon Stones:</b><br>
+            Main-hand:<br>
+            <input type="checkbox" id="dense_stone_main_hand"
+                   onclick="unique_checkboxes_unselect('dense_stone_main_hand', ['elemental_stone_main_hand', 'consecrated_sharpening_stone_main_hand'] )"
+                   checked>
+            <label for="dense_stone_main_hand"> Dense Stone</label><br>
 
-        <input type="checkbox" id="elemental_stone_main_hand"
-               onclick="unique_checkboxes_unselect('elemental_stone_main_hand', ['dense_stone_main_hand', 'consecrated_sharpening_stone_main_hand'] )">
-        <label for="elemental_stone_main_hand"> Elemental Stone</label><br>
+            <input type="checkbox" id="elemental_stone_main_hand"
+                   onclick="unique_checkboxes_unselect('elemental_stone_main_hand', ['dense_stone_main_hand', 'consecrated_sharpening_stone_main_hand'] )">
+            <label for="elemental_stone_main_hand"> Elemental Stone</label><br>
 
-        <input type="checkbox" id="consecrated_sharpening_stone_main_hand"
-               onclick="unique_checkboxes_unselect('consecrated_sharpening_stone_main_hand', ['elemental_stone_main_hand', 'dense_stone_main_hand'] )">
-        <label for="consecrated_sharpening_stone_main_hand"> Consecrated Stone</label><br>
+            <input type="checkbox" id="consecrated_sharpening_stone_main_hand"
+                   onclick="unique_checkboxes_unselect('consecrated_sharpening_stone_main_hand', ['elemental_stone_main_hand', 'dense_stone_main_hand'] )">
+            <label for="consecrated_sharpening_stone_main_hand"> Consecrated Stone</label><br>
 
-        Off-hand:<br>
-        <input type="checkbox" id="dense_stone_off_hand"
-               onclick="unique_checkboxes_unselect('dense_stone_off_hand', ['elemental_stone_off_hand', 'consecrated_sharpening_stone_off_hand'] )"
-               checked>
-        <label for="dense_stone_off_hand"> Dense Stone</label><br>
+            Off-hand:<br>
+            <input type="checkbox" id="dense_stone_off_hand"
+                   onclick="unique_checkboxes_unselect('dense_stone_off_hand', ['elemental_stone_off_hand', 'consecrated_sharpening_stone_off_hand'] )"
+                   checked>
+            <label for="dense_stone_off_hand"> Dense Stone</label><br>
 
-        <input type="checkbox" id="elemental_stone_off_hand"
-               onclick="unique_checkboxes_unselect('elemental_stone_off_hand', ['consecrated_sharpening_stone_off_hand', 'dense_stone_off_hand'] )">
-        <label for="elemental_stone_off_hand"> Elemental Stone Off Hand</label><br>
+            <input type="checkbox" id="elemental_stone_off_hand"
+                   onclick="unique_checkboxes_unselect('elemental_stone_off_hand', ['consecrated_sharpening_stone_off_hand', 'dense_stone_off_hand'] )">
+            <label for="elemental_stone_off_hand"> Elemental Stone Off Hand</label><br>
 
-        <input type="checkbox" id="consecrated_sharpening_stone_off_hand"
-               onclick="unique_checkboxes_unselect('consecrated_sharpening_stone_off_hand', ['elemental_stone_off_hand', 'dense_stone_off_hand'] )">
-        <label for="consecrated_sharpening_stone_off_hand"> Consecrated Stone</label>
+            <input type="checkbox" id="consecrated_sharpening_stone_off_hand"
+                   onclick="unique_checkboxes_unselect('consecrated_sharpening_stone_off_hand', ['elemental_stone_off_hand', 'dense_stone_off_hand'] )">
+            <label for="consecrated_sharpening_stone_off_hand"> Consecrated Stone</label>
+            <br><br>
+
+            <b> Talents:</b><br>
+            <input type="checkbox" id="improved_weapon_totems">
+            <label for="improved_weapon_totems" style="color: #cc0000"> Improved Weapon Totems</label><br>
+
+            <input type="checkbox" id="enhancing_totems">
+            <label for="enhancing_totems" style="color: #cc0000"> Enhancing Totems</label><br><br>
+        </div>
     </div>
     <br><br>
 
     <button type="button" class="collapsible">Cooldowns and Rotation</button>
     <div class="content">
         <b>Cooldowns:</b><br>
-        (Cooldowns are used towards the end of the fight, with a one second precision)
+        (Cooldowns are queued towards the end of the fight, with a one second margin)<br>
         <input type="checkbox" id="death_wish" checked>
         <label for="death_wish"> Use death wish</label><br>
 
@@ -2006,6 +2017,17 @@
             <div class="description" id="mortal_strike_div">
                 <input type="checkbox" id="use_ms_in_exec_phase">
                 <label for="use_ms_in_exec_phase"> Use mortal strike in execute phase</label><br>
+            </div>
+        </div>
+
+        <div class="hide_description" id="sweeping_strikes_talent_div">
+            <input type="checkbox" id="use_sweeping_strikes" checked
+                   onclick="show_div('use_sweeping_strikes', 'sweeping_strikes_div')">
+            <label for="use_sweeping_strikes"><b> Use sweeping strikes</b></label><br>
+            <div class="description" id="sweeping_strikes_div">
+                (Got an idea of more options here?)<br>
+                <input type="checkbox" id="dont_use_hm_when_ss">
+                <label for="dont_use_hm_when_ss"> Dont use hamstring when sweeping strikes is active.</label><br>
             </div>
         </div>
 
@@ -2106,7 +2128,7 @@
         <label for="opponent_level_dd">Opponent level: (60-63):</label>
         <input type="number" id="opponent_level_dd" name="quantity" min="60" max="63" value="63"><br><br>
 
-        <b>Multi target mode:</b><br>
+        <b>Multi-target mode:</b><br>
         <input type="checkbox" id="multi_target_mode" onclick="show_div('multi_target_mode', 'multi_target_div')">
         <label for="multi_target_mode">Multi-target mode enabled</label><br>
         <div class="description" id="multi_target_div">
@@ -2150,7 +2172,7 @@
         </div>
         <br>
 
-        <b>Other combat settings:</b><br>
+        <b>Other:</b><br>
         <input type="checkbox" id="deep_wounds">
         <label for="deep_wounds"> Enable deep wounds.</label><br>
 
@@ -2209,7 +2231,7 @@
     </div>
 
     <p></p>
-    <button style="width: 400px; height: 60px;" class="run_sim_button" data-item-name="itemname">Run simulator
+    <button class="run_sim_button" data-item-name="itemname">Run simulator
     </button>
 
     <h2>----------- RESULTS BELOW -----------</h2>
@@ -2362,7 +2384,8 @@
         "cleave_if_adds", "use_hamstring", "use_bloodthirst", "use_whirlwind", "use_overpower", "use_heroic_strike",
         "item_strengths", "wep_strengths", "deep_wounds", "heroic_strike_aq", "compute_dpr", "talents_stat_weights",
         "multi_target_mode", "essence_of_the_red", "periodic_damage", "can_trigger_enrage", "first_global_sunder",
-        "ability_queue", "first_hit_heroic_strike", "use_slam", "use_ms_in_exec_phase", "use_mortal_strike"];
+        "ability_queue", "first_hit_heroic_strike", "use_slam", "use_ms_in_exec_phase", "use_mortal_strike",
+        "use_sweeping_strikes", "dont_use_hm_when_ss"];
 
     let stat_weigths = ["stat_weight_hit", "stat_weight_crit", "stat_weight_haste",
         "stat_weight_extra_hit", "stat_weight_skill", "stat_weight_mh_speed", "stat_weight_oh_speed"];

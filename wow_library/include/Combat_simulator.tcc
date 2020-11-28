@@ -45,6 +45,14 @@ void Combat_simulator_config::get_combat_simulator_config(const T& input)
     {
         combat.cleave_if_adds = true;
     }
+    if (find_string(input.options, "use_sweeping_strikes"))
+    {
+        combat.use_sweeping_strikes = true;
+    }
+    if (find_string(input.options, "dont_use_hm_when_ss"))
+    {
+        combat.dont_use_hm_when_ss = true;
+    }
     if (find_string(input.options, "use_hamstring"))
     {
         combat.use_hamstring = true;
@@ -168,33 +176,5 @@ void Combat_simulator_config::get_combat_simulator_config(const T& input)
         talents.bloodthirst = fv.find("bloodthirst_talent");
         talents.mortal_strike = fv.find("mortal_strike_talent");
         talents.sweeping_strikes = fv.find("sweeping_strikes_talent");
-
-        //        "improved_berserker_rage_talent"
-        //        "enrage_talent"
     }
-    //    "deflection_talent"
-    //    "improved_rend_talent"
-    //    "improved_charge_talent"
-    //    "improved_thunder_clap_talent"
-    //    "improved_hamstring_talent"
-    //    "improved_demoralizing_shout_talent"
-    //    "peircing_howl_talent"
-    //    "blood_craze_talent"
-    //    "improved_intercept_talent"
-    //    "shield_specialization_talent"
-    //    "anticipation_talent"
-    //    "improved_bloodrage_talent"
-    //    "toughness_talent"
-    //    "iron_will_talent"
-    //    "last_stand_talent"
-    //    "improved_shield_block_talent"
-    //    "improved_revenge_talent"
-    //    "defiance_talent"
-    //    "improved_sunder_armor_talent"
-    //    "improved_disarm_talent"
-    //    "improved_taunt_talent"
-    //    "improved_shield_wall_talent"
-    //    "concussion_blow_talent"
-    //    "improved_shield_bash_talent"
-    //    "shield_slam_talent"
 }

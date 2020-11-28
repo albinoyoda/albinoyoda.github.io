@@ -68,7 +68,8 @@ void Combat_simulator::set_config(const Combat_simulator_config& new_config)
     deep_wounds_ = config.talents.deep_wounds && config.combat.deep_wounds;
     use_bloodthirst_ = config.talents.bloodthirst && config.combat.use_bloodthirst;
     use_mortal_strike_ = config.talents.mortal_strike && config.combat.use_mortal_strike;
-    use_sweeping_strikes_ = config.talents.sweeping_strikes && config.combat.use_sweeping_strikes;
+    use_sweeping_strikes_ =
+        config.talents.sweeping_strikes && config.combat.use_sweeping_strikes && config.multi_target_mode_;
 
     over_time_effects_.clear();
     use_effects_all_.clear();
@@ -268,8 +269,9 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit_oh(double damage)
 
 Combat_simulator::Hit_outcome Combat_simulator::generate_hit(const Weapon_sim& weapon, double damage,
                                                              Combat_simulator::Hit_type hit_type, Socket weapon_hand,
-                                                             const Special_stats& special_stats, bool boss_target,
-                                                             bool is_overpower)
+                                                             const Special_stats& special_stats,
+                                                             Damage_sources& damage_sources, bool boss_target,
+                                                             bool is_overpower, bool can_sweep)
 {
     Combat_simulator::Hit_outcome hit_outcome;
     if (weapon_hand == Socket::main_hand)
@@ -298,6 +300,38 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(const Weapon_sim& w
         }
         cout_damage_parse(hit_type, weapon_hand, hit_outcome);
     }
+
+    if (sweeping_strikes_charges_ > 0)
+    {
+        if (hit_outcome.damage > 0.0 && can_sweep)
+        {
+            double sweeping_strike_damage{};
+            if (boss_target)
+            {
+                sweeping_strike_damage = hit_outcome.damage / armor_reduction_factor_ * armor_reduction_factor_add;
+                damage_sources.add_damage(Damage_source::sweeping_strikes, sweeping_strike_damage, time_keeper_.time);
+            }
+            else
+            {
+                double rand_var = get_uniform_random(1);
+                if (rand_var > 1.0 - 1.0 / config.number_of_extra_targets)
+                {
+                    sweeping_strike_damage = hit_outcome.damage / armor_reduction_factor_add * armor_reduction_factor_;
+                }
+                else
+                {
+                    sweeping_strike_damage = hit_outcome.damage;
+                }
+                damage_sources.add_damage(Damage_source::sweeping_strikes, sweeping_strike_damage, time_keeper_.time);
+            }
+            simulator_cout("Sweeping strikes hits a nearby target.");
+            cout_damage_parse(Hit_type::yellow, Socket::main_hand,
+                              Hit_outcome{sweeping_strike_damage, Hit_result::hit});
+            sweeping_strikes_charges_--;
+            simulator_cout("Sweeping strikes charges left: ", sweeping_strikes_charges_);
+        }
+    }
+
     if (deep_wounds_)
     {
         if (hit_outcome.hit_result == Combat_simulator::Hit_result::crit)
@@ -312,6 +346,7 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(const Weapon_sim& w
                 int(time_keeper_.time));
         }
     }
+
     if (hit_outcome.hit_result == Combat_simulator::Hit_result::dodge)
     {
         simulator_cout("Overpower aura gained!");
@@ -481,7 +516,8 @@ void Combat_simulator::slam(Weapon_sim& main_hand_weapon, Special_stats& special
     }
     simulator_cout("Slam!");
     double damage = main_hand_weapon.normalized_swing(special_stats.attack_power) + 87.0;
-    auto hit_outcome = generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats);
+    auto hit_outcome =
+        generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats, damage_sources);
     if (hit_outcome.hit_result == Hit_result::dodge || hit_outcome.hit_result == Hit_result::miss)
     {
         rage -= 3;
@@ -506,7 +542,8 @@ void Combat_simulator::mortal_strike(Weapon_sim& main_hand_weapon, Special_stats
     }
     simulator_cout("Mortal Strike!");
     double damage = main_hand_weapon.normalized_swing(special_stats.attack_power) + 160;
-    auto hit_outcome = generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats);
+    auto hit_outcome =
+        generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats, damage_sources);
     if (hit_outcome.hit_result == Hit_result::dodge || hit_outcome.hit_result == Hit_result::miss)
     {
         rage -= 6;
@@ -535,7 +572,8 @@ void Combat_simulator::bloodthirst(Weapon_sim& main_hand_weapon, Special_stats& 
     }
     simulator_cout("Bloodthirst!");
     double damage = special_stats.attack_power * 0.45;
-    auto hit_outcome = generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats);
+    auto hit_outcome =
+        generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats, damage_sources);
     if (hit_outcome.hit_result == Hit_result::dodge || hit_outcome.hit_result == Hit_result::miss)
     {
         rage -= 6;
@@ -571,8 +609,8 @@ void Combat_simulator::overpower(Weapon_sim& main_hand_weapon, Special_stats& sp
     simulator_cout("Overpower!");
     buff_manager_.add("battle_stance", {-3.0, 0, 0}, 1.5);
     double damage = main_hand_weapon.normalized_swing(special_stats.attack_power) + 35;
-    auto hit_outcome =
-        generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats, true, true);
+    auto hit_outcome = generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats,
+                                    damage_sources, true, true);
     if (rage > tactical_mastery_rage_)
     {
         rage_lost_stance_swap_ += rage - tactical_mastery_rage_;
@@ -607,8 +645,8 @@ void Combat_simulator::whirlwind(Weapon_sim& main_hand_weapon, Special_stats& sp
     hit_outcomes.reserve(4);
     for (int i = 0; i < std::min(config.number_of_extra_targets + 1, 4); i++)
     {
-        hit_outcomes.emplace_back(
-            generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats, i == 0));
+        hit_outcomes.emplace_back(generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand,
+                                               special_stats, damage_sources, i == 0, false, i == 0));
         if (hit_outcomes.back().hit_result != Hit_result::dodge && hit_outcomes.back().hit_result != Hit_result::miss)
         {
             hit_effects(main_hand_weapon, main_hand_weapon, special_stats, rage, damage_sources, flurry_charges);
@@ -645,7 +683,8 @@ void Combat_simulator::execute(Weapon_sim& main_hand_weapon, Special_stats& spec
     }
     simulator_cout("Execute!");
     double damage = 600 + (rage - execute_rage_cost_) * 15;
-    auto hit_outcome = generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats);
+    auto hit_outcome =
+        generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats, damage_sources);
     if (hit_outcome.hit_result == Hit_result::dodge || hit_outcome.hit_result == Hit_result::miss)
     {
         rage *= 0.8;
@@ -675,7 +714,8 @@ void Combat_simulator::hamstring(Weapon_sim& main_hand_weapon, Special_stats& sp
     }
     simulator_cout("Hamstring!");
     double damage = 45;
-    auto hit_outcome = generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats);
+    auto hit_outcome =
+        generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats, damage_sources);
     time_keeper_.global_cd = 1.5;
     if (hit_outcome.hit_result == Hit_result::dodge || hit_outcome.hit_result == Hit_result::miss)
     {
@@ -728,7 +768,7 @@ void Combat_simulator::hit_effects(Weapon_sim& weapon, Weapon_sim& main_hand_wea
             case Hit_effect::Type::damage_physical:
             {
                 auto hit = generate_hit(main_hand_weapon, hit_effect.damage, Hit_type::yellow, Socket::main_hand,
-                                        special_stats);
+                                        special_stats, damage_sources);
                 damage_sources.add_damage(Damage_source::item_hit_effects, hit.damage, time_keeper_.time);
                 if (config.display_combat_debug)
                 {
@@ -787,8 +827,8 @@ void Combat_simulator::swing_weapon(Weapon_sim& weapon, Weapon_sim& main_hand_we
     {
         simulator_cout("Performing Heroic Strike");
         swing_damage += config.combat.heroic_strike_damage;
-        hit_outcomes.emplace_back(
-            generate_hit(main_hand_weapon, swing_damage, Hit_type::yellow, weapon.socket, special_stats));
+        hit_outcomes.emplace_back(generate_hit(main_hand_weapon, swing_damage, Hit_type::yellow, weapon.socket,
+                                               special_stats, damage_sources));
         ability_queue_manager.heroic_strike_queued = false;
         if (config.ability_queue_ && rage > config.ability_queue_rage_thresh_)
         {
@@ -814,8 +854,8 @@ void Combat_simulator::swing_weapon(Weapon_sim& weapon, Weapon_sim& main_hand_we
 
         for (int i = 0; i < std::min(config.number_of_extra_targets + 1, 2); i++)
         {
-            hit_outcomes.emplace_back(
-                generate_hit(main_hand_weapon, swing_damage, Hit_type::yellow, weapon.socket, special_stats, i == 0));
+            hit_outcomes.emplace_back(generate_hit(main_hand_weapon, swing_damage, Hit_type::yellow, weapon.socket,
+                                                   special_stats, damage_sources, i == 0));
         }
         ability_queue_manager.cleave_queued = false;
         if (config.ability_queue_ && rage > config.ability_queue_rage_thresh_)
@@ -851,8 +891,8 @@ void Combat_simulator::swing_weapon(Weapon_sim& weapon, Weapon_sim& main_hand_we
         }
 
         // Otherwise do white hit
-        hit_outcomes.emplace_back(
-            generate_hit(main_hand_weapon, swing_damage, Hit_type::white, weapon.socket, special_stats));
+        hit_outcomes.emplace_back(generate_hit(main_hand_weapon, swing_damage, Hit_type::white, weapon.socket,
+                                               special_stats, damage_sources));
         if (dpr_heroic_strike_queued_)
         {
             rage -= heroic_strike_rage_cost;
@@ -1214,9 +1254,14 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
 
             if (use_sweeping_strikes_)
             {
-                if (rage > 30.0)
+                if (rage > 30.0 && time_keeper_.global_cd < 0.0 && time_keeper_.sweeping_strikes_cd < 0.0)
                 {
+                    simulator_cout("Changed stance: Battle Stance.");
+                    simulator_cout("Sweeping strkes!");
+                    buff_manager_.add("battle_stance", {-3.0, 0, 0}, 1.5);
                     sweeping_strikes_charges_ = 5;
+                    time_keeper_.sweeping_strikes_cd = 30;
+                    time_keeper_.global_cd = 1.5;
                 }
             }
 
@@ -1357,6 +1402,10 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                 if (config.combat.use_hamstring)
                 {
                     bool use_ham = true;
+                    if (config.combat.dont_use_hm_when_ss && sweeping_strikes_charges_ > 0)
+                    {
+                        use_ham = false;
+                    }
                     if (use_bloodthirst_)
                     {
                         use_ham &= time_keeper_.blood_thirst_cd > config.combat.hamstring_cd_thresh;

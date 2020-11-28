@@ -52,9 +52,38 @@ let talents_vec = [
     "one_handed_weapon_specialization_talent",
     "shield_slam_talent"];
 
+let not_implemented_talents = [
+    "improved_berserker_rage_talent",
+    "enrage_talent",
+    "deflection_talent",
+    "improved_rend_talent",
+    "improved_charge_talent",
+    "improved_thunder_clap_talent",
+    "improved_hamstring_talent",
+    "improved_demoralizing_shout_talent",
+    "peircing_howl_talent",
+    "blood_craze_talent",
+    "improved_intercept_talent",
+    "shield_specialization_talent",
+    "anticipation_talent",
+    "improved_bloodrage_talent",
+    "toughness_talent",
+    "iron_will_talent",
+    "last_stand_talent",
+    "improved_shield_block_talent",
+    "improved_revenge_talent",
+    "defiance_talent",
+    "improved_sunder_armor_talent",
+    "improved_disarm_talent",
+    "improved_taunt_talent",
+    "improved_shield_wall_talent",
+    "concussion_blow_talent",
+    "improved_shield_bash_talent",
+    "shield_slam_talent"];
+
 function load_talent_clear() {
     for (let i = 0; i < talents_vec.length; i++) {
-        document.getElementById(talents_vec[i]).setAttribute("data-count", 0);
+        document.getElementById(talents_vec[i]).setAttribute("data-count", "0");
     }
     displayTalentBootup();
     calcTotalTalents();
@@ -62,21 +91,21 @@ function load_talent_clear() {
 
 function load_talent_standard_fury() {
     load_talent_clear();
-    document.getElementById("improved_heroic_strike_talent").setAttribute("data-count", 3);
-    document.getElementById("improved_rend_talent").setAttribute("data-count", 3);
-    document.getElementById("tactical_mastery_talent").setAttribute("data-count", 5);
-    document.getElementById("anger_management_talent").setAttribute("data-count", 1);
-    document.getElementById("deep_wounds_talent").setAttribute("data-count", 3);
-    document.getElementById("impale_talent").setAttribute("data-count", 2);
-    document.getElementById("cruelty_talent").setAttribute("data-count", 5);
-    document.getElementById("unbridled_wrath_talent").setAttribute("data-count", 5);
-    document.getElementById("improved_battle_shout_talent").setAttribute("data-count", 5);
-    document.getElementById("dual_wield_specialization_talent").setAttribute("data-count", 5);
-    document.getElementById("improved_execute_talent").setAttribute("data-count", 2);
-    document.getElementById("enrage_talent").setAttribute("data-count", 5);
-    document.getElementById("death_wish_talent").setAttribute("data-count", 1);
-    document.getElementById("flurry_talent").setAttribute("data-count", 5);
-    document.getElementById("bloodthirst_talent").setAttribute("data-count", 1);
+    document.getElementById("improved_heroic_strike_talent").setAttribute("data-count", "3");
+    document.getElementById("improved_rend_talent").setAttribute("data-count", "3");
+    document.getElementById("tactical_mastery_talent").setAttribute("data-count", "5");
+    document.getElementById("anger_management_talent").setAttribute("data-count", "1");
+    document.getElementById("deep_wounds_talent").setAttribute("data-count", "3");
+    document.getElementById("impale_talent").setAttribute("data-count", "2");
+    document.getElementById("cruelty_talent").setAttribute("data-count", "5");
+    document.getElementById("unbridled_wrath_talent").setAttribute("data-count", "5");
+    document.getElementById("improved_battle_shout_talent").setAttribute("data-count", "5");
+    document.getElementById("dual_wield_specialization_talent").setAttribute("data-count", "5");
+    document.getElementById("improved_execute_talent").setAttribute("data-count", "2");
+    document.getElementById("enrage_talent").setAttribute("data-count", "5");
+    document.getElementById("death_wish_talent").setAttribute("data-count", "1");
+    document.getElementById("flurry_talent").setAttribute("data-count", "5");
+    document.getElementById("bloodthirst_talent").setAttribute("data-count", "1");
 
     displayTalentBootup();
     calcTotalTalents();
@@ -84,9 +113,9 @@ function load_talent_standard_fury() {
 
 function load_talent_cleave_fury() {
     load_talent_standard_fury();
-    document.getElementById("improved_battle_shout_talent").setAttribute("data-count", 3);
-    document.getElementById("improved_heroic_strike_talent").setAttribute("data-count", 2);
-    document.getElementById("improved_cleave_talent").setAttribute("data-count", 3);
+    document.getElementById("improved_battle_shout_talent").setAttribute("data-count", "3");
+    document.getElementById("improved_heroic_strike_talent").setAttribute("data-count", "2");
+    document.getElementById("improved_cleave_talent").setAttribute("data-count", "3");
 
     displayTalentBootup();
     calcTotalTalents();
@@ -94,13 +123,13 @@ function load_talent_cleave_fury() {
 
 function load_talent_two_hand_fury() {
     load_talent_standard_fury();
-    document.getElementById("improved_heroic_strike_talent").setAttribute("data-count", 2);
-    document.getElementById("two_handed_weapon_specialization_talent").setAttribute("data-count", 2);
+    document.getElementById("improved_heroic_strike_talent").setAttribute("data-count", "2");
+    document.getElementById("two_handed_weapon_specialization_talent").setAttribute("data-count", "2");
 
-    document.getElementById("dual_wield_specialization_talent").setAttribute("data-count", 0);
-    document.getElementById("improved_execute_talent").setAttribute("data-count", 0);
-    document.getElementById("improved_slam_talent").setAttribute("data-count", 5);
-    document.getElementById("improved_overpower_talent").setAttribute("data-count", 1);
+    document.getElementById("dual_wield_specialization_talent").setAttribute("data-count", "0");
+    document.getElementById("improved_execute_talent").setAttribute("data-count", "0");
+    document.getElementById("improved_slam_talent").setAttribute("data-count", "5");
+    document.getElementById("improved_overpower_talent").setAttribute("data-count", "1");
 
     displayTalentBootup();
     calcTotalTalents();
@@ -149,6 +178,14 @@ function showHideTalentDiv() {
     } else {
         document.getElementById("bloodthirst_talent_div").style.display = "none";
     }
+
+    let ss_talent = document.getElementById("sweeping_strikes_talent");
+    current_val = parseInt(ss_talent.getAttribute("data-count"));
+    if (current_val === 1) {
+        document.getElementById("sweeping_strikes_talent_div").style.display = "block";
+    } else {
+        document.getElementById("sweeping_strikes_talent_div").style.display = "none";
+    }
 }
 
 function displayTalentBootup() {
@@ -163,6 +200,7 @@ function displayTalentBootup() {
         }
         talent_button.setAttribute("data-disp", show_string);
         talent_button.setAttribute("onclick", "IncrementTalent(this.id);");
+        drawTalentBorder(talent_button);
     }
 }
 
@@ -180,4 +218,18 @@ function IncrementTalent(talent_name) {
     }
     talent_button.setAttribute("data-disp", show_string);
     calcTotalTalents();
+    drawTalentBorder(talent_button);
+}
+
+function drawTalentBorder(talent_button) {
+    let val = parseInt(talent_button.getAttribute("data-count"));
+    if (val === 0) {
+        talent_button.style.border = "3px solid #000000";
+    } else {
+        talent_button.style.border = "3px solid #75ff78";
+    }
+    for (let talent_name of not_implemented_talents) {
+        let talent_button = document.getElementById(talent_name);
+        talent_button.style.border = "3px dashed #000000";
+    }
 }

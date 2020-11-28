@@ -249,6 +249,7 @@ std::vector<double> get_damage_sources(const Damage_sources& damage_sources_vect
         damage_sources_vector.overpower_damage / damage_sources_vector.sum_damage_sources(),
         damage_sources_vector.slam_damage / damage_sources_vector.sum_damage_sources(),
         damage_sources_vector.mortal_strike_damage / damage_sources_vector.sum_damage_sources(),
+        damage_sources_vector.sweeping_strikes_damage / damage_sources_vector.sum_damage_sources(),
     };
 }
 
@@ -484,9 +485,10 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     std::vector<std::string> time_lapse_names;
     std::vector<std::vector<double>> damage_time_lapse;
     std::vector<double> dps_dist;
-    std::vector<std::string> damage_names = {
-        "White MH",  "White OH",    "Bloodthirst",      "Execute",   "Heroic Strike", "Cleave",       "Whirlwind",
-        "Hamstring", "Deep Wounds", "Item Hit Effects", "Overpower", "Slam",          "Mortal Strike"};
+    std::vector<std::string> damage_names = {"White MH",      "White OH",         "Bloodthirst", "Execute",
+                                             "Heroic Strike", "Cleave",           "Whirlwind",   "Hamstring",
+                                             "Deep Wounds",   "Item Hit Effects", "Overpower",   "Slam",
+                                             "Mortal Strike", "Sweeping Strikes"};
     for (size_t i = 0; i < damage_time_lapse_raw.size(); i++)
     {
         double total_damage = 0;
@@ -1168,6 +1170,8 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         debug_topic += "DPS white OH: " + std::to_string(dist.white_oh_damage / config.sim_time) + "<br>";
         debug_topic += "DPS bloodthirst: " + std::to_string(dist.bloodthirst_damage / config.sim_time) + "<br>";
         debug_topic += "DPS mortal strike: " + std::to_string(dist.mortal_strike_damage / config.sim_time) + "<br>";
+        debug_topic +=
+            "DPS sweeping strikes: " + std::to_string(dist.sweeping_strikes_damage / config.sim_time) + "<br>";
         debug_topic += "DPS overpower: " + std::to_string(dist.overpower_damage / config.sim_time) + "<br>";
         debug_topic += "DPS slam: " + std::to_string(dist.slam_damage / config.sim_time) + "<br>";
         debug_topic += "DPS execute: " + std::to_string(dist.execute_damage / config.sim_time) + "<br>";
@@ -1184,6 +1188,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         debug_topic += "#Hits white OH: " + std::to_string(dist.white_oh_count) + "<br>";
         debug_topic += "#Hits bloodthirst: " + std::to_string(dist.bloodthirst_count) + "<br>";
         debug_topic += "#Hits mortal strike: " + std::to_string(dist.mortal_strike_count) + "<br>";
+        debug_topic += "#Hits sweeping strikes: " + std::to_string(dist.sweeping_strikes_count) + "<br>";
         debug_topic += "#Hits overpower: " + std::to_string(dist.overpower_count) + "<br>";
         debug_topic += "#Hits slam: " + std::to_string(dist.slam_count) + "<br>";
         debug_topic += "#Hits execute: " + std::to_string(dist.execute_count) + "<br>";

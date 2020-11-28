@@ -103,6 +103,7 @@ struct Combat_simulator_config
         bool use_overpower{false};
         bool use_heroic_strike{false};
         double hamstring_cd_thresh{};
+        bool dont_use_hm_when_ss{false};
         double slam_cd_thresh{};
         double hamstring_thresh_dd{};
         double initial_rage{};
@@ -287,7 +288,8 @@ public:
 
     Combat_simulator::Hit_outcome generate_hit(const Weapon_sim& weapon, double damage, Hit_type hit_type,
                                                Socket weapon_hand, const Special_stats& special_stats,
-                                               bool boss_target = true, bool is_overpower = false);
+                                               Damage_sources& damage_sources, bool boss_target = true,
+                                               bool is_overpower = false, bool can_sweep = true);
 
     Combat_simulator::Hit_outcome generate_hit_oh(double damage);
 
@@ -445,11 +447,11 @@ private:
     std::vector<Use_effect> use_effects_all_{};
     std::vector<Over_time_effect> over_time_effects_{};
     std::map<Damage_source, int> source_map{
-        {Damage_source::white_mh, 0},         {Damage_source::white_oh, 1},      {Damage_source::bloodthirst, 2},
-        {Damage_source::execute, 3},          {Damage_source::heroic_strike, 4}, {Damage_source::cleave, 5},
-        {Damage_source::whirlwind, 6},        {Damage_source::hamstring, 7},     {Damage_source::deep_wounds, 8},
-        {Damage_source::item_hit_effects, 9}, {Damage_source::overpower, 10},    {Damage_source::slam, 11},
-        {Damage_source::mortal_strike, 12}};
+        {Damage_source::white_mh, 0},         {Damage_source::white_oh, 1},         {Damage_source::bloodthirst, 2},
+        {Damage_source::execute, 3},          {Damage_source::heroic_strike, 4},    {Damage_source::cleave, 5},
+        {Damage_source::whirlwind, 6},        {Damage_source::hamstring, 7},        {Damage_source::deep_wounds, 8},
+        {Damage_source::item_hit_effects, 9}, {Damage_source::overpower, 10},       {Damage_source::slam, 11},
+        {Damage_source::mortal_strike, 12},   {Damage_source::sweeping_strikes, 13}};
 };
 
 #include "Combat_simulator.tcc"

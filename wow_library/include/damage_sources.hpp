@@ -12,6 +12,7 @@ enum class Damage_source
     white_oh,
     slam,
     mortal_strike,
+    sweeping_strikes,
     overpower,
     bloodthirst,
     execute,
@@ -44,14 +45,14 @@ struct Damage_sources
     {
         return white_mh_damage + white_oh_damage + bloodthirst_damage + mortal_strike_damage + slam_damage +
                overpower_damage + heroic_strike_damage + cleave_damage + whirlwind_damage + hamstring_damage +
-               execute_damage + deep_wounds_damage + item_hit_effects_damage;
+               execute_damage + deep_wounds_damage + item_hit_effects_damage + sweeping_strikes_damage;
     }
 
     constexpr double sum_counts() const
     {
         return white_mh_count + white_oh_count + bloodthirst_count + mortal_strike_count + slam_count +
                overpower_count + heroic_strike_count + cleave_count + whirlwind_count + hamstring_count +
-               execute_count + deep_wounds_count + item_hit_effects_count;
+               execute_count + deep_wounds_count + item_hit_effects_count + sweeping_strikes_count;
     }
 
     void add_damage(Damage_source source, double damage, double time_stamp, bool increment_counter = true);
@@ -62,6 +63,7 @@ struct Damage_sources
     double overpower_damage{};
     double bloodthirst_damage{};
     double mortal_strike_damage{};
+    double sweeping_strikes_damage{};
     double execute_damage{};
     double heroic_strike_damage{};
     double cleave_damage{};
@@ -76,6 +78,7 @@ struct Damage_sources
     long int overpower_count{};
     long int bloodthirst_count{};
     long int mortal_strike_count{};
+    long int sweeping_strikes_count{};
     long int execute_count{};
     long int heroic_strike_count{};
     long int cleave_count{};
