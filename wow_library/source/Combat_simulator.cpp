@@ -251,7 +251,7 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit_oh(double damage)
 {
     if (ability_queue_manager.is_ability_queued())
     {
-        simulator_cout("Drawing outcome from OH twohanded hit table");
+        simulator_cout("Drawing outcome from OH hit table (without DW penalty)");
         double random_var = get_uniform_random(100);
         int outcome = std::lower_bound(hit_table_two_hand_.begin(), hit_table_two_hand_.end(), random_var) -
                       hit_table_two_hand_.begin();
@@ -1121,11 +1121,21 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         // Check if the simulator should use any use effects before the fight
         if (use_effect_order.back().first < 0.0)
         {
-            int n_steps = 100;
-            double dt = -use_effect_order.back().first / n_steps;
             time_keeper_.time = use_effect_order.back().first;
-            for (int i = 0; i < n_steps; ++i)
+            while (time_keeper_.time < 0.0)
             {
+                double buff_dt = buff_manager_.get_dt(time_keeper_.time);
+                double use_effect_dt = buff_manager_.use_effect_order.back().first - time_keeper_.time;
+                if (use_effect_dt <= 0.0)
+                {
+                    use_effect_dt = 1e-5;
+                    if (buff_manager_.use_effect_order.back().second.triggers_gcd)
+                    {
+                        use_effect_dt = (time_keeper_.global_cd > 0.0) ? time_keeper_.global_cd : use_effect_dt;
+                    }
+                }
+                double dt =
+                    time_keeper_.get_dynamic_time_step(100.0, 100.0, buff_dt, 0.0 - time_keeper_.time, use_effect_dt);
                 time_keeper_.increment(dt);
                 std::vector<std::string> debug_msg{};
                 buff_manager_.increment(dt, time_keeper_.time, rage, rage_lost_stance_swap_, rage_lost_execute_batch_,
@@ -1156,7 +1166,8 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
             double oh_dt = is_dual_wield ? weapons[1].internal_swing_timer : 1000.0;
             double buff_dt = buff_manager_.get_dt(time_keeper_.time);
             double slam_dt = slam_manager.time_left(time_keeper_.time);
-            double dt = time_keeper_.get_dynamic_time_step(mh_dt, oh_dt, buff_dt, sim_time, slam_dt);
+            double dt =
+                time_keeper_.get_dynamic_time_step(mh_dt, oh_dt, buff_dt, sim_time - time_keeper_.time, slam_dt);
             time_keeper_.increment(dt);
             std::vector<std::string> debug_msg{};
             buff_manager_.increment(dt, time_keeper_.time, rage, rage_lost_stance_swap_, rage_lost_execute_batch_,
@@ -1206,14 +1217,18 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                 }
                 target_armor = std::max(target_armor, 0);
                 armor_reduction_factor_ = 1 - armor_mitigation(target_armor, config.main_target_level);
-                int extra_target_armor = config.extra_target_initial_armor_ - armor_penetration_;
-                extra_target_armor = std::max(extra_target_armor, 0);
-                armor_reduction_factor_add = 1 - armor_mitigation(extra_target_armor, config.extra_target_level);
-                recompute_mitigation_ = false;
                 simulator_cout("Target armor: ", target_armor, ". Mitigation factor: ", 1 - armor_reduction_factor_,
                                "%.");
-                simulator_cout("Extra targets armor: ", extra_target_armor,
-                               ". Mitigation factor: ", 1 - armor_reduction_factor_add, "%.");
+                if (config.multi_target_mode_)
+                {
+                    int extra_target_armor = config.extra_target_initial_armor_ - armor_penetration_;
+                    extra_target_armor = std::max(extra_target_armor, 0);
+                    armor_reduction_factor_add = 1 - armor_mitigation(extra_target_armor, config.extra_target_level);
+
+                    simulator_cout("Extra targets armor: ", extra_target_armor,
+                                   ". Mitigation factor: ", 1 - armor_reduction_factor_add, "%.");
+                }
+                recompute_mitigation_ = false;
             }
 
             bool mh_swing = weapons[0].time_for_swing(dt);
@@ -1487,7 +1502,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         if (log_data)
         {
             add_damage_source_to_time_lapse(damage_sources.damage_instances);
-            hist_y[new_sample / 10]++;
+            hist_y[new_sample / 20]++;
         }
     }
     if (log_data)
@@ -1529,7 +1544,7 @@ std::vector<std::pair<double, Use_effect>> Combat_simulator::get_use_effect_orde
 
 void Combat_simulator::init_histogram()
 {
-    double res = 10;
+    double res = 20;
     for (int i = 0; i < 1000; i++)
     {
         hist_x.push_back(i * res);

@@ -15,7 +15,7 @@ int get_weapon_skill(const Special_stats& special_stats, Weapon_type weapon_type
         case Weapon_type::mace:
             return special_stats.two_hand_mace_skill;
         default:
-            std::cout << "Attempted to retrieve two hand skill which is not axe/sword/mace. Aborting!\n";
+            std::cout << "\nAttempted to retrieve two hand skill which is not axe/sword/mace. Aborting!\n";
             assert(false);
             return 0;
         }

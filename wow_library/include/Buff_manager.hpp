@@ -80,7 +80,15 @@ public:
     {
         double dt = 1e10;
         dt = std::min(dt, next_event);
-        double interval_dt = double(min_interval) - std::fmod(sim_time, double(min_interval));
+        double interval_dt = std::fmod(sim_time, double(min_interval));
+        if (interval_dt < 0.0)
+        {
+            interval_dt = std::abs(interval_dt);
+        }
+        else
+        {
+            interval_dt = double(min_interval) - interval_dt;
+        }
         dt = std::min(dt, interval_dt);
         return dt;
     }
@@ -268,7 +276,7 @@ public:
                 over_time_buffs.erase(over_time_buffs.begin() + i);
                 if (over_time_buffs.empty())
                 {
-                    min_interval = 10;
+                    min_interval = 100000;
                 }
                 else
                 {
@@ -288,7 +296,7 @@ public:
     void increment(double dt, double current_time, double& rage, double& rage_lost_stance, double& rage_lost_exec,
                    double& global_cooldown, bool debug, std::vector<std::string>& debug_msg)
     {
-        next_event = 100;
+        next_event = 100000;
         increment_stat_gains(current_time, dt, rage, rage_lost_stance, rage_lost_exec, debug, debug_msg);
         increment_hit_gains(current_time, dt, debug, debug_msg);
         increment_use_effects(current_time, rage, global_cooldown, debug, debug_msg);
@@ -355,10 +363,10 @@ public:
     std::vector<Hit_effect>* hit_effects_mh;
     std::vector<Hit_effect>* hit_effects_oh;
     std::vector<std::pair<double, Use_effect>> use_effect_order;
-    double next_event = 10;
+    double next_event = 100000;
     double rage_before_execute{};
     double rage_spent_executing{};
-    int min_interval = 10;
+    int min_interval = 100000;
     std::map<std::string, double> aura_uptime;
     double deep_wounds_damage{};
     double tactical_mastery_rage_{};

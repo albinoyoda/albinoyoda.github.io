@@ -15,6 +15,8 @@ struct Buffs
                             Special_stats{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .15}};
     Buff sayges_fortune{"sayges_fortune", Attributes{0, 0}, Special_stats{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .1}};
     Buff traces_of_silithyst{"traces_of_silithyst", Attributes{0, 0}, Special_stats{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .05}};
+    Buff fungal_bloom{"fungal_bloom", Attributes{0, 0}, Special_stats{50, 0, 0}};
+    Buff full_polarity{"full_polarity", {}, {}};
 
     // Player_buffs
     Buff battle_shout{"battle_shout", {}, {}, 0, {}, {{"battle_shout", Use_effect::Effect_socket::unique, {}, {0, 0, 193}, 0, 120, 120, true}}};
@@ -551,8 +553,12 @@ struct Armory
         {"draconic_maul", Attributes{27.0, 0.0}, Special_stats{2.0, 0.0, 0.0}, 3.5, 187.0, 282.0, Weapon_socket::two_hand,Weapon_type::mace},
         {"jekliks_crusher", Attributes{.0, 0.0}, Special_stats{.0, 0.0, 0.0}, 3.6, 159.0, 248.0, Weapon_socket::two_hand,Weapon_type::mace,
          {{"jekliks_crusher", Hit_effect::Type::damage_physical, {}, {}, 210, 0, 4*3.6/60.0,0}}},
-        {"manual_crowd_pummeler", Attributes{16.0, 5.0}, Special_stats{.0, 0.0, 0.0},
+        {"manual_crowd_pummeler_1charge", Attributes{16.0, 5.0}, Special_stats{.0, 0.0, 0.0},
          2.0, 46.0, 70.0, Weapon_socket::two_hand,Weapon_type::mace, {}, Set::none, {{"manual_crowd_pummeler", Use_effect::Effect_socket::unique, {}, {0,0,0,0,0.5}, 0, 30, 1000,false}}},
+        {"manual_crowd_pummeler_2charge", Attributes{16.0, 5.0}, Special_stats{.0, 0.0, 0.0},
+            2.0, 46.0, 70.0, Weapon_socket::two_hand,Weapon_type::mace, {}, Set::none, {{"manual_crowd_pummeler", Use_effect::Effect_socket::unique, {}, {0,0,0,0,0.5}, 0, 60, 1000,false}}},
+        {"manual_crowd_pummeler_3charge", Attributes{16.0, 5.0}, Special_stats{.0, 0.0, 0.0},
+            2.0, 46.0, 70.0, Weapon_socket::two_hand,Weapon_type::mace, {}, Set::none, {{"manual_crowd_pummeler", Use_effect::Effect_socket::unique, {}, {0,0,0,0,0.5}, 0, 90, 1000,false}}},
     };
 
     std::vector<Weapon> axes_t

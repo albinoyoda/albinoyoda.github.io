@@ -88,6 +88,19 @@ Attributes Armory::get_enchant_attributes(Socket socket, Enchant::Type type) con
             return {0, 0};
         }
     }
+    case Socket::main_hand:
+    case Socket::off_hand:
+    {
+        switch (type)
+        {
+        case Enchant::Type::agility:
+            return {0, 15};
+        case Enchant::Type::strength:
+            return {15, 0};
+        default:
+            return {0, 0};
+        }
+    }
     default:
         return {0, 0};
     }
@@ -678,7 +691,7 @@ Weapon Armory::find_weapon(Weapon_socket socket, const std::string& name) const
                 return item;
             }
         }
-        return {"item_not_found: " + name, {}, {}, 3.0, 0, 0, Weapon_socket::two_hand, Weapon_type::unarmed};
+        return {"item_not_found: " + name, {}, {}, 3.0, 0, 0, Weapon_socket::two_hand, Weapon_type::sword};
     }
     for (const auto& item : swords_t)
     {
@@ -796,15 +809,39 @@ void Armory::add_enchants_to_character(Character& character, const std::vector<s
     {
         character.add_enchant(Socket::main_hand, Enchant::Type::crusader);
     }
+    else if (find_string(ench_vec, "m+15 agility"))
+    {
+        character.add_enchant(Socket::main_hand, Enchant::Type::agility);
+    }
+    else if (find_string(ench_vec, "m+15 strength"))
+    {
+        character.add_enchant(Socket::main_hand, Enchant::Type::strength);
+    }
 
     if (find_string(ench_vec, "ocrusader"))
     {
         character.add_enchant(Socket::off_hand, Enchant::Type::crusader);
     }
+    else if (find_string(ench_vec, "o+15 agility"))
+    {
+        character.add_enchant(Socket::off_hand, Enchant::Type::agility);
+    }
+    else if (find_string(ench_vec, "o+15 strength"))
+    {
+        character.add_enchant(Socket::off_hand, Enchant::Type::strength);
+    }
 }
 
 void Armory::add_buffs_to_character(Character& character, const std::vector<std::string>& buffs_vec) const
 {
+    if (find_string(buffs_vec, "fungal_bloom"))
+    {
+        character.add_buff(buffs.fungal_bloom);
+    }
+    if (find_string(buffs_vec, "full_polarity"))
+    {
+        character.add_buff(buffs.full_polarity);
+    }
     if (find_string(buffs_vec, "rallying_cry"))
     {
         character.add_buff(buffs.rallying_cry);

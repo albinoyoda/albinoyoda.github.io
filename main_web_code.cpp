@@ -28,7 +28,7 @@ int main()
     std::vector<std::string> weapons_vec;
     //    weapons_vec.emplace_back("the_hungering_cold");
     //    weapons_vec.emplace_back("the_hungering_cold");
-    weapons_vec.emplace_back("bonereavers_edge");
+    weapons_vec.emplace_back("manual_crowd_pummeler_1charge");
 
     //    mult_weapons_vec.emplace_back("persuader");
     //    mult_weapons_vec.emplace_back("gressil_dawn_of_ruin");
@@ -375,7 +375,8 @@ int main()
     std::vector<std::string> ench_vec;
     ench_vec.emplace_back("e+8 strength");
     ench_vec.emplace_back("s+30 attack power");
-    ench_vec.emplace_back("mcrusader");
+    ench_vec.emplace_back("m+15 strength");
+//    ench_vec.emplace_back("mcrusader");
     ench_vec.emplace_back("ocrusader");
 
     std::string race = "orc";
@@ -404,42 +405,48 @@ int main()
         "use_sweeping_strikes",
         "multi_target_mode",
         "wep_strengths",
+        "fungal_bloom",
+        "full_polarity",
+        "item_strengths",
     };
 
-    std::vector<std::string> float_options_string{"heroic_strike_rage_thresh_dd",
-                                                  "cleave_rage_thresh_dd",
-                                                  "whirlwind_rage_thresh_dd",
-                                                  "hamstring_cd_thresh_dd",
-                                                  "hamstring_thresh_dd",
-                                                  "initial_rage_dd",
-                                                  "whirlwind_bt_cooldown_thresh_dd",
-                                                  "overpower_rage_thresh_dd",
-                                                  "overpower_bt_cooldown_thresh_dd",
-                                                  "overpower_ww_cooldown_thresh_dd",
-                                                  "fight_time_dd",
-                                                  "opponent_level_dd",
-                                                  "boss_armor_dd",
-                                                  "sunder_armor_dd",
-                                                  "number_of_extra_targets_dd",
-                                                  "extra_target_armor_dd",
-                                                  "extra_target_level_dd",
-                                                  "periodic_damage_interval_dd",
-                                                  "periodic_damage_amount_dd",
-                                                  "execute_phase_percentage_dd",
-                                                  "re_queue_abilities_dd",
-                                                  "stat_weight_mh_speed_dd",
-                                                  "stat_weight_oh_speed_dd",
-                                                  "n_simulations_dd",
-                                                  "n_simulations_stat_dd",
-                                                  "n_simulations_talent_dd",
-                                                  "slam_cd_thresh_dd",
-                                                  "slam_spam_max_time_dd",
-                                                  "slam_spam_rage_dd",
-                                                  "slam_rage_dd"};
+    std::vector<std::string> float_options_string{
+        "heroic_strike_rage_thresh_dd",
+        "cleave_rage_thresh_dd",
+        "whirlwind_rage_thresh_dd",
+        "hamstring_cd_thresh_dd",
+        "hamstring_thresh_dd",
+        "initial_rage_dd",
+        "whirlwind_bt_cooldown_thresh_dd",
+        "overpower_rage_thresh_dd",
+        "overpower_bt_cooldown_thresh_dd",
+        "overpower_ww_cooldown_thresh_dd",
+        "fight_time_dd",
+        "opponent_level_dd",
+        "boss_armor_dd",
+        "sunder_armor_dd",
+        "number_of_extra_targets_dd",
+        "extra_target_armor_dd",
+        "extra_target_level_dd",
+        "periodic_damage_interval_dd",
+        "periodic_damage_amount_dd",
+        "execute_phase_percentage_dd",
+        "re_queue_abilities_dd",
+        "stat_weight_mh_speed_dd",
+        "stat_weight_oh_speed_dd",
+        "n_simulations_dd",
+        "n_simulations_stat_dd",
+        "n_simulations_talent_dd",
+        "slam_cd_thresh_dd",
+        "slam_spam_max_time_dd",
+        "slam_spam_rage_dd",
+        "slam_rage_dd",
+        "full_polarity_dd",
+    };
 
-    std::vector<double> float_options_val{50.0, 50.0, 10.0, 2.0,  50.0, 0.0,  2.0, 25.0, 2.0,  2.0,
-                                          60.0, 63.0, 3731, 5,    0,    3731, 63,  1.0,  300,  15,
-                                          70,   0.5,  0.5,  2000, 1000, 1000, 1.0, 1.5,  60.0, 15};
+    std::vector<double> float_options_val{50.0, 50.0, 10.0, 2.0,  50.0, 0.0, 2.0,  25.0, 2.0, 2.0, 60.0,
+                                          63.0, 3731, 5,    0,    3731, 63,  1.0,  300,  15,  70,  0.5,
+                                          0.5,  2000, 1000, 1000, 1.0,  1.5, 60.0, 15,   190};
 
     std::vector<std::string> talents_string{
         "improved_heroic_strike_talent",

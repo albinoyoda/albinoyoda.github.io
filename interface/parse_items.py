@@ -11,9 +11,12 @@ def remove_blank_spaces(string_list):
 
 def remove_underscores_and_capitalize(string):
     split_string = string.split("_")
-    output = split_string[0].capitalize()
-    for i in range(1, len(split_string)):
-        output = output + " " + split_string[i]
+    output = ""
+    for i, word in enumerate(split_string):
+        if (i == 0) or ((word != 'of') and (word != 'the')):
+            output += " " + word.capitalize()
+        else:
+            output += " " + word
     return output
 
 

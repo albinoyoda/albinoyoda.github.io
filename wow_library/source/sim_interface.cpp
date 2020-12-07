@@ -35,8 +35,10 @@ void item_upgrades(std::string& item_strengths_string, Character character_new, 
                    double dps_sample_std, Socket socket, const Special_stats& special_stats, bool first_item)
 {
     std::string dummy;
-    item_strengths_string = item_strengths_string + socket + ": " + "<b>" +
-                            character_new.get_item_from_socket(socket, first_item).name + "</b>";
+    std::string current{"Current "};
+    item_strengths_string += current;
+    item_strengths_string =
+        item_strengths_string + socket + ": <b>" + character_new.get_item_from_socket(socket, first_item).name + "</b>";
     auto armor_vec = armory.get_items_in_socket(socket);
     auto items = (socket != Socket::trinket) ?
                      item_optimizer.remove_weaker_items(armor_vec, character_new.total_special_stats, dummy, 3) :
@@ -79,9 +81,10 @@ void item_upgrades(std::string& item_strengths_string, Character character_new, 
         }
     }
 
-    double quantile = Statistics::find_cdf_quantile(0.95, 0.01);
+    double quantile = Statistics::find_cdf_quantile(0.99, 0.01);
     std::string best_armor_name{};
     bool found_upgrade = false;
+    std::string item_downgrades_string{};
     for (size_t i = 0; i < items.size(); i++)
     {
         armory.change_armor(character_new.armor, items[i], first_item);
@@ -97,18 +100,23 @@ void item_upgrades(std::string& item_strengths_string, Character character_new, 
                 found_upgrade = true;
                 double dps_increase = simulator.get_dps_mean() - dps_mean;
                 double dps_increase_std = Statistics::add_standard_deviations(sample_std, dps_sample_std);
-                item_strengths_string += "<br> Proposed upgrade: <b>" + items[i].name + "</b> ( +<b>" +
+                item_strengths_string += "<br><b>Up</b>grade: <b>" + items[i].name + "</b> ( +<b>" +
                                          string_with_precision(dps_increase, 2) + " &plusmn " +
                                          string_with_precision(dps_increase_std, 2) + "</b> DPS).";
                 break;
             }
-            else if (simulator.get_dps_mean() + sample_std * quantile <= dps_mean)
+            else if (simulator.get_dps_mean() + sample_std * quantile <= dps_mean &&
+                     cumulative_simulations[iter + 1] > 500)
             {
+                double dps_decrease = simulator.get_dps_mean() - dps_mean;
+                double dps_decrease_std = Statistics::add_standard_deviations(sample_std, dps_sample_std);
+                item_downgrades_string += "<br><b>Down</b>grade: <b>" + items[i].name + "</b> ( <b>" +
+                                          string_with_precision(dps_decrease, 3) + " &plusmn " +
+                                          string_with_precision(dps_decrease_std, 2) + "</b> DPS).";
                 if (does_vector_contain(stronger_indexies, i))
                 {
                     found_upgrade = true;
-                    item_strengths_string +=
-                        "<br> Possible upgrade: <b>" + items[i].name + "</b>. (based on item stats)";
+                    item_downgrades_string += " Note: Similar item stats, difficult to draw conclusions.";
                 }
                 break;
             }
@@ -116,10 +124,13 @@ void item_upgrades(std::string& item_strengths_string, Character character_new, 
     }
     if (!found_upgrade)
     {
-        item_strengths_string += " is <b>BiS</b> in current configuration!<br><br>";
+        item_strengths_string += " is <b>BiS</b> in current configuration!";
+        item_strengths_string += item_downgrades_string;
+        item_strengths_string += "<br><br>";
     }
     else
     {
+        item_strengths_string += item_downgrades_string;
         item_strengths_string += "<br><br>";
     }
 }
@@ -133,6 +144,8 @@ void item_upgrades_wep(std::string& item_strengths_string, Character character_n
     Socket socket = ((weapon_socket == Weapon_socket::main_hand) || (weapon_socket == Weapon_socket::two_hand)) ?
                         Socket::main_hand :
                         Socket::off_hand;
+    std::string current{"Current "};
+    item_strengths_string += current;
     item_strengths_string =
         item_strengths_string + socket + ": " + "<b>" + character_new.get_weapon_from_socket(socket).name + "</b>";
     auto items = armory.get_weapon_in_socket(weapon_socket);
@@ -155,6 +168,7 @@ void item_upgrades_wep(std::string& item_strengths_string, Character character_n
     double quantile = Statistics::find_cdf_quantile(0.95, 0.01);
     std::string best_armor_name{};
     bool found_upgrade = false;
+    std::string item_downgrades_string{};
     for (auto& item : items)
     {
         armory.change_weapon(character_new.weapons, item, socket);
@@ -170,7 +184,7 @@ void item_upgrades_wep(std::string& item_strengths_string, Character character_n
                 found_upgrade = true;
                 double dps_increase = simulator.get_dps_mean() - dps_mean;
                 double dps_increase_std = Statistics::add_standard_deviations(sample_std, dps_sample_std);
-                item_strengths_string += "<br> Proposed upgrade: <b>" + item.name + "</b> ( +<b>" +
+                item_strengths_string += "<br><b>Up</b>grade: <b>" + item.name + "</b> ( +<b>" +
                                          string_with_precision(dps_increase, 3) + " &plusmn " +
                                          string_with_precision(dps_increase_std, 2) + "</b> DPS).";
                 break;
@@ -178,16 +192,24 @@ void item_upgrades_wep(std::string& item_strengths_string, Character character_n
             else if (simulator.get_dps_mean() + sample_std * quantile <= dps_mean &&
                      cumulative_simulations[iter + 1] > 500)
             {
+                double dps_decrease = simulator.get_dps_mean() - dps_mean;
+                double dps_decrease_std = Statistics::add_standard_deviations(sample_std, dps_sample_std);
+                item_downgrades_string += "<br><b>Down</b>grade: <b>" + item.name + "</b> ( <b>" +
+                                          string_with_precision(dps_decrease, 3) + " &plusmn " +
+                                          string_with_precision(dps_decrease_std, 2) + "</b> DPS).";
                 break;
             }
         }
     }
     if (!found_upgrade)
     {
-        item_strengths_string += " is <b>BiS</b> in current configuration!<br><br>";
+        item_strengths_string += " is <b>BiS</b> in current configuration!";
+        item_strengths_string += item_downgrades_string;
+        item_strengths_string += "<br><br>";
     }
     else
     {
+        item_strengths_string += item_downgrades_string;
         item_strengths_string += "<br><br>";
     }
 }
@@ -469,14 +491,23 @@ void compute_talent_weight(Combat_simulator& combat_simulator, const Character& 
 Sim_output Sim_interface::simulate(const Sim_input& input)
 {
     Armory armory{};
-    Buffs buffs{};
 
     auto temp_buffs = input.buffs;
 
+    // Separate case for options which in reality are buffs. Add them to the buff list
     if (find_string(input.options, "mighty_rage_potion"))
     {
-        // temporary solution
         temp_buffs.emplace_back("mighty_rage_potion");
+    }
+    if (find_string(input.options, "full_polarity"))
+    {
+        double full_polarity_val = find_value(input.float_options_string, input.float_options_val, "full_polarity_dd");
+        armory.buffs.full_polarity.special_stats.damage_multiplier = full_polarity_val / 100.0;
+        temp_buffs.emplace_back("full_polarity");
+    }
+    if (find_string(input.options, "fungal_bloom"))
+    {
+        temp_buffs.emplace_back("fungal_bloom");
     }
 
     const Character character = character_setup(armory, input.race[0], input.armor, input.weapons, temp_buffs,
