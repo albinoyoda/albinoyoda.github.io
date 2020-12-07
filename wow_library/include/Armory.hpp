@@ -331,6 +331,7 @@ struct Armory
                     {"leggings_of_apocalypse",             Attributes{15, 31}, Special_stats{2, 0, 0},        Socket::legs},
                     {"leggings_of_carnage",             Attributes{42, 0}, Special_stats{2, 0, 0},        Socket::legs},
                     {"dreadnaughts_legplates",             Attributes{23, 0}, Special_stats{0, 0, 0},        Socket::legs, Set::dreadnaughts_battlegear},
+                    {"WSG_plate_legguards",             Attributes{28, 0}, Special_stats{1, 1, 0},        Socket::legs},
             };
 
     std::vector<Armor> boots_t
@@ -496,6 +497,9 @@ struct Armory
                                                                                                      0, 0, 0, 6},   1.5, 76,    143,   Weapon_socket::one_hand,  Weapon_type::sword},
                     {"widows_remorse",                   Attributes{0, 0},       Special_stats{0, 1,
                                                                                                      0},   1.6, 70,    131,   Weapon_socket::one_hand,  Weapon_type::sword},
+                    {"argent_avenger",                   Attributes{0, 0},       Special_stats{0, 0,
+                                                                                               0},   2.2, 71,    108,   Weapon_socket::one_hand,  Weapon_type::sword,
+                     {{"argent_avenger", Hit_effect::Type::stat_boost,   {0, 0}, Special_stats{0, 0, 200}, 0, 10, 2.2 / 60}}},
             };
 
 
@@ -619,8 +623,11 @@ struct Armory
                                                                               0}, 1.6, 83, 126, Weapon_socket::one_hand,  Weapon_type::dagger},
                     {"kingsfall", Attributes{0, 16},  Special_stats{1, 1,
                                                                            0}, 1.8, 105, 158, Weapon_socket::one_hand,  Weapon_type::dagger},
-                    {"maexxnas_fang", Attributes{0, 16},  Special_stats{0, 1,
+                    {"maexxnas_fang", Attributes{0, 0},  Special_stats{0, 1,
                                                                     36}, 1.8, 94, 141, Weapon_socket::one_hand,  Weapon_type::dagger},
+                    {"felstriker", Attributes{0, 0},  Special_stats{0, 0,
+                                                                       0}, 1.7, 54, 101, Weapon_socket::one_hand,  Weapon_type::dagger,
+                        {{"felstriker", Hit_effect::Type::stat_boost,   {0, 0}, Special_stats{100, 100, 0}, 0, 3, 1.7 / 60}}},
             };
 
     std::vector<Weapon> maces_t

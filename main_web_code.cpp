@@ -26,9 +26,9 @@ int main()
     armor_vec.emplace_back("nerubian_slavemaker");
 
     std::vector<std::string> weapons_vec;
-    //    weapons_vec.emplace_back("the_hungering_cold");
-    //    weapons_vec.emplace_back("the_hungering_cold");
-    weapons_vec.emplace_back("manual_crowd_pummeler_1charge");
+        weapons_vec.emplace_back("felstriker");
+        weapons_vec.emplace_back("argent_avenger");
+//    weapons_vec.emplace_back("manual_crowd_pummeler_1charge");
 
     //    mult_weapons_vec.emplace_back("persuader");
     //    mult_weapons_vec.emplace_back("gressil_dawn_of_ruin");
@@ -405,7 +405,7 @@ int main()
         "use_sweeping_strikes",
         "multi_target_mode",
         "wep_strengths",
-        "fungal_bloom",
+//        "fungal_bloom",
         "full_polarity",
         "item_strengths",
     };
