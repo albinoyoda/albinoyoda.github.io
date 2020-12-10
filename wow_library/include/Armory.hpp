@@ -267,7 +267,6 @@ struct Armory
                                                                                     0},       Socket::hands, Set::valor},
                     {"gauntlets_of_heroism",      Attributes{18, 0},  Special_stats{1, 0,
                                                                                     0},       Socket::hands, Set::battlegear_of_heroism},
-                    {"gloves_of_enforcement",     Attributes{28, 20}, Special_stats{0, 1, 0}, Socket::hands},
                     {"gauntlets_of_steadfast_determination",     Attributes{19, 18}, Special_stats{0, 0, 0}, Socket::hands},
                     {"gauntlets_of_wrath",     Attributes{15, 0}, Special_stats{0, 0, 0}, Socket::hands, Set::battlegear_of_wrath},
                     {"gauntlets_of_undead_slaying",     Attributes{0, 0}, Special_stats{0, 0, 60}, Socket::hands, Set::battlegear_of_undead_slaying},

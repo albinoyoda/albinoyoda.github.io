@@ -513,6 +513,13 @@ std::vector<Weapon> Armory::get_weapon_in_socket(const Weapon_socket socket) con
                 mh_weapons.emplace_back(wep);
             }
         }
+        for (const auto& wep : fists_t)
+        {
+            if (wep.weapon_socket == Weapon_socket::main_hand || wep.weapon_socket == Weapon_socket::one_hand)
+            {
+                mh_weapons.emplace_back(wep);
+            }
+        }
         return mh_weapons;
     }
     case Weapon_socket::off_hand:
@@ -527,21 +534,28 @@ std::vector<Weapon> Armory::get_weapon_in_socket(const Weapon_socket socket) con
         }
         for (const auto& wep : axes_t)
         {
-            if (wep.weapon_socket == Weapon_socket::main_hand || wep.weapon_socket == Weapon_socket::one_hand)
+            if (wep.weapon_socket == Weapon_socket::off_hand || wep.weapon_socket == Weapon_socket::one_hand)
             {
                 oh_weapons.emplace_back(wep);
             }
         }
         for (const auto& wep : maces_t)
         {
-            if (wep.weapon_socket == Weapon_socket::main_hand || wep.weapon_socket == Weapon_socket::one_hand)
+            if (wep.weapon_socket == Weapon_socket::off_hand || wep.weapon_socket == Weapon_socket::one_hand)
             {
                 oh_weapons.emplace_back(wep);
             }
         }
         for (const auto& wep : daggers_t)
         {
-            if (wep.weapon_socket == Weapon_socket::main_hand || wep.weapon_socket == Weapon_socket::one_hand)
+            if (wep.weapon_socket == Weapon_socket::off_hand || wep.weapon_socket == Weapon_socket::one_hand)
+            {
+                oh_weapons.emplace_back(wep);
+            }
+        }
+        for (const auto& wep : fists_t)
+        {
+            if (wep.weapon_socket == Weapon_socket::off_hand || wep.weapon_socket == Weapon_socket::one_hand)
             {
                 oh_weapons.emplace_back(wep);
             }
