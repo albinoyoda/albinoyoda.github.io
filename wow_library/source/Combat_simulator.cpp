@@ -35,10 +35,11 @@ std::vector<double> create_hit_table_yellow(double miss, double dodge, double cr
     return {miss, miss + dodge, miss + dodge, miss + dodge + double_roll_factor * crit};
 }
 
-std::vector<double> create_multipliers(double glancing_factor, double bonus_crit_multiplier)
+std::vector<double> create_multipliers(double glancing_factor, double crit_damage_bonus, double bonus_crit_multiplier)
 {
     // Order -> Miss, parry, dodge, block, glancing, crit, hit.
-    return {0.0, 0.0, glancing_factor, 2.0 + bonus_crit_multiplier, 1.0};
+    return {0.0, 0.0, glancing_factor, 1.0 + multiplicative_addition(1.0 + crit_damage_bonus, bonus_crit_multiplier),
+            1.0};
 }
 } // namespace
 
@@ -433,17 +434,20 @@ void Combat_simulator::compute_hit_table(int weapon_skill, const Special_stats& 
     if (weapon_hand == Socket::main_hand)
     {
         hit_table_white_mh_ = create_hit_table(miss_chance, dodge_chance, glancing_chance, crit_chance);
-        damage_multipliers_white_mh_ = create_multipliers((100.0 - glancing_penalty) / 100.0, 0.0);
+        damage_multipliers_white_mh_ =
+            create_multipliers((100.0 - glancing_penalty) / 100.0, 0.0, special_stats.crit_multiplier);
 
         hit_table_yellow_ = create_hit_table_yellow(two_hand_miss_chance, dodge_chance, crit_chance);
         hit_table_overpower_ =
             create_hit_table_yellow(two_hand_miss_chance, 0, crit_chance + 25 * config.talents.overpower - 3.0);
-        damage_multipliers_yellow_ = create_multipliers(1.0, 0.1 * config.talents.impale);
+        damage_multipliers_yellow_ =
+            create_multipliers(1.0, 0.1 * config.talents.impale, special_stats.crit_multiplier);
     }
     else
     {
         hit_table_white_oh_ = create_hit_table(miss_chance, dodge_chance, glancing_chance, crit_chance);
-        damage_multipliers_white_oh_ = create_multipliers((100.0 - glancing_penalty) / 100.0, 0.0);
+        damage_multipliers_white_oh_ =
+            create_multipliers((100.0 - glancing_penalty) / 100.0, 0.0, special_stats.crit_multiplier);
 
         hit_table_two_hand_ = create_hit_table(two_hand_miss_chance, dodge_chance, glancing_chance, crit_chance);
     }
@@ -499,6 +503,7 @@ bool Combat_simulator::start_cast_slam(bool mh_swing, double rage, double swing_
             {
                 simulator_cout("Starting to channel slam.");
                 slam_manager.queue_slam(time_keeper_.time);
+                time_keeper_.global_cd = 1.5;
                 return true;
             }
         }
@@ -765,8 +770,7 @@ void Combat_simulator::hit_effects(Weapon_sim& weapon, Weapon_sim& main_hand_wea
                 damage_sources.add_damage(Damage_source::item_hit_effects, hit_effect.damage * 0.83, time_keeper_.time,
                                           false);
                 break;
-            case Hit_effect::Type::damage_physical:
-            {
+            case Hit_effect::Type::damage_physical: {
                 auto hit = generate_hit(main_hand_weapon, hit_effect.damage, Hit_type::yellow, Socket::main_hand,
                                         special_stats, damage_sources);
                 damage_sources.add_damage(Damage_source::item_hit_effects, hit.damage, time_keeper_.time);
@@ -784,8 +788,7 @@ void Combat_simulator::hit_effects(Weapon_sim& weapon, Weapon_sim& main_hand_wea
                 buff_manager_.add(weapon.socket_name + "_" + hit_effect.name,
                                   hit_effect.get_special_stat_equivalent(special_stats), hit_effect.duration);
                 break;
-            case Hit_effect::Type::reduce_armor:
-            {
+            case Hit_effect::Type::reduce_armor: {
                 if (current_armor_red_stacks_ < hit_effect.max_stacks)
                 {
                     recompute_mitigation_ = true;
@@ -1332,10 +1335,9 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
             }
             else
             {
-                if (weapons[0].weapon_socket == Weapon_socket::two_hand && config.combat.use_slam &&
-                    time_keeper_.global_cd < 0.0)
+                if (weapons[0].weapon_socket == Weapon_socket::two_hand && config.combat.use_slam)
                 {
-                    if (!slam_manager.is_slam_queued())
+                    if (!slam_manager.is_slam_queued() && time_keeper_.global_cd < 0.0)
                     {
                         if (start_cast_slam(mh_swing, rage, weapons[0].internal_swing_timer))
                         {
@@ -1347,7 +1349,8 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                         slam(weapons[0], special_stats, rage, damage_sources, flurry_charges);
                         slam_manager.un_queue_slam();
                         weapons[0].internal_swing_timer = weapons[0].swing_speed / (1 + special_stats.haste);
-                        if (start_cast_slam(mh_swing, rage, weapons[0].internal_swing_timer))
+                        if (time_keeper_.global_cd < 0.0 &&
+                            start_cast_slam(mh_swing, rage, weapons[0].internal_swing_timer))
                         {
                             continue;
                         }

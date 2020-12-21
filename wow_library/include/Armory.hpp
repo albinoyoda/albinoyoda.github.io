@@ -697,7 +697,7 @@ struct Armory
             {"battlegear_of_heroism",   Attributes{0, 0}, Special_stats{0, 0, 40}, 6, Set::battlegear_of_heroism},
             {"the_defilers_resolution", Attributes{0, 0}, Special_stats{1, 0, 0},  3, Set::the_defilers_resolution},
             {"battlegear_of_wrath",     Attributes{0, 0}, Special_stats{0, 0, 30},  3, Set::battlegear_of_wrath},
-            {"battlegear_of_undead_slaying",     Attributes{0, 0}, Special_stats{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.02},  3, Set::battlegear_of_undead_slaying},
+            {"battlegear_of_undead_slaying",     Attributes{0, 0}, Special_stats{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.02, 0, 0, 0, 0, 0, 0.02}, 3, Set::battlegear_of_undead_slaying},
     };
 
     std::vector<Armor> get_items_in_socket(const Socket socket) const;

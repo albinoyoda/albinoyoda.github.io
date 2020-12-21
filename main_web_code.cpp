@@ -13,9 +13,9 @@ int main()
     armor_vec.emplace_back("stormrages_talisman_of_seething");
     armor_vec.emplace_back("conquerors_spaulders");
     armor_vec.emplace_back("shroud_of_dominion");
-    armor_vec.emplace_back("plated_abomination_ribcage");
-    armor_vec.emplace_back("hive_defiler_wristguards");
-    armor_vec.emplace_back("gauntlets_of_annihilation");
+    armor_vec.emplace_back("breastplate_of_undead_slaying");
+    armor_vec.emplace_back("bracers_of_undead_slaying");
+    armor_vec.emplace_back("gauntlets_of_undead_slaying");
     armor_vec.emplace_back("girdle_of_the_mentor");
     armor_vec.emplace_back("leggings_of_carnage");
     armor_vec.emplace_back("chromatic_boots");
@@ -26,9 +26,9 @@ int main()
     armor_vec.emplace_back("nerubian_slavemaker");
 
     std::vector<std::string> weapons_vec;
-        weapons_vec.emplace_back("felstriker");
-        weapons_vec.emplace_back("argent_avenger");
-//    weapons_vec.emplace_back("manual_crowd_pummeler_1charge");
+//        weapons_vec.emplace_back("felstriker");
+//        weapons_vec.emplace_back("argent_avenger");
+    weapons_vec.emplace_back("manual_crowd_pummeler_1charge");
 
     //    mult_weapons_vec.emplace_back("persuader");
     //    mult_weapons_vec.emplace_back("gressil_dawn_of_ruin");
@@ -404,10 +404,10 @@ int main()
         "use_slam",
         "use_sweeping_strikes",
         "multi_target_mode",
-        "wep_strengths",
+//        "wep_strengths",
 //        "fungal_bloom",
         "full_polarity",
-        "item_strengths",
+//        "item_strengths",
     };
 
     std::vector<std::string> float_options_string{
@@ -465,9 +465,10 @@ int main()
         "flurry_talent",
         "bloodthirst_talent",
         "sweeping_strikes_talent",
+        "improved_slam_talent",
     };
 
-    std::vector<int> talents_val{3, 3, 5, 1, 3, 2, 5, 5, 5, 5, 2, 5, 1, 5, 1, 1};
+    std::vector<int> talents_val{3, 3, 5, 1, 3, 2, 5, 5, 5, 5, 2, 5, 1, 5, 1, 1, 5};
 
     Sim_input sim_input{{race},
                         armor_vec,

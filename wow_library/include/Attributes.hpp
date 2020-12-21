@@ -15,7 +15,8 @@ struct Special_stats
     Special_stats(double critical_strike, double hit, double attack_power, double chance_for_extra_hit = 0.0,
                   double haste = 0.0, int sword_skill = 0, int axe_skill = 0, int dagger_skill = 0, int mace_skill = 0,
                   int fist_skill = 0, double damage_multiplier = 0, double stat_multiplier = 0, double bonus_damage = 0,
-                  int two_hand_sword_skill = 0, int two_hand_axe_skill = 0, int two_hand_mace_skill = 0)
+                  int two_hand_sword_skill = 0, int two_hand_axe_skill = 0, int two_hand_mace_skill = 0,
+                  double crit_multiplier = 0)
         : critical_strike{critical_strike}
         , hit{hit}
         , attack_power{attack_power}
@@ -32,6 +33,7 @@ struct Special_stats
         , two_hand_sword_skill(two_hand_sword_skill)
         , two_hand_axe_skill(two_hand_axe_skill)
         , two_hand_mace_skill(two_hand_mace_skill)
+        , crit_multiplier(crit_multiplier)
     {
     }
 
@@ -54,6 +56,7 @@ struct Special_stats
             two_hand_sword_skill + rhs.two_hand_sword_skill,
             two_hand_axe_skill + rhs.two_hand_axe_skill,
             two_hand_mace_skill + rhs.two_hand_mace_skill,
+            multiplicative_addition(crit_multiplier, rhs.crit_multiplier),
         };
     }
 
@@ -76,6 +79,7 @@ struct Special_stats
             two_hand_sword_skill - rhs.two_hand_sword_skill,
             two_hand_axe_skill - rhs.two_hand_axe_skill,
             two_hand_mace_skill - rhs.two_hand_mace_skill,
+            multiplicative_subtraction(crit_multiplier, rhs.crit_multiplier),
         };
     }
 
@@ -107,6 +111,7 @@ struct Special_stats
     int two_hand_sword_skill{};
     int two_hand_axe_skill{};
     int two_hand_mace_skill{};
+    double crit_multiplier{};
 };
 
 class Attributes
