@@ -96,7 +96,6 @@ public:
     std::vector<std::string> talent_vec;
     std::vector<int> talent_val_vec;
 
-private:
     Armory armory;
 };
 
