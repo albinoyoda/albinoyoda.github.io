@@ -138,7 +138,7 @@ for index, line in enumerate(lines):
             copy_line = True
 copy_line_chunks.append(copy_lines)
 
-if (len(start_indexes) is not 4) or (len(stop_indexes) is not 4):
+if (len(start_indexes) != 4) or (len(stop_indexes) != 4):
     print("Did not find all begin and stop indexes. aborting!")
     exit()
 
@@ -147,6 +147,7 @@ extra_stuff_armor = '" class="item-select"'
 extra_stuff_armor_mult = '_mult" size="10" class="item-select" multiple'
 extra_stuff_weapon = '" class="weapon-select"'
 extra_stuff_weapon_mult = '_mult" size="10" class="item-select" multiple'
+extra_stuff_weapon_mult_two_hand = '_mult" size="10" class="weapon-select" multiple'
 
 div_title_string = \
     '<span class="left_select">{}</span><span class="middle_select">{}</span><span class="right_select">{}</span><br>\n'
@@ -167,6 +168,7 @@ for armor_type in armor_types:
     else:
         armor_names_mult.append(armor_type.category.capitalize())
 armor_names_mult.append("Weapons")
+armor_names_mult.append("Two-Handed Weapons")
 
 # ------------------------ STANDARD -----------------------
 # ------------------------ ARMOR -----------------------
@@ -252,11 +254,8 @@ generated = []
 index = 0
 for armor_type in armor_types:
     if index % 3 == 0:
-        if index <= 9:
-            generated.append(div_title_string.format(armor_names_mult[index], armor_names_mult[index + 1],
-                                                     armor_names_mult[index + 2]))
-        else:
-            generated.append(div_title_string_double.format(armor_names_mult[index], armor_names_mult[index + 1]))
+        generated.append(div_title_string.format(armor_names_mult[index], armor_names_mult[index + 1],
+                                                 armor_names_mult[index + 2]))
     index = index + 1
     generated.append('<select id="' + armor_type.category + '_dd' + extra_stuff_armor_mult + '>\n')
     for item in armor_type.items:
@@ -276,6 +275,20 @@ tot_generated.append(generated)
 generated = []
 generated.append('<select id="weapons_dd' + extra_stuff_weapon_mult + '>\n')
 for wep_type in weapons:
+    if wep_type.category[0:3] == 'two':
+        continue
+    generated.append('    <option value="none" disabled> --- ' + wep_type.category.upper() + ' --- </option>\n')
+    for item in wep_type.items:
+        split_item = item.split("*")
+        item_name = remove_underscores_and_capitalize(split_item[0])
+        generated.append('    <option value="' + split_item[0] + '">' + item_name + '</option>\n')
+generated.append('</select>\n')
+tot_generated.append(generated)
+
+generated.append('<select id="two_hand_weapons_dd' + extra_stuff_weapon_mult_two_hand + '>\n')
+for wep_type in weapons:
+    if wep_type.category[0:3] != 'two':
+        continue
     generated.append('    <option value="none" disabled> --- ' + wep_type.category.upper() + ' --- </option>\n')
     for item in wep_type.items:
         split_item = item.split("*")

@@ -418,6 +418,7 @@ bool is_strictly_weaker(Special_stats special_stats1, Special_stats special_stat
                (special_stats2.mace_skill >= special_stats1.mace_skill) &&
                (special_stats2.dagger_skill >= special_stats1.dagger_skill) &&
                (special_stats2.bonus_damage >= special_stats1.bonus_damage) &&
+               (special_stats2.damage_multiplier >= special_stats1.damage_multiplier) &&
                (special_stats2.two_hand_sword_skill >= special_stats1.two_hand_sword_skill) &&
                (special_stats2.two_hand_mace_skill >= special_stats1.two_hand_mace_skill) &&
                (special_stats2.two_hand_axe_skill >= special_stats1.two_hand_axe_skill);
@@ -429,6 +430,7 @@ bool is_strictly_weaker(Special_stats special_stats1, Special_stats special_stat
                (special_stats2.mace_skill > special_stats1.mace_skill) ||
                (special_stats2.dagger_skill > special_stats1.dagger_skill) ||
                (special_stats2.bonus_damage > special_stats1.bonus_damage) ||
+               (special_stats2.damage_multiplier >= special_stats1.damage_multiplier) ||
                (special_stats2.two_hand_sword_skill > special_stats1.two_hand_sword_skill) ||
                (special_stats2.two_hand_mace_skill > special_stats1.two_hand_mace_skill) ||
                (special_stats2.two_hand_axe_skill > special_stats1.two_hand_axe_skill);
@@ -450,6 +452,10 @@ double estimate_special_stats_high(const Special_stats& special_stats)
     // Assume 1.8 speed for the high estimation
     double high_estimation = special_stats.bonus_damage / 1.8 * 14;
 
+    // Assume 3k AP for the high estimate of the damage multiplier
+    high_estimation += special_stats.damage_multiplier * 3000 +
+                       special_stats.damage_multiplier * 3000 * special_stats.critical_strike / 100;
+
     high_estimation +=
         special_stats.attack_power + special_stats.hit * hit_w + special_stats.critical_strike * crit_w + ap_from_skill;
     return high_estimation;
@@ -467,6 +473,10 @@ double estimate_special_stats_low(const Special_stats& special_stats)
 
     // Assume 2.6 speed for the low estimation
     double low_estimation = special_stats.bonus_damage / 2.6 * 14;
+
+    // Assume 1.5k AP for the high estimate of the damage multiplier
+    low_estimation += special_stats.damage_multiplier * 1500 +
+                      special_stats.damage_multiplier * 1500 * special_stats.critical_strike / 100;
 
     low_estimation += special_stats.attack_power + special_stats.hit * hit_w_cap +
                       special_stats.critical_strike * crit_w_cap + max_skill * skill_w_hard;
@@ -498,6 +508,8 @@ double estimate_stat_diff(Special_stats special_stats1, Special_stats special_st
     diff.hit > 0 ? res_2.hit = diff.hit : res_1.hit = -diff.hit;
     diff.attack_power > 0 ? res_2.attack_power = diff.attack_power : res_1.attack_power = -diff.attack_power;
     diff.bonus_damage > 0 ? res_2.bonus_damage = diff.bonus_damage : res_1.bonus_damage = -diff.bonus_damage;
+    diff.damage_multiplier > 0 ? res_2.damage_multiplier = diff.damage_multiplier :
+                                 res_1.damage_multiplier = -diff.damage_multiplier;
     diff.axe_skill > 0 ? res_2.axe_skill = diff.axe_skill : res_1.axe_skill = -diff.axe_skill;
     diff.sword_skill > 0 ? res_2.sword_skill = diff.sword_skill : res_1.sword_skill = -diff.sword_skill;
     diff.mace_skill > 0 ? res_2.mace_skill = diff.mace_skill : res_1.mace_skill = -diff.mace_skill;
@@ -560,7 +572,7 @@ double find_value(const std::vector<std::string>& string_vec, const std::vector<
         }
         index++;
     }
-    std::cout << "ERROR: Could not find: " << match_string;
+    std::cout << "WARN: Could not find: " << match_string << std::endl;
     return 0.0;
 }
 

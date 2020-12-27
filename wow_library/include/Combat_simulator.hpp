@@ -28,6 +28,16 @@ struct Combat_simulator_config
 
         n_batches =
             static_cast<int>(find_value(input.float_options_string, input.float_options_val, "n_simulations_dd"));
+        if (find_string(input.options, "item_strengths") || find_string(input.options, "wep_strengths") ||
+            !input.stat_weights.empty() || find_string(input.options, "compute_dpr"))
+        {
+            if (n_batches < 100000)
+            {
+                std::cout << "Increased the number of simulations to 100000 to improve later calculations."
+                          << std::endl;
+                n_batches = 100000;
+            }
+        }
         seed = 110000;
     };
 

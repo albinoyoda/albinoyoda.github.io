@@ -60,6 +60,8 @@ public:
 
     void fill_empty_weapons();
 
+    void find_set_bonuses();
+
     void fill(std::vector<Armor>& vec, Socket socket, std::string name);
 
     std::vector<Armor> helmets;
@@ -77,6 +79,10 @@ public:
     std::vector<Armor> trinkets;
     std::vector<Weapon> main_hands;
     std::vector<Weapon> off_hands;
+    std::vector<Weapon> two_hands;
+
+    std::vector<Set> set_names;
+    std::vector<Set_bonus> possible_set_bonuses;
 
     std::string best_use_effect_name{};
     double sim_time{};

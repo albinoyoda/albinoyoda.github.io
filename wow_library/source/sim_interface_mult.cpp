@@ -58,8 +58,17 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult& input)
         {
             auto character = item_optimizer.construct(0);
             item_optimizer.filter_weaker_items(character.total_special_stats, debug_message, 1);
+            item_optimizer.compute_combinations();
+            size_t set_bonuses_before = item_optimizer.possible_set_bonuses.size();
+            item_optimizer.find_set_bonuses();
+            if (item_optimizer.possible_set_bonuses.size() != set_bonuses_before)
+            {
+                debug_message += "<b>Applying item filter again since a set-bonus has been knocked out of the "
+                                 "pool</b><br>";
+                item_optimizer.filter_weaker_items(character.total_special_stats, debug_message, 1);
+                item_optimizer.compute_combinations();
+            }
         }
-        item_optimizer.compute_combinations();
         debug_message +=
             "Item filter done. Combinations: " + std::to_string(item_optimizer.total_combinations) + "<br>";
         std::cout << "Item filter done. Combinations: " << std::to_string(item_optimizer.total_combinations) << "\n";
@@ -75,8 +84,11 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult& input)
         {
             Character character = item_optimizer.construct(i);
             double ap_equivalent =
-                get_character_ap_equivalent(character.total_special_stats, character.weapons[0], character.weapons[1],
-                                            config.sim_time, character.use_effects);
+                (character.weapons.size() == 2) ?
+                    get_character_ap_equivalent(character.total_special_stats, character.weapons[0],
+                                                character.weapons[1], config.sim_time, character.use_effects) :
+                    get_character_ap_equivalent(character.total_special_stats, character.weapons[0], config.sim_time,
+                                                character.use_effects);
             if (ap_equivalent > highest_attack_power)
             {
                 highest_attack_power = ap_equivalent;
@@ -102,8 +114,11 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult& input)
         {
             Character character = item_optimizer.construct(i);
             double ap_equivalent =
-                get_character_ap_equivalent(character.total_special_stats, character.weapons[0], character.weapons[1],
-                                            config.sim_time, character.use_effects);
+                (character.weapons.size() == 2) ?
+                    get_character_ap_equivalent(character.total_special_stats, character.weapons[0],
+                                                character.weapons[1], config.sim_time, character.use_effects) :
+                    get_character_ap_equivalent(character.total_special_stats, character.weapons[0], config.sim_time,
+                                                character.use_effects);
             if (ap_equivalent > filtering_ap)
             {
                 keepers.emplace_back(i, 0, 0, ap_equivalent);
@@ -314,7 +329,7 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult& input)
     {
         for (size_t j = 0; j < best_character.armor.size(); j++)
         {
-            bool found = false;
+             bool found = false;
             for (auto& item : item_popularity[j])
             {
                 if (item.name == best_character.armor[j].name)
@@ -330,7 +345,7 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult& input)
                 item_popularity[j].push_back(a);
             }
         }
-        for (size_t j = 0; j < 2; j++)
+        for (size_t j = 0; j < best_character.weapons.size(); j++)
         {
             bool found = false;
             for (auto& item : weapon_popularity[j])
@@ -428,8 +443,8 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult& input)
     for (size_t i = 0; i < max_number; i++)
     {
         message += "<b>Set " + std::to_string(i + 1) + ":</b><br>";
-        message += "DPS: " + string_with_precision(keepers[i].mean_dps, 5) + " (+<b>" +
-                   string_with_precision(keepers[i].mean_dps - keepers[max_number - 1].mean_dps, 3) + "</b>)<br> ";
+        message += "DPS: " + string_with_precision(keepers[i].mean_dps, 5) + " (-<b>" +
+                   string_with_precision(keepers[0].mean_dps - keepers[i].mean_dps, 3) + "</b>)<br> ";
         double error_margin = Statistics::sample_deviation(std::sqrt(keepers[i].variance),
                                                            cumulative_simulations[performed_iterations + 1]);
         message += "Error margin DPS: " + string_with_precision(error_margin, 3) + "<br>";
@@ -444,20 +459,12 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult& input)
         message += "<b>Armor:</b><br>";
         for (size_t j = 0; j < best_characters[i].armor.size(); j++)
         {
-            auto item_pop =
-                *std::find(item_popularity[j].begin(), item_popularity[j].end(), best_characters[i].armor[j].name);
-            //            message += "[" + std::to_string(item_pop.counter) + "/" +
-            //            std::to_string(best_characters.size()) + "] ";
             message += "(" + std::to_string(socket_combinations[j]) + ") ";
             message += "<b>" + socket_names[j] + "</b>" + " - " + best_characters[i].armor[j].name + "<br>";
         }
         message += "<b>Weapons:</b><br>";
-        for (size_t j = 0; j < 2; j++)
+        for (size_t j = 0; j < best_characters[i].weapons.size(); j++)
         {
-            auto item_pop = (*std::find(weapon_popularity[j].begin(), weapon_popularity[j].end(),
-                                        best_characters[i].weapons[j].name));
-            //            message += "[" + std::to_string(item_pop.counter) + "/" +
-            //            std::to_string(best_characters.size()) + "] ";
             message += "(" + std::to_string(weapon_combinations) + ") ";
             message += "<b>" + weapon_names[j] + "</b>" + " - " + best_characters[i].weapons[j].name + "<br>";
         }

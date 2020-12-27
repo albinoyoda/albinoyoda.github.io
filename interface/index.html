@@ -56,11 +56,6 @@
         /*background-color: #ccccff;*/
     }
 
-    select.item-select {
-        width: 150px;
-        /*background-color: #ccccff;*/
-    }
-
     option:checked {
         color: #000066;
         background-color: #b3c6ff;
@@ -1243,7 +1238,7 @@
 
             <p></p>
 
-            <span class="left_select">Ranged</span><span class="middle_select">Weapons</span><br>
+            <span class="left_select">Ranged</span><span class="middle_select">Weapons</span><span class="right_select">Two-Handed Weapons</span><br>
             <select id="ranged_dd_mult" size="10" class="item-select" multiple>
                 <option value="blastershot"> Blastershot</option>
                 <option value="bloodseeker"> Bloodseeker</option>
@@ -1293,35 +1288,6 @@
                 <option value="warblade_hakkari_oh"> Warblade Hakkari Oh</option>
                 <option value="widows_remorse"> Widows Remorse</option>
                 <option value="zulian_slicer"> Zulian Slicer</option>
-                <option value="none" disabled> --- TWO_HANDED_SWORDS ---</option>
-                <option value="ashkandi,_greatsword_of_the_brotherhood"> Ashkandi, Greatsword of the Brotherhood
-                </option>
-                <option value="bonereavers_edge"> Bonereavers Edge</option>
-                <option value="claymore_of_unholy_might"> Claymore of Unholy Might</option>
-                <option value="corrupted_ashbringer"> Corrupted Ashbringer</option>
-                <option value="destiny"> Destiny</option>
-                <option value="kalimdors_revenge"> Kalimdors Revenge</option>
-                <option value="manslayer_of_the_qiraji"> Manslayer of the Qiraji</option>
-                <option value="obsidian_edged_blade"> Obsidian Edged Blade</option>
-                <option value="the_untamed_blade"> The Untamed Blade</option>
-                <option value="zinrokh,_destroyer_of_worlds"> Zinrokh, Destroyer of Worlds</option>
-                <option value="none" disabled> --- TWO_HANDED_AXES ---</option>
-                <option value="dark_edge_of_insanity"> Dark Edge of Insanity</option>
-                <option value="draconic_avenger"> Draconic Avenger</option>
-                <option value="drake_talon_cleaver"> Drake Talon Cleaver</option>
-                <option value="neretzek,_the_blood_drinker"> Neretzek, the Blood Drinker</option>
-                <option value="severance"> Severance</option>
-                <option value="spinal_reaper"> Spinal Reaper</option>
-                <option value="treants_bane"> Treants Bane</option>
-                <option value="none" disabled> --- TWO_HANDED_MACES ---</option>
-                <option value="draconic_maul"> Draconic Maul</option>
-                <option value="herald_of_woe"> Herald of Woe</option>
-                <option value="jekliks_crusher"> Jekliks Crusher</option>
-                <option value="manual_crowd_pummeler_1charge"> Manual Crowd Pummeler 1charge</option>
-                <option value="manual_crowd_pummeler_2charge"> Manual Crowd Pummeler 2charge</option>
-                <option value="manual_crowd_pummeler_3charge"> Manual Crowd Pummeler 3charge</option>
-                <option value="might_of_menethil"> Might of Menethil</option>
-                <option value="sulfuras,_hand_of_ragnaros"> Sulfuras, Hand of Ragnaros</option>
                 <option value="none" disabled> --- AXES ---</option>
                 <option value="ancient_hakkari_manslayer"> Ancient Hakkari Manslayer</option>
                 <option value="axe_of_the_deep_woods"> Axe of the Deep Woods</option>
@@ -1370,6 +1336,37 @@
                 <option value="claw_of_the_black_drake"> Claw of the Black Drake</option>
                 <option value="claw_of_the_frost_wyrm"> Claw of the Frost Wyrm</option>
                 <option value="silithid_claw"> Silithid Claw</option>
+            </select>
+            <select id="two_hand_weapons_dd_mult" size="10" class="weapon-select" multiple>
+                <option value="none" disabled> --- TWO_HANDED_SWORDS ---</option>
+                <option value="ashkandi,_greatsword_of_the_brotherhood"> Ashkandi, Greatsword of the Brotherhood
+                </option>
+                <option value="bonereavers_edge"> Bonereavers Edge</option>
+                <option value="claymore_of_unholy_might"> Claymore of Unholy Might</option>
+                <option value="corrupted_ashbringer"> Corrupted Ashbringer</option>
+                <option value="destiny"> Destiny</option>
+                <option value="kalimdors_revenge"> Kalimdors Revenge</option>
+                <option value="manslayer_of_the_qiraji"> Manslayer of the Qiraji</option>
+                <option value="obsidian_edged_blade"> Obsidian Edged Blade</option>
+                <option value="the_untamed_blade"> The Untamed Blade</option>
+                <option value="zinrokh,_destroyer_of_worlds"> Zinrokh, Destroyer of Worlds</option>
+                <option value="none" disabled> --- TWO_HANDED_AXES ---</option>
+                <option value="dark_edge_of_insanity"> Dark Edge of Insanity</option>
+                <option value="draconic_avenger"> Draconic Avenger</option>
+                <option value="drake_talon_cleaver"> Drake Talon Cleaver</option>
+                <option value="neretzek,_the_blood_drinker"> Neretzek, the Blood Drinker</option>
+                <option value="severance"> Severance</option>
+                <option value="spinal_reaper"> Spinal Reaper</option>
+                <option value="treants_bane"> Treants Bane</option>
+                <option value="none" disabled> --- TWO_HANDED_MACES ---</option>
+                <option value="draconic_maul"> Draconic Maul</option>
+                <option value="herald_of_woe"> Herald of Woe</option>
+                <option value="jekliks_crusher"> Jekliks Crusher</option>
+                <option value="manual_crowd_pummeler_1charge"> Manual Crowd Pummeler 1charge</option>
+                <option value="manual_crowd_pummeler_2charge"> Manual Crowd Pummeler 2charge</option>
+                <option value="manual_crowd_pummeler_3charge"> Manual Crowd Pummeler 3charge</option>
+                <option value="might_of_menethil"> Might of Menethil</option>
+                <option value="sulfuras,_hand_of_ragnaros"> Sulfuras, Hand of Ragnaros</option>
             </select>
             <!--armor stop4-->
 
@@ -2420,7 +2417,7 @@
         "boots_dd_mult", "ring_dd_mult", "trinket_dd_mult", "ranged_dd_mult"];
     let armor_input_mult = [];
 
-    let weapons_mult = ["weapons_dd_mult"];
+    let weapons_mult = ["weapons_dd_mult", "two_hand_weapons_dd_mult"];
     let weapons_input_mult = [];
 
     let enchants = ["helmet_ench_dd", "shoulder_ench_dd", "back_ench_dd", "chest_ench_dd", "wrist_ench_dd",

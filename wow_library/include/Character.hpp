@@ -33,12 +33,27 @@ public:
 
     void equip_armor(const Armor& piece) { armor.emplace_back(piece); }
 
+    void equip_weapon(std::vector<Weapon> weapon_vec)
+    {
+        if (weapon_vec.size() == 1)
+        {
+            equip_weapon(weapon_vec[0]);
+        }
+        else if (weapon_vec.size() == 2)
+        {
+            equip_weapon(weapon_vec[0], weapon_vec[1]);
+        }
+        else
+        {
+            std::cout << "ERROR: trying to equip weapon vec of size: " << weapon_vec.size() << "\n";
+        }
+    }
+
     void equip_weapon(Weapon weapon)
     {
         if (weapon.weapon_socket != Weapon_socket::two_hand)
         {
-            std::cout << "WARN: Wielding single weapon that is not two handed."
-                      << "\n";
+            std::cout << "WARN: Wielding single weapon that is not two handed.\n";
         }
         weapon.socket = Socket::main_hand;
         weapons.emplace_back(weapon);

@@ -538,7 +538,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     const auto white_mh_ht = simulator.get_hit_probabilities_white_mh();
     const auto white_oh_ht = simulator.get_hit_probabilities_white_oh();
     const auto white_oh_ht_2h = simulator.get_hit_probabilities_white_2h();
-    double n_simulations_base = find_value(input.float_options_string, input.float_options_val, "n_simulations_dd");
+    double n_simulations_base = config.n_batches;
 
     simulator.simulate(character, 0, true);
 

@@ -30,6 +30,10 @@ void Item_optimizer::compute_weapon_combinations()
             }
         }
     }
+    for (const auto& wep : two_hands)
+    {
+        weapon_combinations.emplace_back(std::vector<Weapon>{wep});
+    }
 }
 
 std::vector<std::vector<Armor>> Item_optimizer::get_combinations(const std::vector<Armor>& armors)
@@ -154,6 +158,18 @@ void Item_optimizer::extract_weapons(const std::vector<std::string>& weapon_vec)
             else if (weapon.weapon_socket == Weapon_socket::off_hand)
             {
                 off_hands.emplace_back(weapon);
+            }
+        }
+        else
+        {
+            auto th_weapon = armory.find_weapon(Weapon_socket::two_hand, weapon_name);
+            if (is_armor_valid(th_weapon.name))
+            {
+                two_hands.emplace_back(th_weapon);
+            }
+            else
+            {
+                std::cout << "Not valid weapon: " << weapon.name << std::endl;
             }
         }
     }
@@ -337,20 +353,14 @@ std::vector<Weapon> Item_optimizer::remove_weaker_weapons(const Weapon_socket we
                 case Hit_effect::Type::damage_magic_guaranteed:
                 case Hit_effect::Type::damage_magic:
                 case Hit_effect::Type::damage_physical:
-                {
-                    double factor = 1.0;
+                case Hit_effect::Type::extra_hit: {
+                    double factor = weapon_socket == Weapon_socket::main_hand ? 1.0 : 0.5;
                     if (effect.affects_both_weapons)
                     {
-                        factor = 2.0;
+                        factor *= 2;
                     }
                     wep_struct.hit_special_stats.attack_power +=
-                        effect.probability * effect.damage * ap_per_coh * factor;
-                    break;
-                }
-                case Hit_effect::Type::extra_hit:
-                {
-                    double factor = weapon_socket == Weapon_socket::main_hand ? 1.0 : 0.5;
-                    wep_struct.hit_special_stats.critical_strike += effect.probability * factor;
+                        get_hit_effect_ap_equivalent(effect, 0.0, weapon_vec[i].swing_speed, factor);
                     break;
                 }
                 default:
@@ -458,7 +468,7 @@ std::vector<Armor> Item_optimizer::remove_weaker_items(const std::vector<Armor>&
         {
             double ap_equiv_max = 0;
             Special_stats best_special_stats;
-            for (const auto& set_bonus : armory.set_bonuses)
+            for (const auto& set_bonus : possible_set_bonuses)
             {
                 if (armors[i].set_name == set_bonus.set)
                 {
@@ -476,20 +486,7 @@ std::vector<Armor> Item_optimizer::remove_weaker_items(const std::vector<Armor>&
         }
         if (!armors[i].use_effects.empty())
         {
-            //            if (armors[i].use_effects[0].effect_socket == Use_effect::Effect_socket::shared)
-            //            {
-            //                if (armors[i].use_effects[0].name == best_use_effect_name)
-            //                {
-            //                    Special_stats use_sp =
-            //                    armors[i].use_effects[0].get_special_stat_equivalent(special_stats);
-            //                    use_sp.attack_power *= armors[i].use_effects[0].duration / sim_time;
-            //                    armor_equiv.use_special_stats = use_sp;
-            //                }
-            //            }
-            //            else
-            //            {
             armor_equiv.can_be_estimated = false;
-            //            }
         }
         if (!armors[i].hit_effects.empty())
         {
@@ -605,11 +602,14 @@ void Item_optimizer::filter_weaker_items(const Special_stats& special_stats, std
     debug_message += "<br>Filtering <b> trinkets: </b><br>";
     trinkets = remove_weaker_items(trinkets, special_stats, debug_message, min_removal + 1);
 
-    debug_message += "<br>Filtering <b> weapons: </b><br>";
+    debug_message += "<br>Filtering <b> Main-hand weapons: </b><br>";
     main_hands =
         remove_weaker_weapons(Weapon_socket::main_hand, main_hands, special_stats, debug_message, min_removal + 1);
+    debug_message += "<br>Filtering <b> Off-hand weapons: </b><br>";
     off_hands =
         remove_weaker_weapons(Weapon_socket::off_hand, off_hands, special_stats, debug_message, min_removal + 1);
+    debug_message += "<br>Filtering <b> Two-hand weapons: </b><br>";
+    two_hands = remove_weaker_weapons(Weapon_socket::main_hand, two_hands, special_stats, debug_message, min_removal);
 }
 
 void Item_optimizer::fill_empty_armor()
@@ -639,6 +639,90 @@ void Item_optimizer::fill_empty_weapons()
     {
         off_hands.emplace_back(armory.find_weapon(Weapon_socket::one_hand, "none"));
     }
+    if (two_hands.empty())
+    {
+        two_hands.emplace_back(armory.find_weapon(Weapon_socket::two_hand, "none"));
+    }
+}
+
+void Item_optimizer::find_set_bonuses()
+{
+    std::vector<std::vector<Armor>> armors;
+    armors.push_back(helmets);
+    armors.push_back(necks);
+    armors.push_back(shoulders);
+    armors.push_back(backs);
+    armors.push_back(chests);
+    armors.push_back(wrists);
+    armors.push_back(hands);
+    armors.push_back(belts);
+    armors.push_back(legs);
+    armors.push_back(boots);
+    armors.push_back(ranged);
+    armors.push_back(rings);
+    armors.push_back(trinkets);
+
+    std::vector<std::vector<Weapon>> weapons;
+    weapons.push_back(main_hands);
+    weapons.push_back(off_hands);
+
+    set_names.clear();
+    for (const auto& armor_vec : armors)
+    {
+        for (const auto& armor : armor_vec)
+        {
+            set_names.emplace_back(armor.set_name);
+        }
+    }
+    for (const auto& weapon_vec : weapons)
+    {
+        for (const auto& armor : weapon_vec)
+        {
+            set_names.emplace_back(armor.set_name);
+        }
+    }
+
+    std::vector<Set> unique_set_names{};
+    for (const Set& set_name : set_names)
+    {
+        if (set_name != Set::none)
+        {
+            bool unique = true;
+            for (const Set& set_name_unique : unique_set_names)
+            {
+                if (set_name == set_name_unique)
+                {
+                    unique = false;
+                }
+            }
+            if (unique)
+            {
+                unique_set_names.emplace_back(set_name);
+            }
+        }
+    }
+
+    std::cout << "Possible set-bonuses: " << std::endl;
+    possible_set_bonuses.clear();
+    for (const Set& unique_set_name : unique_set_names)
+    {
+        int count = 0;
+        for (const Set& set_name : set_names)
+        {
+            if (set_name == unique_set_name)
+            {
+                count++;
+            }
+        }
+        for (const Set_bonus& set_bonus : armory.set_bonuses)
+        {
+            if (set_bonus.set == unique_set_name && count >= set_bonus.pieces)
+            {
+                std::cout << "Possible set-bonus: " << set_bonus.name << std::endl;
+                possible_set_bonuses.push_back(set_bonus);
+            }
+        }
+    }
 }
 
 void Item_optimizer::item_setup(const std::vector<std::string>& armor_vec, const std::vector<std::string>& weapons_vec)
@@ -647,6 +731,7 @@ void Item_optimizer::item_setup(const std::vector<std::string>& armor_vec, const
     fill_empty_armor();
     extract_weapons(weapons_vec);
     fill_empty_weapons();
+    find_set_bonuses();
 }
 
 void Item_optimizer::compute_combinations()
@@ -711,7 +796,7 @@ Character Item_optimizer::generate_character(const std::vector<size_t>& item_ids
     character.equip_armor(ring_combinations[item_ids[11]][1]);
     character.equip_armor(trinket_combinations[item_ids[12]][0]);
     character.equip_armor(trinket_combinations[item_ids[12]][1]);
-    character.equip_weapon(weapon_combinations[item_ids[13]][0], weapon_combinations[item_ids[13]][1]);
+    character.equip_weapon(weapon_combinations[item_ids[13]]);
     return character;
 }
 
