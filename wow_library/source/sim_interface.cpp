@@ -149,7 +149,7 @@ void item_upgrades_wep(std::string& item_strengths_string, Character character_n
     item_strengths_string =
         item_strengths_string + socket + ": " + "<b>" + character_new.get_weapon_from_socket(socket).name + "</b>";
     auto items = armory.get_weapon_in_socket(weapon_socket);
-    items = item_optimizer.remove_weaker_weapons(weapon_socket, items, character_new.total_special_stats, dummy, 5);
+    items = item_optimizer.remove_weaker_weapons(weapon_socket, items, character_new.total_special_stats, dummy, 10);
     {
         size_t i = 0;
         while (i < items.size())
