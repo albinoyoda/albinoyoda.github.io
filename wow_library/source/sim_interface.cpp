@@ -901,6 +901,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
         Combat_simulator simulator_strength{};
         simulator_strength.set_config(config);
         Item_optimizer item_optimizer{};
+        item_optimizer.race = get_race(input.race[0]);
         Character character_new = character_setup(armory, input.race[0], input.armor, input.weapons, temp_buffs,
                                                   input.talent_string, input.talent_val, input.enchants);
         std::string dummy{};

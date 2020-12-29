@@ -418,6 +418,7 @@ int main()
 //        "fungal_bloom",
         "full_polarity",
 //        "item_strengths",
+        "wep_strengths",
     };
 
     std::vector<std::string> float_options_string{
@@ -498,8 +499,8 @@ int main()
     Sim_input_mult sim_input_mult{{race},      mult_armor_vec,       mult_weapons_vec,  buff_vec,       ench_vec,
                                   sim_options, float_options_string, float_options_val, talents_string, talents_val};
 
-//    auto sim_output = sim_interface.simulate(sim_input);
-        auto sim_output = sim_interface.simulate_mult(sim_input_mult);
+    auto sim_output = sim_interface.simulate(sim_input);
+//        auto sim_output = sim_interface.simulate_mult(sim_input_mult);
 
     //    for (const auto &dmg_batch : sim_output.stat_weights)
     //    {
