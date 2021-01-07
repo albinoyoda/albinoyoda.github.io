@@ -505,7 +505,7 @@ bool Combat_simulator::start_cast_slam(bool mh_swing, double rage, double& swing
                 slam_manager.queue_slam(time_keeper_.time);
                 time_keeper_.global_cd = 1.5;
                 // We have started 'channeling' so set a value for the swing time for now which is larger than GCD
-                swing_time_left = 100.;
+                swing_time_left = 1.6;
                 return true;
             }
         }
@@ -1351,10 +1351,12 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                         slam(weapons[0], special_stats, rage, damage_sources, flurry_charges);
                         slam_manager.un_queue_slam();
                         weapons[0].internal_swing_timer = weapons[0].swing_speed / (1 + special_stats.haste);
-                        if (time_keeper_.global_cd < 0.0 &&
-                            start_cast_slam(mh_swing, rage, weapons[0].internal_swing_timer))
+                        if (time_keeper_.global_cd < 0.0)
                         {
-                            continue;
+                            if (start_cast_slam(mh_swing, rage, weapons[0].internal_swing_timer))
+                            {
+                                continue;
+                            }
                         }
                     }
                     else
