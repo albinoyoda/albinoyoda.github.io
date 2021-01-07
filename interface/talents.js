@@ -124,11 +124,11 @@ function load_talent_cleave_fury() {
 function load_talent_two_hand_fury() {
     load_talent_standard_fury();
     document.getElementById("improved_heroic_strike_talent").setAttribute("data-count", "2");
-    document.getElementById("two_handed_weapon_specialization_talent").setAttribute("data-count", "2");
+    document.getElementById("two_handed_weapon_specialization_talent").setAttribute("data-count", "3");
 
     document.getElementById("dual_wield_specialization_talent").setAttribute("data-count", "0");
     document.getElementById("improved_execute_talent").setAttribute("data-count", "0");
-    document.getElementById("improved_slam_talent").setAttribute("data-count", "5");
+    document.getElementById("improved_slam_talent").setAttribute("data-count", "4");
     document.getElementById("improved_overpower_talent").setAttribute("data-count", "1");
 
     displayTalentBootup();
