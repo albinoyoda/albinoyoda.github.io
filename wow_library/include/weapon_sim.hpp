@@ -29,7 +29,7 @@ public:
         average_damage = (min_damage + max_damage) / 2;
     }
 
-    double swing_speed;
+    const double swing_speed;
     double normalized_swing_speed;
     double internal_swing_timer;
     double min_damage;

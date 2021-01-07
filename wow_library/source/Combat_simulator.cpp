@@ -520,7 +520,7 @@ void Combat_simulator::slam(Weapon_sim& main_hand_weapon, Special_stats& special
         return;
     }
     simulator_cout("Slam!");
-    double damage = main_hand_weapon.normalized_swing(special_stats.attack_power) + 87.0;
+    double damage = main_hand_weapon.swing(special_stats.attack_power) + 87.0;
     auto hit_outcome =
         generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats, damage_sources);
     if (hit_outcome.hit_result == Hit_result::dodge || hit_outcome.hit_result == Hit_result::miss)
