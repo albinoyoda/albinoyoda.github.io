@@ -269,7 +269,7 @@ public:
     void overpower(Weapon_sim& main_hand_weapon, Special_stats& special_stats, double& rage,
                    Damage_sources& damage_sources, int& flurry_charges);
 
-    bool start_cast_slam(bool mh_swing, double rage, double swing_time_left);
+    bool start_cast_slam(bool mh_swing, double rage, double& swing_time_left);
 
     void slam(Weapon_sim& main_hand_weapon, Special_stats& special_stats, double& rage, Damage_sources& damage_sources,
               int& flurry_charges);

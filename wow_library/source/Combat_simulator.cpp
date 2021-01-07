@@ -480,7 +480,7 @@ void Combat_simulator::manage_flurry(Hit_result hit_result, Special_stats& speci
     }
 }
 
-bool Combat_simulator::start_cast_slam(bool mh_swing, double rage, double swing_time_left)
+bool Combat_simulator::start_cast_slam(bool mh_swing, double rage, double& swing_time_left)
 {
     bool use_sl = true;
     if (use_bloodthirst_)
@@ -504,6 +504,8 @@ bool Combat_simulator::start_cast_slam(bool mh_swing, double rage, double swing_
                 simulator_cout("Starting to channel slam.");
                 slam_manager.queue_slam(time_keeper_.time);
                 time_keeper_.global_cd = 1.5;
+                // We have started 'channeling' so set a value for the swing time for now which is larger than GCD
+                swing_time_left = 100.;
                 return true;
             }
         }
