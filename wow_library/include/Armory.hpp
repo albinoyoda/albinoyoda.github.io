@@ -516,6 +516,8 @@ struct Armory
                     {"argent_avenger",                   Attributes{0, 0},       Special_stats{0, 0,
                                                                                                0},   2.2, 71,    108,   Weapon_socket::one_hand,  Weapon_type::sword,
                      {{"argent_avenger", Hit_effect::Type::stat_boost,   {0, 0}, Special_stats{0, 0, 200}, 0, 10, 2.2 / 60}}},
+                    {"krol_blade",              Attributes{7, 0},       Special_stats{1, 0,
+                                                                                           0},  2.8, 80,    149,   Weapon_socket::main_hand,  Weapon_type::sword},
             };
 
 
