@@ -2308,8 +2308,7 @@
     </div>
 
     <p></p>
-    <button class="run_sim_button" data-item-name="itemname">Run simulator
-    </button>
+    <button class="run_sim_button" onclick="run_sim()">Run simulator</button>
 
     <h2>----------- RESULTS BELOW -----------</h2>
     <div id="loader">
@@ -2744,16 +2743,14 @@
         $("#loader").removeClass("loader");
     }
 
-    if ($(".run_sim_button").length) {
-        $(".run_sim_button").click(function (event) {
-            show_loader();
-            setTimeout(myFunction, 100);
-            setTimeout(hide_loader, 100);
-            event.preventDefault();
-        });
+    async function run_sim(event) {
+        show_loader();
+        setTimeout(setup_simulation_context, 100);
+        setTimeout(hide_loader, 100);
+        event.preventDefault();
     }
 
-    function myFunction() {
+    function setup_simulation_context() {
 
         clean_charts();
         read_inputs();
@@ -2953,6 +2950,7 @@
             }
 
             document.getElementById("output1").innerHTML = n_sim_status;
+
             document.getElementById("output3").innerHTML = result['messages'].get(0);
 
             let stat_weights = [];

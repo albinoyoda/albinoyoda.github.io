@@ -8,24 +8,31 @@ bool operator<(const Item_optimizer::Sim_result_t& left, const Item_optimizer::S
 void Item_optimizer::compute_weapon_combinations()
 {
     weapon_combinations.clear();
-    for (const auto& main_wep : main_hands)
+    if (main_hands.size() == 1 && off_hands.size() == 1)
     {
-        for (const auto& off_wep : off_hands)
+        weapon_combinations.emplace_back(std::vector<Weapon>{main_hands[0], off_hands[0]});
+    }
+    else
+    {
+        for (const auto& main_wep : main_hands)
         {
-            // TODO unique tag needed here!!
-            if (main_wep.name != off_wep.name)
+            for (const auto& off_wep : off_hands)
             {
-                bool new_combination = true;
-                for (const auto& combination : weapon_combinations)
+                // TODO unique tag needed here!!
+                if (main_wep.name != off_wep.name)
                 {
-                    if (combination[0].name == main_wep.name && combination[1].name == off_wep.name)
+                    bool new_combination = true;
+                    for (const auto& combination : weapon_combinations)
                     {
-                        new_combination = false;
+                        if (combination[0].name == main_wep.name && combination[1].name == off_wep.name)
+                        {
+                            new_combination = false;
+                        }
                     }
-                }
-                if (new_combination)
-                {
-                    weapon_combinations.emplace_back(std::vector<Weapon>{main_wep, off_wep});
+                    if (new_combination)
+                    {
+                        weapon_combinations.emplace_back(std::vector<Weapon>{main_wep, off_wep});
+                    }
                 }
             }
         }
