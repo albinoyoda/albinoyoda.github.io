@@ -26,7 +26,8 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult& input)
     if (find_string(input.options, "full_polarity"))
     {
         double full_polarity_val = find_value(input.float_options_string, input.float_options_val, "full_polarity_dd");
-        item_optimizer.armory.buffs.full_polarity.special_stats.damage_multiplier = full_polarity_val / 100.0;
+        item_optimizer.armory.buffs.full_polarity.special_stats.damage_mod_physical = full_polarity_val / 100.0;
+        item_optimizer.armory.buffs.full_polarity.special_stats.damage_mod_spell = full_polarity_val / 100.0;
         temp_buffs.emplace_back("full_polarity");
     }
     if (find_string(input.options, "fungal_bloom"))

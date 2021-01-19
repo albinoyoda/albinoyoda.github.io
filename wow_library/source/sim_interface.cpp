@@ -14,16 +14,9 @@ void mod_hit_effects(std::vector<Hit_effect>& hit_effects, double factor)
 {
     for (auto& hit_effect : hit_effects)
     {
-        if (hit_effect.type == Hit_effect::Type::damage_magic_guaranteed)
+        if (hit_effect.name != "windfury_totem")
         {
-            hit_effect.damage *= factor;
-        }
-        else
-        {
-            if (hit_effect.name != "windfury_totem")
-            {
-                hit_effect.probability *= factor;
-            }
+            hit_effect.probability *= factor;
         }
     }
 }
@@ -502,7 +495,8 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     if (find_string(input.options, "full_polarity"))
     {
         double full_polarity_val = find_value(input.float_options_string, input.float_options_val, "full_polarity_dd");
-        armory.buffs.full_polarity.special_stats.damage_multiplier = full_polarity_val / 100.0;
+        armory.buffs.full_polarity.special_stats.damage_mod_physical = full_polarity_val / 100.0;
+        armory.buffs.full_polarity.special_stats.damage_mod_spell = full_polarity_val / 100.0;
         temp_buffs.emplace_back("full_polarity");
     }
     if (find_string(input.options, "fungal_bloom"))

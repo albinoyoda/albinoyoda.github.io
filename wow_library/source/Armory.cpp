@@ -864,6 +864,10 @@ void Armory::add_buffs_to_character(Character& character, const std::vector<std:
     {
         character.add_buff(buffs.dire_maul);
     }
+    if (find_string(buffs_vec, "slipkiks_savy"))
+    {
+        character.add_buff(buffs.slipkiks_savy);
+    }
     if (find_string(buffs_vec, "songflower"))
     {
         character.add_buff(buffs.songflower);

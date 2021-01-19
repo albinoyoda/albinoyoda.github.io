@@ -357,7 +357,6 @@ std::vector<Weapon> Item_optimizer::remove_weaker_weapons(const Weapon_socket we
             {
                 switch (effect.type)
                 {
-                case Hit_effect::Type::damage_magic_guaranteed:
                 case Hit_effect::Type::damage_magic:
                 case Hit_effect::Type::damage_physical:
                 case Hit_effect::Type::extra_hit: {
@@ -501,7 +500,6 @@ std::vector<Armor> Item_optimizer::remove_weaker_items(const std::vector<Armor>&
             {
                 switch (effect.type)
                 {
-                case Hit_effect::Type::damage_magic_guaranteed:
                 case Hit_effect::Type::damage_magic:
                 case Hit_effect::Type::damage_physical:
                     armor_equiv.hit_special_stats.attack_power += effect.probability * effect.damage * ap_per_coh;

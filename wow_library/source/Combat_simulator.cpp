@@ -280,11 +280,11 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(const Weapon_sim& w
         hit_outcome = generate_hit_mh(damage, hit_type, is_overpower);
         if (boss_target)
         {
-            hit_outcome.damage *= armor_reduction_factor_ * (1 + special_stats.damage_multiplier);
+            hit_outcome.damage *= armor_reduction_factor_ * (1 + special_stats.damage_mod_physical);
         }
         else
         {
-            hit_outcome.damage *= armor_reduction_factor_add * (1 + special_stats.damage_multiplier);
+            hit_outcome.damage *= armor_reduction_factor_add * (1 + special_stats.damage_mod_physical);
         }
         cout_damage_parse(hit_type, weapon_hand, hit_outcome);
     }
@@ -293,11 +293,11 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(const Weapon_sim& w
         hit_outcome = generate_hit_oh(damage);
         if (boss_target)
         {
-            hit_outcome.damage *= armor_reduction_factor_ * (1 + special_stats.damage_multiplier);
+            hit_outcome.damage *= armor_reduction_factor_ * (1 + special_stats.damage_mod_physical);
         }
         else
         {
-            hit_outcome.damage *= armor_reduction_factor_add * (1 + special_stats.damage_multiplier);
+            hit_outcome.damage *= armor_reduction_factor_add * (1 + special_stats.damage_mod_physical);
         }
         cout_damage_parse(hit_type, weapon_hand, hit_outcome);
     }
@@ -341,7 +341,7 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(const Weapon_sim& w
                 {"Deep_wounds",
                  {},
                  0,
-                 (1 + special_stats.damage_multiplier) * weapon.swing(special_stats.attack_power) / 4,
+                 (1 + special_stats.damage_mod_physical) * weapon.swing(special_stats.attack_power) / 4,
                  3,
                  12},
                 int(time_keeper_.time));
@@ -747,10 +747,7 @@ void Combat_simulator::hit_effects(Weapon_sim& weapon, Weapon_sim& main_hand_wea
         double r = get_uniform_random(1);
         if (r < hit_effect.probability)
         {
-            if (hit_effect.type != Hit_effect::Type::damage_magic_guaranteed)
-            {
-                proc_data_[hit_effect.name]++;
-            }
+            proc_data_[hit_effect.name]++;
             switch (hit_effect.type)
             {
             case Hit_effect::Type::extra_hit:
@@ -761,17 +758,15 @@ void Combat_simulator::hit_effects(Weapon_sim& weapon, Weapon_sim& main_hand_wea
                                  flurry_charges, hit_effect.attack_power_boost, true);
                 }
                 break;
-            case Hit_effect::Type::damage_magic:
-                damage_sources.add_damage(Damage_source::item_hit_effects, hit_effect.damage * 0.83 * 1.1,
-                                          time_keeper_.time);
-                simulator_cout("PROC: ", hit_effect.name, " does ", hit_effect.damage * 0.83 * 1.1, " magic damage.");
+            case Hit_effect::Type::damage_magic: {
+                // * 0.83 Assumes a static 17% chance to resist.
+                // (100 + special_stats.spell_crit / 2) / 100 is the average damage gained from a x1.5 spell crit
+                double effect_damage = hit_effect.damage * 0.83 * (100 + special_stats.spell_crit / 2) / 100 *
+                                       (1 + special_stats.damage_mod_spell);
+                damage_sources.add_damage(Damage_source::item_hit_effects, effect_damage, time_keeper_.time);
+                simulator_cout("PROC: ", hit_effect.name, " does ", effect_damage, " magic damage.");
                 break;
-            case Hit_effect::Type::damage_magic_guaranteed:
-                simulator_cout("Weapon swing with: ", hit_effect.name, " does ", hit_effect.damage * 0.83,
-                               " magic damage.");
-                damage_sources.add_damage(Damage_source::item_hit_effects, hit_effect.damage * 0.83, time_keeper_.time,
-                                          false);
-                break;
+            }
             case Hit_effect::Type::damage_physical: {
                 auto hit = generate_hit(main_hand_weapon, hit_effect.damage, Hit_type::yellow, Socket::main_hand,
                                         special_stats, damage_sources);
@@ -915,8 +910,8 @@ void Combat_simulator::swing_weapon(Weapon_sim& weapon, Weapon_sim& main_hand_we
         if (hit_outcomes[0].hit_result == Hit_result::dodge)
         {
             simulator_cout("Rage gained since the enemy dodged.");
-            rage +=
-                0.75 * rage_generation(swing_damage * armor_reduction_factor_ * (1 + special_stats.damage_multiplier));
+            rage += 0.75 *
+                    rage_generation(swing_damage * armor_reduction_factor_ * (1 + special_stats.damage_mod_physical));
         }
         if (rage > 100.0)
         {
