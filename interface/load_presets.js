@@ -9,6 +9,18 @@ function selectElement(id, valueToSelect) {
             }
         } else if (id.slice(id.length - 6, id.length) === "talent") {
             document.getElementById(id).setAttribute("data-count", valueToSelect)
+        } else if (valueToSelect === "true" || valueToSelect === "false") {
+            console.log("asd");
+            let all_dropdowns = armor_mult.concat(weapons_mult);
+            for (let dropdown of all_dropdowns) {
+                let select_menu = document.getElementById(dropdown);
+                for (let i = 0; i < select_menu.length; i++) {
+                    let item = select_menu[i];
+                    if (item.value === id) {
+                        (valueToSelect === "true") ? item.selected = true : item.selected = false;
+                    }
+                }
+            }
         } else {
             if (id === valueToSelect) {
                 try {

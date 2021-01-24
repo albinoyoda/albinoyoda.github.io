@@ -2593,6 +2593,15 @@
         for (let i = 0; i < weapons.length; i++) {
             file_content += weapons[i] + " " + weapons_input[i] + "\n";
         }
+        let all_dropdowns = armor_mult.concat(weapons_mult);
+        for (let dropdown of all_dropdowns) {
+            let select_menu = document.getElementById(dropdown);
+            for (let i = 0; i < select_menu.length; i++) {
+                let item = select_menu[i];
+                file_content += item.value;
+                file_content += item.selected ? " true\n" : " false\n";
+            }
+        }
         for (let i = 0; i < enchants.length; i++) {
             let dd_string = enchants_input[i].slice(1, enchants_input[i].length);
             file_content += enchants[i] + " " + dd_string + "\n";
