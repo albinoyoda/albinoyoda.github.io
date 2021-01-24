@@ -613,6 +613,10 @@ struct Armory
                                                                                            0},    2.1, 75,    141,   Weapon_socket::one_hand, Weapon_type::axe},
                     {"hatchet_of_sundered_bone", Attributes{0, 0},     Special_stats{1, 0,
                                                                                            36},    2.6, 119,    221,   Weapon_socket::one_hand, Weapon_type::axe},
+                    {"annihilator", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0,
+                                                                             0.0},1.7, 49.0, 92.0, Weapon_socket::main_hand, Weapon_type::axe, {{"annihilator", Hit_effect::Type::reduce_armor, {}, {}, 0, 10, 1.7/60.0,0, 1, 200, 3}}},
+                    {"rivenspike", Attributes{0.0, 0.0}, Special_stats{0.0, 0.0,
+                                                                        0.0},2.9, 77.0, 144.0, Weapon_socket::one_hand, Weapon_type::axe, {{"rivenspike", Hit_effect::Type::reduce_armor, {}, {}, 0, 10, 2.9/60.0,0, 1, 200, 3}}},
             };
 
     std::vector<Weapon> daggers_t
