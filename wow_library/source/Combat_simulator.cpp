@@ -315,7 +315,7 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(const Weapon_sim& w
             else
             {
                 double rand_var = get_uniform_random(1);
-                if (rand_var > 1.0 - 1.0 / config.number_of_extra_targets)
+                if (number_of_extra_targets_ > 0 && rand_var > 1.0 - 1.0 / number_of_extra_targets_)
                 {
                     sweeping_strike_damage = hit_outcome.damage / armor_reduction_factor_add * armor_reduction_factor_;
                 }
@@ -645,12 +645,12 @@ void Combat_simulator::whirlwind(Weapon_sim& main_hand_weapon, Special_stats& sp
         time_keeper_.global_cd = 1.5;
         return;
     }
-    simulator_cout("Whirlwind! #targets = boss + ", config.number_of_extra_targets, " adds");
-    simulator_cout("Whirlwind hits: ", std::min(config.number_of_extra_targets + 1, 4), " targets");
+    simulator_cout("Whirlwind! #targets = boss + ", number_of_extra_targets_, " adds");
+    simulator_cout("Whirlwind hits: ", std::min(number_of_extra_targets_ + 1, 4), " targets");
     double damage = main_hand_weapon.normalized_swing(special_stats.attack_power);
     std::vector<Hit_outcome> hit_outcomes{};
     hit_outcomes.reserve(4);
-    for (int i = 0; i < std::min(config.number_of_extra_targets + 1, 4); i++)
+    for (int i = 0; i < std::min(number_of_extra_targets_ + 1, 4); i++)
     {
         hit_outcomes.emplace_back(generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand,
                                                special_stats, damage_sources, i == 0, false, i == 0));
@@ -848,11 +848,11 @@ void Combat_simulator::swing_weapon(Weapon_sim& weapon, Weapon_sim& main_hand_we
     }
     else if (ability_queue_manager.cleave_queued && weapon.socket == Socket::main_hand && rage >= 20)
     {
-        simulator_cout("Performing cleave! #targets = boss + ", config.number_of_extra_targets, " adds");
-        simulator_cout("Cleave hits: ", std::min(config.number_of_extra_targets + 1, 2), " targets");
+        simulator_cout("Performing cleave! #targets = boss + ", number_of_extra_targets_, " adds");
+        simulator_cout("Cleave hits: ", std::min(number_of_extra_targets_ + 1, 2), " targets");
         swing_damage += cleave_bonus_damage_;
 
-        for (int i = 0; i < std::min(config.number_of_extra_targets + 1, 2); i++)
+        for (int i = 0; i < std::min(number_of_extra_targets_ + 1, 2); i++)
         {
             hit_outcomes.emplace_back(generate_hit(main_hand_weapon, swing_damage, Hit_type::yellow, weapon.socket,
                                                    special_stats, damage_sources, i == 0));
@@ -1002,6 +1002,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                           wep.socket, wep.weapon_socket);
     }
 
+    // TODO can move this to armory::compute_total_stats method
     if (character.is_dual_wield())
     {
         for (size_t i = 0; i < 2; i++)
@@ -1115,7 +1116,11 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         // Combat configuration
         if (!config.multi_target_mode_)
         {
-            config.number_of_extra_targets = 0;
+            number_of_extra_targets_ = 0;
+        }
+        else
+        {
+            number_of_extra_targets_ = config.number_of_extra_targets;
         }
 
         // Check if the simulator should use any use effects before the fight
@@ -1229,6 +1234,13 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                                    ". Mitigation factor: ", 1 - armor_reduction_factor_add, "%.");
                 }
                 recompute_mitigation_ = false;
+            }
+
+            if (config.multi_target_mode_ && number_of_extra_targets_ > 0 &&
+                time_keeper_.time / sim_time > config.extra_target_duration)
+            {
+                simulator_cout("Extra targets die.");
+                number_of_extra_targets_ = 0;
             }
 
             bool mh_swing = weapons[0].time_for_swing(dt);
@@ -1443,7 +1455,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
 
                 // Heroic strike or Cleave
                 // TODO move to the top of sim loop, enables 'continue' after casting spells for performance
-                if (config.number_of_extra_targets > 0 && config.combat.cleave_if_adds)
+                if (number_of_extra_targets_ > 0 && config.combat.cleave_if_adds)
                 {
                     if (rage > config.combat.cleave_rage_thresh && !ability_queue_manager.cleave_queued)
                     {

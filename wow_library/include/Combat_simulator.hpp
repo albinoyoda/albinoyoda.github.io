@@ -59,6 +59,7 @@ struct Combat_simulator_config
     int main_target_initial_armor_{};
     int extra_target_level{};
     int number_of_extra_targets{};
+    double extra_target_duration{};
     int extra_target_initial_armor_{};
     int n_sunder_armor_stacks = 0;
     bool exposed_armor{false};
@@ -425,6 +426,7 @@ private:
     int armor_reduction_from_spells_{};
     int armor_reduction_delayed_{};
     bool recompute_mitigation_{false};
+    int number_of_extra_targets_{};
 
     double flurry_uptime_mh_{};
     double flurry_uptime_oh_{};

@@ -150,6 +150,7 @@ void Combat_simulator_config::get_combat_simulator_config(const T& input)
         n_sunder_armor_stacks = fv.find("sunder_armor_dd");
 
         number_of_extra_targets = fv.find("number_of_extra_targets_dd");
+        extra_target_duration = fv.find("extra_target_duration_dd") / 100;
         extra_target_initial_armor_ = fv.find("extra_target_armor_dd");
         extra_target_level = fv.find("extra_target_level_dd");
         periodic_damage_interval_ = fv.find("periodic_damage_interval_dd");
