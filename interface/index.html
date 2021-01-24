@@ -1939,7 +1939,12 @@
             <label for="strength_of_earth_totem" style="color: #cc0000"> Strength of earth Totem</label><br>
 
             <input type="checkbox" id="grace_of_air_totem">
-            <label for="grace_of_air_totem" style="color: #cc0000"> Grace of Air Totem</label><br><br>
+            <label for="grace_of_air_totem" style="color: #cc0000"> Grace of Air Totem</label><br>
+
+            <input type="checkbox" id="battle_squawk">
+            <label for="battle_squawk">Battle squawk:
+                <input type="number" id="battle_squawk_dd" name="quantity" min="0" max="25" value="5" step="5">% haste.
+            </label><br><br>
 
             <b> AQ-books:</b><br>
             <input type="checkbox" id="battle_shout_aq" checked>
@@ -2476,7 +2481,7 @@
         "periodic_damage_interval_dd", "periodic_damage_amount_dd", "execute_phase_percentage_dd",
         "re_queue_abilities_dd", "stat_weight_skill_dd", "stat_weight_mh_speed_dd", "stat_weight_oh_speed_dd",
         "slam_spam_max_time_dd", "slam_cd_thresh_dd", "slam_spam_rage_dd", "slam_rage_dd", "berserking_haste_dd",
-        "full_polarity_dd", "extra_target_duration_dd"];
+        "full_polarity_dd", "extra_target_duration_dd", "battle_squawk_dd"];
 
     let sim_options = ["faerie_fire", "exposed_armor", "curse_of_recklessness", "death_wish", "enable_blood_fury",
         "enable_berserking", "recklessness", "mighty_rage_potion", "debug_on", "use_bt_in_exec_phase", "use_hs_in_exec_phase",
@@ -2484,7 +2489,7 @@
         "item_strengths", "wep_strengths", "deep_wounds", "heroic_strike_aq", "compute_dpr", "talents_stat_weights",
         "multi_target_mode", "essence_of_the_red", "periodic_damage", "can_trigger_enrage", "first_global_sunder",
         "ability_queue", "first_hit_heroic_strike", "use_slam", "use_ms_in_exec_phase", "use_mortal_strike",
-        "use_sweeping_strikes", "dont_use_hm_when_ss", "fungal_bloom", "full_polarity"];
+        "use_sweeping_strikes", "dont_use_hm_when_ss", "fungal_bloom", "full_polarity", "battle_squawk"];
 
     let stat_weigths = ["stat_weight_hit", "stat_weight_crit", "stat_weight_haste",
         "stat_weight_extra_hit", "stat_weight_skill", "stat_weight_mh_speed", "stat_weight_oh_speed"];

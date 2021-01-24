@@ -856,6 +856,10 @@ void Armory::add_buffs_to_character(Character& character, const std::vector<std:
     {
         character.add_buff(buffs.full_polarity);
     }
+    if (find_string(buffs_vec, "battle_squawk"))
+    {
+        character.add_buff(buffs.battle_squawk);
+    }
     if (find_string(buffs_vec, "rallying_cry"))
     {
         character.add_buff(buffs.rallying_cry);

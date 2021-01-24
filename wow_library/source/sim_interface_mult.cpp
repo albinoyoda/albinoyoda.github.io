@@ -34,6 +34,12 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult& input)
     {
         temp_buffs.emplace_back("fungal_bloom");
     }
+    if (find_string(input.options, "battle_squawk"))
+    {
+        double battle_squawk_val = find_value(input.float_options_string, input.float_options_val, "battle_squawk_dd");
+        item_optimizer.armory.buffs.battle_squawk.special_stats.haste = battle_squawk_val / 100.0;
+        temp_buffs.emplace_back("battle_squawk");
+    }
 
     Race race = get_race(input.race[0]);
     item_optimizer.race = race;
@@ -53,7 +59,7 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult& input)
     std::cout << "init. Combinations: " << std::to_string(item_optimizer.total_combinations) << "\n";
     debug_message += "Total item combinations: " + std::to_string(item_optimizer.total_combinations) + "<br>";
     clock_t start_filter = clock();
-    if (item_optimizer.total_combinations > 200)
+    if (item_optimizer.total_combinations > 500)
     {
         debug_message += "Applying item filter.<br>";
         {

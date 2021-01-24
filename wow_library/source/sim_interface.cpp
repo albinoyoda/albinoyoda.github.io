@@ -503,6 +503,12 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     {
         temp_buffs.emplace_back("fungal_bloom");
     }
+    if (find_string(input.options, "battle_squawk"))
+    {
+        double battle_squawk_val = find_value(input.float_options_string, input.float_options_val, "battle_squawk_dd");
+        armory.buffs.battle_squawk.special_stats.haste = battle_squawk_val / 100.0;
+        temp_buffs.emplace_back("battle_squawk");
+    }
 
     const Character character = character_setup(armory, input.race[0], input.armor, input.weapons, temp_buffs,
                                                 input.talent_string, input.talent_val, input.enchants);

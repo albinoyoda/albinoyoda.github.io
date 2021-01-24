@@ -419,6 +419,7 @@ int main()
         "full_polarity",
 //        "item_strengths",
         "wep_strengths",
+        "battle_squawk"
     };
 
     std::vector<std::string> float_options_string{
@@ -453,12 +454,13 @@ int main()
         "slam_spam_rage_dd",
         "slam_rage_dd",
         "full_polarity_dd",
+        "battle_squawk_dd",
         "max_optimize_time_dd",
     };
 
     std::vector<double> float_options_val{50.0, 50.0, 10.0, 2.0,  50.0, 0.0, 2.0,  25.0, 2.0, 2.0, 60.0,
                                           63.0, 3731, 5,    0,    3731, 63,  1.0,  300,  15,  70,  0.5,
-                                          0.5,  2000, 1000, 1000, 1.0,  1.5, 60.0, 15,   190, 90};
+                                          0.5,  2000, 1000, 1000, 1.0,  1.5, 60.0, 15,   190, 20, 90};
 
     std::vector<std::string> talents_string{
         "improved_heroic_strike_talent",

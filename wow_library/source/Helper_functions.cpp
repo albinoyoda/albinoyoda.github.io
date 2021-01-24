@@ -300,7 +300,7 @@ double get_hit_effect_ap_equivalent(const Hit_effect& hit_effect, double total_a
     double hit_effects_ap = 0.0;
     if (hit_effect.type == Hit_effect::Type::damage_magic || hit_effect.type == Hit_effect::Type::damage_physical)
     {
-        hit_effects_ap += hit_effect.probability * hit_effect.damage * ap_per_coh * swing_speed * factor;
+        hit_effects_ap += hit_effect.probability * hit_effect.damage * ap_per_coh / swing_speed * factor;
     }
     else if (hit_effect.type == Hit_effect::Type::extra_hit)
     {

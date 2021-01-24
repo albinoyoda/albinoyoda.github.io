@@ -15,7 +15,7 @@ constexpr double hit_w_cap = 10;
 constexpr double skill_w = 220.0 / 5;
 constexpr double skill_w_soft = 70.0 / 5;
 constexpr double skill_w_hard = 20.0 / 5;
-constexpr double ap_per_coh = 20 / 6.2;
+constexpr double ap_per_coh = 50 / 6.2;
 
 double is_time_available(const std::vector<std::pair<double, Use_effect>>& use_effect_timers, double check_time,
                          double duration);
