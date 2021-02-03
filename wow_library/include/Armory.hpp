@@ -382,7 +382,7 @@ struct Armory
             {
                     {"don_julios_band",                   Attributes{0, 0},   Special_stats{1, 1, 16},   Socket::ring},
                     {"magnis_will",                       Attributes{6, 0},   Special_stats{1, 0, 0},    Socket::ring},
-                    {"quick_strike_ring",                 Attributes{8, 0},   Special_stats{1, 0, 30},   Socket::ring},
+                    {"quick_strike_ring",                 Attributes{5, 0},   Special_stats{1, 0, 30},   Socket::ring},
                     {"master_dragonslayers_ring",         Attributes{0, 0},   Special_stats{0, 1, 48},   Socket::ring},
                     {"circle_of_applied_force",           Attributes{12, 22}, Special_stats{0, 0, 0},    Socket::ring},
                     {"blackstone_ring",                   Attributes{0, 0},   Special_stats{0, 1, 20},   Socket::ring},
