@@ -1,10 +1,11 @@
 # Welcome to wow fury sim GitHub
 ## Basics
-This is a C++ based wow classic simulator for fury warriors,
+This is Kateparry warrior fury sim that is ported to TBC,
 the mechanics used in the simulator can be found in:
 https://github.com/magey/classic-warrior/wiki/Attack-table
 
 # Website
+You can find the original classic WoW sim on the link below:
 https://wow-fury-sim.herokuapp.com/
 
 # Discord
