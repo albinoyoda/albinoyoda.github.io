@@ -4,11 +4,11 @@
 
 namespace
 {
-constexpr double rage_factor = 15.0 / 230.6 / 2.0;
+constexpr double rage_factor = 15.0 / 274.7 / 2.0;
 
 constexpr double rage_from_damage_taken(double damage)
 {
-    return damage * 5.0 / 2.0 / 230.6;
+    return damage * 5.0 / 2.0 / 274.7;
 }
 
 constexpr double rage_generation(double damage)
