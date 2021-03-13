@@ -4,16 +4,25 @@
 
 namespace
 {
-constexpr double rage_factor = 15.0 / 274.7 / 2.0;
+constexpr double rage_factor = 3.75 / 274.7;
 
 constexpr double rage_from_damage_taken(double damage)
 {
     return damage * 5.0 / 2.0 / 274.7;
 }
 
-constexpr double rage_generation(double damage)
+constexpr double rage_generation(double damage, Socket weapon_hand, double swing_speed)
 {
-    return damage * rage_factor;
+    
+    if (weapon_hand == Socket::main_hand)
+    {
+        return damage * rage_factor + (3.5 * swing_speed / 2);
+    }
+    else
+    {
+        return damage * rage_factor + (1.75 * swing_speed / 2);
+    }
+    
 }
 
 constexpr double armor_mitigation(int target_armor, int target_level)
@@ -940,13 +949,13 @@ void Combat_simulator::swing_weapon(Weapon_sim& weapon, Weapon_sim& main_hand_we
         }
         else
         {
-            rage += rage_generation(hit_outcomes[0].damage);
+            rage += rage_generation(hit_outcomes[0].damage, weapon.socket, weapon.swing_speed);
         }
         if (hit_outcomes[0].hit_result == Hit_result::dodge)
         {
             simulator_cout("Rage gained since the enemy dodged.");
             rage += 0.75 *
-                    rage_generation(swing_damage * armor_reduction_factor_ * (1 + special_stats.damage_mod_physical));
+                    rage_generation(swing_damage * armor_reduction_factor_ * (1 + special_stats.damage_mod_physical), weapon.socket, weapon.swing_speed);
         }
         if (rage > 100.0)
         {

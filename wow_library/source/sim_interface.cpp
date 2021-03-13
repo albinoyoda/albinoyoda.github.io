@@ -716,7 +716,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 double dmg_per_hs = dmg_tot / avg_hs_casts;
                 double avg_mh_dmg =
                     static_cast<double>(dmg_dist.white_mh_damage) / static_cast<double>(dmg_dist.white_mh_count);
-                double avg_mh_rage_lost = avg_mh_dmg * 15.0 / 274.7 / 2.0;
+                double avg_mh_rage_lost = avg_mh_dmg * 3.75 / 274.7 + (3.5 * character.weapons[0].swing_speed / 2);
                 double dmg_per_rage = dmg_per_hs / (13 + avg_mh_rage_lost);
                 dpr_info += "<b>Heroic Strike</b>: <br>Damage per cast: <b>" + string_with_precision(dmg_per_hs, 4) +
                             "</b><br>Average rage cost: <b>" + string_with_precision((13 + avg_mh_rage_lost), 3) +
@@ -738,7 +738,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 double dmg_per_hs = dmg_tot / avg_cl_casts;
                 double avg_mh_dmg =
                     static_cast<double>(dmg_dist.white_mh_damage) / static_cast<double>(dmg_dist.white_mh_count);
-                double avg_mh_rage_lost = avg_mh_dmg * 15.0 / 274.7 / 2.0;
+                double avg_mh_rage_lost = avg_mh_dmg * 3.75 / 274.7 + (3.5 * character.weapons[0].swing_speed / 2);
                 double dmg_per_rage = dmg_per_hs / (20 + avg_mh_rage_lost);
                 dpr_info += "<b>Cleave</b>: <br>Damage per cast: <b>" + string_with_precision(dmg_per_hs, 4) +
                             "</b><br>Average rage cost: <b>" + string_with_precision((20 + avg_mh_rage_lost), 3) +
