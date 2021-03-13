@@ -727,8 +727,6 @@ void Combat_simulator::execute(Weapon_sim& main_hand_weapon, Special_stats& spec
     if (config.dpr_settings.compute_dpr_ex_)
     {
         get_uniform_random(100) < hit_table_yellow_[1] ? rage *= 0.8 : rage -= execute_rage_cost_;
-        double next_server_batch = std::fmod(time_keeper_.time + init_server_time, 0.4);
-        buff_manager_.add("execute_rage_batch", {}, 0.4 + next_server_batch);
         time_keeper_.global_cd = 1.5;
         return;
     }
@@ -745,8 +743,6 @@ void Combat_simulator::execute(Weapon_sim& main_hand_weapon, Special_stats& spec
         rage -= execute_rage_cost_;
         hit_effects(main_hand_weapon, main_hand_weapon, special_stats, rage, damage_sources, flurry_charges);
     }
-    double next_server_batch = std::fmod(time_keeper_.time + init_server_time, 0.4);
-    buff_manager_.add("execute_rage_batch", {}, 0.4 + next_server_batch);
     buff_manager_.rage_before_execute = rage;
     time_keeper_.global_cd = 1.5;
     manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges, true);
