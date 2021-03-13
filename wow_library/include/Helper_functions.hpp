@@ -61,7 +61,7 @@ bool estimate_special_stats_smart_no_skill(const Special_stats& special_stats1, 
 
 double estimate_stat_diff(Special_stats special_stats1, Special_stats special_stats2);
 
-int get_weapon_skill(const Special_stats& special_stats, Weapon_type weapon_type, Weapon_socket weapon_socket);
+double get_weapon_expertise(const Special_stats& special_stats, Weapon_type weapon_type, Weapon_socket weapon_socket);
 
 std::string percent_to_str(double value);
 

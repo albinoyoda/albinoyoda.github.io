@@ -306,7 +306,7 @@ public:
 
     Combat_simulator::Hit_outcome generate_hit_mh(double damage, Hit_type hit_type, bool is_overpower = false);
 
-    void compute_hit_table(int weapon_skill, const Special_stats& special_stats, Socket weapon_hand,
+    void compute_hit_table(double weapon_expertise, const Special_stats& special_stats, Socket weapon_hand,
                            Weapon_socket weapon_socket);
 
     std::vector<std::pair<double, Use_effect>> get_use_effect_order(const Character& character);

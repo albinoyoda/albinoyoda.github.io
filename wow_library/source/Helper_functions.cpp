@@ -2,43 +2,21 @@
 
 #include <algorithm>
 
-int get_weapon_skill(const Special_stats& special_stats, Weapon_type weapon_type, Weapon_socket weapon_socket)
+double get_weapon_expertise(const Special_stats& special_stats, Weapon_type weapon_type, Weapon_socket weapon_socket)
 {
-    if (weapon_socket == Weapon_socket::two_hand)
+    switch (weapon_type)
     {
-        switch (weapon_type)
-        {
-        case Weapon_type::sword:
-            return special_stats.two_hand_sword_skill;
-        case Weapon_type::axe:
-            return special_stats.two_hand_axe_skill;
-        case Weapon_type::mace:
-            return special_stats.two_hand_mace_skill;
-        default:
-            std::cout << "\nAttempted to retrieve two hand skill which is not axe/sword/mace. Aborting!\n";
-            assert(false);
-            return 0;
-        }
+    case Weapon_type::sword:
+        return special_stats.sword_skill;
+    case Weapon_type::axe:
+        return special_stats.axe_skill;
+    case Weapon_type::mace:
+        return special_stats.mace_skill;
+    default:
+        std::cout << "Attempted to retrieve expertise which is not axe/sword/mace. Aborting!\n";
+        assert(false);
+        return 0;
     }
-    else
-    {
-        switch (weapon_type)
-        {
-        case Weapon_type::sword:
-            return special_stats.sword_skill;
-        case Weapon_type::axe:
-            return special_stats.axe_skill;
-        case Weapon_type::dagger:
-            return special_stats.dagger_skill;
-        case Weapon_type::mace:
-            return special_stats.mace_skill;
-        case Weapon_type::unarmed:
-            return special_stats.fist_skill;
-        default:
-            std::cout << "Attempted to retrieve skill which is not axe/sword/mace. Aborting!\n";
-            assert(false);
-            return 0;
-        }
     }
 }
 
@@ -208,10 +186,10 @@ double get_character_ap_equivalent(const Special_stats& special_stats, const Wea
                                    double sim_time, const std::vector<Use_effect>& use_effects)
 {
     double attack_power = special_stats.attack_power;
-    int mh_skill = get_weapon_skill(special_stats, mh_wep.type, mh_wep.weapon_socket);
+    int mh_skill = 350;
     double mh_hit_crit_skill_ap = get_hit_crit_skill_ap_equivalent(special_stats, mh_skill);
 
-    int oh_skill = get_weapon_skill(special_stats, oh_wep.type, mh_wep.weapon_socket);
+    int oh_skill = 350;
     double oh_hit_crit_skill_ap = get_hit_crit_skill_ap_equivalent(special_stats, oh_skill);
 
     /// Weighted combination of ap from mh and oh, based on the hit-tables
@@ -260,7 +238,7 @@ double get_character_ap_equivalent(const Special_stats& special_stats, const Wea
                                    const std::vector<Use_effect>& use_effects)
 {
     double attack_power = special_stats.attack_power;
-    int mh_skill = get_weapon_skill(special_stats, mh_wep.type, mh_wep.weapon_socket);
+    int mh_skill = 350;
     double hit_crit_skill_ap = get_hit_crit_skill_ap_equivalent(special_stats, mh_skill);
 
     double mh_ap = ((mh_wep.max_damage + mh_wep.min_damage) / 2 + special_stats.bonus_damage) / mh_wep.swing_speed * 14;
