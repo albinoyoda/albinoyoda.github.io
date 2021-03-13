@@ -6,9 +6,9 @@ Character::Character(const Race& race, int level)
     : base_attributes{}, total_attributes{}, base_special_stats{}, total_special_stats{}, race{race}, level(level)
 {
     int base_skill = level * 5;
-    base_special_stats = Special_stats{0,          0,          160, 0,          0,          base_skill, base_skill, base_skill,
-                                       base_skill, base_skill, 0,   0,          0,          base_skill, base_skill, base_skill, 
-                                       0,          0,          0,   0,          base_skill, base_skill, base_skill};
+    base_special_stats = Special_stats{0,          0,          160, 0,          0,          base_skill,          base_skill,                      base_skill,
+                                       base_skill, base_skill, 0,   0,          0,          base_skill,          base_skill,                      base_skill, 
+                                       0,          0,          0,   0,          static_cast<double>(base_skill), static_cast<double>(base_skill), static_cast<double>(base_skill)};
     switch (race)
     {
     case Race::human:
