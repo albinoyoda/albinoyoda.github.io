@@ -17,7 +17,7 @@ struct Special_stats
                   int fist_skill = 0, double damage_mod_physical = 0, double stat_multiplier = 0,
                   double bonus_damage = 0, int two_hand_sword_skill = 0, int two_hand_axe_skill = 0,
                   int two_hand_mace_skill = 0, double crit_multiplier = 0, double spell_crit = 0,
-                  double damage_mod_spell = 0, double expertise = 0.0)
+                  double damage_mod_spell = 0, double expertise = 0.0, double sword_expertise = 0.0, double mace_expertise = 0.0, double axe_expertise = 0.0)
         : critical_strike{critical_strike}
         , hit{hit}
         , attack_power{attack_power}
@@ -38,6 +38,9 @@ struct Special_stats
         , spell_crit(spell_crit)
         , damage_mod_spell(damage_mod_spell)
         , expertise{expertise}
+        , sword_expertise{sword_expertise}
+        , mace_expertise{mace_expertise}
+        , axe_expertise{axe_expertise}
     {
     }
 
@@ -63,7 +66,10 @@ struct Special_stats
             multiplicative_addition(crit_multiplier, rhs.crit_multiplier),
             spell_crit + rhs.spell_crit,
             multiplicative_addition(damage_mod_spell, rhs.damage_mod_spell),
-            expertise + rhs.expertise
+            expertise + rhs.expertise,
+            sword_expertise + rhs.sword_expertise,
+            mace_expertise + rhs.mace_expertise,
+            axe_expertise + rhs.axe_expertise
         };
     }
 
@@ -89,7 +95,10 @@ struct Special_stats
             multiplicative_subtraction(crit_multiplier, rhs.crit_multiplier),
             spell_crit - rhs.spell_crit,
             multiplicative_subtraction(damage_mod_spell, rhs.damage_mod_spell),
-            expertise - rhs.expertise
+            expertise - rhs.expertise,
+            sword_expertise - rhs.sword_expertise,
+            mace_expertise - rhs.mace_expertise,
+            axe_expertise - rhs.axe_expertise
         };
     }
 
@@ -125,6 +134,9 @@ struct Special_stats
     double spell_crit{};
     double damage_mod_spell{};
     double expertise{};
+    double sword_expertise{};
+    double mace_expertise{};
+    double axe_expertise{};
 };
 
 class Attributes
