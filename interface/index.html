@@ -2205,10 +2205,10 @@
         <input type="number" id="execute_phase_percentage_dd" name="quantity" min="0" max="100" value="15"><br><br>
 
         <b>Target settings:</b><br>
-        <label for="boss_armor_dd">Boss armor (default 3731): </label>
-        <input type="number" id="boss_armor_dd" name="quantity" min="0" max="10000" value="3731"><br>
-        <label for="opponent_level_dd">Opponent level: (60-63):</label>
-        <input type="number" id="opponent_level_dd" name="quantity" min="60" max="63" value="63"><br><br>
+        <label for="boss_armor_dd">Boss armor (default 7700): </label>
+        <input type="number" id="boss_armor_dd" name="quantity" min="0" max="10000" value="7700"><br>
+        <label for="opponent_level_dd">Opponent level: (70-73):</label>
+        <input type="number" id="opponent_level_dd" name="quantity" min="70" max="73" value="73"><br><br>
 
         <b>Multi-target mode:</b><br>
         <input type="checkbox" id="multi_target_mode" onclick="show_div('multi_target_mode', 'multi_target_div')">
@@ -2218,8 +2218,8 @@
             <input type="number" id="number_of_extra_targets_dd" name="quantity" min="1" max="4" value="2"><br>
             <label for="extra_target_armor_dd">Extra targets armor:</label>
             <input type="number" id="extra_target_armor_dd" name="quantity" min="0" max="10000" value="3000"><br>
-            <label for="extra_target_level_dd">Extra targets level (60-63):</label>
-            <input type="number" id="extra_target_level_dd" name="quantity" min="60" max="63" value="60"><br>
+            <label for="extra_target_level_dd">Extra targets level (70-73):</label>
+            <input type="number" id="extra_target_level_dd" name="quantity" min="70" max="73" value="60"><br>
             <label for="extra_target_duration_dd">Extra targets die at (% of fight):</label>
             <input type="number" id="extra_target_duration_dd" name="quantity" min="1" max="100" value="100"><br>
         </div>
@@ -2284,18 +2284,17 @@
         <input type="checkbox" id="stat_weight_crit" checked>
         <label for="stat_weight_crit"> &plusmn 1% crit.</label><br>
 
+        <input type="checkbox" id="stat_weight_expertise" checked>
+        <label for="stat_weight_expertise"> &plusmn 1% hit.</label><br>
+
         <input type="checkbox" id="stat_weight_hit" checked>
-        <label for="stat_weight_hit"> &plusmn 1% hit.</label><br>
+        <label for="stat_weight_hit"> &plusmn 1% expertise.</label><br>
 
         <input type="checkbox" id="stat_weight_haste">
         <label for="stat_weight_haste"> &plusmn 1% haste.</label><br>
 
         <input type="checkbox" id="stat_weight_extra_hit">
         <label for="stat_weight_extra_hit"> + 1% chance for extra attack.</label><br>
-
-        <input type="checkbox" id="stat_weight_skill">
-        <label for="stat_weight_skill"> &plusmn <input type="number" id="stat_weight_skill_dd" name="quantity" min="1"
-                                                       max="15" value="5"> weapon skill. (1-15)</label><br>
 
         <input type="checkbox" id="stat_weight_mh_speed">
         <label for="stat_weight_mh_speed"> &plusmn <input type="number" id="stat_weight_mh_speed_dd" name="quantity"
@@ -2484,7 +2483,7 @@
         "overpower_ww_cooldown_thresh_dd", "hamstring_cd_thresh_dd", "initial_rage_dd", "hamstring_thresh_dd",
         "max_optimize_time_dd", "number_of_extra_targets_dd", "extra_target_armor_dd", "extra_target_level_dd",
         "periodic_damage_interval_dd", "periodic_damage_amount_dd", "execute_phase_percentage_dd",
-        "re_queue_abilities_dd", "stat_weight_skill_dd", "stat_weight_mh_speed_dd", "stat_weight_oh_speed_dd",
+        "re_queue_abilities_dd", "stat_weight_mh_speed_dd", "stat_weight_oh_speed_dd",
         "slam_spam_max_time_dd", "slam_cd_thresh_dd", "slam_spam_rage_dd", "slam_rage_dd", "berserking_haste_dd",
         "full_polarity_dd", "extra_target_duration_dd", "battle_squawk_dd"];
 
@@ -2496,8 +2495,8 @@
         "ability_queue", "first_hit_heroic_strike", "use_slam", "use_ms_in_exec_phase", "use_mortal_strike",
         "use_sweeping_strikes", "dont_use_hm_when_ss", "fungal_bloom", "full_polarity", "battle_squawk"];
 
-    let stat_weigths = ["stat_weight_hit", "stat_weight_crit", "stat_weight_haste",
-        "stat_weight_extra_hit", "stat_weight_skill", "stat_weight_mh_speed", "stat_weight_oh_speed"];
+    let stat_weigths = ["stat_weight_expertise", "stat_weight_hit", "stat_weight_crit", "stat_weight_haste",
+        "stat_weight_extra_hit", "stat_weight_mh_speed", "stat_weight_oh_speed"];
 
     let race;
     let race_string;

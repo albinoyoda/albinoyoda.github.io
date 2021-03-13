@@ -94,7 +94,7 @@ public:
     }
 
     void increment_stat_gains(double current_time, double dt, double& rage, double& rage_lost_stance,
-                              double& rage_lost_exec, bool debug, std::vector<std::string>& debug_msg)
+                              bool debug, std::vector<std::string>& debug_msg)
     {
         for (auto it = stat_gains.begin(); it != stat_gains.end();)
         {
@@ -116,16 +116,6 @@ public:
                         rage_lost_stance += rage - tactical_mastery_rage_;
                         rage = tactical_mastery_rage_;
                     }
-                }
-                else if (it->first == "execute_rage_batch")
-                {
-                    if (rage > rage_before_execute)
-                    {
-                        rage_lost_exec += rage - rage_before_execute;
-                    }
-                    rage_spent_executing += rage;
-                    rage = 0;
-                    debug_msg.emplace_back("Current rage: 0");
                 }
                 if (it->second.special_stats.hit > 0.0 || it->second.special_stats.critical_strike > 0.0)
                 {
@@ -293,11 +283,11 @@ public:
         }
     }
 
-    void increment(double dt, double current_time, double& rage, double& rage_lost_stance, double& rage_lost_exec,
+    void increment(double dt, double current_time, double& rage, double& rage_lost_stance,
                    double& global_cooldown, bool debug, std::vector<std::string>& debug_msg)
     {
         next_event = 100000;
-        increment_stat_gains(current_time, dt, rage, rage_lost_stance, rage_lost_exec, debug, debug_msg);
+        increment_stat_gains(current_time, dt, rage, rage_lost_stance, debug, debug_msg);
         increment_hit_gains(current_time, dt, debug, debug_msg);
         increment_use_effects(current_time, rage, global_cooldown, debug, debug_msg);
         increment_over_time_buffs(current_time, rage, debug, debug_msg);

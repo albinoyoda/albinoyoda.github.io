@@ -2,46 +2,6 @@
 
 #include <algorithm>
 
-int get_weapon_skill(const Special_stats& special_stats, Weapon_type weapon_type, Weapon_socket weapon_socket)
-{
-    if (weapon_socket == Weapon_socket::two_hand)
-    {
-        switch (weapon_type)
-        {
-        case Weapon_type::sword:
-            return special_stats.two_hand_sword_skill;
-        case Weapon_type::axe:
-            return special_stats.two_hand_axe_skill;
-        case Weapon_type::mace:
-            return special_stats.two_hand_mace_skill;
-        default:
-            std::cout << "\nAttempted to retrieve two hand skill which is not axe/sword/mace. Aborting!\n";
-            assert(false);
-            return 0;
-        }
-    }
-    else
-    {
-        switch (weapon_type)
-        {
-        case Weapon_type::sword:
-            return special_stats.sword_skill;
-        case Weapon_type::axe:
-            return special_stats.axe_skill;
-        case Weapon_type::dagger:
-            return special_stats.dagger_skill;
-        case Weapon_type::mace:
-            return special_stats.mace_skill;
-        case Weapon_type::unarmed:
-            return special_stats.fist_skill;
-        default:
-            std::cout << "Attempted to retrieve skill which is not axe/sword/mace. Aborting!\n";
-            assert(false);
-            return 0;
-        }
-    }
-}
-
 double is_time_available(const std::vector<std::pair<double, Use_effect>>& use_effect_timers, double check_time,
                          double duration)
 {
@@ -208,20 +168,17 @@ double get_character_ap_equivalent(const Special_stats& special_stats, const Wea
                                    double sim_time, const std::vector<Use_effect>& use_effects)
 {
     double attack_power = special_stats.attack_power;
-    int mh_skill = get_weapon_skill(special_stats, mh_wep.type, mh_wep.weapon_socket);
-    double mh_hit_crit_skill_ap = get_hit_crit_skill_ap_equivalent(special_stats, mh_skill);
-
-    int oh_skill = get_weapon_skill(special_stats, oh_wep.type, mh_wep.weapon_socket);
-    double oh_hit_crit_skill_ap = get_hit_crit_skill_ap_equivalent(special_stats, oh_skill);
+    double mh_hit_crit_expertise_ap = get_hit_crit_expertise_ap_equivalent(special_stats, mh_wep.type);
+    double oh_hit_crit_expertise_ap = get_hit_crit_expertise_ap_equivalent(special_stats, oh_wep.type);
 
     /// Weighted combination of ap from mh and oh, based on the hit-tables
-    double hit_crit_skill_ap = (mh_hit_crit_skill_ap + oh_hit_crit_skill_ap * 0.5) / 1.5;
+    double hit_crit_expertise_ap = (mh_hit_crit_expertise_ap + oh_hit_crit_expertise_ap * 0.5) / 1.5;
 
     double mh_ap = ((mh_wep.max_damage + mh_wep.min_damage) / 2 + special_stats.bonus_damage) / mh_wep.swing_speed * 14;
     double oh_ap = ((oh_wep.max_damage + oh_wep.min_damage) / 2 + special_stats.bonus_damage) / oh_wep.swing_speed * 14;
     oh_ap *= 0.625;
 
-    double special_stats_ap = attack_power + hit_crit_skill_ap + mh_ap + oh_ap;
+    double special_stats_ap = attack_power + hit_crit_expertise_ap + mh_ap + oh_ap;
 
     double use_effects_ap = 0;
     double use_effects_shared_ap = 0;
@@ -260,12 +217,12 @@ double get_character_ap_equivalent(const Special_stats& special_stats, const Wea
                                    const std::vector<Use_effect>& use_effects)
 {
     double attack_power = special_stats.attack_power;
-    int mh_skill = get_weapon_skill(special_stats, mh_wep.type, mh_wep.weapon_socket);
-    double hit_crit_skill_ap = get_hit_crit_skill_ap_equivalent(special_stats, mh_skill);
+    int mh_skill = 350;
+    double hit_crit_expertise_ap = get_hit_crit_expertise_ap_equivalent(special_stats, mh_wep.type);
 
     double mh_ap = ((mh_wep.max_damage + mh_wep.min_damage) / 2 + special_stats.bonus_damage) / mh_wep.swing_speed * 14;
 
-    double special_stats_ap = attack_power + hit_crit_skill_ap + mh_ap;
+    double special_stats_ap = attack_power + hit_crit_expertise_ap + mh_ap;
 
     double use_effects_ap = 0;
     double use_effects_shared_ap = 0;
@@ -338,10 +295,10 @@ double get_use_effect_ap_equivalent(const Use_effect& use_effect, const Special_
     return ap_during_active * std::min(use_effect.duration / sim_time, 1.0);
 }
 
-double get_hit_crit_skill_ap_equivalent(const Special_stats& special_stats, int relevant_skill)
+double get_hit_crit_expertise_ap_equivalent(const Special_stats& special_stats, Weapon_type weapon_type)
 {
-    int target_defence_level = 315;
-    int skill_diff = target_defence_level - relevant_skill;
+    int target_defence_level = 365;
+    int skill_diff = target_defence_level - 350;
     int base_skill_diff = 15;
     double crit_chance = special_stats.critical_strike - base_skill_diff * 0.2 - 1.8; // 1.8 flat aura modifier
 
@@ -366,7 +323,51 @@ double get_hit_crit_skill_ap_equivalent(const Special_stats& special_stats, int 
     double miss_chance = dw_miss_chance - std::max(special_stats.hit - hit_penalty, 0.0);
 
     // Dodge chance
-    double dodge_chance = std::max(5 + skill_diff * 0.1, 5.0);
+    double dodge_chance;
+    if (weapon_type == Weapon_type::sword)
+    {
+        if (base_skill_diff > 0)
+        {
+            dodge_chance = std::max(std::max(5 + skill_diff * 0.1, 5.0) - (special_stats.expertise + special_stats.sword_expertise), 0.0);
+        }
+        else
+        {
+            dodge_chance = std::max(std::max(5 - base_skill_diff * 0.04, 0.0) - (special_stats.expertise + special_stats.sword_expertise), 0.0);
+        }
+    }
+    else if (weapon_type == Weapon_type::mace)
+    {
+        if (base_skill_diff > 0)
+        {
+            dodge_chance = std::max(std::max(5 + skill_diff * 0.1, 5.0) - (special_stats.expertise + special_stats.mace_expertise), 0.0);
+        }
+        else
+        {
+            dodge_chance = std::max(std::max(5 - base_skill_diff * 0.04, 0.0) - (special_stats.expertise + special_stats.mace_expertise), 0.0);
+        }
+    }
+    else if (weapon_type == Weapon_type::axe)
+    {
+        if (base_skill_diff > 0)
+        {
+            dodge_chance = std::max(std::max(5 + skill_diff * 0.1, 5.0) - (special_stats.expertise + special_stats.axe_expertise), 0.0);
+        }
+        else
+        {
+            dodge_chance = std::max(std::max(5 - base_skill_diff * 0.04, 0.0) - (special_stats.expertise + special_stats.axe_expertise), 0.0);
+        }
+    }
+    else
+    {
+        if (base_skill_diff > 0)
+        {
+            dodge_chance = std::max(std::max(5 + skill_diff * 0.1, 5.0) - special_stats.expertise, 0.0);
+        }
+        else
+        {
+            dodge_chance = std::max(std::max(5 - base_skill_diff * 0.04, 0.0) - special_stats.expertise, 0.0);
+        }
+    }
     double crit_cap = 100 - (miss_chance + dodge_chance + 40);
 
     double ap_from_crit{};
@@ -389,22 +390,17 @@ double get_hit_crit_skill_ap_equivalent(const Special_stats& special_stats, int 
         ap_from_hit = special_stats.hit * hit_w;
     }
 
-    int extra_skill = relevant_skill - 300;
-    double ap_from_skill{};
-    if (extra_skill > 8)
+    double ap_from_expertise{};
+    if (special_stats.expertise > dodge_chance)
     {
-        ap_from_skill = (extra_skill - 8) * skill_w_hard + 3 * skill_w_soft + 5 * skill_w;
+        ap_from_expertise = special_stats.expertise * expertise_w;
     }
-    else if (extra_skill > 5)
+    else
     {
-        ap_from_skill = (extra_skill - 5) * skill_w_soft + 5 * skill_w;
-    }
-    else if (extra_skill > 0)
-    {
-        ap_from_skill = extra_skill * skill_w;
+        ap_from_expertise = 0;
     }
 
-    return ap_from_crit + ap_from_hit + ap_from_skill;
+    return ap_from_crit + ap_from_hit;
 }
 
 bool is_strictly_weaker(Special_stats special_stats1, Special_stats special_stats2)
@@ -446,7 +442,6 @@ double estimate_special_stats_high(const Special_stats& special_stats)
     max_skill = std::max(special_stats.two_hand_mace_skill, max_skill);
     max_skill = std::max(special_stats.two_hand_axe_skill, max_skill);
 
-    double ap_from_skill = max_skill <= 5 ? max_skill * skill_w : 5 * skill_w + (max_skill - 5) * skill_w_soft;
 
     // Assume 1.8 speed for the high estimation
     double high_estimation = special_stats.bonus_damage / 1.8 * 14;
@@ -456,7 +451,7 @@ double estimate_special_stats_high(const Special_stats& special_stats)
                        special_stats.damage_mod_physical * 3000 * special_stats.critical_strike / 100;
 
     high_estimation +=
-        special_stats.attack_power + special_stats.hit * hit_w + special_stats.critical_strike * crit_w + ap_from_skill;
+        special_stats.attack_power + special_stats.hit * hit_w + special_stats.critical_strike * crit_w;
     return high_estimation;
 }
 

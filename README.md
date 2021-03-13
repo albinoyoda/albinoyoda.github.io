@@ -29,4 +29,4 @@ https://docs.docker.com/docker-for-windows/install/
 3. .\docker_run.ps1
 
 ## Open in browser
-http://localhost:49160/
+http://localhost:49252/

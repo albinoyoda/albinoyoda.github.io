@@ -4,21 +4,30 @@
 
 namespace
 {
-constexpr double rage_factor = 15.0 / 230.6 / 2.0;
+constexpr double rage_factor = 3.75 / 274.7;
 
 constexpr double rage_from_damage_taken(double damage)
 {
-    return damage * 5.0 / 2.0 / 230.6;
+    return damage * 5.0 / 2.0 / 274.7;
 }
 
-constexpr double rage_generation(double damage)
+constexpr double rage_generation(double damage, Socket weapon_hand, double swing_speed)
 {
-    return damage * rage_factor;
+    
+    if (weapon_hand == Socket::main_hand)
+    {
+        return damage * rage_factor + (3.5 * swing_speed / 2);
+    }
+    else
+    {
+        return damage * rage_factor + (1.75 * swing_speed / 2);
+    }
+    
 }
 
 constexpr double armor_mitigation(int target_armor, int target_level)
 {
-    return static_cast<double>(target_armor) / static_cast<double>(target_armor + 400 + 85 * target_level);
+    return static_cast<double>(target_armor) / static_cast<double>(target_armor + (467.5 * target_level - 22167.5));
 }
 
 std::vector<double> create_hit_table(double miss, double dodge, double glancing, double crit)
@@ -52,12 +61,12 @@ void Combat_simulator::set_config(const Combat_simulator_config& new_config)
     execute_rage_cost_ = 15 - static_cast<int>(2.51 * config.talents.improved_execute);
 
     armor_reduction_from_spells_ = 0.0;
-    armor_reduction_from_spells_ += 450 * config.n_sunder_armor_stacks;
-    armor_reduction_from_spells_ += 640 * config.curse_of_recklessness_active;
-    armor_reduction_from_spells_ += 505 * config.faerie_fire_feral_active;
+    armor_reduction_from_spells_ += 520 * config.n_sunder_armor_stacks;
+    armor_reduction_from_spells_ += 800 * config.curse_of_recklessness_active;
+    armor_reduction_from_spells_ += 610 * config.faerie_fire_feral_active;
     if (config.exposed_armor)
     {
-        armor_reduction_delayed_ = 2550 - 450 * config.n_sunder_armor_stacks;
+        armor_reduction_delayed_ = 3075 - 520 * config.n_sunder_armor_stacks;
     }
 
     flurry_haste_factor_ = (config.talents.flurry > 0) ? 0.05 + 0.05 * config.talents.flurry : 0.0;
@@ -356,12 +365,12 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(const Weapon_sim& w
     return hit_outcome;
 }
 
-void Combat_simulator::compute_hit_table(int weapon_skill, const Special_stats& special_stats, Socket weapon_hand,
-                                         Weapon_socket weapon_socket)
+void Combat_simulator::compute_hit_table(const Special_stats& special_stats, Socket weapon_hand,
+                                         Weapon_socket weapon_socket, Weapon_type weapon_type)
 {
-    int level_difference = config.main_target_level - 60;
+    int level_difference = config.main_target_level - 70;
     int target_defence_level = config.main_target_level * 5;
-    int skill_diff = target_defence_level - weapon_skill;
+    int skill_diff = target_defence_level - 350;
     int base_skill_diff = level_difference * 5;
 
     // Crit chance
@@ -405,20 +414,55 @@ void Combat_simulator::compute_hit_table(int weapon_skill, const Special_stats& 
 
     // Dodge chance
     double dodge_chance;
-    if (level_difference > 0)
+    if (weapon_type == Weapon_type::sword)
     {
-        dodge_chance = std::max(5 + skill_diff * 0.1, 5.0);
+        if (level_difference > 0)
+        {
+            dodge_chance = std::max(std::max(5 + skill_diff * 0.1, 5.0) - (special_stats.expertise + special_stats.sword_expertise), 0.0);
+        }
+        else
+        {
+            dodge_chance = std::max(std::max(5 - base_skill_diff * 0.04, 0.0) - (special_stats.expertise + special_stats.sword_expertise), 0.0);
+        }
+    }
+    else if (weapon_type == Weapon_type::mace)
+    {
+        if (level_difference > 0)
+        {
+            dodge_chance = std::max(std::max(5 + skill_diff * 0.1, 5.0) - (special_stats.expertise + special_stats.mace_expertise), 0.0);
+        }
+        else
+        {
+            dodge_chance = std::max(std::max(5 - base_skill_diff * 0.04, 0.0) - (special_stats.expertise + special_stats.mace_expertise), 0.0);
+        }
+    }
+    else if (weapon_type == Weapon_type::axe)
+    {
+        if (level_difference > 0)
+        {
+            dodge_chance = std::max(std::max(5 + skill_diff * 0.1, 5.0) - (special_stats.expertise + special_stats.axe_expertise), 0.0);
+        }
+        else
+        {
+            dodge_chance = std::max(std::max(5 - base_skill_diff * 0.04, 0.0) - (special_stats.expertise + special_stats.axe_expertise), 0.0);
+        }
     }
     else
     {
-        dodge_chance = std::max(5 - base_skill_diff * 0.04, 0.0);
+        if (level_difference > 0)
+        {
+            dodge_chance = std::max(std::max(5 + skill_diff * 0.1, 5.0) - special_stats.expertise, 0.0);
+        }
+        else
+        {
+            dodge_chance = std::max(std::max(5 - base_skill_diff * 0.04, 0.0) - special_stats.expertise, 0.0);
+        }
     }
-
     // Glancing blows
     double glancing_chance = 0.0;
     if (level_difference > 0)
     {
-        glancing_chance = 10 + level_difference * 10;
+        glancing_chance = 10 + level_difference * 5;
     }
 
     double glancing_penalty;
@@ -683,8 +727,6 @@ void Combat_simulator::execute(Weapon_sim& main_hand_weapon, Special_stats& spec
     if (config.dpr_settings.compute_dpr_ex_)
     {
         get_uniform_random(100) < hit_table_yellow_[1] ? rage *= 0.8 : rage -= execute_rage_cost_;
-        double next_server_batch = std::fmod(time_keeper_.time + init_server_time, 0.4);
-        buff_manager_.add("execute_rage_batch", {}, 0.4 + next_server_batch);
         time_keeper_.global_cd = 1.5;
         return;
     }
@@ -701,8 +743,6 @@ void Combat_simulator::execute(Weapon_sim& main_hand_weapon, Special_stats& spec
         rage -= execute_rage_cost_;
         hit_effects(main_hand_weapon, main_hand_weapon, special_stats, rage, damage_sources, flurry_charges);
     }
-    double next_server_batch = std::fmod(time_keeper_.time + init_server_time, 0.4);
-    buff_manager_.add("execute_rage_batch", {}, 0.4 + next_server_batch);
     buff_manager_.rage_before_execute = rage;
     time_keeper_.global_cd = 1.5;
     manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges, true);
@@ -905,13 +945,13 @@ void Combat_simulator::swing_weapon(Weapon_sim& weapon, Weapon_sim& main_hand_we
         }
         else
         {
-            rage += rage_generation(hit_outcomes[0].damage);
+            rage += rage_generation(hit_outcomes[0].damage, weapon.socket, weapon.swing_speed);
         }
         if (hit_outcomes[0].hit_result == Hit_result::dodge)
         {
             simulator_cout("Rage gained since the enemy dodged.");
             rage += 0.75 *
-                    rage_generation(swing_damage * armor_reduction_factor_ * (1 + special_stats.damage_mod_physical));
+                    rage_generation(swing_damage * armor_reduction_factor_ * (1 + special_stats.damage_mod_physical), weapon.socket, weapon.swing_speed);
         }
         if (rage > 100.0)
         {
@@ -987,7 +1027,6 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
     damage_distribution_ = Damage_sources{};
     flurry_uptime_mh_ = 0;
     flurry_uptime_oh_ = 0;
-    rage_lost_execute_batch_ = 0;
     rage_lost_stance_swap_ = 0;
     rage_lost_capped_ = 0;
     heroic_strike_uptime_ = 0;
@@ -998,8 +1037,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         weapons.emplace_back(wep.swing_speed, wep.min_damage, wep.max_damage, wep.socket, wep.type, wep.weapon_socket,
                              wep.hit_effects);
         weapons.back().compute_weapon_damage(wep.buff.bonus_damage + starting_special_stats.bonus_damage);
-        compute_hit_table(get_weapon_skill(starting_special_stats, wep.type, wep.weapon_socket), starting_special_stats,
-                          wep.socket, wep.weapon_socket);
+        compute_hit_table(starting_special_stats, wep.socket, wep.weapon_socket, wep.type);
     }
 
     // TODO can move this to armory::compute_total_stats method
@@ -1143,7 +1181,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                     time_keeper_.get_dynamic_time_step(100.0, 100.0, buff_dt, 0.0 - time_keeper_.time, use_effect_dt);
                 time_keeper_.increment(dt);
                 std::vector<std::string> debug_msg{};
-                buff_manager_.increment(dt, time_keeper_.time, rage, rage_lost_stance_swap_, rage_lost_execute_batch_,
+                buff_manager_.increment(dt, time_keeper_.time, rage, rage_lost_stance_swap_,
                                         time_keeper_.global_cd, config.display_combat_debug, debug_msg);
                 for (const auto& msg : debug_msg)
                 {
@@ -1175,7 +1213,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                 time_keeper_.get_dynamic_time_step(mh_dt, oh_dt, buff_dt, sim_time - time_keeper_.time, slam_dt);
             time_keeper_.increment(dt);
             std::vector<std::string> debug_msg{};
-            buff_manager_.increment(dt, time_keeper_.time, rage, rage_lost_stance_swap_, rage_lost_execute_batch_,
+            buff_manager_.increment(dt, time_keeper_.time, rage, rage_lost_stance_swap_,
                                     time_keeper_.global_cd, config.display_combat_debug, debug_msg);
             for (const auto& msg : debug_msg)
             {
@@ -1191,8 +1229,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
             {
                 for (const auto& weapon : weapons)
                 {
-                    compute_hit_table(get_weapon_skill(special_stats, weapon.weapon_type, weapon.weapon_socket),
-                                      special_stats, weapon.socket, weapon.weapon_socket);
+                    compute_hit_table(special_stats, weapon.socket, weapon.weapon_socket, weapon.weapon_type);
                 }
                 buff_manager_.need_to_recompute_hittables = false;
             }

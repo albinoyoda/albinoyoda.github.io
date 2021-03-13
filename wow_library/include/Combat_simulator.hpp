@@ -306,8 +306,8 @@ public:
 
     Combat_simulator::Hit_outcome generate_hit_mh(double damage, Hit_type hit_type, bool is_overpower = false);
 
-    void compute_hit_table(int weapon_skill, const Special_stats& special_stats, Socket weapon_hand,
-                           Weapon_socket weapon_socket);
+    void compute_hit_table(const Special_stats& special_stats, Socket weapon_hand,
+                           Weapon_socket weapon_socket, Weapon_type weapon_type);
 
     std::vector<std::pair<double, Use_effect>> get_use_effect_order(const Character& character);
 
@@ -347,8 +347,6 @@ public:
     constexpr int get_n_simulations() const { return config.n_batches; }
 
     constexpr double get_rage_lost_stance() const { return rage_lost_stance_swap_; }
-
-    constexpr double get_rage_lost_exec() const { return rage_lost_execute_batch_; }
 
     constexpr double get_rage_lost_capped() const { return rage_lost_capped_; }
 
@@ -436,7 +434,6 @@ private:
     int heroic_strike_rage_cost{};
 
     double cleave_bonus_damage_{};
-    double rage_lost_execute_batch_{};
     double rage_lost_stance_swap_{};
     double rage_lost_capped_{};
     double avg_rage_spent_executing_{};
