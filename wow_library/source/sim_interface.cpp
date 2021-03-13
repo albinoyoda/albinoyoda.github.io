@@ -342,6 +342,7 @@ std::string get_character_stat(const Character& character)
     out_string += print_stat("Strength: ", character.total_attributes.strength);
     out_string += print_stat("Agility: ", character.total_attributes.agility);
     out_string += print_stat("Hit: ", character.total_special_stats.hit);
+    out_string += print_stat("Expertise: ", character.total_special_stats.expertise);
     out_string += print_stat("Crit (spellbook): ", character.total_special_stats.critical_strike);
     out_string += print_stat("Attack Power: ", character.total_special_stats.attack_power);
     out_string += print_stat("Haste factor: ", 1 + character.total_special_stats.haste);
@@ -349,38 +350,38 @@ std::string get_character_stat(const Character& character)
     {
         if (character.has_weapon_of_type(Weapon_type::sword))
         {
-            out_string += print_stat("Sword skill: ", character.total_special_stats.sword_skill);
+            out_string += print_stat("Sword bonus expertise: ", character.total_special_stats.sword_expertise);
         }
         if (character.has_weapon_of_type(Weapon_type::axe))
         {
-            out_string += print_stat("Axe skill: ", character.total_special_stats.axe_skill);
+            out_string += print_stat("Axe bonus expertise: ", character.total_special_stats.axe_expertise);
         }
         if (character.has_weapon_of_type(Weapon_type::dagger))
         {
-            out_string += print_stat("Dagger skill: ", character.total_special_stats.dagger_skill);
+            out_string += print_stat("Dagger bonus expertise: ", 0);
         }
         if (character.has_weapon_of_type(Weapon_type::mace))
         {
-            out_string += print_stat("Mace skill: ", character.total_special_stats.mace_skill);
+            out_string += print_stat("Mace bonus expertise: ", character.total_special_stats.mace_expertise);
         }
         if (character.has_weapon_of_type(Weapon_type::unarmed))
         {
-            out_string += print_stat("Unarmed skill: ", character.total_special_stats.fist_skill);
+            out_string += print_stat("Unarmed bonus expertise: ", 0);
         }
     }
     else
     {
         if (character.has_weapon_of_type(Weapon_type::sword))
         {
-            out_string += print_stat("Two Hand Sword skill: ", character.total_special_stats.two_hand_sword_skill);
+            out_string += print_stat("Two Hand Sword expertise: ", character.total_special_stats.sword_expertise);
         }
         if (character.has_weapon_of_type(Weapon_type::axe))
         {
-            out_string += print_stat("Two Hand Axe skill: ", character.total_special_stats.two_hand_axe_skill);
+            out_string += print_stat("Two Hand Axe expertise: ", character.total_special_stats.axe_expertise);
         }
         if (character.has_weapon_of_type(Weapon_type::mace))
         {
-            out_string += print_stat("Two Hand Mace skill: ", character.total_special_stats.two_hand_mace_skill);
+            out_string += print_stat("Two Hand Mace expertise: ", character.total_special_stats.mace_expertise);
         }
     }
 
@@ -530,8 +531,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     }
     for (const auto& wep : character.weapons)
     {
-        simulator.compute_hit_table(get_weapon_expertise(character.total_special_stats, wep.type, wep.weapon_socket),
-                                    character.total_special_stats, wep.socket, wep.weapon_socket);
+        simulator.compute_hit_table(character.total_special_stats, wep.socket, wep.weapon_socket, wep.type);
     }
     const bool is_two_handed = !character.is_dual_wield();
     const auto yellow_ht = simulator.get_hit_probabilities_yellow();
@@ -589,10 +589,6 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     rage_info += "</b>Rage lost when changing stace (cutting rage at 25): <b>" +
                  string_with_precision(simulator.get_rage_lost_stance() / double(simulator.get_n_simulations()), 3) +
                  "</b><br>";
-    rage_info += "</b>Rage lost to execute batch window (rage gained during two server cycles after execute is cast "
-                 "will be lost): <b>" +
-                 string_with_precision(simulator.get_rage_lost_exec() / double(simulator.get_n_simulations()), 3) +
-                 "</b><br>";
 
     std::string extra_info_string = "<b>Fight stats vs. target:</b> <br/>";
     extra_info_string += "<b>Hit:</b> <br/>";
@@ -635,7 +631,7 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
     }
     extra_info_string += "<b>Other:</b><br/>";
     double dodge_chance = yellow_ht[1] - yellow_ht[0];
-    extra_info_string += percent_to_str("Target dodge chance", dodge_chance, "(based on skill difference)") + "<br>"
+    extra_info_string += percent_to_str("Target dodge chance", dodge_chance, "(based on skill difference and expertise)") + "<br>"
                                                                                                               "<"
                                                                                                               "br>";
 
@@ -980,6 +976,19 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                 stat_weights.emplace_back("1%Crit " + std::to_string(crit.dps_plus) + " " +
                                           std::to_string(crit.std_dps_plus) + " " + std::to_string(crit.dps_minus) +
                                           " " + std::to_string(crit.std_dps_minus));
+            }
+
+            if (stat_weight == "expertise")
+            {
+                Character char_plus = character;
+                Character char_minus = character;
+                char_plus.total_special_stats.hit += 1;
+                char_minus.total_special_stats.hit -= 1;
+                Stat_weight expertise =
+                    compute_stat_weight(simulator, char_plus, char_minus, "expertise", 1, 1, dps_mean, dps_sample_std);
+                stat_weights.emplace_back("1%Expertise " + std::to_string(expertise.dps_plus) + " " +
+                                          std::to_string(expertise.std_dps_plus) + " " + std::to_string(expertise.dps_minus) + " " +
+                                          std::to_string(expertise.std_dps_minus));
             }
 
             if (stat_weight == "hit")
