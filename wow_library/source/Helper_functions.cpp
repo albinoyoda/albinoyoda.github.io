@@ -391,7 +391,7 @@ double get_hit_crit_expertise_ap_equivalent(const Special_stats& special_stats, 
     }
 
     double ap_from_expertise{};
-    if (special_stats.expertise > dodge_chance)
+    if (special_stats.expertise < dodge_chance)
     {
         ap_from_expertise = special_stats.expertise * expertise_w;
     }
@@ -400,7 +400,7 @@ double get_hit_crit_expertise_ap_equivalent(const Special_stats& special_stats, 
         ap_from_expertise = 0;
     }
 
-    return ap_from_crit + ap_from_hit;
+    return ap_from_crit + ap_from_hit + ap_from_expertise;
 }
 
 bool is_strictly_weaker(Special_stats special_stats1, Special_stats special_stats2)
@@ -434,14 +434,6 @@ bool is_strictly_weaker(Special_stats special_stats1, Special_stats special_stat
 
 double estimate_special_stats_high(const Special_stats& special_stats)
 {
-    int max_skill = std::max(special_stats.axe_skill, 0);
-    max_skill = std::max(special_stats.sword_skill, max_skill);
-    max_skill = std::max(special_stats.mace_skill, max_skill);
-    max_skill = std::max(special_stats.dagger_skill, max_skill);
-    max_skill = std::max(special_stats.two_hand_sword_skill, max_skill);
-    max_skill = std::max(special_stats.two_hand_mace_skill, max_skill);
-    max_skill = std::max(special_stats.two_hand_axe_skill, max_skill);
-
 
     // Assume 1.8 speed for the high estimation
     double high_estimation = special_stats.bonus_damage / 1.8 * 14;
@@ -457,13 +449,6 @@ double estimate_special_stats_high(const Special_stats& special_stats)
 
 double estimate_special_stats_low(const Special_stats& special_stats)
 {
-    int max_skill = std::max(special_stats.axe_skill, 0);
-    max_skill = std::max(special_stats.sword_skill, max_skill);
-    max_skill = std::max(special_stats.mace_skill, max_skill);
-    max_skill = std::max(special_stats.dagger_skill, max_skill);
-    max_skill = std::max(special_stats.two_hand_sword_skill, max_skill);
-    max_skill = std::max(special_stats.two_hand_mace_skill, max_skill);
-    max_skill = std::max(special_stats.two_hand_axe_skill, max_skill);
 
     // Assume 2.6 speed for the low estimation
     double low_estimation = special_stats.bonus_damage / 2.6 * 14;
@@ -473,7 +458,7 @@ double estimate_special_stats_low(const Special_stats& special_stats)
                       special_stats.damage_mod_physical * 1500 * special_stats.critical_strike / 100;
 
     low_estimation += special_stats.attack_power + special_stats.hit * hit_w_cap +
-                      special_stats.critical_strike * crit_w_cap + max_skill * skill_w_hard;
+                      special_stats.critical_strike * crit_w_cap;
     return low_estimation;
 }
 
@@ -588,6 +573,10 @@ Race get_race(const std::string& race)
     {
         return Race::night_elf;
     }
+    else if (race == "draenei")
+    {
+        return Race::draenei;
+    }
     else if (race == "orc")
     {
         return Race::orc;
@@ -616,41 +605,45 @@ Character get_character_of_race(const std::string& race)
 {
     if (race == "human")
     {
-        return {Race::human, 60};
+        return {Race::human, 70};
     }
     else if (race == "gnome")
     {
-        return {Race::gnome, 60};
+        return {Race::gnome, 70};
     }
     else if (race == "dwarf")
     {
-        return {Race::dwarf, 60};
+        return {Race::dwarf, 70};
     }
     else if (race == "night_elf")
     {
-        return {Race::night_elf, 60};
+        return {Race::night_elf, 70};
+    }
+        else if (race == "draenei")
+    {
+        return {Race::draenei, 70};
     }
     else if (race == "orc")
     {
-        return {Race::orc, 60};
+        return {Race::orc, 70};
     }
     else if (race == "troll")
     {
-        return {Race::troll, 60};
+        return {Race::troll, 70};
     }
     else if (race == "undead")
     {
-        return {Race::undead, 60};
+        return {Race::undead, 70};
     }
     else if (race == "tauren")
     {
-        return {Race::tauren, 60};
+        return {Race::tauren, 70};
     }
     else
     {
         std::cout << "Race not found!!! picking human"
                   << "\n";
-        return {Race::human, 60};
+        return {Race::human, 70};
     }
 }
 

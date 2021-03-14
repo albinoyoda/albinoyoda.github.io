@@ -348,6 +348,8 @@ public:
 
     constexpr double get_rage_lost_stance() const { return rage_lost_stance_swap_; }
 
+    constexpr double get_rage_lost_exec() const { return rage_lost_execute_batch_; }
+
     constexpr double get_rage_lost_capped() const { return rage_lost_capped_; }
 
     constexpr double get_avg_rage_spent_executing() const { return avg_rage_spent_executing_; }
@@ -435,11 +437,11 @@ private:
 
     double cleave_bonus_damage_{};
     double rage_lost_stance_swap_{};
+    double rage_lost_execute_batch_{};
     double rage_lost_capped_{};
     double avg_rage_spent_executing_{};
     double p_unbridled_wrath_{};
     double flurry_haste_factor_{};
-    double init_server_time{};
     double dual_wield_damage_factor_;
     bool dpr_heroic_strike_queued_{false};
     bool dpr_cleave_queued_{false};

@@ -299,29 +299,12 @@ std::vector<Weapon> Item_optimizer::remove_weaker_weapons(const Weapon_socket we
                                                           std::string& debug_message, int keep_n_stronger_items)
 {
     std::vector<Weapon_struct> weapon_struct_vec;
-    Character character{race, 60};
+    Character character{race, 70};
     Special_stats racial_stats = character.base_special_stats;
     for (size_t i = 0; i < weapon_vec.size(); ++i)
     {
         Special_stats wep_special_stats = weapon_vec[i].special_stats;
         wep_special_stats += weapon_vec[i].attributes.convert_to_special_stats(special_stats);
-        switch (weapon_vec[i].type)
-        {
-        case Weapon_type::sword:
-            wep_special_stats.sword_skill += racial_stats.sword_skill - 300;
-            wep_special_stats.two_hand_sword_skill += racial_stats.two_hand_sword_skill - 300;
-            break;
-        case Weapon_type::axe:
-            wep_special_stats.axe_skill += racial_stats.axe_skill - 300;
-            wep_special_stats.two_hand_axe_skill += racial_stats.two_hand_axe_skill - 300;
-            break;
-        case Weapon_type::mace:
-            wep_special_stats.mace_skill += racial_stats.mace_skill - 300;
-            wep_special_stats.two_hand_mace_skill += racial_stats.two_hand_mace_skill - 300;
-            break;
-        default:
-            break;
-        }
 
         Weapon_struct wep_struct{i,
                                  wep_special_stats,
