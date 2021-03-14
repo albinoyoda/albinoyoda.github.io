@@ -747,6 +747,8 @@ void Combat_simulator::execute(Weapon_sim& main_hand_weapon, Special_stats& spec
     time_keeper_.global_cd = 1.5;
     manage_flurry(hit_outcome.hit_result, special_stats, flurry_charges, true);
     damage_sources.add_damage(Damage_source::execute, hit_outcome.damage, time_keeper_.time);
+    buff_manager_.rage_spent_executing += rage + execute_rage_cost_;
+    rage = 0;
     simulator_cout("Current rage: ", int(rage));
 }
 
@@ -1027,6 +1029,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
     damage_distribution_ = Damage_sources{};
     flurry_uptime_mh_ = 0;
     flurry_uptime_oh_ = 0;
+    rage_lost_execute_batch_ = 0;
     rage_lost_stance_swap_ = 0;
     rage_lost_capped_ = 0;
     heroic_strike_uptime_ = 0;
@@ -1149,7 +1152,6 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         // To avoid local max/min results from running a specific run time
         sim_time += averaging_interval / n_damage_batches;
         double time_execute_phase = sim_time * (100.0 - config.execute_phase_percentage_) / 100.0;
-        init_server_time = 50.0 * iter / n_damage_batches;
 
         // Combat configuration
         if (!config.multi_target_mode_)
@@ -1182,7 +1184,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                 time_keeper_.increment(dt);
                 std::vector<std::string> debug_msg{};
                 buff_manager_.increment(dt, time_keeper_.time, rage, rage_lost_stance_swap_,
-                                        time_keeper_.global_cd, config.display_combat_debug, debug_msg);
+                                        rage_lost_execute_batch_, time_keeper_.global_cd, config.display_combat_debug, debug_msg);
                 for (const auto& msg : debug_msg)
                 {
                     simulator_cout(msg);
@@ -1214,7 +1216,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
             time_keeper_.increment(dt);
             std::vector<std::string> debug_msg{};
             buff_manager_.increment(dt, time_keeper_.time, rage, rage_lost_stance_swap_,
-                                    time_keeper_.global_cd, config.display_combat_debug, debug_msg);
+                                    rage_lost_execute_batch_, time_keeper_.global_cd, config.display_combat_debug, debug_msg);
             for (const auto& msg : debug_msg)
             {
                 simulator_cout(msg);
