@@ -1,6 +1,6 @@
-# Welcome to TBC wow GitHub
+# Welcome to TBC Warrior DPS Sim GitHub
 ## Basics
-This is warrior fury sim that is ported to TBC,
+This is classic warrior fury sim that is ported to TBC,
 the mechanics used in the simulator can be found in:
 https://wowwiki-archive.fandom.com/wiki/Attack_table
 
