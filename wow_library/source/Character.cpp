@@ -15,31 +15,55 @@ Character::Character(const Race& race, int level)
         base_attributes = Attributes{145, 96};
         base_special_stats.sword_expertise = 1.25;
         base_special_stats.mace_expertise = 1.25;
+        base_special_stats.axe_expertise = 0.0;
         break;
     case Race::dwarf:
         base_attributes = Attributes{147, 92};
+        base_special_stats.sword_expertise = 0.0;
+        base_special_stats.mace_expertise = 0.0;
+        base_special_stats.axe_expertise = 0.0;
         break;
     case Race::night_elf:
         base_attributes = Attributes{142, 101};
+        base_special_stats.sword_expertise = 0.0;
+        base_special_stats.mace_expertise = 0.0;
+        base_special_stats.axe_expertise = 0.0;
         break;
     case Race::gnome:
         base_attributes = Attributes{140, 99};
+        base_special_stats.sword_expertise = 0.0;
+        base_special_stats.mace_expertise = 0.0;
+        base_special_stats.axe_expertise = 0.0;
         break;
     case Race::draenei:
         base_attributes = Attributes{146, 93};
+        base_special_stats.sword_expertise = 0.0;
+        base_special_stats.mace_expertise = 0.0;
+        base_special_stats.axe_expertise = 0.0;
         break;
     case Race::orc:
         base_attributes = Attributes{148, 93};
+        base_special_stats.sword_expertise = 0.0;
+        base_special_stats.mace_expertise = 0.0;
         base_special_stats.axe_expertise = 1.25;
         break;
     case Race::tauren:
         base_attributes = Attributes{150, 91};
+        base_special_stats.sword_expertise = 0.0;
+        base_special_stats.mace_expertise = 0.0;
+        base_special_stats.axe_expertise = 0.0;
         break;
     case Race::troll:
         base_attributes = Attributes{146, 98};
+        base_special_stats.sword_expertise = 0.0;
+        base_special_stats.mace_expertise = 0.0;
+        base_special_stats.axe_expertise = 0.0;
         break;
     case Race::undead:
         base_attributes = Attributes{144, 94};
+        base_special_stats.sword_expertise = 0.0;
+        base_special_stats.mace_expertise = 0.0;
+        base_special_stats.axe_expertise = 0.0;
         break;
     default:
         assert(false);
