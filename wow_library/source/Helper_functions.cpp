@@ -588,6 +588,10 @@ Race get_race(const std::string& race)
     {
         return Race::night_elf;
     }
+    else if (race == "draenei")
+    {
+        return Race::draenei;
+    }
     else if (race == "orc")
     {
         return Race::orc;
@@ -616,41 +620,45 @@ Character get_character_of_race(const std::string& race)
 {
     if (race == "human")
     {
-        return {Race::human, 60};
+        return {Race::human, 70};
     }
     else if (race == "gnome")
     {
-        return {Race::gnome, 60};
+        return {Race::gnome, 70};
     }
     else if (race == "dwarf")
     {
-        return {Race::dwarf, 60};
+        return {Race::dwarf, 70};
     }
     else if (race == "night_elf")
     {
-        return {Race::night_elf, 60};
+        return {Race::night_elf, 70};
+    }
+        else if (race == "draenei")
+    {
+        return {Race::draenei, 70};
     }
     else if (race == "orc")
     {
-        return {Race::orc, 60};
+        return {Race::orc, 70};
     }
     else if (race == "troll")
     {
-        return {Race::troll, 60};
+        return {Race::troll, 70};
     }
     else if (race == "undead")
     {
-        return {Race::undead, 60};
+        return {Race::undead, 70};
     }
     else if (race == "tauren")
     {
-        return {Race::tauren, 60};
+        return {Race::tauren, 70};
     }
     else
     {
         std::cout << "Race not found!!! picking human"
                   << "\n";
-        return {Race::human, 60};
+        return {Race::human, 70};
     }
 }
 
