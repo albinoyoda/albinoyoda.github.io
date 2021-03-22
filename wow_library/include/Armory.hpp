@@ -295,6 +295,7 @@ struct Armory
                     {"brigam_girdle",                 Attributes{15, 0},  Special_stats{0, 1, 0},  Socket::belt},
                     {"zandalar_vindicators_belt",     Attributes{25, 0},  Special_stats{1, 0, 0},  Socket::belt},
                     {"therazanes_link",               Attributes{0, 0},   Special_stats{1, 0, 44}, Socket::belt},
+                    {"ossirians_binding",             Attributes{0, 20},   Special_stats{1, 1, 0}, Socket::belt},
                     {"girdle_of_the_fallen_crusader", Attributes{20, 10}, Special_stats{0, 0, 0},  Socket::belt},
                     {"defilers_plate_girdle",         Attributes{17, 0},  Special_stats{1, 0,
                                                                                         0},        Socket::belt, Set::the_defilers_resolution},
