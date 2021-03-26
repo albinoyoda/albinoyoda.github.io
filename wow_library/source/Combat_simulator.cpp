@@ -1344,6 +1344,20 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
             }
             else
             {
+                if (time_keeper_.overpower_cd < 0.0 && rage < config.combat.overpower_rage_thresh && rage > 5 &&
+                        time_keeper_.global_cd < 0 && buff_manager_.can_do_overpower())
+                {
+                    if (weapons[0].internal_swing_timer > 1.5)
+                    {
+                        simulator_cout("Overpower available, >1.5s on swing timer, use it!");
+                        overpower(weapons[0], special_stats, rage, damage_sources, flurry_charges);   
+                    }
+                    else
+                    {
+                        simulator_cout("Overpower available, but not enough time left on swing timer");
+                    }
+                }
+
                 if (weapons[0].weapon_socket == Weapon_socket::two_hand && config.combat.use_slam)
                 {
                     if (!slam_manager.is_slam_queued() && time_keeper_.global_cd < 0.0)
@@ -1406,7 +1420,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                     }
                 }
 
-                if (config.combat.use_overpower)
+                /*if (config.combat.use_overpower)
                 {
                     bool use_op = true;
                     if (use_bloodthirst_)
@@ -1426,7 +1440,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                     {
                         overpower(weapons[0], special_stats, rage, damage_sources, flurry_charges);
                     }
-                }
+                }*/
 
                 if (config.combat.use_hamstring)
                 {
