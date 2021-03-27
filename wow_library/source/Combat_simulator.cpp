@@ -1420,28 +1420,6 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                     }
                 }
 
-                /*if (config.combat.use_overpower)
-                {
-                    bool use_op = true;
-                    if (use_bloodthirst_)
-                    {
-                        use_op &= time_keeper_.blood_thirst_cd > config.combat.overpower_bt_cooldown_thresh;
-                    }
-                    if (use_mortal_strike_)
-                    {
-                        use_op &= time_keeper_.mortal_strike_cd > config.combat.overpower_bt_cooldown_thresh;
-                    }
-                    if (config.combat.use_whirlwind)
-                    {
-                        use_op &= time_keeper_.whirlwind_cd > config.combat.overpower_ww_cooldown_thresh;
-                    }
-                    if (time_keeper_.overpower_cd < 0.0 && rage < config.combat.overpower_rage_thresh && rage > 5 &&
-                        time_keeper_.global_cd < 0 && buff_manager_.can_do_overpower() && use_op)
-                    {
-                        overpower(weapons[0], special_stats, rage, damage_sources, flurry_charges);
-                    }
-                }*/
-
                 if (config.combat.use_hamstring)
                 {
                     bool use_ham = true;
