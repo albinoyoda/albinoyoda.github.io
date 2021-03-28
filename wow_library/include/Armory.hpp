@@ -92,6 +92,8 @@ struct Armory
                                                                                      0},       Socket::head, Set::battlegear_of_wrath},
                     {"dreadnaught_helmet",            Attributes{21, 0}, Special_stats{0, 0,
                                                                                   0},       Socket::head, Set::dreadnaughts_battlegear},
+                    {"raging_berserkers_helm",            Attributes{13, 0}, Special_stats{1, 0,
+                                                                                       0},       Socket::head},
             };
 
     std::vector<Armor> neck_t
@@ -109,6 +111,7 @@ struct Armory
                     {"pendant_of_the_qiraji_guardian",    Attributes{12, 11},   Special_stats{0, 0, 0},  Socket::neck},
                     {"sadists_collar",    Attributes{0, 0},   Special_stats{1, 0, 20},  Socket::neck},
                     {"stormrages_talisman_of_seething",    Attributes{0, 0},   Special_stats{2, 0, 26},  Socket::neck},
+                    {"emberfury_talisman",    Attributes{0, 0},   Special_stats{1, 0, 0},  Socket::neck},
             };
 
     std::vector<Armor> shoulder_t
@@ -149,6 +152,8 @@ struct Armory
                                                                                          0},  Socket::shoulder, Set::the_defilers_resolution},
                     {"pauldrons_of_wrath",       Attributes{13, 0}, Special_stats{0, 0,
                                                                                          0},  Socket::shoulder, Set::battlegear_of_wrath},
+                    {"pauldrons_of_might",       Attributes{15, 0}, Special_stats{0, 0,
+                                                                                  0},  Socket::shoulder},
                     {"taut_dragonhide_shoulderpads",       Attributes{0, 0}, Special_stats{0, 0,
                                                                                          46},  Socket::shoulder},
                     {"dreadnaught_pauldrons",       Attributes{16, 0}, Special_stats{0, 1,
@@ -407,6 +412,7 @@ struct Armory
                     {"signet_of_the_fallen_defender", Attributes{0, 0},  Special_stats{0, 1, 0},    Socket::ring},
                     {"ring_of_the_dreadnaught", Attributes{0, 0},  Special_stats{0, 0, 0},    Socket::ring, Set::dreadnaughts_battlegear},
                     {"ring_of_fury", Attributes{0, 0},  Special_stats{0, 1, 30},    Socket::ring},
+                    {"masons_fraternity_ring", Attributes{0, 13},  Special_stats{0, 0, 0},    Socket::ring},
             };
 
     std::vector<Armor> trinket_t
@@ -454,6 +460,7 @@ struct Armory
                     {"nerubian_slavemaker",               Attributes{0, 0}, Special_stats{1, 0, 24},  Socket::ranged},
                     {"soulstring",               Attributes{0, 0}, Special_stats{1, 0, 16},  Socket::ranged},
                     {"toxin_injector",               Attributes{0, 0}, Special_stats{0, 0, 28},  Socket::ranged},
+                    {"heartseeking_crossbow",               Attributes{0, 9}, Special_stats{0, 0, 0},  Socket::ranged},
             };
 
     std::vector<Weapon> swords_t
@@ -652,6 +659,8 @@ struct Armory
                     {"felstriker", Attributes{0, 0},  Special_stats{0, 0,
                                                                        0}, 1.7, 54, 101, Weapon_socket::one_hand,  Weapon_type::dagger,
                         {{"felstriker", Hit_effect::Type::stat_boost,   {0, 0}, Special_stats{100, 100, 0}, 0, 3, 1.7 / 60}}},
+                    {"gutgore_ripper",                  Attributes{0, 0},      Special_stats{0, 0,
+                                                                                           0},    1.8, 63,   119,   Weapon_socket::one_hand, Weapon_type::dagger, {{"gutgore_ripper",              Hit_effect::Type::damage_magic, {}, {}, 75, 0, 1.8/60}}},
             };
 
     std::vector<Weapon> maces_t
@@ -706,6 +715,9 @@ struct Armory
                             Weapon_socket::main_hand, Weapon_type::unarmed},
                     {"claw_of_the_frost_wyrm",           Attributes{0, 0},  Special_stats{1, 1, 22}, 1.5, 75,  140,
                         Weapon_socket::off_hand, Weapon_type::unarmed},
+                    {"eskhadars_right_claw",           Attributes{0, 4},  Special_stats{0, 0, 0}, 1.5, 50,  94,
+                        Weapon_socket::main_hand, Weapon_type::unarmed, {{"eskhadars_right_claw", Hit_effect::Type::stat_boost,   {0, 0}, Special_stats{0, 0, 0, 0,
+                                                                                                                                                       .3}, 0,   5, 1.5 / 60}}},
             };
 
     std::vector<Set_bonus> set_bonuses{
