@@ -1,5 +1,7 @@
-project(simulator_tests)
+project(test_simulator)
 
-add_executable(simulator_tests test_ap_estimation.cpp test_item_optimizer.cpp)
+add_executable(test_simulator test_ap_estimation.cpp test_item_optimizer.cpp)
 
-target_link_libraries(simulator_tests gtest gtest_main wow_library simulator)
+target_link_libraries(test_simulator gtest gtest_main wow_library simulator)
+
+add_test(NAME simulator_tests COMMAND test_simulator)
