@@ -19,13 +19,6 @@ enum class Race
     undead
 };
 
-enum class Talent
-{
-    fury,
-    arms,
-    none,
-};
-
 class Character
 {
 public:

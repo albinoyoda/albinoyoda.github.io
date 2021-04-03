@@ -3,9 +3,9 @@
 
 #include "Helper_functions.hpp"
 
-#include <Armory.hpp>
-#include <Character.hpp>
-#include <Combat_simulator.hpp>
+#include "include/Armory.hpp"
+#include <include/Character.hpp>
+#include "Combat_simulator.hpp"
 #include <algorithm>
 #include <ctime>
 #include <iostream>

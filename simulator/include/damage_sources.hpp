@@ -1,8 +1,6 @@
 #ifndef WOW_SIMULATOR_DAMAGE_SOURCES_HPP
 #define WOW_SIMULATOR_DAMAGE_SOURCES_HPP
 
-#include "Statistics.hpp"
-
 #include <string>
 #include <vector>
 

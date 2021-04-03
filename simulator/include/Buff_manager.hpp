@@ -1,9 +1,9 @@
 #ifndef WOW_SIMULATOR_BUFF_MANAGER_HPP
 #define WOW_SIMULATOR_BUFF_MANAGER_HPP
 
-#include "Attributes.hpp"
 #include "Helper_functions.hpp"
-#include "Item.hpp"
+#include "include/Attributes.hpp"
+#include "include/Item.hpp"
 
 #include <algorithm>
 #include <cmath>

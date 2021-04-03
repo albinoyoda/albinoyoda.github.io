@@ -1,4 +1,4 @@
-#include "../include/Character.hpp"
+#include "Character.hpp"
 
 #include <iostream>
 

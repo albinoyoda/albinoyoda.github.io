@@ -148,7 +148,7 @@ public:
         return {agility / 20 * multiplier, 0, strength * 2 * multiplier};
     }
 
-    Attributes operator+(const Attributes& rhs) { return {strength + rhs.strength, agility + rhs.agility}; }
+    Attributes operator+(const Attributes& rhs) const { return {strength + rhs.strength, agility + rhs.agility}; }
 
     Attributes& operator+=(const Attributes& rhs)
     {

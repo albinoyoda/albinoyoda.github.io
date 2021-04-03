@@ -1,5 +1,4 @@
 # Welcome to wow fury sim GitHub
-## Basics
 This is a C++ based wow classic simulator for fury warriors,
 the mechanics used in the simulator can be found in:
 https://github.com/magey/classic-warrior/wiki/Attack-table

@@ -1,10 +1,8 @@
+#include "Helper_functions.hpp"
+#include "include/Attributes.hpp"
+#include "sim_input_mult.hpp"
+
 #include "gtest/gtest.h"
-//#include <Armory.hpp>
-#include <Attributes.hpp>
-//#include <Item_optimizer.hpp>
-#include <Helper_functions.hpp>
-#include <sim_input_mult.hpp>
-//#include <sim_output_mult.hpp>
 
 TEST(TestSuite, test_find_value_class)
 {

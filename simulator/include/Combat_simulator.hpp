@@ -2,9 +2,8 @@
 #define WOW_SIMULATOR_COMBAT_SIMULATOR_HPP
 
 #include "Buff_manager.hpp"
-#include "Character.hpp"
+#include "include/Character.hpp"
 #include "Helper_functions.hpp"
-#include "Statistics.hpp"
 #include "damage_sources.hpp"
 #include "sim_input.hpp"
 #include "sim_input_mult.hpp"

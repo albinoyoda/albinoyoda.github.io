@@ -1,6 +1,5 @@
-#include "../include/Armory.hpp"
-
-#include <Character.hpp>
+#include "Armory.hpp"
+#include "Character.hpp"
 
 Attributes Armory::get_enchant_attributes(Socket socket, Enchant::Type type) const
 {
@@ -164,11 +163,6 @@ Hit_effect Armory::enchant_hit_effect(double weapon_speed, Enchant::Type type) c
         return {"crusader", Hit_effect::Type::stat_boost, {100, 0}, {0, 0, 0}, 0, 15, weapon_speed / 60};
     }
     return {"none", Hit_effect::Type::none, {}, {}, 0, 0, 0};
-}
-
-std::vector<Set_bonus> Armory::get_set_bonuses() const
-{
-    return set_bonuses;
 }
 
 void Armory::clean_weapon(Weapon& weapon) const

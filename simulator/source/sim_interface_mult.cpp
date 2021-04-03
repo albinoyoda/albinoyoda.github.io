@@ -1,9 +1,10 @@
-#include "Armory.hpp"
-#include "Character.hpp"
 #include "Combat_simulator.hpp"
 #include "Helper_functions.hpp"
 #include "Item_optimizer.hpp"
 #include "Item_popularity.hpp"
+#include "include/Armory.hpp"
+#include "include/Character.hpp"
+#include "include/Statistics.hpp"
 #include "sim_interface.hpp"
 
 #include <algorithm>
@@ -336,7 +337,7 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult& input)
     {
         for (size_t j = 0; j < best_character.armor.size(); j++)
         {
-             bool found = false;
+            bool found = false;
             for (auto& item : item_popularity[j])
             {
                 if (item.name == best_character.armor[j].name)

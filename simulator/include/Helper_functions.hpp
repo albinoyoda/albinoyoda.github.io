@@ -1,7 +1,7 @@
 #ifndef WOW_SIMULATOR_INTERFACE_HELPER_H
 #define WOW_SIMULATOR_INTERFACE_HELPER_H
 
-#include "Character.hpp"
+#include "include/Character.hpp"
 
 #include <iomanip>
 #include <sstream>

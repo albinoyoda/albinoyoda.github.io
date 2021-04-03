@@ -1,11 +1,12 @@
 #include "sim_interface.hpp"
 
-#include "Armory.hpp"
+#include "Combat_simulator.hpp"
 #include "Helper_functions.hpp"
+#include "Item_optimizer.hpp"
+#include "include/Armory.hpp"
+#include "include/Character.hpp"
+#include "include/Statistics.hpp"
 
-#include <Character.hpp>
-#include <Combat_simulator.hpp>
-#include <Item_optimizer.hpp>
 #include <sstream>
 
 namespace

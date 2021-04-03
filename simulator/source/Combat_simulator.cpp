@@ -1,4 +1,6 @@
-#include "../include/Combat_simulator.hpp"
+#include "Combat_simulator.hpp"
+
+#include "include/Statistics.hpp"
 
 #include <algorithm>
 

@@ -2,7 +2,7 @@
 #define WOW_SIMULATOR_ARMORY_HPP
 
 #include "Character.hpp"
-#include "Helper_functions.hpp"
+#include "../../simulator/include/Helper_functions.hpp"
 
 struct Buffs
 {
@@ -16,6 +16,7 @@ struct Buffs
     Buff sayges_fortune{"sayges_fortune", Attributes{0, 0}, Special_stats{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .1, 0, 0, 0, 0, 0, 0, 0, .1}};
     Buff traces_of_silithyst{"traces_of_silithyst", Attributes{0, 0}, Special_stats{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .05, 0, 0, 0, 0, 0, 0, 0, .05}};
     Buff fungal_bloom{"fungal_bloom", Attributes{0, 0}, Special_stats{50, 0, 0}};
+
     // these are set in "sim_interface.cpp" or "sim_interface_mult.cpp" depending on whats specified
     Buff full_polarity{"full_polarity", {}, {}};
     Buff battle_squawk{"battle_squawk", {}, {}};
@@ -742,15 +743,13 @@ struct Armory
 //    {"Arlokks_grasp",           Attributes{0, 0},  Special_stats{1, 0, 0}, 2.2, 72,  135,
 //            Weapon_socket::main_hand, Weapon_type::unarmed, std::vector<Hit_effect>(), Set::primal_blessing},
 
-    std::vector<Armor> get_items_in_socket(const Socket socket) const;
+    std::vector<Armor> get_items_in_socket(Socket socket) const;
 
-    std::vector<Weapon> get_weapon_in_socket(const Weapon_socket socket) const;
+    std::vector<Weapon> get_weapon_in_socket(Weapon_socket socket) const;
 
     Armor find_armor(Socket socket, const std::string &name) const;
 
     Weapon find_weapon(Weapon_socket weapon_socket, const std::string &name) const;
-
-    std::vector<Set_bonus> get_set_bonuses() const;
 
     Attributes get_enchant_attributes(Socket socket, Enchant::Type type) const;
 
