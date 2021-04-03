@@ -1,6 +1,7 @@
 #ifndef WOW_SIMULATOR_CHARACTER_HPP
 #define WOW_SIMULATOR_CHARACTER_HPP
 
+#include "Armory.hpp"
 #include "Item.hpp"
 
 #include <cassert>
@@ -17,13 +18,6 @@ enum class Race
     tauren,
     troll,
     undead
-};
-
-enum class Talent
-{
-    fury,
-    arms,
-    none,
 };
 
 class Character
@@ -190,6 +184,15 @@ public:
     Race race;
     int level;
 };
+
+Character character_setup(const Armory& armory, const std::string& race, const std::vector<std::string>& armor_vec,
+                          const std::vector<std::string>& weapons_vec, const std::vector<std::string>& buffs_vec,
+                          const std::vector<std::string>& talent_string, const std::vector<int>& talent_val,
+                          const std::vector<std::string>& ench_vec);
+
+Race get_race(const std::string& race);
+
+Character get_character_of_race(const std::string& race);
 
 std::ostream& operator<<(std::ostream& os, const Character& character);
 

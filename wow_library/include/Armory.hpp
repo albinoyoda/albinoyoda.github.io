@@ -1,8 +1,9 @@
 #ifndef WOW_SIMULATOR_ARMORY_HPP
 #define WOW_SIMULATOR_ARMORY_HPP
 
-#include "Character.hpp"
-#include "Helper_functions.hpp"
+#include "Item.hpp"
+
+class Character;
 
 struct Buffs
 {
@@ -16,6 +17,7 @@ struct Buffs
     Buff sayges_fortune{"sayges_fortune", Attributes{0, 0}, Special_stats{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .1, 0, 0, 0, 0, 0, 0, 0, .1}};
     Buff traces_of_silithyst{"traces_of_silithyst", Attributes{0, 0}, Special_stats{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .05, 0, 0, 0, 0, 0, 0, 0, .05}};
     Buff fungal_bloom{"fungal_bloom", Attributes{0, 0}, Special_stats{50, 0, 0}};
+
     // these are set in "sim_interface.cpp" or "sim_interface_mult.cpp" depending on whats specified
     Buff full_polarity{"full_polarity", {}, {}};
     Buff battle_squawk{"battle_squawk", {}, {}};
@@ -225,6 +227,7 @@ struct Armory
                     {"icebane_breastplate",              Attributes{12, 0}, Special_stats{0, 0, 0},        Socket::chest},
                     {"icy_scale_breastplate",              Attributes{0, 0}, Special_stats{0, 0, 40},        Socket::chest},
                     {"polar_tunic",              Attributes{0, 18}, Special_stats{0, 0, 0},        Socket::chest},
+                    {"primal_batskin_jerkin",              Attributes{0, 32}, Special_stats{0, 1, 0},        Socket::chest},
             };
 
     std::vector<Armor> wrists_t
@@ -250,6 +253,7 @@ struct Armory
                     {"icebane_bracers",           Attributes{6, 0}, Special_stats{0, 0, 0}, Socket::wrist},
                     {"icy_scale_bracers",           Attributes{0, 0}, Special_stats{0, 0, 32}, Socket::wrist},
                     {"polar_bracers",           Attributes{0, 12}, Special_stats{0, 0, 0}, Socket::wrist},
+                    {"primal_batskin_bracers",           Attributes{0, 14}, Special_stats{0, 1, 0}, Socket::wrist},
             };
 
     std::vector<Armor> hands_t
@@ -289,6 +293,7 @@ struct Armory
                     {"icebane_gauntlets",     Attributes{9, 0}, Special_stats{0, 0, 0}, Socket::hands},
                     {"icy_scale_gauntlets",     Attributes{0, 0}, Special_stats{0, 0, 22}, Socket::hands},
                     {"polar_gloves",     Attributes{0, 18}, Special_stats{0, 0, 0}, Socket::hands},
+                    {"primal_batskin_gloves",     Attributes{0, 10}, Special_stats{0, 2, 0}, Socket::hands},
             };
 
     std::vector<Armor> belt_t
@@ -315,6 +320,7 @@ struct Armory
                     {"dreadnaught_waistguard",                 Attributes{20, 0},  Special_stats{0, 0, 0},        Socket::belt, Set::dreadnaughts_battlegear},
                     {"frostbite_girdle",                 Attributes{5, 15},  Special_stats{0, 0, 0},        Socket::belt},
                     {"unmelting_ice_girdle",                 Attributes{14, 14},  Special_stats{0, 0, 0},        Socket::belt},
+                    {"ossirians_binding",                 Attributes{0, 20},  Special_stats{1, 1, 0},        Socket::belt},
             };
 
     std::vector<Armor> legs_t
@@ -742,15 +748,13 @@ struct Armory
 //    {"Arlokks_grasp",           Attributes{0, 0},  Special_stats{1, 0, 0}, 2.2, 72,  135,
 //            Weapon_socket::main_hand, Weapon_type::unarmed, std::vector<Hit_effect>(), Set::primal_blessing},
 
-    std::vector<Armor> get_items_in_socket(const Socket socket) const;
+    std::vector<Armor> get_items_in_socket(Socket socket) const;
 
-    std::vector<Weapon> get_weapon_in_socket(const Weapon_socket socket) const;
+    std::vector<Weapon> get_weapon_in_socket(Weapon_socket socket) const;
 
     Armor find_armor(Socket socket, const std::string &name) const;
 
     Weapon find_weapon(Weapon_socket weapon_socket, const std::string &name) const;
-
-    std::vector<Set_bonus> get_set_bonuses() const;
 
     Attributes get_enchant_attributes(Socket socket, Enchant::Type type) const;
 

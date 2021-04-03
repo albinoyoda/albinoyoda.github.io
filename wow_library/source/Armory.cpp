@@ -1,13 +1,14 @@
-#include "../include/Armory.hpp"
+#include "Armory.hpp"
 
-#include <Character.hpp>
+#include "Character.hpp"
+#include "find_values.hpp"
+#include "string_helpers.hpp"
 
 Attributes Armory::get_enchant_attributes(Socket socket, Enchant::Type type) const
 {
     switch (socket)
     {
-    case Socket::head:
-    {
+    case Socket::head: {
         switch (type)
         {
         case Enchant::Type::agility:
@@ -18,8 +19,7 @@ Attributes Armory::get_enchant_attributes(Socket socket, Enchant::Type type) con
             return {0, 0};
         }
     }
-    case Socket::back:
-    {
+    case Socket::back: {
         switch (type)
         {
         case Enchant::Type::agility:
@@ -28,8 +28,7 @@ Attributes Armory::get_enchant_attributes(Socket socket, Enchant::Type type) con
             return {0, 0};
         }
     }
-    case Socket::chest:
-    {
+    case Socket::chest: {
         switch (type)
         {
         case Enchant::Type::minor_stats:
@@ -40,8 +39,7 @@ Attributes Armory::get_enchant_attributes(Socket socket, Enchant::Type type) con
             return {0, 0};
         }
     }
-    case Socket::wrist:
-    {
+    case Socket::wrist: {
         switch (type)
         {
         case Enchant::Type::strength7:
@@ -52,8 +50,7 @@ Attributes Armory::get_enchant_attributes(Socket socket, Enchant::Type type) con
             return {0, 0};
         }
     }
-    case Socket::hands:
-    {
+    case Socket::hands: {
         switch (type)
         {
         case Enchant::Type::agility:
@@ -66,8 +63,7 @@ Attributes Armory::get_enchant_attributes(Socket socket, Enchant::Type type) con
             return {0, 0};
         }
     }
-    case Socket::legs:
-    {
+    case Socket::legs: {
         switch (type)
         {
         case Enchant::Type::agility:
@@ -78,8 +74,7 @@ Attributes Armory::get_enchant_attributes(Socket socket, Enchant::Type type) con
             return {0, 0};
         }
     }
-    case Socket::boots:
-    {
+    case Socket::boots: {
         switch (type)
         {
         case Enchant::Type::agility:
@@ -89,8 +84,7 @@ Attributes Armory::get_enchant_attributes(Socket socket, Enchant::Type type) con
         }
     }
     case Socket::main_hand:
-    case Socket::off_hand:
-    {
+    case Socket::off_hand: {
         switch (type)
         {
         case Enchant::Type::agility:
@@ -110,8 +104,7 @@ Special_stats Armory::get_enchant_special_stats(Socket socket, Enchant::Type typ
 {
     switch (socket)
     {
-    case Socket::head:
-    {
+    case Socket::head: {
         switch (type)
         {
         case Enchant::Type::haste:
@@ -120,8 +113,7 @@ Special_stats Armory::get_enchant_special_stats(Socket socket, Enchant::Type typ
             return {0, 0, 0};
         }
     }
-    case Socket::shoulder:
-    {
+    case Socket::shoulder: {
         switch (type)
         {
         case Enchant::Type::attack_power:
@@ -132,8 +124,7 @@ Special_stats Armory::get_enchant_special_stats(Socket socket, Enchant::Type typ
             return {0, 0, 0};
         }
     }
-    case Socket::hands:
-    {
+    case Socket::hands: {
         switch (type)
         {
         case Enchant::Type::haste:
@@ -142,8 +133,7 @@ Special_stats Armory::get_enchant_special_stats(Socket socket, Enchant::Type typ
             return {0, 0, 0};
         }
     }
-    case Socket::legs:
-    {
+    case Socket::legs: {
         switch (type)
         {
         case Enchant::Type::haste:
@@ -166,13 +156,9 @@ Hit_effect Armory::enchant_hit_effect(double weapon_speed, Enchant::Type type) c
     return {"none", Hit_effect::Type::none, {}, {}, 0, 0, 0};
 }
 
-std::vector<Set_bonus> Armory::get_set_bonuses() const
-{
-    return set_bonuses;
-}
-
 void Armory::clean_weapon(Weapon& weapon) const
 {
+    // TODO remove from armory.
     if (!weapon.hit_effects.empty())
     {
         auto temp = weapon.hit_effects;
@@ -482,8 +468,7 @@ std::vector<Weapon> Armory::get_weapon_in_socket(const Weapon_socket socket) con
 {
     switch (socket)
     {
-    case Weapon_socket::main_hand:
-    {
+    case Weapon_socket::main_hand: {
         std::vector<Weapon> mh_weapons{};
         for (const auto& wep : swords_t)
         {
@@ -522,8 +507,7 @@ std::vector<Weapon> Armory::get_weapon_in_socket(const Weapon_socket socket) con
         }
         return mh_weapons;
     }
-    case Weapon_socket::off_hand:
-    {
+    case Weapon_socket::off_hand: {
         std::vector<Weapon> oh_weapons{};
         for (const auto& wep : swords_t)
         {
@@ -562,8 +546,7 @@ std::vector<Weapon> Armory::get_weapon_in_socket(const Weapon_socket socket) con
         }
         return oh_weapons;
     }
-    case Weapon_socket ::two_hand:
-    {
+    case Weapon_socket ::two_hand: {
         std::vector<Weapon> th_weapons{};
         for (const auto& wep : two_handed_swords_t)
         {
@@ -747,100 +730,100 @@ Weapon Armory::find_weapon(Weapon_socket socket, const std::string& name) const
 
 void Armory::add_enchants_to_character(Character& character, const std::vector<std::string>& ench_vec) const
 {
-    if (find_string(ench_vec, "e+8 strength"))
+    if (String_helpers::find_string(ench_vec, "e+8 strength"))
     {
         character.add_enchant(Socket::head, Enchant::Type::strength);
     }
-    else if (find_string(ench_vec, "e+1 haste"))
+    else if (String_helpers::find_string(ench_vec, "e+1 haste"))
     {
         character.add_enchant(Socket::head, Enchant::Type::haste);
     }
 
-    if (find_string(ench_vec, "s+30 attack_power"))
+    if (String_helpers::find_string(ench_vec, "s+30 attack_power"))
     {
         character.add_enchant(Socket::shoulder, Enchant::Type::attack_power);
     }
-    else if (find_string(ench_vec, "snaxxramas"))
+    else if (String_helpers::find_string(ench_vec, "snaxxramas"))
     {
         character.add_enchant(Socket::shoulder, Enchant::Type::naxxramas);
     }
 
-    if (find_string(ench_vec, "b+3 agility"))
+    if (String_helpers::find_string(ench_vec, "b+3 agility"))
     {
         character.add_enchant(Socket::back, Enchant::Type::agility);
     }
 
-    if (find_string(ench_vec, "c+3 stats"))
+    if (String_helpers::find_string(ench_vec, "c+3 stats"))
     {
         character.add_enchant(Socket::chest, Enchant::Type::minor_stats);
     }
-    else if (find_string(ench_vec, "c+4 stats"))
+    else if (String_helpers::find_string(ench_vec, "c+4 stats"))
     {
         character.add_enchant(Socket::chest, Enchant::Type::major_stats);
     }
 
-    if (find_string(ench_vec, "w+7 strength"))
+    if (String_helpers::find_string(ench_vec, "w+7 strength"))
     {
         character.add_enchant(Socket::wrist, Enchant::Type::strength7);
     }
-    else if (find_string(ench_vec, "w+9 strength"))
+    else if (String_helpers::find_string(ench_vec, "w+9 strength"))
     {
         character.add_enchant(Socket::wrist, Enchant::Type::strength9);
     }
 
-    if (find_string(ench_vec, "h+7 strength"))
+    if (String_helpers::find_string(ench_vec, "h+7 strength"))
     {
         character.add_enchant(Socket::hands, Enchant::Type::strength);
     }
-    else if (find_string(ench_vec, "h+7 agility"))
+    else if (String_helpers::find_string(ench_vec, "h+7 agility"))
     {
         character.add_enchant(Socket::hands, Enchant::Type::agility);
     }
-    else if (find_string(ench_vec, "h+15 agility"))
+    else if (String_helpers::find_string(ench_vec, "h+15 agility"))
     {
         character.add_enchant(Socket::hands, Enchant::Type::greater_agility);
     }
-    else if (find_string(ench_vec, "h+1 haste"))
+    else if (String_helpers::find_string(ench_vec, "h+1 haste"))
     {
         character.add_enchant(Socket::hands, Enchant::Type::haste);
     }
 
-    if (find_string(ench_vec, "l+8 strength"))
+    if (String_helpers::find_string(ench_vec, "l+8 strength"))
     {
         character.add_enchant(Socket::legs, Enchant::Type::strength);
     }
-    else if (find_string(ench_vec, "l+1 haste"))
+    else if (String_helpers::find_string(ench_vec, "l+1 haste"))
     {
         character.add_enchant(Socket::legs, Enchant::Type::haste);
     }
 
-    if (find_string(ench_vec, "b+7 agility"))
+    if (String_helpers::find_string(ench_vec, "b+7 agility"))
     {
         character.add_enchant(Socket::boots, Enchant::Type::agility);
     }
 
-    if (find_string(ench_vec, "mcrusader"))
+    if (String_helpers::find_string(ench_vec, "mcrusader"))
     {
         character.add_enchant(Socket::main_hand, Enchant::Type::crusader);
     }
-    else if (find_string(ench_vec, "m+15 agility"))
+    else if (String_helpers::find_string(ench_vec, "m+15 agility"))
     {
         character.add_enchant(Socket::main_hand, Enchant::Type::agility);
     }
-    else if (find_string(ench_vec, "m+15 strength"))
+    else if (String_helpers::find_string(ench_vec, "m+15 strength"))
     {
         character.add_enchant(Socket::main_hand, Enchant::Type::strength);
     }
 
-    if (find_string(ench_vec, "ocrusader"))
+    if (String_helpers::find_string(ench_vec, "ocrusader"))
     {
         character.add_enchant(Socket::off_hand, Enchant::Type::crusader);
     }
-    else if (find_string(ench_vec, "o+15 agility"))
+    else if (String_helpers::find_string(ench_vec, "o+15 agility"))
     {
         character.add_enchant(Socket::off_hand, Enchant::Type::agility);
     }
-    else if (find_string(ench_vec, "o+15 strength"))
+    else if (String_helpers::find_string(ench_vec, "o+15 strength"))
     {
         character.add_enchant(Socket::off_hand, Enchant::Type::strength);
     }
@@ -848,55 +831,55 @@ void Armory::add_enchants_to_character(Character& character, const std::vector<s
 
 void Armory::add_buffs_to_character(Character& character, const std::vector<std::string>& buffs_vec) const
 {
-    if (find_string(buffs_vec, "fungal_bloom"))
+    if (String_helpers::find_string(buffs_vec, "fungal_bloom"))
     {
         character.add_buff(buffs.fungal_bloom);
     }
-    if (find_string(buffs_vec, "full_polarity"))
+    if (String_helpers::find_string(buffs_vec, "full_polarity"))
     {
         character.add_buff(buffs.full_polarity);
     }
-    if (find_string(buffs_vec, "battle_squawk"))
+    if (String_helpers::find_string(buffs_vec, "battle_squawk"))
     {
         character.add_buff(buffs.battle_squawk);
     }
-    if (find_string(buffs_vec, "rallying_cry"))
+    if (String_helpers::find_string(buffs_vec, "rallying_cry"))
     {
         character.add_buff(buffs.rallying_cry);
     }
-    if (find_string(buffs_vec, "dire_maul"))
+    if (String_helpers::find_string(buffs_vec, "dire_maul"))
     {
         character.add_buff(buffs.dire_maul);
     }
-    if (find_string(buffs_vec, "slipkiks_savy"))
+    if (String_helpers::find_string(buffs_vec, "slipkiks_savy"))
     {
         character.add_buff(buffs.slipkiks_savy);
     }
-    if (find_string(buffs_vec, "songflower"))
+    if (String_helpers::find_string(buffs_vec, "songflower"))
     {
         character.add_buff(buffs.songflower);
     }
-    if (find_string(buffs_vec, "warchiefs_blessing"))
+    if (String_helpers::find_string(buffs_vec, "warchiefs_blessing"))
     {
         character.add_buff(buffs.warchiefs_blessing);
     }
-    if (find_string(buffs_vec, "spirit_of_zandalar"))
+    if (String_helpers::find_string(buffs_vec, "spirit_of_zandalar"))
     {
         character.add_buff(buffs.spirit_of_zandalar);
     }
-    if (find_string(buffs_vec, "sayges_fortune"))
+    if (String_helpers::find_string(buffs_vec, "sayges_fortune"))
     {
         character.add_buff(buffs.sayges_fortune);
     }
-    if (find_string(buffs_vec, "traces_of_silithyst"))
+    if (String_helpers::find_string(buffs_vec, "traces_of_silithyst"))
     {
         character.add_buff(buffs.traces_of_silithyst);
     }
 
     // Player buffs
-    if (find_string(buffs_vec, "battle_shout"))
+    if (String_helpers::find_string(buffs_vec, "battle_shout"))
     {
-        if (find_string(buffs_vec, "battle_shout_aq"))
+        if (String_helpers::find_string(buffs_vec, "battle_shout_aq"))
         {
             character.add_buff(buffs.battle_shout_aq);
         }
@@ -905,13 +888,13 @@ void Armory::add_buffs_to_character(Character& character, const std::vector<std:
             character.add_buff(buffs.battle_shout);
         }
     }
-    if (find_string(buffs_vec, "blessing_of_kings"))
+    if (String_helpers::find_string(buffs_vec, "blessing_of_kings"))
     {
         character.add_buff(buffs.blessing_of_kings);
     }
-    if (find_string(buffs_vec, "blessing_of_might"))
+    if (String_helpers::find_string(buffs_vec, "blessing_of_might"))
     {
-        if (find_string(buffs_vec, "blessing_of_might_aq"))
+        if (String_helpers::find_string(buffs_vec, "blessing_of_might_aq"))
         {
             character.add_buff(buffs.blessing_of_might_aq);
         }
@@ -920,110 +903,111 @@ void Armory::add_buffs_to_character(Character& character, const std::vector<std:
             character.add_buff(buffs.blessing_of_might);
         }
     }
-    if (find_string(buffs_vec, "windfury_totem"))
+    if (String_helpers::find_string(buffs_vec, "windfury_totem"))
     {
         Buff totem = buffs.windfury_totem;
-        if (find_string(buffs_vec, "improved_weapon_totems"))
+        if (String_helpers::find_string(buffs_vec, "improved_weapon_totems"))
         {
             totem.hit_effects[0].attack_power_boost *= 1.3;
         }
         character.add_buff(totem);
     }
-    if (find_string(buffs_vec, "strength_of_earth_totem"))
+    if (String_helpers::find_string(buffs_vec, "strength_of_earth_totem"))
     {
-        Buff totem = (find_string(buffs_vec, "strength_of_earth_totem_aq")) ? buffs.strength_of_earth_totem_aq :
-                                                                              buffs.strength_of_earth_totem;
-        if (find_string(buffs_vec, "enhancing_totems"))
+        Buff totem = (String_helpers::find_string(buffs_vec, "strength_of_earth_totem_aq")) ?
+                         buffs.strength_of_earth_totem_aq :
+                         buffs.strength_of_earth_totem;
+        if (String_helpers::find_string(buffs_vec, "enhancing_totems"))
         {
             totem.attributes.strength *= 1.15;
         }
         character.add_buff(totem);
     }
-    if (find_string(buffs_vec, "grace_of_air_totem"))
+    if (String_helpers::find_string(buffs_vec, "grace_of_air_totem"))
     {
-        Buff totem =
-            (find_string(buffs_vec, "grace_of_air_totem_aq")) ? buffs.grace_of_air_totem_aq : buffs.grace_of_air_totem;
-        if (find_string(buffs_vec, "enhancing_totems"))
+        Buff totem = (String_helpers::find_string(buffs_vec, "grace_of_air_totem_aq")) ? buffs.grace_of_air_totem_aq :
+                                                                                         buffs.grace_of_air_totem;
+        if (String_helpers::find_string(buffs_vec, "enhancing_totems"))
         {
             totem.attributes.agility *= 1.15;
         }
         character.add_buff(totem);
     }
-    if (find_string(buffs_vec, "gift_of_the_wild"))
+    if (String_helpers::find_string(buffs_vec, "gift_of_the_wild"))
     {
         character.add_buff(buffs.gift_of_the_wild);
     }
-    if (find_string(buffs_vec, "leader_of_the_pack"))
+    if (String_helpers::find_string(buffs_vec, "leader_of_the_pack"))
     {
         character.add_buff(buffs.leader_of_the_pack);
     }
-    if (find_string(buffs_vec, "trueshot_aura"))
+    if (String_helpers::find_string(buffs_vec, "trueshot_aura"))
     {
         character.add_buff(buffs.trueshot_aura);
     }
-    if (find_string(buffs_vec, "elixir_mongoose"))
+    if (String_helpers::find_string(buffs_vec, "elixir_mongoose"))
     {
         character.add_buff(buffs.elixir_mongoose);
     }
-    if (find_string(buffs_vec, "blessed_sunfruit"))
+    if (String_helpers::find_string(buffs_vec, "blessed_sunfruit"))
     {
         character.add_buff(buffs.blessed_sunfruit);
     }
-    if (find_string(buffs_vec, "smoked_dessert_dumplings"))
+    if (String_helpers::find_string(buffs_vec, "smoked_dessert_dumplings"))
     {
         character.add_buff(buffs.smoked_dessert_dumplings);
     }
-    if (find_string(buffs_vec, "juju_power"))
+    if (String_helpers::find_string(buffs_vec, "juju_power"))
     {
         character.add_buff(buffs.juju_power);
     }
-    if (find_string(buffs_vec, "elixir_of_giants"))
+    if (String_helpers::find_string(buffs_vec, "elixir_of_giants"))
     {
         character.add_buff(buffs.elixir_of_giants);
     }
-    if (find_string(buffs_vec, "juju_might"))
+    if (String_helpers::find_string(buffs_vec, "juju_might"))
     {
         character.add_buff(buffs.juju_might);
     }
-    if (find_string(buffs_vec, "winterfall_firewater"))
+    if (String_helpers::find_string(buffs_vec, "winterfall_firewater"))
     {
         character.add_buff(buffs.winterfall_firewater);
     }
-    if (find_string(buffs_vec, "roids"))
+    if (String_helpers::find_string(buffs_vec, "roids"))
     {
         character.add_buff(buffs.roids);
     }
-    if (find_string(buffs_vec, "fire_toasted_bun"))
+    if (String_helpers::find_string(buffs_vec, "fire_toasted_bun"))
     {
         character.add_buff(buffs.fire_toasted_bun);
     }
-    if (find_string(buffs_vec, "mighty_rage_potion"))
+    if (String_helpers::find_string(buffs_vec, "mighty_rage_potion"))
     {
         character.add_buff(buffs.mighty_rage_potion);
     }
 
-    if (find_string(buffs_vec, "dense_stone_main_hand"))
+    if (String_helpers::find_string(buffs_vec, "dense_stone_main_hand"))
     {
         character.add_weapon_buff(Socket::main_hand, buffs.dense_stone);
     }
-    else if (find_string(buffs_vec, "elemental_stone_main_hand"))
+    else if (String_helpers::find_string(buffs_vec, "elemental_stone_main_hand"))
     {
         character.add_buff(buffs.elemental_stone);
     }
-    else if (find_string(buffs_vec, "consecrated_sharpening_stone_main_hand"))
+    else if (String_helpers::find_string(buffs_vec, "consecrated_sharpening_stone_main_hand"))
     {
         character.add_buff(buffs.consecrated_sharpening_stone);
     }
 
-    if (find_string(buffs_vec, "dense_stone_off_hand"))
+    if (String_helpers::find_string(buffs_vec, "dense_stone_off_hand"))
     {
         character.add_weapon_buff(Socket::off_hand, buffs.dense_stone);
     }
-    else if (find_string(buffs_vec, "elemental_stone_off_hand"))
+    else if (String_helpers::find_string(buffs_vec, "elemental_stone_off_hand"))
     {
         character.add_buff(buffs.elemental_stone);
     }
-    else if (find_string(buffs_vec, "consecrated_sharpening_stone_off_hand"))
+    else if (String_helpers::find_string(buffs_vec, "consecrated_sharpening_stone_off_hand"))
     {
         character.add_buff(buffs.consecrated_sharpening_stone);
     }

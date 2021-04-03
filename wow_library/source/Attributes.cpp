@@ -1,4 +1,4 @@
-#include "../include/Attributes.hpp"
+#include "Attributes.hpp"
 
 double multiplicative_addition(double val1, double val2)
 {
