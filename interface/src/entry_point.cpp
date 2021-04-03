@@ -1,4 +1,4 @@
-#include "sim_interface.hpp"
+#include "../../simulator/include/sim_interface.hpp"
 
 #include <emscripten/bind.h>
 

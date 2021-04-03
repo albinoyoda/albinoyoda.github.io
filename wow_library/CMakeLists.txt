@@ -15,4 +15,6 @@ target_include_directories(wow_library PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(wow_library)
 
-add_subdirectory(tests)
+if (NOT EMSCRIPTEN)
+    add_subdirectory(tests)
+endif ()

@@ -3,7 +3,7 @@
 Damage_sources::Damage_sources()
 {
     damage_instances.reserve(500);
-};
+}
 
 Damage_sources& Damage_sources::operator+(const Damage_sources& rhs)
 {

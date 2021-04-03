@@ -19,4 +19,6 @@ target_include_directories(simulator PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(simulator statistics wow_library)
 
-add_subdirectory(tests)
+if (NOT EMSCRIPTEN)
+    add_subdirectory(tests)
+endif ()
