@@ -32,7 +32,8 @@ TEST(TestSuite, test_ap_estimation)
     special_stats.dagger_skill = 311;
     special_stats.mace_skill = 311;
     special_stats.fist_skill = 311;
-    special_stats.damage_multiplier = 0.1;
+    special_stats.damage_mod_physical = 0.1;
+    special_stats.damage_mod_spell = 0.1;
     special_stats.stat_multiplier = 0.265;
     special_stats.bonus_damage = 10;
 
