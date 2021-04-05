@@ -1,5 +1,5 @@
 # Welcome to wow fury sim GitHub
-[![wow-fury-sim Actions Status](https://github.com/albinoyoda/wow_classic_simulator/workflows/CMake/badge.svg)](https://github.com/albinoyoda/wow_classic_simulator/actions)
+[![wow-fury-sim Actions Status](https://github.com/albinoyoda/wow_classic_simulator/workflows/Pipeline/badge.svg)](https://github.com/albinoyoda/wow_classic_simulator/actions)
 
 This is a C++ based wow classic simulator for fury warriors,
 the mechanics used in the simulator can be found in:
