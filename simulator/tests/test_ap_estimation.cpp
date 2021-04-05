@@ -1,5 +1,5 @@
 #include "Combat_simulator.hpp"
-#include "include/Armory.hpp"
+#include "Armory.hpp"
 
 #include "gtest/gtest.h"
 

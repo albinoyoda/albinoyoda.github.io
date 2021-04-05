@@ -7,7 +7,7 @@ include(FetchContent)
 FetchContent_Declare(
         googletest
         GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG        release-1.10.0
+        GIT_TAG release-1.10.0
 )
 FetchContent_MakeAvailable(googletest)
 
@@ -18,14 +18,16 @@ FetchContent_MakeAvailable(googletest)
 #)
 #FetchContent_MakeAvailable(emscripten)
 
-include(CTest)
+#include(CTest)
 enable_testing()
 
+add_compile_options(-Wall -Wextra -pedantic -Werror)
 if (CMAKE_BUILD_TYPE MATCHES Debug)
-    message("Building ${CMAKE_PROJECT_NAME} in debug mode")
-    add_compile_options(-Wall -Wextra -pedantic -Werror)
+    message("Building ${CMAKE_PROJECT_NAME} in Debug mode")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -Wunused -std=c++14 -pedantic")
 else ()
-    add_compile_options(-O2)
+    message("Building ${CMAKE_PROJECT_NAME} in Release mode")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -O2")
 endif ()
 
 add_subdirectory(simulator)

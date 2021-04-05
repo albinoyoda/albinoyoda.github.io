@@ -1,10 +1,8 @@
 set(CMAKE_CXX_STANDARD 14)
 project(simulator)
 
-include_directories(include)
-
 add_library(
-        simulator
+        ${PROJECT_NAME}
         source/Combat_simulator.cpp
         source/weapon_sim.cpp
         source/sim_interface.cpp
@@ -15,9 +13,9 @@ add_library(
         source/Helper_functions.cpp
 )
 
-target_include_directories(simulator PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC include ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(simulator statistics wow_library)
+target_link_libraries(${PROJECT_NAME} statistics wow_library)
 
 if (NOT EMSCRIPTEN)
     add_subdirectory(tests)

@@ -1,7 +1,7 @@
 project(test_wow_library)
 
-add_executable(test_wow_library test_attributes.cpp)
+add_executable(${PROJECT_NAME} test_attributes.cpp)
 
-target_link_libraries(test_wow_library gtest gtest_main wow_library)
+target_link_libraries(${PROJECT_NAME} gtest_main wow_library)
 
-add_test(NAME wow_library_tests COMMAND test_wow_library)
+add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
