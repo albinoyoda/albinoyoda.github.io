@@ -48,4 +48,4 @@ jobs:
     - name: BuildEmscripten
       working-directory: ${{github.workspace}}
       shell: pwsh
-      run: .\build.ps1
+      run: .\docker_cmake.ps1
