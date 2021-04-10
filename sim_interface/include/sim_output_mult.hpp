@@ -1,7 +1,8 @@
 #ifndef COVID_OUTPUT_MULT_HPP
 #define COVID_OUTPUT_MULT_HPP
 
-#include <utility>
+#include <string>
+#include <vector>
 
 struct Sim_output_mult
 {

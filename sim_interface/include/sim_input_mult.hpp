@@ -1,6 +1,7 @@
 #ifndef SIM_INPUT_MULT_HPP
 #define SIM_INPUT_MULT_HPP
 
+#include <string>
 #include <vector>
 
 struct Sim_input_mult

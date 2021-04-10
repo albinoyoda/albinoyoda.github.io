@@ -4,22 +4,15 @@ project(wow_simulator)
 
 include(FetchContent)
 
-FetchContent_Declare(
-        googletest
-        GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG release-1.10.0
-)
-FetchContent_MakeAvailable(googletest)
-
-#FetchContent_Declare(
-#        emscripten
-#        GIT_REPOSITORY https://github.com/emscripten-core/emscripten.git
-#        GIT_TAG        main
-#)
-#FetchContent_MakeAvailable(emscripten)
-
-#include(CTest)
-enable_testing()
+if (NOT EMSCRIPTEN)
+    FetchContent_Declare(
+            googletest
+            GIT_REPOSITORY https://github.com/google/googletest.git
+            GIT_TAG release-1.10.0
+    )
+    FetchContent_MakeAvailable(googletest)
+    enable_testing()
+endif ()
 
 add_compile_options(-Wall -Wextra -pedantic -Werror)
 if (CMAKE_BUILD_TYPE MATCHES Debug)
@@ -33,8 +26,12 @@ endif ()
 add_subdirectory(simulator)
 add_subdirectory(statistics)
 add_subdirectory(wow_library)
-add_subdirectory(local_build)
+add_subdirectory(sim_interface)
+
+if (NOT EMSCRIPTEN)
+    add_subdirectory(local_build)
+endif ()
 
 if (EMSCRIPTEN)
-    add_subdirectory(interface)
+    add_subdirectory(website)
 endif ()

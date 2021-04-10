@@ -1,12 +1,12 @@
 #ifndef WOW_SIMULATOR_COMBAT_SIMULATOR_HPP
 #define WOW_SIMULATOR_COMBAT_SIMULATOR_HPP
 
-#include "Buff_manager.hpp"
-#include "include/Character.hpp"
-#include "Helper_functions.hpp"
-#include "damage_sources.hpp"
 #include "sim_input.hpp"
 #include "sim_input_mult.hpp"
+#include "Buff_manager.hpp"
+#include "Helper_functions.hpp"
+#include "damage_sources.hpp"
+#include "Character.hpp"
 #include "time_keeper.hpp"
 #include "weapon_sim.hpp"
 

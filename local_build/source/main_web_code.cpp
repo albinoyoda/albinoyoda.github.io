@@ -1,4 +1,4 @@
-#include "../../simulator/include/sim_interface.hpp"
+#include "sim_interface.hpp"
 
 #include <ctime>
 #include <iostream>

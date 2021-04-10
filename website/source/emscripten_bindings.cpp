@@ -1,5 +1,4 @@
 #include "sim_interface.hpp"
-
 #include "emscripten/bind.h"
 
 using namespace emscripten;

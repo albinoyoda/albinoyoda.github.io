@@ -44,7 +44,7 @@ class Weapon_category:
         self.items.append(wep_name + "*" + wep_hand)
 
 
-file = "/../wow_library/include/Armory.hpp"
+file = "../../wow_library/include/Armory.hpp"
 path = os.getcwd() + file
 file1 = open(path, "r")
 lines = file1.readlines()
@@ -108,7 +108,7 @@ for wep_type in weapons:
     wep_type.items = list(set(wep_type.items))
     wep_type.items.sort()
 
-with open("index.html", "r") as f:
+with open("../index.html", "r") as f:
     lines = f.readlines()
 
 for armors in armor_types:
@@ -297,7 +297,7 @@ for wep_type in weapons:
 generated.append('</select>\n')
 tot_generated.append(generated)
 
-file1 = open("index.html", "w")
+file1 = open("../index.html", "w")
 all_lines = copy_line_chunks[0] + tot_generated[0] + copy_line_chunks[1] + tot_generated[1] + copy_line_chunks[2] + \
             tot_generated[2] + copy_line_chunks[3] + tot_generated[3] + tot_generated[4] + copy_line_chunks[4]
 for line in all_lines:

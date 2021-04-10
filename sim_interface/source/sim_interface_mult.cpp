@@ -1,3 +1,4 @@
+#include "sim_interface.hpp"
 #include "Combat_simulator.hpp"
 #include "Helper_functions.hpp"
 #include "Item_optimizer.hpp"
@@ -5,7 +6,6 @@
 #include "include/Armory.hpp"
 #include "include/Character.hpp"
 #include "include/Statistics.hpp"
-#include "sim_interface.hpp"
 
 #include <algorithm>
 #include <ctime>
