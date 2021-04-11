@@ -20,6 +20,8 @@ double update_mean(double mean, int tot_samples, double new_sample);
 
 double update_variance(double variance, double mean, int tot_samples, double new_sample);
 
+double get_two_sided_p_value(double p_value);
+
 double normalCDF(double value);
 
 double find_cdf_quantile(double target_quantile, double precision);

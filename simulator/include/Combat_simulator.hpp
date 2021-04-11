@@ -9,6 +9,7 @@
 #include "sim_input_mult.hpp"
 #include "time_keeper.hpp"
 #include "weapon_sim.hpp"
+#include "Distribution.hpp"
 
 #include <array>
 #include <cassert>
@@ -310,58 +311,60 @@ public:
 
     std::vector<std::pair<double, Use_effect>> get_use_effect_order(const Character& character);
 
-    const std::vector<double>& get_hit_probabilities_white_mh() const;
+    [[nodiscard]] const std::vector<double>& get_hit_probabilities_white_mh() const;
 
-    const std::vector<double>& get_hit_probabilities_white_oh() const;
+    [[nodiscard]] const std::vector<double>& get_hit_probabilities_white_oh() const;
 
-    const std::vector<double>& get_hit_probabilities_white_2h() const;
+    [[nodiscard]] const std::vector<double>& get_hit_probabilities_white_2h() const;
 
-    const std::vector<double>& get_hit_probabilities_yellow() const;
+    [[nodiscard]] const std::vector<double>& get_hit_probabilities_yellow() const;
 
-    double get_glancing_penalty_mh() const;
+    [[nodiscard]] double get_glancing_penalty_mh() const;
 
-    double get_glancing_penalty_oh() const;
+    [[nodiscard]] double get_glancing_penalty_oh() const;
 
     void cout_damage_parse(Combat_simulator::Hit_type hit_type, Socket weapon_hand,
                            Combat_simulator::Hit_outcome hit_outcome);
 
     void add_damage_source_to_time_lapse(std::vector<Damage_instance>& damage_instances);
 
-    std::vector<std::string> get_aura_uptimes() const;
+    [[nodiscard]] std::vector<std::string> get_aura_uptimes() const;
 
-    std::vector<std::string> get_proc_statistics() const;
+    [[nodiscard]] std::vector<std::string> get_proc_statistics() const;
 
     void reset_time_lapse();
 
-    std::vector<std::vector<double>> get_damage_time_lapse() const;
+    [[nodiscard]] std::vector<std::vector<double>> get_damage_time_lapse() const;
 
-    std::string get_debug_topic() const;
+    [[nodiscard]] std::string get_debug_topic() const;
 
     Damage_sources get_damage_distribution() { return damage_distribution_; }
 
-    constexpr double get_dps_mean() const { return dps_mean_; }
+    [[nodiscard]] constexpr Distribution get_dps_distribution() const { return dps_distribution_; }
 
-    constexpr double get_dps_variance() const { return dps_variance_; }
+    [[nodiscard]] constexpr double get_dps_mean() const { return dps_distribution_.mean_; }
 
-    constexpr int get_n_simulations() const { return config.n_batches; }
+    [[nodiscard]] constexpr double get_dps_variance() const { return dps_distribution_.variance_; }
 
-    constexpr double get_rage_lost_stance() const { return rage_lost_stance_swap_; }
+    [[nodiscard]] constexpr int get_n_simulations() const { return config.n_batches; }
 
-    constexpr double get_rage_lost_exec() const { return rage_lost_execute_batch_; }
+    [[nodiscard]] constexpr double get_rage_lost_stance() const { return rage_lost_stance_swap_; }
 
-    constexpr double get_rage_lost_capped() const { return rage_lost_capped_; }
+    [[nodiscard]] constexpr double get_rage_lost_exec() const { return rage_lost_execute_batch_; }
 
-    constexpr double get_avg_rage_spent_executing() const { return avg_rage_spent_executing_; }
+    [[nodiscard]] constexpr double get_rage_lost_capped() const { return rage_lost_capped_; }
+
+    [[nodiscard]] constexpr double get_avg_rage_spent_executing() const { return avg_rage_spent_executing_; }
 
     std::vector<int>& get_hist_x() { return hist_x; }
 
     std::vector<int>& get_hist_y() { return hist_y; }
 
-    constexpr double get_flurry_uptime_mh() const { return flurry_uptime_mh_; }
+    [[nodiscard]] constexpr double get_flurry_uptime_mh() const { return flurry_uptime_mh_; }
 
-    constexpr double get_flurry_uptime_oh() const { return flurry_uptime_oh_; }
+    [[nodiscard]] constexpr double get_flurry_uptime_oh() const { return flurry_uptime_oh_; }
 
-    constexpr double get_hs_uptime() const { return heroic_strike_uptime_; }
+    [[nodiscard]] constexpr double get_hs_uptime() const { return heroic_strike_uptime_; }
 
     void init_histogram();
 
@@ -422,8 +425,7 @@ private:
     std::vector<int> hist_y{};
     std::string debug_topic_{};
 
-    double dps_mean_{};
-    double dps_variance_{};
+    Distribution dps_distribution_{};
     double armor_reduction_factor_{};
     double armor_reduction_factor_add{};
     int current_armor_red_stacks_{};

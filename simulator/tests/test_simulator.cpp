@@ -187,7 +187,8 @@ TEST(TestSuite, test_dps_return)
 {
     auto config = get_test_config();
     config.main_target_initial_armor_ = 0.0;
-    config.sim_time = 100.0;
+    config.sim_time = 1000.0;
+    config.n_batches = 500.0;
 
     auto character = get_test_character();
     character.total_special_stats.critical_strike = 0;
@@ -203,5 +204,9 @@ TEST(TestSuite, test_dps_return)
     double dps_white = 50 + 25;
     double expected_dps = dps_white * hit_chance + dps_white * 0.65 * glancing_chance;
 
-    EXPECT_NEAR(sim.get_dps_mean(), expected_dps, 10);
+    Distribution distribution = sim.get_dps_distribution();
+    auto conf_interval = distribution.confidence_interval_of_the_mean(0.99);
+
+    EXPECT_LT(conf_interval.first, expected_dps);
+    EXPECT_GT(conf_interval.second, expected_dps);
 }

@@ -966,8 +966,8 @@ void Combat_simulator::swing_weapon(Weapon_sim& weapon, Weapon_sim& main_hand_we
 void Combat_simulator::simulate(const Character& character, size_t n_simulations, double init_mean,
                                 double init_variance, size_t init_simulations)
 {
-    dps_mean_ = init_mean;
-    dps_variance_ = init_variance;
+    dps_distribution_.mean_ = init_mean;
+    dps_distribution_.variance_ = init_variance;
     config.n_batches = n_simulations;
     simulate(character, init_simulations);
 }
@@ -1502,8 +1502,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
             }
         }
         double new_sample = damage_sources.sum_damage_sources() / sim_time;
-        dps_mean_ = Statistics::update_mean(dps_mean_, iter + 1, new_sample);
-        dps_variance_ = Statistics::update_variance(dps_variance_, dps_mean_, iter + 1, new_sample);
+        dps_distribution_.add_sample(new_sample);
         damage_distribution_ = damage_distribution_ + damage_sources;
         flurry_uptime_mh_ = Statistics::update_mean(flurry_uptime_mh_, iter + 1, double(mh_hits_w_flurry) / mh_hits);
         if (weapons.size() > 1)

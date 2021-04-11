@@ -52,6 +52,11 @@ double update_variance(double variance, double mean, int tot_samples, double new
     return ((tot_samples - 1) * variance + (new_sample - new_mean) * (new_sample - mean)) / tot_samples;
 }
 
+double get_two_sided_p_value(double p_value)
+{
+    return 1 - ((1 - p_value) / 2.0);
+}
+
 double normalCDF(double value)
 {
     return 0.5 * erfc(-value * M_SQRT1_2);

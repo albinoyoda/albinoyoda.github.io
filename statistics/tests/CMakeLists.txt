@@ -1,6 +1,9 @@
 project(test_statistics)
 
-add_executable(${PROJECT_NAME} test_statistics.cpp)
+add_executable(${PROJECT_NAME}
+        test_statistics.cpp
+        test_distribution.cpp
+        )
 
 target_link_libraries(${PROJECT_NAME} gtest_main statistics)
 
