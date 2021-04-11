@@ -1126,7 +1126,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
         }
 
         // Check if the simulator should use any use effects before the fight
-        if (use_effect_order.back().first < 0.0)
+        if (!use_effect_order.empty() && use_effect_order.back().first < 0.0)
         {
             time_keeper_.time = use_effect_order.back().first;
             while (time_keeper_.time < 0.0)

@@ -1,12 +1,12 @@
 #ifndef WOW_SIMULATOR_COMBAT_SIMULATOR_HPP
 #define WOW_SIMULATOR_COMBAT_SIMULATOR_HPP
 
-#include "sim_input.hpp"
-#include "sim_input_mult.hpp"
 #include "Buff_manager.hpp"
+#include "Character.hpp"
 #include "Helper_functions.hpp"
 #include "damage_sources.hpp"
-#include "Character.hpp"
+#include "sim_input.hpp"
+#include "sim_input_mult.hpp"
 #include "time_keeper.hpp"
 #include "weapon_sim.hpp"
 
@@ -357,6 +357,12 @@ public:
 
     std::vector<int>& get_hist_y() { return hist_y; }
 
+    constexpr double get_flurry_uptime_mh() const { return flurry_uptime_mh_; }
+
+    constexpr double get_flurry_uptime_oh() const { return flurry_uptime_oh_; }
+
+    constexpr double get_hs_uptime() const { return heroic_strike_uptime_; }
+
     void init_histogram();
 
     void prune_histogram();
@@ -416,8 +422,8 @@ private:
     std::vector<int> hist_y{};
     std::string debug_topic_{};
 
-    double dps_mean_;
-    double dps_variance_;
+    double dps_mean_{};
+    double dps_variance_{};
     double armor_reduction_factor_{};
     double armor_reduction_factor_add{};
     int current_armor_red_stacks_{};
@@ -442,7 +448,7 @@ private:
     double p_unbridled_wrath_{};
     double flurry_haste_factor_{};
     double init_server_time{};
-    double dual_wield_damage_factor_;
+    double dual_wield_damage_factor_{};
     bool dpr_heroic_strike_queued_{false};
     bool dpr_cleave_queued_{false};
 

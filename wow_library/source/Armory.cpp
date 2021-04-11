@@ -1,12 +1,13 @@
 #include "Armory.hpp"
+
 #include "Character.hpp"
+#include "Helper_functions.hpp"
 
 Attributes Armory::get_enchant_attributes(Socket socket, Enchant::Type type) const
 {
     switch (socket)
     {
-    case Socket::head:
-    {
+    case Socket::head: {
         switch (type)
         {
         case Enchant::Type::agility:
@@ -17,8 +18,7 @@ Attributes Armory::get_enchant_attributes(Socket socket, Enchant::Type type) con
             return {0, 0};
         }
     }
-    case Socket::back:
-    {
+    case Socket::back: {
         switch (type)
         {
         case Enchant::Type::agility:
@@ -27,8 +27,7 @@ Attributes Armory::get_enchant_attributes(Socket socket, Enchant::Type type) con
             return {0, 0};
         }
     }
-    case Socket::chest:
-    {
+    case Socket::chest: {
         switch (type)
         {
         case Enchant::Type::minor_stats:
@@ -39,8 +38,7 @@ Attributes Armory::get_enchant_attributes(Socket socket, Enchant::Type type) con
             return {0, 0};
         }
     }
-    case Socket::wrist:
-    {
+    case Socket::wrist: {
         switch (type)
         {
         case Enchant::Type::strength7:
@@ -51,8 +49,7 @@ Attributes Armory::get_enchant_attributes(Socket socket, Enchant::Type type) con
             return {0, 0};
         }
     }
-    case Socket::hands:
-    {
+    case Socket::hands: {
         switch (type)
         {
         case Enchant::Type::agility:
@@ -65,8 +62,7 @@ Attributes Armory::get_enchant_attributes(Socket socket, Enchant::Type type) con
             return {0, 0};
         }
     }
-    case Socket::legs:
-    {
+    case Socket::legs: {
         switch (type)
         {
         case Enchant::Type::agility:
@@ -77,8 +73,7 @@ Attributes Armory::get_enchant_attributes(Socket socket, Enchant::Type type) con
             return {0, 0};
         }
     }
-    case Socket::boots:
-    {
+    case Socket::boots: {
         switch (type)
         {
         case Enchant::Type::agility:
@@ -88,8 +83,7 @@ Attributes Armory::get_enchant_attributes(Socket socket, Enchant::Type type) con
         }
     }
     case Socket::main_hand:
-    case Socket::off_hand:
-    {
+    case Socket::off_hand: {
         switch (type)
         {
         case Enchant::Type::agility:
@@ -109,8 +103,7 @@ Special_stats Armory::get_enchant_special_stats(Socket socket, Enchant::Type typ
 {
     switch (socket)
     {
-    case Socket::head:
-    {
+    case Socket::head: {
         switch (type)
         {
         case Enchant::Type::haste:
@@ -119,8 +112,7 @@ Special_stats Armory::get_enchant_special_stats(Socket socket, Enchant::Type typ
             return {0, 0, 0};
         }
     }
-    case Socket::shoulder:
-    {
+    case Socket::shoulder: {
         switch (type)
         {
         case Enchant::Type::attack_power:
@@ -131,8 +123,7 @@ Special_stats Armory::get_enchant_special_stats(Socket socket, Enchant::Type typ
             return {0, 0, 0};
         }
     }
-    case Socket::hands:
-    {
+    case Socket::hands: {
         switch (type)
         {
         case Enchant::Type::haste:
@@ -141,8 +132,7 @@ Special_stats Armory::get_enchant_special_stats(Socket socket, Enchant::Type typ
             return {0, 0, 0};
         }
     }
-    case Socket::legs:
-    {
+    case Socket::legs: {
         switch (type)
         {
         case Enchant::Type::haste:
@@ -167,6 +157,7 @@ Hit_effect Armory::enchant_hit_effect(double weapon_speed, Enchant::Type type) c
 
 void Armory::clean_weapon(Weapon& weapon) const
 {
+    // TODO remove from armory.
     if (!weapon.hit_effects.empty())
     {
         auto temp = weapon.hit_effects;
@@ -476,8 +467,7 @@ std::vector<Weapon> Armory::get_weapon_in_socket(const Weapon_socket socket) con
 {
     switch (socket)
     {
-    case Weapon_socket::main_hand:
-    {
+    case Weapon_socket::main_hand: {
         std::vector<Weapon> mh_weapons{};
         for (const auto& wep : swords_t)
         {
@@ -516,8 +506,7 @@ std::vector<Weapon> Armory::get_weapon_in_socket(const Weapon_socket socket) con
         }
         return mh_weapons;
     }
-    case Weapon_socket::off_hand:
-    {
+    case Weapon_socket::off_hand: {
         std::vector<Weapon> oh_weapons{};
         for (const auto& wep : swords_t)
         {
@@ -556,8 +545,7 @@ std::vector<Weapon> Armory::get_weapon_in_socket(const Weapon_socket socket) con
         }
         return oh_weapons;
     }
-    case Weapon_socket ::two_hand:
-    {
+    case Weapon_socket ::two_hand: {
         std::vector<Weapon> th_weapons{};
         for (const auto& wep : two_handed_swords_t)
         {

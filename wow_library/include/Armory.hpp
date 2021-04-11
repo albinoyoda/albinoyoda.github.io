@@ -1,8 +1,9 @@
 #ifndef WOW_SIMULATOR_ARMORY_HPP
 #define WOW_SIMULATOR_ARMORY_HPP
 
-#include "Character.hpp"
-#include "../../simulator/include/Helper_functions.hpp"
+#include "Item.hpp"
+
+class Character;
 
 struct Buffs
 {
