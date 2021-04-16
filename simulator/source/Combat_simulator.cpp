@@ -1031,7 +1031,6 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
     damage_distribution_ = Damage_sources{};
     flurry_uptime_mh_ = 0;
     flurry_uptime_oh_ = 0;
-    rage_lost_execute_batch_ = 0;
     rage_lost_stance_swap_ = 0;
     rage_lost_capped_ = 0;
     heroic_strike_uptime_ = 0;
@@ -1186,7 +1185,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
                 time_keeper_.increment(dt);
                 std::vector<std::string> debug_msg{};
                 buff_manager_.increment(dt, time_keeper_.time, rage, rage_lost_stance_swap_,
-                                        rage_lost_execute_batch_, time_keeper_.global_cd, config.display_combat_debug, debug_msg);
+                                        time_keeper_.global_cd, config.display_combat_debug, debug_msg);
                 for (const auto& msg : debug_msg)
                 {
                     simulator_cout(msg);
@@ -1218,7 +1217,7 @@ void Combat_simulator::simulate(const Character& character, int init_iteration, 
             time_keeper_.increment(dt);
             std::vector<std::string> debug_msg{};
             buff_manager_.increment(dt, time_keeper_.time, rage, rage_lost_stance_swap_,
-                                    rage_lost_execute_batch_, time_keeper_.global_cd, config.display_combat_debug, debug_msg);
+                                    time_keeper_.global_cd, config.display_combat_debug, debug_msg);
             for (const auto& msg : debug_msg)
             {
                 simulator_cout(msg);

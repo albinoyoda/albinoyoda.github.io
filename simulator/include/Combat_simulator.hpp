@@ -350,8 +350,6 @@ public:
 
     [[nodiscard]] constexpr double get_rage_lost_stance() const { return rage_lost_stance_swap_; }
 
-    [[nodiscard]] constexpr double get_rage_lost_exec() const { return rage_lost_execute_batch_; }
-
     [[nodiscard]] constexpr double get_rage_lost_capped() const { return rage_lost_capped_; }
 
     [[nodiscard]] constexpr double get_avg_rage_spent_executing() const { return avg_rage_spent_executing_; }
@@ -443,7 +441,6 @@ private:
     int heroic_strike_rage_cost{};
 
     double cleave_bonus_damage_{};
-    double rage_lost_execute_batch_{};
     double rage_lost_stance_swap_{};
     double rage_lost_capped_{};
     double avg_rage_spent_executing_{};

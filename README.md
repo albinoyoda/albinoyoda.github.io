@@ -1,9 +1,9 @@
 # Welcome to wow fury sim GitHub
 [![wow-fury-sim Actions Status](https://github.com/albinoyoda/wow_classic_simulator/workflows/Pipeline/badge.svg)](https://github.com/albinoyoda/wow_classic_simulator/actions)
 
-This is a C++ based wow classic simulator for fury warriors,
+This is classic warrior fury sim that is ported to TBC,
 the mechanics used in the simulator can be found in:
-https://github.com/magey/classic-warrior/wiki/Attack-table
+https://wowwiki-archive.fandom.com/wiki/Attack_table
 
 # Website
 https://wow-fury-sim.herokuapp.com/
