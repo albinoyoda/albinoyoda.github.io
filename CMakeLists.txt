@@ -1,27 +1,37 @@
 cmake_minimum_required(VERSION 3.14)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 project(wow_simulator)
 
-include_directories(wow_library/include/)
+include(FetchContent)
 
-if (EMSCRIPTEN)
-
-    add_executable(
-            wow_interface
-            interface/src/entry_point.cpp
+if (NOT EMSCRIPTEN)
+    FetchContent_Declare(
+            googletest
+            GIT_REPOSITORY https://github.com/google/googletest.git
+            GIT_TAG release-1.10.0
     )
-
-    target_link_libraries(wow_interface wow_library)
-    set_target_properties(wow_interface PROPERTIES LINK_FLAGS "-s ERROR_ON_UNDEFINED_SYMBOLS=0 -s DEMANGLE_SUPPORT=1 -s TOTAL_MEMORY=640MB -s ALLOW_MEMORY_GROWTH=1 -s ASSERTIONS=1 --bind")
-
-else ()
-
-    # Main executable when running offline
-    add_executable(wow_web main_web_code.cpp)
-    target_link_libraries(wow_web wow_library)
-
-    add_subdirectory(Google_tests)
-
+    FetchContent_MakeAvailable(googletest)
+    enable_testing()
 endif ()
 
+add_compile_options(-Wall -Wextra -pedantic -Werror)
+if (CMAKE_BUILD_TYPE MATCHES Debug)
+    message("Building ${CMAKE_PROJECT_NAME} in Debug mode")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -Wunused -std=c++14 -pedantic")
+else ()
+    message("Building ${CMAKE_PROJECT_NAME} in Release mode")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -O2")
+endif ()
+
+add_subdirectory(simulator)
+add_subdirectory(statistics)
 add_subdirectory(wow_library)
+add_subdirectory(sim_interface)
+
+if (NOT EMSCRIPTEN)
+    add_subdirectory(local_build)
+endif ()
+
+if (EMSCRIPTEN)
+    add_subdirectory(website)
+endif ()

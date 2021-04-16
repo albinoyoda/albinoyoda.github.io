@@ -1,11 +1,11 @@
-# Welcome to TBC Warrior DPS Sim GitHub
-## Basics
+# Welcome to wow fury sim GitHub
+[![wow-fury-sim Actions Status](https://github.com/albinoyoda/wow_classic_simulator/workflows/Pipeline/badge.svg)](https://github.com/albinoyoda/wow_classic_simulator/actions)
+
 This is classic warrior fury sim that is ported to TBC,
 the mechanics used in the simulator can be found in:
 https://wowwiki-archive.fandom.com/wiki/Attack_table
 
 # Website
-You can find the original classic WoW fury sim on the link below:
 https://wow-fury-sim.herokuapp.com/
 
 # Discord
@@ -29,4 +29,4 @@ https://docs.docker.com/docker-for-windows/install/
 3. .\docker_run.ps1
 
 ## Open in browser
-http://localhost:49252/
+http://localhost:49160/
