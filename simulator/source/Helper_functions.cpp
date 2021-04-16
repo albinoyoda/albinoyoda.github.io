@@ -217,7 +217,6 @@ double get_character_ap_equivalent(const Special_stats& special_stats, const Wea
                                    const std::vector<Use_effect>& use_effects)
 {
     double attack_power = special_stats.attack_power;
-    int mh_skill = 350;
     double hit_crit_expertise_ap = get_hit_crit_expertise_ap_equivalent(special_stats, mh_wep.type);
 
     double mh_ap = ((mh_wep.max_damage + mh_wep.min_damage) / 2 + special_stats.bonus_damage) / mh_wep.swing_speed * 14;
