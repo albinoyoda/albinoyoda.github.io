@@ -199,7 +199,7 @@ TEST(TestSuite, test_dps_return)
     sim.simulate(character);
     double miss_chance = (8 * 0.8 + 20.0) / 100.0;
     double dodge_chance = 6.5 / 100.0;
-    double glancing_chance = 0.4;
+    double glancing_chance = 0.25;
     double hit_chance = (1 - dodge_chance - miss_chance - glancing_chance);
     double dps_white = 50 + 25;
     double expected_dps = dps_white * hit_chance + dps_white * 0.65 * glancing_chance;
