@@ -300,7 +300,7 @@ std::vector<Weapon> Item_optimizer::remove_weaker_weapons(const Weapon_socket we
 {
     std::vector<Weapon_struct> weapon_struct_vec;
     Character character{race, 70};
-    Special_stats racial_stats = character.base_special_stats;
+    //Special_stats racial_stats = character.base_special_stats;
     for (size_t i = 0; i < weapon_vec.size(); ++i)
     {
         Special_stats wep_special_stats = weapon_vec[i].special_stats;
