@@ -446,7 +446,6 @@ private:
     double avg_rage_spent_executing_{};
     double p_unbridled_wrath_{};
     double flurry_haste_factor_{};
-    double init_server_time{};
     double dual_wield_damage_factor_{};
     bool dpr_heroic_strike_queued_{false};
     bool dpr_cleave_queued_{false};
