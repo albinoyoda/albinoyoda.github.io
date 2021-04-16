@@ -287,16 +287,16 @@
 </style>
 
 <head>
-    <title>wow fury sim</title>
+    <title>TBC Warrior Sim</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="emscripten/website/wasm_interface.js"></script>
-    <script src="js/talents.js"></script>
-    <script src="js/load_presets.js"></script>
-    <meta name="site_description" content="WoW Classic simulator for Fury Warriors">
+    <script src="emscripten/wow_interface.js"></script>
+    <script src="talents.js"></script>
+    <script src="load_presets.js"></script>
+    <meta name="site_description" content="WoW TBC simulator for Warriors">
 </head>
 
-<h1>wow fury sim</h1>
+<h1>TBC Warrior Sim</h1>
 
 <body style="background-color:#bfbfbf;"
       onload="openTab('event', 'Simulator');open_armor();show_div('cleave_if_adds', 'cleave_div');
@@ -311,8 +311,8 @@
 </div>
 
 <div id="Discord" class="tabcontent">
-    <h2>Welcome to wow-fury-sim!</h2>
-    If you like my simulator feel free to join my <b>Discord</b>:
+    <h2>Welcome to TBC Warrior Sim!</h2>
+    If you like this simulator feel free to join Fury Sim <b>Discord</b>:
     <h3><a href="https://discord.gg/xTuKsRz">Discord link</a></h3>
     There you can discuss your results, get notifications when a <b>new patch</b> goes live, read the <b>patch-notes</b>,
     <br>
@@ -320,19 +320,21 @@
 </div>
 
 <div id="About" class="tabcontent">
-    <h2>Welcome to my fury simulator!</h2>
-    <h3><a href="https://github.com/albinoyoda/wow_classic_simulator">Github link</a></h3>
-    The project is open-source and can be found on github. <br>
-    If you have ideas of what you think is missing/would be nice to have join my <a href="https://discord.gg/xTuKsRz">Discord.</a>
+    <h2>Welcome to TBC Warrior Sim!</h2>
+    <h3><a href="https://github.com/TheGroxEmpire/Grox-Kateparry_TBC_Warrior_Sim">Github link</a></h3>
+    This project is a TBC port from the wow classic fury sim. Link to the original project below: <br>
+    <h3><a href="https://wow-fury-sim.herokuapp.com/">WoW Classic Fury Sim</a></h3>
+    You could also join their <a href="https://discord.gg/xTuKsRz">Discord.</a>
     <h3>FAQ:</h3>
     <p><b>Q: Is this a spreadsheet? How does it work? </b></p>
-    <p> A: No, this is not a spreadsheet. This is an actual simulator with world of warcraft classic mechanics.<br>
+    <p> A: No, this is not a spreadsheet. This is an actual simulator with World of Warcraft TBC mechanics.<br>
         When the "Run simulator" button is pressed, a character is created, wearing the items, weapons, buffs, and<br>
         enchants specified by the drop down menus and checkboxes. Then the following values, which are used <br>
         in the simulator, are computed:<br>
         - Total attack power<br>
         - Weapon skill<br>
         - Hit chance<br>
+        - Expertise rating<br>
         - Haste rating<br>
         - Weapons extra hit probability<br>
         - Damage multipliers<br><br>
@@ -357,8 +359,8 @@
     </p>
     <p><b>Q: What equations are used in this simulator?</b></p>
     <p>A: The tables for crit, hit, glancing hits, and weapon skill have all been based on the results presented in<br>
-        the <a href="https://github.com/magey/classic-warrior/wiki/Attack-table">Attack table</a> github.<br>
-        Their models have been verified on classic servers, and I can strongly recommend to check it out.<br>
+        the <a href="https://wowwiki-archive.fandom.com/wiki/Attack_table">Attack table</a> wowwiki.<br>
+        Their models came from the retail TBC servers. I'll change this model accordingly once we get TBC classic.<br>
     </p>
     <p><b>Q: The DPS in the simulator is much higher than what I usually get when I raid. What is wrong?</b></p>
     <p>A: The simulator follows the specified ability rotation with perfect execution,<br>
@@ -419,7 +421,6 @@
                 <option value="mask_of_the_unforgiven"> Mask of the Unforgiven</option>
                 <option value="r10_commanders_plate_helm"> R10 Commanders Plate Helm</option>
                 <option value="r13_plate_helm"> R13 Plate Helm</option>
-                <option value="raging_berserkers_helm"> Raging Berserkers Helm</option>
             </select>
 
             <select id="neck_dd" class="item-select">
@@ -428,7 +429,6 @@
                 <option value="barbed_choker"> Barbed Choker</option>
                 <option value="beads_of_ogre_might"> Beads of Ogre Might</option>
                 <option value="choker_of_the_shifting_sands"> Choker of the Shifting Sands</option>
-                <option value="emberfury_talisman"> Emberfury Talisman</option>
                 <option value="fury_of_the_forgotten_swarm"> Fury of the Forgotten Swarm</option>
                 <option value="imperial_jewel"> Imperial Jewel</option>
                 <option value="mark_of_fordring"> Mark of Fordring</option>
@@ -453,7 +453,6 @@
                 <option value="flamescarred_shoulders"> Flamescarred Shoulders</option>
                 <option value="icebane_pauldrons"> Icebane Pauldrons</option>
                 <option value="mantle_of_wicked_revenge"> Mantle of Wicked Revenge</option>
-                <option value="pauldrons_of_might"> Pauldrons of Might</option>
                 <option value="pauldrons_of_the_unrelenting"> Pauldrons of the Unrelenting</option>
                 <option value="pauldrons_of_wrath"> Pauldrons of Wrath</option>
                 <option value="r10_commanders_plate_shoulders"> R10 Commanders Plate Shoulders</option>
@@ -665,7 +664,6 @@
                 <option value="circle_of_applied_force"> Circle of Applied Force</option>
                 <option value="don_julios_band"> Don Julios Band</option>
                 <option value="magnis_will"> Magnis Will</option>
-                <option value="masons_fraternity_ring"> Masons Fraternity Ring</option>
                 <option value="master_dragonslayers_ring"> Master Dragonslayers Ring</option>
                 <option value="might_of_cenarius"> Might of Cenarius</option>
                 <option value="painweaver_band"> Painweaver Band</option>
@@ -694,7 +692,6 @@
                 <option value="circle_of_applied_force"> Circle of Applied Force</option>
                 <option value="don_julios_band"> Don Julios Band</option>
                 <option value="magnis_will"> Magnis Will</option>
-                <option value="masons_fraternity_ring"> Masons Fraternity Ring</option>
                 <option value="master_dragonslayers_ring"> Master Dragonslayers Ring</option>
                 <option value="might_of_cenarius"> Might of Cenarius</option>
                 <option value="painweaver_band"> Painweaver Band</option>
@@ -759,7 +756,6 @@
                 <option value="crossbow_of_imminent_doom"> Crossbow of Imminent Doom</option>
                 <option value="dragonbreath_hand_cannon"> Dragonbreath Hand Cannon</option>
                 <option value="gurubashi_dwarf_destroyer"> Gurubashi Dwarf Destroyer</option>
-                <option value="heartseeking_crossbow"> Heartseeking Crossbow</option>
                 <option value="heartstriker"> Heartstriker</option>
                 <option value="huhurans_stinger"> Huhurans Stinger</option>
                 <option value="larvae_of_the_great_worm"> Larvae of the Great Worm</option>
@@ -845,7 +841,6 @@
                     <option value="fang_of_the_faceless"> Fang of the Faceless</option>
                     <option value="felstriker"> Felstriker</option>
                     <option value="finkles_skinner"> Finkles Skinner</option>
-                    <option value="gutgore_ripper"> Gutgore Ripper</option>
                     <option value="harbinger_of_doom"> Harbinger of Doom</option>
                     <option value="kingsfall"> Kingsfall</option>
                     <option value="maexxnas_fang"> Maexxnas Fang</option>
@@ -868,7 +863,6 @@
                     <option value="the_castigator"> The Castigator</option>
                     <option value="none" disabled> --- FISTS ---</option>
                     <option value="claw_of_the_black_drake"> Claw of the Black Drake</option>
-                    <option value="eskhadars_right_claw"> Eskhadars Right Claw</option>
                     <option value="silithid_claw"> Silithid Claw</option>
                 </select>
                 <select id="off_hand_dd" class="weapon-select">
@@ -923,7 +917,6 @@
                     <option value="dragonfang_blade"> Dragonfang Blade</option>
                     <option value="fang_of_the_faceless"> Fang of the Faceless</option>
                     <option value="felstriker"> Felstriker</option>
-                    <option value="gutgore_ripper"> Gutgore Ripper</option>
                     <option value="harbinger_of_doom"> Harbinger of Doom</option>
                     <option value="kingsfall"> Kingsfall</option>
                     <option value="maexxnas_fang"> Maexxnas Fang</option>
@@ -1019,7 +1012,6 @@
                 <option value="mask_of_the_unforgiven"> Mask of the Unforgiven</option>
                 <option value="r10_commanders_plate_helm"> R10 Commanders Plate Helm</option>
                 <option value="r13_plate_helm"> R13 Plate Helm</option>
-                <option value="raging_berserkers_helm"> Raging Berserkers Helm</option>
             </select>
 
             <select id="neck_dd_mult" size="10" class="item-select" multiple>
@@ -1027,7 +1019,6 @@
                 <option value="barbed_choker"> Barbed Choker</option>
                 <option value="beads_of_ogre_might"> Beads of Ogre Might</option>
                 <option value="choker_of_the_shifting_sands"> Choker of the Shifting Sands</option>
-                <option value="emberfury_talisman"> Emberfury Talisman</option>
                 <option value="fury_of_the_forgotten_swarm"> Fury of the Forgotten Swarm</option>
                 <option value="imperial_jewel"> Imperial Jewel</option>
                 <option value="mark_of_fordring"> Mark of Fordring</option>
@@ -1051,7 +1042,6 @@
                 <option value="flamescarred_shoulders"> Flamescarred Shoulders</option>
                 <option value="icebane_pauldrons"> Icebane Pauldrons</option>
                 <option value="mantle_of_wicked_revenge"> Mantle of Wicked Revenge</option>
-                <option value="pauldrons_of_might"> Pauldrons of Might</option>
                 <option value="pauldrons_of_the_unrelenting"> Pauldrons of the Unrelenting</option>
                 <option value="pauldrons_of_wrath"> Pauldrons of Wrath</option>
                 <option value="r10_commanders_plate_shoulders"> R10 Commanders Plate Shoulders</option>
@@ -1255,7 +1245,6 @@
                 <option value="circle_of_applied_force"> Circle of Applied Force</option>
                 <option value="don_julios_band"> Don Julios Band</option>
                 <option value="magnis_will"> Magnis Will</option>
-                <option value="masons_fraternity_ring"> Masons Fraternity Ring</option>
                 <option value="master_dragonslayers_ring"> Master Dragonslayers Ring</option>
                 <option value="might_of_cenarius"> Might of Cenarius</option>
                 <option value="painweaver_band"> Painweaver Band</option>
@@ -1299,7 +1288,6 @@
                 <option value="crossbow_of_imminent_doom"> Crossbow of Imminent Doom</option>
                 <option value="dragonbreath_hand_cannon"> Dragonbreath Hand Cannon</option>
                 <option value="gurubashi_dwarf_destroyer"> Gurubashi Dwarf Destroyer</option>
-                <option value="heartseeking_crossbow"> Heartseeking Crossbow</option>
                 <option value="heartstriker"> Heartstriker</option>
                 <option value="huhurans_stinger"> Huhurans Stinger</option>
                 <option value="larvae_of_the_great_worm"> Larvae of the Great Worm</option>
@@ -1370,7 +1358,6 @@
                 <option value="fang_of_the_faceless"> Fang of the Faceless</option>
                 <option value="felstriker"> Felstriker</option>
                 <option value="finkles_skinner"> Finkles Skinner</option>
-                <option value="gutgore_ripper"> Gutgore Ripper</option>
                 <option value="harbinger_of_doom"> Harbinger of Doom</option>
                 <option value="kingsfall"> Kingsfall</option>
                 <option value="maexxnas_fang"> Maexxnas Fang</option>
@@ -1394,7 +1381,6 @@
                 <option value="none" disabled> --- FISTS ---</option>
                 <option value="claw_of_the_black_drake"> Claw of the Black Drake</option>
                 <option value="claw_of_the_frost_wyrm"> Claw of the Frost Wyrm</option>
-                <option value="eskhadars_right_claw"> Eskhadars Right Claw</option>
                 <option value="silithid_claw"> Silithid Claw</option>
             </select>
             <select id="two_hand_weapons_dd_mult" size="10" class="weapon-select" multiple>
@@ -1487,6 +1473,7 @@
             <option value="gnome">gnome</option>
             <option value="dwarf">dwarf</option>
             <option value="night_elf">night_elf</option>
+            <option value="draenei">draenei</option>
             <option value="orc">orc</option>
             <option value="troll">troll</option>
             <option value="undead">undead</option>
@@ -2221,10 +2208,10 @@
         <input type="number" id="execute_phase_percentage_dd" name="quantity" min="0" max="100" value="15"><br><br>
 
         <b>Target settings:</b><br>
-        <label for="boss_armor_dd">Boss armor (default 3731): </label>
-        <input type="number" id="boss_armor_dd" name="quantity" min="0" max="10000" value="3731"><br>
-        <label for="opponent_level_dd">Opponent level: (60-63):</label>
-        <input type="number" id="opponent_level_dd" name="quantity" min="60" max="63" value="63"><br><br>
+        <label for="boss_armor_dd">Boss armor (default 7700): </label>
+        <input type="number" id="boss_armor_dd" name="quantity" min="0" max="10000" value="7700"><br>
+        <label for="opponent_level_dd">Opponent level: (70-73):</label>
+        <input type="number" id="opponent_level_dd" name="quantity" min="70" max="73" value="73"><br><br>
 
         <b>Multi-target mode:</b><br>
         <input type="checkbox" id="multi_target_mode" onclick="show_div('multi_target_mode', 'multi_target_div')">
@@ -2234,8 +2221,8 @@
             <input type="number" id="number_of_extra_targets_dd" name="quantity" min="1" max="4" value="2"><br>
             <label for="extra_target_armor_dd">Extra targets armor:</label>
             <input type="number" id="extra_target_armor_dd" name="quantity" min="0" max="10000" value="3000"><br>
-            <label for="extra_target_level_dd">Extra targets level (60-63):</label>
-            <input type="number" id="extra_target_level_dd" name="quantity" min="60" max="63" value="60"><br>
+            <label for="extra_target_level_dd">Extra targets level (70-73):</label>
+            <input type="number" id="extra_target_level_dd" name="quantity" min="70" max="73" value="60"><br>
             <label for="extra_target_duration_dd">Extra targets die at (% of fight):</label>
             <input type="number" id="extra_target_duration_dd" name="quantity" min="1" max="100" value="100"><br>
         </div>
@@ -2300,18 +2287,17 @@
         <input type="checkbox" id="stat_weight_crit" checked>
         <label for="stat_weight_crit"> &plusmn 1% crit.</label><br>
 
+        <input type="checkbox" id="stat_weight_expertise" checked>
+        <label for="stat_weight_expertise"> &plusmn 1% hit.</label><br>
+
         <input type="checkbox" id="stat_weight_hit" checked>
-        <label for="stat_weight_hit"> &plusmn 1% hit.</label><br>
+        <label for="stat_weight_hit"> &plusmn 1% expertise.</label><br>
 
         <input type="checkbox" id="stat_weight_haste">
         <label for="stat_weight_haste"> &plusmn 1% haste.</label><br>
 
         <input type="checkbox" id="stat_weight_extra_hit">
         <label for="stat_weight_extra_hit"> + 1% chance for extra attack.</label><br>
-
-        <input type="checkbox" id="stat_weight_skill">
-        <label for="stat_weight_skill"> &plusmn <input type="number" id="stat_weight_skill_dd" name="quantity" min="1"
-                                                       max="15" value="5"> weapon skill. (1-15)</label><br>
 
         <input type="checkbox" id="stat_weight_mh_speed">
         <label for="stat_weight_mh_speed"> &plusmn <input type="number" id="stat_weight_mh_speed_dd" name="quantity"
@@ -2500,7 +2486,7 @@
         "overpower_ww_cooldown_thresh_dd", "hamstring_cd_thresh_dd", "initial_rage_dd", "hamstring_thresh_dd",
         "max_optimize_time_dd", "number_of_extra_targets_dd", "extra_target_armor_dd", "extra_target_level_dd",
         "periodic_damage_interval_dd", "periodic_damage_amount_dd", "execute_phase_percentage_dd",
-        "re_queue_abilities_dd", "stat_weight_skill_dd", "stat_weight_mh_speed_dd", "stat_weight_oh_speed_dd",
+        "re_queue_abilities_dd", "stat_weight_mh_speed_dd", "stat_weight_oh_speed_dd",
         "slam_spam_max_time_dd", "slam_cd_thresh_dd", "slam_spam_rage_dd", "slam_rage_dd", "berserking_haste_dd",
         "full_polarity_dd", "extra_target_duration_dd", "battle_squawk_dd"];
 
@@ -2512,8 +2498,8 @@
         "ability_queue", "first_hit_heroic_strike", "use_slam", "use_ms_in_exec_phase", "use_mortal_strike",
         "use_sweeping_strikes", "dont_use_hm_when_ss", "fungal_bloom", "full_polarity", "battle_squawk"];
 
-    let stat_weigths = ["stat_weight_hit", "stat_weight_crit", "stat_weight_haste",
-        "stat_weight_extra_hit", "stat_weight_skill", "stat_weight_mh_speed", "stat_weight_oh_speed"];
+    let stat_weigths = ["stat_weight_expertise", "stat_weight_hit", "stat_weight_crit", "stat_weight_haste",
+        "stat_weight_extra_hit", "stat_weight_mh_speed", "stat_weight_oh_speed"];
 
     let race;
     let race_string;
