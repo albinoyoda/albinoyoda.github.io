@@ -152,8 +152,8 @@ TEST(TestSuite, test_multi_select)
             successful_runs++;
         }
     }
-    // Allow two failed runs. This is to make it very unlikely to fail if it is working.
-    EXPECT_GE(successful_runs, total_runs - 2);
+    // Allow three failed runs. This is to make it very unlikely to fail if it is working.
+    EXPECT_GE(successful_runs, total_runs - 3);
 }
 
 TEST(TestSuite, test_multi_select_item_filter)
@@ -243,6 +243,6 @@ TEST(TestSuite, test_multi_select_item_filter)
             successful_runs++;
         }
     }
-    // Allow two failed runs. This is to make it very unlikely to fail if it is working.
-    EXPECT_GE(successful_runs, total_runs - 2);
+    // Allow three failed runs. This is to make it very unlikely to fail if it is working.
+    EXPECT_GE(successful_runs, total_runs - 3);
 }

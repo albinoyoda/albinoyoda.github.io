@@ -305,6 +305,10 @@ public:
         {
             need_to_recompute_hittables = true;
         }
+        if (duration_left < next_event)
+        {
+            next_event = duration_left;
+        }
     }
 
     void add_hit_effect(const std::string& name, const Hit_effect& hit_effect, double duration_left)

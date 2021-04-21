@@ -31,9 +31,9 @@ std::vector<double> create_hit_table(double miss, double dodge, double glancing,
     return {miss, miss + dodge, miss + dodge + glancing, miss + dodge + glancing + crit};
 }
 
-std::vector<double> create_hit_table_yellow(double miss, double dodge, double crit)
+std::vector<double> create_hit_table_yellow(double miss, double dodge, double crit, bool double_roll)
 {
-    double double_roll_factor = (100 - miss - dodge) / 100;
+    double double_roll_factor = double_roll ? (100 - miss - dodge) / 100 : 1.0;
     // Order -> Miss, parry, dodge, block, glancing, crit, hit.
     // double_roll_factor compensates for the crit suppression caused by ability double roll
     return {miss, miss + dodge, miss + dodge, miss + dodge + double_roll_factor * crit};
@@ -223,7 +223,8 @@ void Combat_simulator::cout_damage_parse(Combat_simulator::Hit_type hit_type, So
     }
 }
 
-Combat_simulator::Hit_outcome Combat_simulator::generate_hit_mh(double damage, Hit_type hit_type, bool is_overpower)
+Combat_simulator::Hit_outcome Combat_simulator::generate_hit_mh(double damage, Hit_type hit_type, bool is_overpower,
+                                                                bool is_spell)
 {
     if (hit_type == Hit_type::white)
     {
@@ -237,7 +238,13 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit_mh(double damage, H
     {
         simulator_cout("Drawing outcome from yellow table");
         double random_var = get_uniform_random(100);
-        if (is_overpower)
+        if (is_spell)
+        {
+            int outcome = std::lower_bound(hit_table_yellow_spell_.begin(), hit_table_yellow_spell_.end(), random_var) -
+                          hit_table_yellow_spell_.begin();
+            return {damage * damage_multipliers_yellow_[outcome], Hit_result(outcome)};
+        }
+        else if (is_overpower)
         {
             int outcome = std::lower_bound(hit_table_overpower_.begin(), hit_table_overpower_.end(), random_var) -
                           hit_table_overpower_.begin();
@@ -276,12 +283,12 @@ Combat_simulator::Hit_outcome Combat_simulator::generate_hit(const Weapon_sim& w
                                                              Combat_simulator::Hit_type hit_type, Socket weapon_hand,
                                                              const Special_stats& special_stats,
                                                              Damage_sources& damage_sources, bool boss_target,
-                                                             bool is_overpower, bool can_sweep)
+                                                             bool is_overpower, bool can_sweep, bool is_spell)
 {
     Combat_simulator::Hit_outcome hit_outcome;
     if (weapon_hand == Socket::main_hand)
     {
-        hit_outcome = generate_hit_mh(damage, hit_type, is_overpower);
+        hit_outcome = generate_hit_mh(damage, hit_type, is_overpower, is_spell);
         if (boss_target)
         {
             hit_outcome.damage *= armor_reduction_factor_ * (1 + special_stats.damage_mod_physical);
@@ -441,9 +448,10 @@ void Combat_simulator::compute_hit_table(int weapon_skill, const Special_stats& 
         damage_multipliers_white_mh_ =
             create_multipliers((100.0 - glancing_penalty) / 100.0, 0.0, special_stats.crit_multiplier);
 
-        hit_table_yellow_ = create_hit_table_yellow(two_hand_miss_chance, dodge_chance, crit_chance);
+        hit_table_yellow_spell_ = create_hit_table_yellow(two_hand_miss_chance, dodge_chance, crit_chance, true);
+        hit_table_yellow_ = create_hit_table_yellow(two_hand_miss_chance, dodge_chance, crit_chance, false);
         hit_table_overpower_ =
-            create_hit_table_yellow(two_hand_miss_chance, 0, crit_chance + 25 * config.talents.overpower - 3.0);
+            create_hit_table_yellow(two_hand_miss_chance, 0, crit_chance + 25 * config.talents.overpower - 3.0, false);
         damage_multipliers_yellow_ =
             create_multipliers(1.0, 0.1 * config.talents.impale, special_stats.crit_multiplier);
     }
@@ -583,8 +591,8 @@ void Combat_simulator::bloodthirst(Weapon_sim& main_hand_weapon, Special_stats& 
     }
     simulator_cout("Bloodthirst!");
     double damage = special_stats.attack_power * 0.45;
-    auto hit_outcome =
-        generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats, damage_sources);
+    auto hit_outcome = generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats,
+                                    damage_sources, true, false, true, true);
     if (hit_outcome.hit_result == Hit_result::dodge || hit_outcome.hit_result == Hit_result::miss)
     {
         rage -= 6;
@@ -694,8 +702,8 @@ void Combat_simulator::execute(Weapon_sim& main_hand_weapon, Special_stats& spec
     }
     simulator_cout("Execute!");
     double damage = 600 + (rage - execute_rage_cost_) * 15;
-    auto hit_outcome =
-        generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats, damage_sources);
+    auto hit_outcome = generate_hit(main_hand_weapon, damage, Hit_type::yellow, Socket::main_hand, special_stats,
+                                    damage_sources, true, false, true, true);
     if (hit_outcome.hit_result == Hit_result::dodge || hit_outcome.hit_result == Hit_result::miss)
     {
         rage *= 0.8;

@@ -1,4 +1,5 @@
 #include "Armory.hpp"
+#include "BinomialDistribution.hpp"
 #include "Combat_simulator.hpp"
 
 #include "gtest/gtest.h"
@@ -247,17 +248,23 @@ TEST(TestSuite, test_hit_effects_extra_hit)
     double hit_chance = (1 - miss_chance - dodge_chance);
 
     double expected_swings_oh = config.n_batches * config.sim_time / character.weapons[1].swing_speed;
-    double expected_procs_oh = hit_chance * expected_swings_oh * oh_proc_prob;
+    BinomialDistribution bin_dist_oh{expected_swings_oh, hit_chance * oh_proc_prob};
+    double expected_procs_oh = bin_dist_oh.mean_;
+    double conf_interval_oh = bin_dist_oh.confidence_interval_width(0.99);
 
     double expected_swings_mh = config.n_batches * config.sim_time / character.weapons[0].swing_speed;
-    double expected_procs_mh = hit_chance * expected_swings_mh * mh_proc_prob;
+    BinomialDistribution bin_dist_mh{expected_swings_mh, hit_chance * mh_proc_prob};
+    double expected_procs_mh = bin_dist_mh.mean_;
+    auto conf_interval_mh = bin_dist_mh.confidence_interval_width(0.99);
+
+    // OH proc's trigger main hand swings
     expected_swings_mh += expected_procs_mh + expected_procs_oh;
 
     EXPECT_NEAR(sources.white_mh_count, expected_swings_mh, 0.01 * expected_swings_mh);
     EXPECT_NEAR(sources.white_oh_count, expected_swings_oh, 0.01 * expected_swings_oh);
 
-    EXPECT_NEAR(proc_data["test_wep_mh"], expected_procs_mh, 0.05 * expected_procs_mh);
-    EXPECT_NEAR(proc_data["test_wep_oh"], expected_procs_oh, 0.05 * expected_procs_oh);
+    EXPECT_NEAR(proc_data["test_wep_mh"], expected_procs_mh, conf_interval_mh / 2);
+    EXPECT_NEAR(proc_data["test_wep_oh"], expected_procs_oh, conf_interval_oh / 2);
 }
 
 TEST(TestSuite, test_hit_effects_physical_damage)
@@ -291,10 +298,12 @@ TEST(TestSuite, test_hit_effects_physical_damage)
     double yellow_hit_chance = (1 - 0.09);
 
     double expected_swings_oh = config.n_batches * config.sim_time / character.weapons[1].swing_speed;
-    double expected_procs_oh = hit_chance * expected_swings_oh * oh_proc_prob;
+    BinomialDistribution bin_dist_oh{expected_swings_oh, hit_chance * oh_proc_prob};
+    double expected_procs_oh = bin_dist_oh.mean_;
 
     double expected_swings_mh = config.n_batches * config.sim_time / character.weapons[0].swing_speed;
-    double expected_procs_mh = hit_chance * expected_swings_mh * mh_proc_prob;
+    BinomialDistribution bin_dist_mh{expected_swings_mh, hit_chance * mh_proc_prob};
+    double expected_procs_mh = bin_dist_mh.mean_;
 
     double second_order_procs =
         (expected_procs_oh + expected_procs_mh) * (geometric_series(yellow_hit_chance * mh_proc_prob) - 1);
@@ -313,8 +322,8 @@ TEST(TestSuite, test_hit_effects_physical_damage)
 TEST(TestSuite, test_hit_effects_magic_damage)
 {
     auto config = get_test_config();
-    config.sim_time = 100000.0;
-    config.n_batches = 1.0;
+    config.sim_time = 1000.0;
+    config.n_batches = 100.0;
 
     auto character = get_test_character();
     character.total_special_stats.critical_strike = 0;
@@ -340,10 +349,14 @@ TEST(TestSuite, test_hit_effects_magic_damage)
     double hit_chance = (1 - miss_chance - dodge_chance);
 
     double expected_swings_oh = config.n_batches * config.sim_time / character.weapons[1].swing_speed;
-    double expected_procs_oh = hit_chance * expected_swings_oh * oh_proc_prob;
+    BinomialDistribution bin_dist_oh{expected_swings_oh, hit_chance * oh_proc_prob};
+    double expected_procs_oh = bin_dist_oh.mean_;
+    double conf_interval_oh = bin_dist_oh.confidence_interval_width(0.99);
 
     double expected_swings_mh = config.n_batches * config.sim_time / character.weapons[0].swing_speed;
-    double expected_procs_mh = hit_chance * expected_swings_mh * mh_proc_prob;
+    BinomialDistribution bin_dist_mh{expected_swings_mh, hit_chance * mh_proc_prob};
+    double expected_procs_mh = bin_dist_mh.mean_;
+    double conf_interval_mh = bin_dist_mh.confidence_interval_width(0.99);
 
     double expected_total_procs = expected_procs_oh + expected_procs_mh;
     EXPECT_NEAR(sources.white_mh_count, expected_swings_mh, 0.01 * expected_swings_mh);
@@ -351,6 +364,152 @@ TEST(TestSuite, test_hit_effects_magic_damage)
 
     EXPECT_NEAR(sources.item_hit_effects_count, expected_total_procs, 0.03 * expected_total_procs);
 
+    EXPECT_NEAR(proc_data["test_wep_mh"], expected_procs_mh, conf_interval_mh / 2);
+    EXPECT_NEAR(proc_data["test_wep_oh"], expected_procs_oh, conf_interval_oh / 2);
+}
+
+TEST(TestSuite, test_hit_effects_stat_boost_short_duration)
+{
+    auto config = get_test_config();
+    config.sim_time = 1000.0;
+    config.n_batches = 100.0;
+    config.performance_mode = false;
+
+    auto character = get_test_character();
+
+    double mh_proc_prob = 1.0;
+    int mh_proc_duration = 1;
+    double oh_proc_prob = 1.0;
+    int oh_proc_duration = 2;
+    Hit_effect test_effect_mh{"test_wep_mh", Hit_effect::Type::stat_boost, {50, 0}, {}, 0, mh_proc_duration,
+                              mh_proc_prob};
+    Hit_effect test_effect_oh{"test_wep_oh", Hit_effect::Type::stat_boost, {}, {10, 0, 0, 0, 0.1}, 0, oh_proc_duration,
+                              oh_proc_prob};
+    character.weapons[0].swing_speed = 3.0;
+    character.weapons[1].swing_speed = 3.0;
+    character.weapons[0].hit_effects.push_back(test_effect_mh);
+    character.weapons[1].hit_effects.push_back(test_effect_oh);
+
+    Combat_simulator sim{};
+    sim.set_config(config);
+    sim.simulate(character);
+
+    Damage_sources sources = sim.get_damage_distribution();
+
+    auto proc_data = sim.get_proc_data();
+    auto aura_uptimes = sim.get_aura_uptimes_map();
+
+    double miss_chance = (8 * 0.8 + 20.0) / 100.0;
+    double dodge_chance = 6.5 / 100.0;
+    double hit_chance = (1 - miss_chance - dodge_chance);
+
+    double expected_procs_oh = hit_chance * sources.white_oh_count * oh_proc_prob;
+    double expected_uptime_oh = expected_procs_oh * oh_proc_duration;
+
+    double expected_procs_mh = hit_chance * sources.white_mh_count * mh_proc_prob;
+    double expected_uptime_mh = expected_procs_mh * mh_proc_duration;
+
     EXPECT_NEAR(proc_data["test_wep_mh"], expected_procs_mh, 0.03 * expected_procs_mh);
     EXPECT_NEAR(proc_data["test_wep_oh"], expected_procs_oh, 0.03 * expected_procs_oh);
+
+    EXPECT_NEAR(aura_uptimes["main_hand_test_wep_mh"], expected_uptime_mh, 0.03 * expected_uptime_mh);
+    EXPECT_NEAR(aura_uptimes["off_hand_test_wep_oh"], expected_uptime_oh, 0.03 * expected_uptime_oh);
+    EXPECT_TRUE(aura_uptimes["off_hand_test_wep_oh"] != aura_uptimes["off_hand_test_wep_mh"]);
+}
+
+TEST(TestSuite, test_hit_effects_stat_boost_long_duration)
+{
+    auto config = get_test_config();
+    config.sim_time = 10000.0;
+    config.n_batches = 100.0;
+    config.performance_mode = false;
+
+    auto character = get_test_character();
+
+    // Small chance on hit to decrease second order terms, i.e., procing stat buff while a stat buff is already active
+    double mh_proc_prob = .01;
+    int mh_proc_duration = 30;
+    double oh_proc_prob = .01;
+    int oh_proc_duration = 20;
+    Hit_effect test_effect_mh{"test_wep_mh", Hit_effect::Type::stat_boost, {50, 0}, {}, 0, mh_proc_duration,
+                              mh_proc_prob};
+    Hit_effect test_effect_oh{"test_wep_oh", Hit_effect::Type::stat_boost, {}, {10, 0, 0, 0, 0.1}, 0, oh_proc_duration,
+                              oh_proc_prob};
+    character.weapons[0].swing_speed = 1.7;
+    character.weapons[1].swing_speed = 1.9;
+    character.weapons[0].hit_effects.push_back(test_effect_mh);
+    character.weapons[1].hit_effects.push_back(test_effect_oh);
+
+    Combat_simulator sim{};
+    sim.set_config(config);
+    sim.simulate(character);
+
+    Damage_sources sources = sim.get_damage_distribution();
+
+    auto proc_data = sim.get_proc_data();
+    auto aura_uptimes = sim.get_aura_uptimes_map();
+
+    double miss_chance = (8 * 0.8 + 20.0) / 100.0;
+    double dodge_chance = 6.5 / 100.0;
+    double hit_chance = (1 - miss_chance - dodge_chance);
+
+    double expected_procs_oh = hit_chance * sources.white_oh_count * oh_proc_prob;
+    double expected_uptime_oh = expected_procs_oh * oh_proc_duration;
+    double swings_during_uptime_oh = oh_proc_duration / character.weapons[1].swing_speed;
+    double procs_during_uptime_oh = hit_chance * swings_during_uptime_oh * oh_proc_prob;
+    double expected_procs_during_uptime_oh = expected_procs_oh * procs_during_uptime_oh;
+    double overlap_duration_oh = expected_procs_during_uptime_oh * oh_proc_duration / 2;
+
+    double expected_procs_mh = hit_chance * sources.white_mh_count * mh_proc_prob;
+    double expected_uptime_mh = expected_procs_mh * mh_proc_duration;
+    double swings_during_uptime_mh = mh_proc_duration / character.weapons[0].swing_speed;
+    double procs_during_uptime_mh = hit_chance * swings_during_uptime_mh * mh_proc_prob;
+    double expected_procs_during_uptime_mh = expected_procs_mh * procs_during_uptime_mh;
+    double overlap_duration_mh = expected_procs_during_uptime_mh * mh_proc_duration / 2;
+
+    // Does not factor in that a buff might end due to the simulation time reaching its end
+    EXPECT_NEAR(proc_data["test_wep_mh"], expected_procs_mh, 0.03 * expected_procs_mh);
+    EXPECT_NEAR(proc_data["test_wep_oh"], expected_procs_oh, 0.03 * expected_procs_oh);
+
+    EXPECT_NEAR(aura_uptimes["main_hand_test_wep_mh"], expected_uptime_mh - overlap_duration_mh,
+                0.03 * expected_uptime_mh);
+    EXPECT_NEAR(aura_uptimes["off_hand_test_wep_oh"], expected_uptime_oh - overlap_duration_oh,
+                0.03 * expected_uptime_oh);
+    EXPECT_TRUE(aura_uptimes["off_hand_test_wep_oh"] != aura_uptimes["off_hand_test_wep_mh"]);
+}
+
+TEST(TestSuite, test_hit_effects_stat_boost_long_duration_overlap)
+{
+    auto config = get_test_config();
+    config.sim_time = 1000.0;
+    config.n_batches = 100.0;
+    config.performance_mode = false;
+
+    auto character = get_test_character();
+
+    // Small chance on hit to decrease second order terms, i.e., procing stat buff while a stat buff is already active
+    double mh_proc_prob = .95;
+    int mh_proc_duration = 17;
+    double oh_proc_prob = .85;
+    int oh_proc_duration = 19;
+    Hit_effect test_effect_mh{"test_wep_mh", Hit_effect::Type::stat_boost, {50, 0}, {}, 0, mh_proc_duration,
+                              mh_proc_prob};
+    Hit_effect test_effect_oh{"test_wep_oh", Hit_effect::Type::stat_boost, {}, {10, 0, 0, 0, 0.1}, 0, oh_proc_duration,
+                              oh_proc_prob};
+    character.weapons[0].swing_speed = 1.7;
+    character.weapons[1].swing_speed = 1.9;
+    character.weapons[0].hit_effects.push_back(test_effect_mh);
+    character.weapons[1].hit_effects.push_back(test_effect_oh);
+
+    Combat_simulator sim{};
+    sim.set_config(config);
+    sim.simulate(character);
+
+    auto aura_uptimes = sim.get_aura_uptimes_map();
+
+    // Subtract 2 seconds since it might not always proc on the first hit
+    double expected_duration = (config.sim_time - 2.0) * config.n_batches;
+
+    EXPECT_GT(aura_uptimes["main_hand_test_wep_mh"], 0.98 * expected_duration);
+    EXPECT_GT(aura_uptimes["off_hand_test_wep_oh"], 0.98 * expected_duration);
 }
