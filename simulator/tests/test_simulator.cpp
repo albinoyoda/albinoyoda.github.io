@@ -468,13 +468,13 @@ TEST(TestSuite, test_hit_effects_stat_boost_long_duration)
     double overlap_duration_mh = expected_procs_during_uptime_mh * mh_proc_duration / 2;
 
     // Does not factor in that a buff might end due to the simulation time reaching its end
-    EXPECT_NEAR(proc_data["test_wep_mh"], expected_procs_mh, 0.03 * expected_procs_mh);
-    EXPECT_NEAR(proc_data["test_wep_oh"], expected_procs_oh, 0.03 * expected_procs_oh);
+    EXPECT_NEAR(proc_data["test_wep_mh"], expected_procs_mh, 0.05 * expected_procs_mh);
+    EXPECT_NEAR(proc_data["test_wep_oh"], expected_procs_oh, 0.05 * expected_procs_oh);
 
     EXPECT_NEAR(aura_uptimes["main_hand_test_wep_mh"], expected_uptime_mh - overlap_duration_mh,
-                0.03 * expected_uptime_mh);
+                0.05 * expected_uptime_mh);
     EXPECT_NEAR(aura_uptimes["off_hand_test_wep_oh"], expected_uptime_oh - overlap_duration_oh,
-                0.03 * expected_uptime_oh);
+                0.05 * expected_uptime_oh);
     EXPECT_TRUE(aura_uptimes["off_hand_test_wep_oh"] != aura_uptimes["off_hand_test_wep_mh"]);
 }
 
