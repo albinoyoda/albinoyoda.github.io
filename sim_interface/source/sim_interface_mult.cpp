@@ -75,6 +75,10 @@ Sim_output_mult Sim_interface::simulate_mult(const Sim_input_mult& input)
 
     // Simulator & Combat settings
     Combat_simulator_config config{input};
+    if (String_helpers::find_string(input.float_options_string, "seed"))
+    {
+        config.seed = String_helpers::find_value(input.float_options_string, input.float_options_val, "seed");
+    }
 
     std::string debug_message;
     item_optimizer.compute_combinations();

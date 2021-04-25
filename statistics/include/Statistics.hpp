@@ -25,6 +25,9 @@ double get_two_sided_p_value(double p_value);
 double normalCDF(double value);
 
 double find_cdf_quantile(double target_quantile, double precision);
+
+double geometric_series(double p);
+
 } // namespace Statistics
 
 #endif // WOW_SIMULATOR_STATISTICS_HPP

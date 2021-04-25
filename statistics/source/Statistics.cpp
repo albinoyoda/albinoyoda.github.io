@@ -74,4 +74,9 @@ double find_cdf_quantile(double target_quantile, double precision)
     return x;
 }
 
+double geometric_series(double p)
+{
+    return 1 / (1 - p);
+}
+
 } // namespace Statistics

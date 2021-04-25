@@ -2,6 +2,7 @@ project(test_item_optimizer)
 
 add_executable(${PROJECT_NAME}
         test_item_optimizer.cpp
+        item_optimizer_fixture.cpp
         )
 
 target_link_libraries(${PROJECT_NAME} gtest_main wow_library sim_interface)
