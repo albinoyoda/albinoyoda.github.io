@@ -114,7 +114,7 @@ public:
         return false;
     }
 
-    bool has_item(const std::string& item_name)
+    bool has_item(const std::string& item_name) const
     {
         for (const auto& armor_piece : armor)
         {
@@ -149,6 +149,8 @@ public:
         std::cout << "Error did not find item in socket: " << socket << "\n";
         return armor[0];
     }
+
+    void replace_armor(const Armor& armor_piece, bool first_misc_slot);
 
     Weapon get_weapon_from_socket(const Socket socket)
     {

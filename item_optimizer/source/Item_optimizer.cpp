@@ -462,7 +462,7 @@ struct Armor_struct
 
 std::vector<Armor> Item_optimizer::remove_weaker_items(const std::vector<Armor>& armors,
                                                        const Special_stats& special_stats, std::string& debug_message,
-                                                       int keep_n_stronger_items)
+                                                       int keep_n_stronger_items) const
 {
     std::vector<Armor_struct> armors_special_stats;
     for (size_t i = 0; i < armors.size(); ++i)

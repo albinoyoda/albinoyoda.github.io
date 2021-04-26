@@ -45,6 +45,34 @@ Character::Character(const Race& race, int level)
     }
 }
 
+void Character::replace_armor(const Armor& piece_to_equip, bool first_misc_slot)
+{
+    auto socket = piece_to_equip.socket;
+    for (auto& armor_piece : armor)
+    {
+        if (armor_piece.socket == socket)
+        {
+            if (socket == Socket::ring || socket == Socket::trinket)
+            {
+                if (first_misc_slot)
+                {
+                    armor_piece = piece_to_equip;
+                    return;
+                }
+                first_misc_slot = true; // Will trigger on the second hit instead
+            }
+            else
+            {
+                // Reuse the same enchant
+                auto enchant = armor_piece.enchant;
+                armor_piece = piece_to_equip;
+                armor_piece.enchant = enchant;
+                return;
+            }
+        }
+    }
+}
+
 Character character_setup(const Armory& armory, const std::string& race, const std::vector<std::string>& armor_vec,
                           const std::vector<std::string>& weapons_vec, const std::vector<std::string>& buffs_vec,
                           const std::vector<std::string>& talent_string, const std::vector<int>& talent_val,

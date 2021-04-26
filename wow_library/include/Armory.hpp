@@ -772,8 +772,6 @@ struct Armory
 
     void change_weapon(std::vector<Weapon> &current_weapons, const Weapon &equip_weapon, const Socket &socket) const;
 
-    void change_armor(std::vector<Armor> &armor_vec, const Armor &armor, bool first_misc_slot = true) const;
-
     void add_enchants_to_character(Character& character, const std::vector<std::string>& ench_vec) const;
 
     void add_buffs_to_character(Character& character, const std::vector<std::string>& buffs_vec) const;

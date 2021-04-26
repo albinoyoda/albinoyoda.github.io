@@ -3,7 +3,9 @@ project(item_optimizer)
 
 add_library(${PROJECT_NAME}
         source/item_heuristics.cpp
-        source/Item_optimizer.cpp)
+        source/Item_optimizer.cpp
+        source/item_upgrades.cpp
+        )
 
 target_include_directories(${PROJECT_NAME} PUBLIC include ${CMAKE_CURRENT_SOURCE_DIR})
 

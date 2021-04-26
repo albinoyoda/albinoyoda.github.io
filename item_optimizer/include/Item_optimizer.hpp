@@ -52,7 +52,7 @@ public:
                                               int keep_n_stronger_items);
 
     std::vector<Armor> remove_weaker_items(const std::vector<Armor>& armors, const Special_stats& special_stats,
-                                           std::string& debug_message, int keep_n_stronger_items);
+                                           std::string& debug_message, int keep_n_stronger_items) const;
 
     void filter_weaker_items(const Special_stats& special_stats, std::string& debug_message, int min_removal);
 
