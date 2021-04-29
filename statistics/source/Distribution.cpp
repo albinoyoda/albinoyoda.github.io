@@ -11,6 +11,13 @@ double expected_samples_to_observe(double z_value)
 }
 } // namespace
 
+Distribution::Distribution(double mean, double variance)
+{
+    mean_ = mean;
+    variance_ = variance;
+    max_ = min_ = n_samples_ = 0;
+}
+
 void Distribution::add_sample(const double sample)
 {
     if (n_samples_ == 0)

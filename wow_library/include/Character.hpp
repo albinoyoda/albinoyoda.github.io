@@ -4,6 +4,7 @@
 #include "Armory.hpp"
 #include "Item.hpp"
 
+#include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <vector>
@@ -104,14 +105,8 @@ public:
 
     bool has_weapon_of_type(Weapon_type weapon_type) const
     {
-        for (const auto& wep : weapons)
-        {
-            if (wep.type == weapon_type)
-            {
-                return true;
-            }
-        }
-        return false;
+        return std::any_of(weapons.cbegin(), weapons.cend(),
+                           [&](const Weapon& wep) { return wep.type == weapon_type; });
     }
 
     bool has_item(const std::string& item_name) const
@@ -150,7 +145,70 @@ public:
         return armor[0];
     }
 
-    void replace_armor(const Armor& armor_piece, bool first_misc_slot);
+    template <typename T>
+    void equip_and_replace(const T& piece_to_equip, const Socket socket, bool first_misc_slot = false)
+    {
+        if constexpr (std::is_same_v<decltype(piece_to_equip), Armor>)
+        {
+            equip_and_replace_armor(piece_to_equip, first_misc_slot);
+            return;
+        }
+        if constexpr (std::is_same_v<decltype(piece_to_equip), Weapon>)
+        {
+        equip_and_replace_weapon(piece_to_equip, socket);
+            return;
+        }
+    }
+
+    void equip_and_replace_armor(const Armor& piece_to_equip, bool first_misc_slot = false)
+    {
+        auto socket = piece_to_equip.socket;
+        for (auto& armor_piece : armor)
+        {
+            if (armor_piece.socket == socket)
+            {
+                if (socket == Socket::ring || socket == Socket::trinket)
+                {
+                    if (first_misc_slot)
+                    {
+                        armor_piece = piece_to_equip;
+                        return;
+                    }
+                    first_misc_slot = true; // Will trigger on the second hit instead
+                }
+                else
+                {
+                    // Reuse the same enchant
+                    auto enchant = armor_piece.enchant;
+                    armor_piece = piece_to_equip;
+                    armor_piece.enchant = enchant;
+                    return;
+                }
+            }
+        }
+    }
+
+    void equip_and_replace_weapon(const Weapon& weapon_to_equip, const Socket socket)
+    {
+        if (weapon_to_equip.weapon_socket == Weapon_socket::two_hand)
+        {
+            Weapon& current_wep = weapons[0];
+            Weapon weapon_copy = weapon_to_equip;
+            weapon_copy.buff = current_wep.buff;
+            weapon_copy.enchant = current_wep.enchant;
+            weapon_copy.socket = socket;
+            current_wep = weapon_copy;
+        }
+        else
+        {
+            Weapon& current_wep = (socket == Socket::main_hand) ? weapons[0] : weapons[1];
+            Weapon weapon_copy = weapon_to_equip;
+            weapon_copy.buff = current_wep.buff;
+            weapon_copy.enchant = current_wep.enchant;
+            weapon_copy.socket = socket;
+            current_wep = weapon_copy;
+        }
+    }
 
     Weapon get_weapon_from_socket(const Socket socket)
     {

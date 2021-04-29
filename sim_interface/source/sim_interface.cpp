@@ -6,6 +6,7 @@
 #include "Statistics.hpp"
 #include "item_heuristics.hpp"
 
+#include <item_upgrades.hpp>
 #include <sstream>
 
 namespace
@@ -80,7 +81,7 @@ void item_upgrades(std::string& item_strengths_string, Character character_new, 
     std::string item_downgrades_string{};
     for (size_t i = 0; i < items.size(); i++)
     {
-        armory.change_armor(character_new.armor, items[i], first_item);
+        character_new.replace_armor(items[i], first_item);
         armory.compute_total_stats(character_new);
         for (size_t iter = 0; iter < batches_per_iteration.size(); iter++)
         {
@@ -865,23 +866,11 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
                                                                                                                    "s"))
     {
         item_strengths_string = "<b>Character items and proposed upgrades:</b><br>";
-
-        std::vector<size_t> batches_per_iteration = {100};
-        std::vector<size_t> cumulative_simulations = {0};
-        for (int i = 0; i < 25; i++)
-        {
-            batches_per_iteration.push_back(batches_per_iteration.back() * 1.2);
-            cumulative_simulations.push_back(cumulative_simulations.back() + batches_per_iteration[i]);
-        }
-        cumulative_simulations.push_back(cumulative_simulations.back() + batches_per_iteration.back());
-
-        Combat_simulator simulator_strength{};
-        simulator_strength.set_config(config);
-        Item_optimizer item_optimizer{};
-        item_optimizer.race = get_race(input.race[0]);
+        Item_upgrades_config item_upgrades_config{100, 25, 500, 5000, 5, 1.2, dps_mean, dps_sample_std};
+        Item_upgrades item_upgrades{config, item_upgrades_config};
+        item_upgrades.set_race(get_race(input.race[0]));
         Character character_new = character_setup(armory, input.race[0], input.armor, input.weapons, temp_buffs,
                                                   input.talent_string, input.talent_val, input.enchants);
-        std::string dummy{};
         std::vector<Socket> all_sockets = {
             Socket::head, Socket::neck, Socket::shoulder, Socket::back, Socket::chest,   Socket::wrist,  Socket::hands,
             Socket::belt, Socket::legs, Socket::boots,    Socket::ring, Socket::trinket, Socket::ranged,
@@ -893,18 +882,12 @@ Sim_output Sim_interface::simulate(const Sim_input& input)
             {
                 if (socket == Socket::ring || socket == Socket::trinket)
                 {
-                    item_upgrades(item_strengths_string, character_new, item_optimizer, armory, batches_per_iteration,
-                                  cumulative_simulations, simulator, dps_mean, dps_sample_std, socket,
-                                  character_new.total_special_stats, true);
-                    item_upgrades(item_strengths_string, character_new, item_optimizer, armory, batches_per_iteration,
-                                  cumulative_simulations, simulator, dps_mean, dps_sample_std, socket,
-                                  character_new.total_special_stats, false);
+                    item_upgrades.get_armor_upgrades(character_new, socket, true);
+                    item_upgrades.get_armor_upgrades(character_new, socket, false);
                 }
                 else
                 {
-                    item_upgrades(item_strengths_string, character_new, item_optimizer, armory, batches_per_iteration,
-                                  cumulative_simulations, simulator, dps_mean, dps_sample_std, socket,
-                                  character_new.total_special_stats, true);
+                    item_upgrades.get_armor_upgrades(character_new, socket);
                 }
             }
         }

@@ -9,6 +9,8 @@ class Distribution
 public:
     Distribution() = default;
 
+    Distribution(double mean, double variance);
+
     void add_sample(double sample);
 
     void reset();

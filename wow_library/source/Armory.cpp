@@ -413,29 +413,6 @@ bool Armory::check_if_weapons_valid(std::vector<Weapon>& weapons) const
     return is_valid;
 }
 
-void Armory::change_weapon(std::vector<Weapon>& current_weapons, const Weapon& equip_weapon, const Socket& socket) const
-{
-    // TODO fix twohanded -> dual wield item swap!
-    if (equip_weapon.weapon_socket == Weapon_socket::two_hand)
-    {
-        Weapon& current_wep = current_weapons[0];
-        Weapon weapon_copy = equip_weapon;
-        weapon_copy.buff = current_wep.buff;
-        weapon_copy.enchant = current_wep.enchant;
-        weapon_copy.socket = socket;
-        current_wep = weapon_copy;
-    }
-    else
-    {
-        Weapon& current_wep = (socket == Socket::main_hand) ? current_weapons[0] : current_weapons[1];
-        Weapon weapon_copy = equip_weapon;
-        weapon_copy.buff = current_wep.buff;
-        weapon_copy.enchant = current_wep.enchant;
-        weapon_copy.socket = socket;
-        current_wep = weapon_copy;
-    }
-}
-
 std::vector<Weapon> Armory::get_weapon_in_socket(const Weapon_socket socket) const
 {
     switch (socket)

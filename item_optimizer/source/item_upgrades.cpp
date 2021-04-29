@@ -1,13 +1,5 @@
 #include "item_upgrades.hpp"
 
-#include <Statistics.hpp>
-
-void sort_item_upgrades_descending(std::vector<Item_upgrade_result>& item_upgrades)
-{
-    std::sort(item_upgrades.begin(), item_upgrades.end(),
-              [](const Item_upgrade_result& a, const Item_upgrade_result& b) { return a.second[0] < b.second[0]; });
-}
-
 std::vector<Item_upgrade_result> Item_upgrades::get_armor_upgrades(const Character& character, Socket socket,
                                                                    bool first_item)
 {
@@ -35,40 +27,32 @@ std::vector<Item_upgrade_result> Item_upgrades::get_armor_upgrades(const Charact
         }
     }
 
-    double quantile = Statistics::find_cdf_quantile(0.99, 0.01);
-
-    std::vector<Item_upgrade_result> item_upgrades{};
-    item_upgrades.reserve(items.size());
-    for (const auto& item : items)
+    return get_item_upgrades(character_copy, items, socket, first_item);
+}
+std::vector<Item_upgrade_result> Item_upgrades::get_weapon_upgrades(const Character& character,
+                                                                    Weapon_socket weapon_socket)
+{
+    Character character_copy = character;
+    Socket socket = ((weapon_socket == Weapon_socket::main_hand) || (weapon_socket == Weapon_socket::two_hand)) ?
+                        Socket::main_hand :
+                        Socket::off_hand;
+    std::string dummy;
+    auto items = armory.get_weapon_in_socket(weapon_socket);
+    items = item_optimizer.remove_weaker_weapons(weapon_socket, items, character.total_special_stats, dummy, 10);
     {
-        character_copy.replace_armor(item, first_item);
-        armory.compute_total_stats(character_copy);
-        bool stop_iterating = false;
-        for (size_t iter = 0; iter < batches_per_iteration.size(); iter++)
+        size_t i = 0;
+        while (i < items.size())
         {
-            simulator.simulate(character_copy, batches_per_iteration[iter], simulator.get_dps_mean(),
-                               simulator.get_dps_variance(), cumulative_simulations[iter]);
-            double sample_std =
-                Statistics::sample_deviation(std::sqrt(simulator.get_dps_variance()), cumulative_simulations[iter + 1]);
-            if ((simulator.get_dps_mean() - sample_std * quantile >= config.dps_mean ||
-                 simulator.get_dps_mean() + sample_std * quantile <= config.dps_mean) &&
-                cumulative_simulations[iter + 1] > config.minimum_iterations)
+            if (character_copy.has_item(items[i].name))
             {
-                stop_iterating = true;
+                items.erase(items.begin() + i);
             }
-            if (cumulative_simulations[iter + 1] > config.maximum_iterations)
+            else
             {
-                stop_iterating = true;
-            }
-            if (stop_iterating)
-            {
-                double dps_increase = simulator.get_dps_mean() - config.dps_mean;
-                double dps_increase_std = Statistics::add_standard_deviations(sample_std, config.dps_sample_std);
-                item_upgrades.emplace_back(item.name, std::array<double, 2>{dps_increase, dps_increase_std});
-                break;
+                i++;
             }
         }
     }
-    sort_item_upgrades_descending(item_upgrades);
-    return item_upgrades;
+
+    return get_item_upgrades(character_copy, items, socket);
 }

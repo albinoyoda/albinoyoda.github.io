@@ -353,6 +353,8 @@ public:
 
     [[nodiscard]] constexpr double get_dps_variance() const { return dps_distribution_.variance_; }
 
+    [[nodiscard]] double get_std_of_the_mean() const { return dps_distribution_.std_of_the_mean(); }
+
     [[nodiscard]] constexpr int get_n_simulations() const { return config.n_batches; }
 
     [[nodiscard]] constexpr double get_rage_lost_stance() const { return rage_lost_stance_swap_; }
