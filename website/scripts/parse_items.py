@@ -47,7 +47,7 @@ class Weapon_category:
 armory_location = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..', 'wow_library', 'include', 'Armory.hpp'))
 index_html_location = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', 'index.html'))
+    os.path.join(os.path.dirname(__file__), '..', '..', 'index.html'))
 file1 = open(armory_location, "r")
 lines = file1.readlines()
 file1.close()
