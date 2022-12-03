@@ -6,7 +6,9 @@ the mechanics used in the simulator can be found in:
 https://github.com/magey/classic-warrior/wiki/Attack-table
 
 # Website
-https://wow-fury-sim.herokuapp.com/
+~https://wow-fury-sim.herokuapp.com/~
+
+https://albinoyoda.github.io.
 
 # Discord
 Feel free to join the Discord for Discussions, bug-reporting, if you have a wish of what you want to be added next, etc.
