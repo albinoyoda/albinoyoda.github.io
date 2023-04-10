@@ -1,8 +1,7 @@
 #include "item_heuristics.hpp"
 
-#include "Use_effects.hpp"
-
 #include <algorithm>
+#include <simulator/use_effect_schedule.hpp>
 
 int get_weapon_skill(const Special_stats& special_stats, Weapon_type weapon_type, Weapon_socket weapon_socket)
 {
@@ -45,7 +44,7 @@ int get_weapon_skill(const Special_stats& special_stats, Weapon_type weapon_type
 }
 
 double get_character_ap_equivalent(const Special_stats& special_stats, const Weapon& mh_wep, const Weapon& oh_wep,
-                                   double sim_time, const std::vector<Use_effect>& use_effects)
+                                   Sim_time sim_time, const std::vector<Use_effect>& use_effects)
 {
     double attack_power = special_stats.attack_power;
     int mh_skill = get_weapon_skill(special_stats, mh_wep.type, mh_wep.weapon_socket);
@@ -57,8 +56,10 @@ double get_character_ap_equivalent(const Special_stats& special_stats, const Wea
     /// Weighted combination of ap from mh and oh, based on the hit-tables
     double hit_crit_skill_ap = (mh_hit_crit_skill_ap + oh_hit_crit_skill_ap * 0.5) / 1.5;
 
-    double mh_ap = ((mh_wep.max_damage + mh_wep.min_damage) / 2 + special_stats.bonus_damage) / mh_wep.swing_speed * 14;
-    double oh_ap = ((oh_wep.max_damage + oh_wep.min_damage) / 2 + special_stats.bonus_damage) / oh_wep.swing_speed * 14;
+    double mh_ap =
+        ((mh_wep.max_damage + mh_wep.min_damage) / 2 + special_stats.bonus_damage) / mh_wep.swing_speed.seconds() * 14;
+    double oh_ap =
+        ((oh_wep.max_damage + oh_wep.min_damage) / 2 + special_stats.bonus_damage) / oh_wep.swing_speed.seconds() * 14;
     oh_ap *= 0.625;
 
     double special_stats_ap = attack_power + hit_crit_skill_ap + mh_ap + oh_ap;
@@ -97,14 +98,15 @@ double get_character_ap_equivalent(const Special_stats& special_stats, const Wea
     return special_stats_ap + use_effects_ap + use_effects_shared_ap + hit_effects_ap;
 }
 
-double get_character_ap_equivalent(const Special_stats& special_stats, const Weapon& mh_wep, double sim_time,
+double get_character_ap_equivalent(const Special_stats& special_stats, const Weapon& mh_wep, Sim_time sim_time,
                                    const std::vector<Use_effect>& use_effects)
 {
     double attack_power = special_stats.attack_power;
     int mh_skill = get_weapon_skill(special_stats, mh_wep.type, mh_wep.weapon_socket);
     double hit_crit_skill_ap = get_hit_crit_skill_ap_equivalent(special_stats, mh_skill);
 
-    double mh_ap = ((mh_wep.max_damage + mh_wep.min_damage) / 2 + special_stats.bonus_damage) / mh_wep.swing_speed * 14;
+    double mh_ap =
+        ((mh_wep.max_damage + mh_wep.min_damage) / 2 + special_stats.bonus_damage) / mh_wep.swing_speed.seconds() * 14;
 
     double special_stats_ap = attack_power + hit_crit_skill_ap + mh_ap;
 
@@ -137,17 +139,17 @@ double get_character_ap_equivalent(const Special_stats& special_stats, const Wea
     return special_stats_ap + use_effects_ap + use_effects_shared_ap + hit_effects_ap;
 }
 
-double get_hit_effect_ap_equivalent(const Hit_effect& hit_effect, double total_ap, double swing_speed, double factor)
+double get_hit_effect_ap_equivalent(const Hit_effect& hit_effect, double total_ap, Sim_time swing_speed, double factor)
 {
     double hit_effects_ap = 0.0;
     if (hit_effect.type == Hit_effect::Type::damage_magic || hit_effect.type == Hit_effect::Type::damage_physical)
     {
-        hit_effects_ap += hit_effect.probability * hit_effect.damage * ap_per_coh / swing_speed * factor;
+        hit_effects_ap += hit_effect.probability * hit_effect.damage * ap_per_coh / swing_speed.seconds() * factor;
     }
     else if (hit_effect.type == Hit_effect::Type::extra_hit)
     {
         // Estimate extra hit as 75% the value of crit, since abilities might reset swing to early
-        hit_effects_ap += 100.0 * hit_effect.probability * swing_speed * crit_w * factor * 0.75;
+        hit_effects_ap += 100.0 * hit_effect.probability * swing_speed.seconds() * crit_w * factor * 0.75;
     }
     else if (hit_effect.type == Hit_effect::Type::stat_boost)
     {

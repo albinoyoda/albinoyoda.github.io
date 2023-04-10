@@ -1,8 +1,8 @@
 #include "Armory.hpp"
 #include "item_heuristics.hpp"
+#include "simulator/combat_simulator.hpp"
 
 #include "gtest/gtest.h"
-#include <Combat_simulator.hpp>
 
 namespace
 {
@@ -43,27 +43,27 @@ Combat_simulator_config get_config_with_everything_deactivated()
     config.combat.heroic_strike_rage_thresh = 0.0;
     config.combat.cleave_rage_thresh = 0.0;
     config.combat.whirlwind_rage_thresh = 0.0;
-    config.combat.hamstring_cd_thresh = 0.0;
+    config.combat.hamstring_cd_thresh = Sim_time::zero();
     config.combat.hamstring_thresh_dd = 0.0;
     config.combat.initial_rage = 0.0;
-    config.combat.whirlwind_bt_cooldown_thresh = 0.0;
+    config.combat.whirlwind_bt_cooldown_thresh = Sim_time::zero();
     config.combat.overpower_rage_thresh = 0.0;
-    config.combat.overpower_bt_cooldown_thresh = 0.0;
-    config.combat.overpower_ww_cooldown_thresh = 0.0;
-    config.combat.slam_cd_thresh = 0.0;
-    config.combat.slam_spam_max_time = 0.0;
+    config.combat.overpower_bt_cooldown_thresh = Sim_time::zero();
+    config.combat.overpower_ww_cooldown_thresh = Sim_time::zero();
+    config.combat.slam_cd_thresh = Sim_time::zero();
+    config.combat.slam_spam_max_time = Sim_time::zero();
     config.combat.slam_spam_rage = 0.0;
     config.combat.slam_rage_dd = 0.0;
 
-    config.sim_time = 60.0;
+    config.sim_time = Sim_time::from_seconds(60);
     config.main_target_level = 63.0;
     config.main_target_initial_armor_ = 3731.0;
     config.n_sunder_armor_stacks = 5.0;
     config.number_of_extra_targets = 0.0;
-    config.extra_target_duration = 0.0;
+    config.extra_target_percent_uptime = 0.0;
     config.extra_target_initial_armor_ = 0.0;
     config.extra_target_level = 60.0;
-    config.periodic_damage_interval_ = 0.0;
+    config.periodic_damage_interval_ = Sim_time::zero();
     config.periodic_damage_amount_ = 0.0;
     config.execute_phase_percentage_ = 0.0;
     config.ability_queue_rage_thresh_ = 0.0;
@@ -101,9 +101,7 @@ public:
     Character character;
     Combat_simulator_config config{};
     Combat_simulator sim{};
-    Sim_fixture() : character{Race::gnome, 60} {}
-
-    void SetUp() override
+    Sim_fixture() : character{Race::gnome, 60}
     {
         config = get_config_with_everything_deactivated();
 
@@ -112,10 +110,5 @@ public:
 
         Armory armory{};
         armory.compute_total_stats(character);
-    }
-
-    void TearDown() override
-    {
-        // Nothing to do since no memory was allocated
     }
 };

@@ -1,4 +1,4 @@
-#include "../include/damage_sources.hpp"
+#include "simulator/damage_sources.hpp"
 
 Damage_sources::Damage_sources()
 {
@@ -39,7 +39,7 @@ Damage_sources& Damage_sources::operator+(const Damage_sources& rhs)
     return *(this);
 }
 
-void Damage_sources::add_damage(Damage_source source, double damage, double time_stamp, bool increment_counter)
+void Damage_sources::add_damage(Damage_source source, double damage, Sim_time time_stamp, bool increment_counter)
 {
     if (increment_counter)
     {

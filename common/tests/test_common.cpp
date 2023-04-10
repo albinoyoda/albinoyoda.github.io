@@ -1,8 +1,9 @@
-#include "find_values.hpp"
+#include "common/find_values.hpp"
+#include "common/sim_time.hpp"
 
 #include "gtest/gtest.h"
 
-TEST(TestSuite, test_find_value_class)
+TEST(Common, find_value_class)
 {
     std::vector<std::string> mult_armor_vec;
     mult_armor_vec.emplace_back("lionheart_helm");
@@ -44,4 +45,22 @@ TEST(TestSuite, test_find_value_class)
         EXPECT_TRUE(fv.find("cloudkeeper_legplates") == 8.0);
         EXPECT_TRUE(fv.find("chromatic_boots") == 9.0);
     }
+}
+
+TEST(Common, sim_time)
+{
+    auto one_milli{Sim_time::from_milliseconds(1)};
+    auto one_second{Sim_time::from_seconds(1)};
+    auto result{one_milli + one_second};
+    ASSERT_EQ(result, Sim_time::from_milliseconds(1001));
+    ASSERT_NEAR(result.seconds(), 1.001, 1e-8);
+}
+
+TEST(Common, sim_time_double)
+{
+    auto one_milli{Sim_time::from_milliseconds(1)};
+    auto one_second{Sim_time::from_seconds(1.5)};
+    auto result{one_milli + one_second};
+    ASSERT_EQ(result, Sim_time::from_milliseconds(1501));
+    ASSERT_NEAR(result.seconds(), 1.501, 1e-8);
 }

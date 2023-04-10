@@ -4,7 +4,7 @@
 #include "Armory.hpp"
 #include "Character.hpp"
 #include "item_heuristics.hpp"
-#include "string_helpers.hpp"
+#include "common/string_helpers.hpp"
 
 #include <algorithm>
 #include <ctime>
@@ -85,7 +85,7 @@ public:
     std::vector<Set_bonus> possible_set_bonuses;
 
     std::string best_use_effect_name{};
-    double sim_time{};
+    int sim_time_ms{};
 
     std::vector<std::vector<Weapon>> weapon_combinations;
     std::vector<std::vector<Armor>> ring_combinations;

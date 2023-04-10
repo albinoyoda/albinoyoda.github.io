@@ -5,6 +5,7 @@ add_executable(${PROJECT_NAME}
         test_use_effects.cpp
         test_simulator.cpp
         simulation_fixture.cpp
+        test_hit_tables.cpp
         )
 
 target_link_libraries(${PROJECT_NAME} gtest_main wow_library simulator statistics)

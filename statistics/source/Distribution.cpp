@@ -1,6 +1,6 @@
-#include "Distribution.hpp"
+#include "statistics/Distribution.hpp"
 
-#include "Statistics.hpp"
+#include "statistics/Statistics.hpp"
 
 namespace
 {

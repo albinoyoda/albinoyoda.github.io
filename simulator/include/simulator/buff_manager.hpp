@@ -3,6 +3,7 @@
 
 #include "Attributes.hpp"
 #include "Item.hpp"
+#include "common/sim_time.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -12,8 +13,8 @@
 
 struct Over_time_buff
 {
-    Over_time_buff(std::string id, Special_stats special_stats, int init_time, double rage_gain, double damage,
-                   int interval, int duration)
+    Over_time_buff(std::string id, Special_stats special_stats, Sim_time init_time, double rage_gain, double damage,
+                   Sim_time interval, Sim_time duration)
         : id(std::move(id))
         , special_stats(special_stats)
         , init_time(init_time)
@@ -25,12 +26,12 @@ struct Over_time_buff
 
     std::string id;
     Special_stats special_stats;
-    int init_time;
+    Sim_time init_time;
     int total_ticks;
     int current_ticks;
     double rage_gain;
     double damage;
-    int interval;
+    Sim_time interval;
 };
 
 struct Combat_buff
@@ -38,25 +39,25 @@ struct Combat_buff
     Combat_buff() = default;
     ~Combat_buff() = default;
 
-    Combat_buff(Special_stats special_stats, double duration_left)
+    Combat_buff(Special_stats special_stats, Sim_time duration_left)
         : special_stats(special_stats), duration_left(duration_left){};
 
     Special_stats special_stats{};
-    double duration_left{};
+    Sim_time duration_left{};
 };
 
 struct Hit_buff
 {
-    Hit_buff(std::string id, double duration_left) : id(std::move(id)), duration_left(duration_left){};
+    Hit_buff(std::string id, Sim_time duration_left) : id(std::move(id)), duration_left(duration_left){};
 
     std::string id;
-    double duration_left;
+    Sim_time duration_left;
 };
 
 class Buff_manager
 {
 public:
-    void initialize(Special_stats& special_stats, const std::vector<std::pair<double, Use_effect>>& use_effects_order,
+    void initialize(Special_stats& special_stats, const std::vector<std::pair<Sim_time, Use_effect>>& use_effects_order,
                     std::vector<Hit_effect>& hit_effects_mh_input, std::vector<Hit_effect>& hit_effects_oh_input,
                     double tactical_mastery_rage, bool performance_mode_in)
     {
@@ -74,34 +75,34 @@ public:
         tactical_mastery_rage_ = tactical_mastery_rage;
     };
 
-    double get_dt(double sim_time)
+    [[nodiscard]] Sim_time get_dt(const Sim_time& sim_time) const
     {
-        double dt = 1e10;
+        Sim_time dt{1000000};
         dt = std::min(dt, next_event);
-        double interval_dt = std::fmod(sim_time, double(min_interval));
-        if (interval_dt < 0.0)
+        Sim_time interval_dt{Sim_time::from_milliseconds(sim_time.milliseconds() % min_interval.milliseconds())};
+        if (interval_dt.milliseconds() < 0)
         {
-            interval_dt = std::abs(interval_dt);
+            interval_dt = interval_dt.abs();
         }
         else
         {
-            interval_dt = double(min_interval) - interval_dt;
+            interval_dt = min_interval - interval_dt;
         }
         dt = std::min(dt, interval_dt);
         return dt;
     }
 
-    void increment_stat_gains(double current_time, double dt, double& rage, double& rage_lost_stance, bool debug,
+    void increment_stat_gains(Sim_time current_time, Sim_time dt, double& rage, double& rage_lost_stance, bool debug,
                               std::vector<std::string>& debug_msg)
     {
         for (auto it = stat_gains.begin(); it != stat_gains.end();)
         {
-            if (!performance_mode && current_time > 0.0)
+            if (!performance_mode && current_time.milliseconds() > 0)
             {
                 aura_uptime[it->first] += dt;
             }
             it->second.duration_left -= dt;
-            if (it->second.duration_left < 0.0)
+            if (it->second.duration_left.milliseconds() < 0)
             {
                 if (debug)
                 {
@@ -130,17 +131,17 @@ public:
         }
     }
 
-    void increment_hit_gains(double current_time, double dt, bool debug, std::vector<std::string>& debug_msg)
+    void increment_hit_gains(Sim_time current_time, Sim_time dt, bool debug, std::vector<std::string>& debug_msg)
     {
         size_t i = 0;
         while (i < hit_gains.size())
         {
-            if (!performance_mode && current_time > 0.0)
+            if (!performance_mode && current_time.milliseconds() > 0)
             {
                 aura_uptime[hit_gains[i].id] += dt;
             }
             hit_gains[i].duration_left -= dt;
-            if (hit_gains[i].duration_left < 0.0)
+            if (hit_gains[i].duration_left.milliseconds() < 0)
             {
                 if (debug)
                 {
@@ -171,19 +172,19 @@ public:
         }
     }
 
-    void increment_use_effects(double current_time, double& rage, double& global_cooldown, bool debug,
+    void increment_use_effects(Sim_time current_time, double& rage, Sim_time& global_cooldown, bool debug,
                                std::vector<std::string>& debug_msg)
     {
         // Try to use the use effect within one second of what was planned (compensate some for GCD's)
-        double margin = 0.0;
-        if (current_time > 0.0)
+        Sim_time margin{Sim_time::from_milliseconds(0)};
+        if (current_time.milliseconds() > 0)
         {
-            margin = 1.0;
+            margin += Sim_time::from_seconds(1);
         }
         if (!use_effect_order.empty() && current_time > use_effect_order.back().first - margin)
         {
             Use_effect& use_effect = use_effect_order.back().second;
-            if (!use_effect.triggers_gcd || (global_cooldown < 0.0))
+            if (!use_effect.triggers_gcd || (global_cooldown.milliseconds() < 0))
             {
                 if (debug)
                 {
@@ -195,7 +196,7 @@ public:
                 }
                 else if (!use_effect.over_time_effects.empty())
                 {
-                    add_over_time_effect(use_effect.over_time_effects[0], int(current_time + 1));
+                    add_over_time_effect(use_effect.over_time_effects[0], current_time + Sim_time::from_seconds(1));
                 }
                 else
                 {
@@ -213,19 +214,19 @@ public:
                 }
                 if (use_effect.triggers_gcd)
                 {
-                    global_cooldown = 1.5;
+                    global_cooldown = Sim_time::from_seconds(1.5);
                 }
                 use_effect_order.pop_back();
             }
         }
     }
 
-    void increment_over_time_buffs(double current_time, double& rage, bool debug, std::vector<std::string>& debug_msg)
+    void increment_over_time_buffs(Sim_time current_time, double& rage, bool debug, std::vector<std::string>& debug_msg)
     {
         size_t i = 0;
         while (i < over_time_buffs.size())
         {
-            if ((int(current_time) - over_time_buffs[i].init_time) / over_time_buffs[i].interval >=
+            if ((current_time - over_time_buffs[i].init_time) / over_time_buffs[i].interval >=
                 over_time_buffs[i].current_ticks)
             {
                 rage += over_time_buffs[i].rage_gain;
@@ -264,7 +265,7 @@ public:
                 over_time_buffs.erase(over_time_buffs.begin() + i);
                 if (over_time_buffs.empty())
                 {
-                    min_interval = 100000;
+                    min_interval = Sim_time::from_seconds(100000);
                 }
                 else
                 {
@@ -281,17 +282,17 @@ public:
         }
     }
 
-    void increment(double dt, double current_time, double& rage, double& rage_lost_stance, double& global_cooldown,
-                   bool debug, std::vector<std::string>& debug_msg)
+    void increment(Sim_time dt, Sim_time current_time, double& rage, double& rage_lost_stance,
+                   Sim_time& global_cooldown, bool debug, std::vector<std::string>& debug_msg)
     {
-        next_event = 100000;
+        next_event = Sim_time::from_seconds(100000);
         increment_stat_gains(current_time, dt, rage, rage_lost_stance, debug, debug_msg);
         increment_hit_gains(current_time, dt, debug, debug_msg);
         increment_use_effects(current_time, rage, global_cooldown, debug, debug_msg);
         increment_over_time_buffs(current_time, rage, debug, debug_msg);
     }
 
-    void add(const std::string& name, const Special_stats& special_stats, double duration_left)
+    void add(const std::string& name, const Special_stats& special_stats, Sim_time duration_left)
     {
         // Insert the buff in stat gains vector. If it exists increase the duration of the buff
         auto kv_pair = stat_gains.insert({name, {special_stats, duration_left}});
@@ -311,14 +312,14 @@ public:
         }
     }
 
-    void add_hit_effect(const std::string& name, const Hit_effect& hit_effect, double duration_left)
+    void add_hit_effect(const std::string& name, const Hit_effect& hit_effect, Sim_time duration_left)
     {
         (*hit_effects_mh).emplace_back(hit_effect);
         (*hit_effects_oh).emplace_back(hit_effect);
         hit_gains.emplace_back(name, duration_left);
     }
 
-    void add_over_time_effect(const Over_time_effect& over_time_effect, int init_time)
+    void add_over_time_effect(const Over_time_effect& over_time_effect, Sim_time init_time)
     {
         if (over_time_effect.name == "Deep_wounds")
         {
@@ -354,13 +355,13 @@ public:
     std::vector<Over_time_buff> over_time_buffs;
     std::vector<Hit_effect>* hit_effects_mh;
     std::vector<Hit_effect>* hit_effects_oh;
-    std::vector<std::pair<double, Use_effect>> use_effect_order;
-    double next_event = 100000;
-    int min_interval = 100000;
-    std::map<std::string, double> aura_uptime;
+    std::vector<std::pair<Sim_time, Use_effect>> use_effect_order;
+    Sim_time next_event{Sim_time::from_seconds(100000)};
+    Sim_time min_interval{Sim_time::from_seconds(100000)};
+    std::map<std::string, Sim_time> aura_uptime;
     double deep_wounds_damage{};
     double tactical_mastery_rage_{};
-    std::vector<double> deep_wounds_timestamps{};
+    std::vector<Sim_time> deep_wounds_timestamps{};
 };
 
 #endif // WOW_SIMULATOR_BUFF_MANAGER_HPP

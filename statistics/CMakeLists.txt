@@ -6,6 +6,7 @@ add_library(
         source/Statistics.cpp
         source/Distribution.cpp
         source/BinomialDistribution.cpp
+        source/uniform.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC include ${CMAKE_CURRENT_SOURCE_DIR})

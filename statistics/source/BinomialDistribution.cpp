@@ -1,6 +1,6 @@
-#include "BinomialDistribution.hpp"
+#include "statistics/BinomialDistribution.hpp"
 
-#include "Statistics.hpp"
+#include "statistics/Statistics.hpp"
 
 BinomialDistribution::BinomialDistribution(double trials, double success_rate)
 {

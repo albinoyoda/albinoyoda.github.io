@@ -1,6 +1,6 @@
-#include "Combat_simulator.hpp"
+#include "common/string_helpers.hpp"
 #include "sim_interface.hpp"
-#include "string_helpers.hpp"
+#include "simulator/combat_simulator.hpp"
 
 #include "gtest/gtest.h"
 

@@ -27,9 +27,9 @@ TEST(TestSuite, test_ap_estimation)
 
     Weapon wep3{"test_oh", {10, 10}, {2, 1, 40}, 1.5, 75, 120, Weapon_socket::main_hand, Weapon_type::sword};
 
-    double ap_equiv_1 = get_character_ap_equivalent(special_stats, wep1, wep3, 65.0, {});
+    double ap_equiv_1 = get_character_ap_equivalent(special_stats, wep1, wep3, Sim_time::from_seconds(65), {});
 
-    double ap_equiv_2 = get_character_ap_equivalent(special_stats, wep2, wep3, 65.0, {});
+    double ap_equiv_2 = get_character_ap_equivalent(special_stats, wep2, wep3, Sim_time::from_seconds(65), {});
 
     EXPECT_GE(ap_equiv_1, ap_equiv_2);
 }

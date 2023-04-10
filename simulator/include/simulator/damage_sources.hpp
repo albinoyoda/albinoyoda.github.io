@@ -1,6 +1,8 @@
 #ifndef WOW_SIMULATOR_DAMAGE_SOURCES_HPP
 #define WOW_SIMULATOR_DAMAGE_SOURCES_HPP
 
+#include <common/sim_time.hpp>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -19,16 +21,16 @@ enum class Damage_source
     whirlwind,
     hamstring,
     deep_wounds,
-    item_hit_effects
+    item_hit_effects,
 };
 
 struct Damage_instance
 {
-    Damage_instance(Damage_source source, double damage, double time_stamp)
+    Damage_instance(Damage_source source, double damage, Sim_time time_stamp)
         : damage_source(source), damage(damage), time_stamp(time_stamp){};
     Damage_source damage_source;
     double damage{};
-    double time_stamp{};
+    Sim_time time_stamp{};
 };
 
 struct Damage_sources
@@ -39,21 +41,23 @@ struct Damage_sources
 
     Damage_sources& operator+(const Damage_sources& rhs);
 
-    constexpr double sum_damage_sources() const
+    [[nodiscard]] constexpr double sum_damage_sources() const
     {
         return white_mh_damage + white_oh_damage + bloodthirst_damage + mortal_strike_damage + slam_damage +
                overpower_damage + heroic_strike_damage + cleave_damage + whirlwind_damage + hamstring_damage +
                execute_damage + deep_wounds_damage + item_hit_effects_damage + sweeping_strikes_damage;
     }
 
-    constexpr double sum_counts() const
+    [[nodiscard]] constexpr double sum_counts() const
     {
         return white_mh_count + white_oh_count + bloodthirst_count + mortal_strike_count + slam_count +
                overpower_count + heroic_strike_count + cleave_count + whirlwind_count + hamstring_count +
                execute_count + deep_wounds_count + item_hit_effects_count + sweeping_strikes_count;
     }
 
-    void add_damage(Damage_source source, double damage, double time_stamp, bool increment_counter = true);
+    void add_damage(Damage_source source, double damage, Sim_time time_stamp, bool increment_counter = true);
+
+    std::map<Damage_source, std::vector<Damage_instance>> registered_damage_;
 
     double white_mh_damage{};
     double white_oh_damage{};

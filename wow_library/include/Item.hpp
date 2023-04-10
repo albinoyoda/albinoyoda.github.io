@@ -2,6 +2,7 @@
 #define WOW_SIMULATOR_ITEM_HPP
 
 #include "Attributes.hpp"
+#include "common/sim_time.hpp"
 
 #include <cassert>
 #include <utility>
@@ -63,12 +64,8 @@ enum class Set
 
 struct Over_time_effect
 {
-    Over_time_effect() = default;
-
-    ~Over_time_effect() = default;
-
-    Over_time_effect(std::string name, Special_stats special_stats, double rage_gain, double damage, int interval,
-                     int duration)
+    Over_time_effect(std::string name, Special_stats special_stats, double rage_gain, double damage, Sim_time interval,
+                     Sim_time duration)
         : name(std::move(name))
         , special_stats(special_stats)
         , rage_gain(rage_gain)
@@ -80,8 +77,8 @@ struct Over_time_effect
     Special_stats special_stats;
     double rage_gain;
     double damage;
-    int interval;
-    int duration;
+    Sim_time interval;
+    Sim_time duration;
 };
 
 class Hit_effect
@@ -89,7 +86,6 @@ class Hit_effect
 public:
     enum class Type
     {
-        none,
         extra_hit,
         stat_boost,
         damage_physical,
@@ -97,10 +93,8 @@ public:
         reduce_armor
     };
 
-    Hit_effect() = default;
-
     Hit_effect(std::string name, Type type, Attributes attribute_boost, Special_stats special_stats_boost,
-               double damage, int duration, double probability, double attack_power_boost = 0, int n_targets = 1,
+               double damage, Sim_time duration, double probability, double attack_power_boost = 0, int n_targets = 1,
                int armor_reduction = 0, int max_stacks = 0, double ppm = 0.0, bool affects_both_weapons = false)
         : name(std::move(name))
         , type(type)
@@ -116,7 +110,7 @@ public:
         , affects_both_weapons(affects_both_weapons)
         , max_stacks(max_stacks){};
 
-    inline Special_stats get_special_stat_equivalent(const Special_stats& special_stats) const
+    [[nodiscard]] inline Special_stats get_special_stat_equivalent(const Special_stats& special_stats) const
     {
         return attribute_boost.convert_to_special_stats(special_stats) + special_stats_boost;
     }
@@ -126,7 +120,7 @@ public:
     Attributes attribute_boost;
     Special_stats special_stats_boost;
     double damage;
-    int duration;
+    Sim_time duration;
     double probability;
     double attack_power_boost;
     int n_targets;
@@ -150,7 +144,7 @@ public:
     ~Use_effect() = default;
 
     Use_effect(std::string name, Effect_socket effect_socket, Attributes attribute_boost,
-               Special_stats special_stats_boost, double rage_boost, double duration, double cooldown,
+               Special_stats special_stats_boost, double rage_boost, Sim_time duration, Sim_time cooldown,
                bool triggers_gcd, std::vector<Hit_effect> hit_effects = std::vector<Hit_effect>(),
                std::vector<Over_time_effect> over_time_effects = std::vector<Over_time_effect>())
         : name(std::move(name))
@@ -164,7 +158,7 @@ public:
         , hit_effects(std::move(hit_effects))
         , over_time_effects(std::move(over_time_effects)){};
 
-    inline Special_stats get_special_stat_equivalent(const Special_stats& special_stats) const
+    [[nodiscard]] inline Special_stats get_special_stat_equivalent(const Special_stats& special_stats) const
     {
         return attribute_boost.convert_to_special_stats(special_stats) + special_stats_boost;
     }
@@ -174,8 +168,8 @@ public:
     Attributes attribute_boost{};
     Special_stats special_stats_boost{};
     double rage_boost{};
-    double duration{};
-    double cooldown{};
+    Sim_time duration{};
+    Sim_time cooldown{};
     bool triggers_gcd{false};
     std::vector<Hit_effect> hit_effects{};
     std::vector<Over_time_effect> over_time_effects{};
@@ -284,7 +278,7 @@ struct Weapon
         : name(std::move(name))
         , attributes(attributes)
         , special_stats(special_stats)
-        , swing_speed(swing_speed)
+        , swing_speed(Sim_time::from_seconds(swing_speed))
         , min_damage(min_damage)
         , max_damage(max_damage)
         , weapon_socket(weapon_socket)
@@ -296,7 +290,7 @@ struct Weapon
     std::string name;
     Attributes attributes;
     Special_stats special_stats;
-    double swing_speed;
+    Sim_time swing_speed;
     double min_damage;
     double max_damage;
     Weapon_socket weapon_socket;

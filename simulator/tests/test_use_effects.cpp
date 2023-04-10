@@ -1,13 +1,14 @@
-#include "Combat_simulator.hpp"
 #include "Armory.hpp"
-#include "Use_effects.hpp"
+#include "simulator/use_effect_schedule.hpp"
+#include "simulator/use_effects.hpp"
+
 #include "gtest/gtest.h"
 
 namespace
 {
-bool is_descending(const std::vector<std::pair<double, Use_effect>>& use_effects)
+bool is_descending(const std::vector<std::pair<Sim_time, Use_effect>>& use_effects)
 {
-    double activate_time = 1000000.0;
+    Sim_time activate_time{Sim_time::from_seconds(1000000)};
     bool is_descending{true};
     for (const auto& effect : use_effects)
     {
@@ -21,46 +22,47 @@ bool is_descending(const std::vector<std::pair<double, Use_effect>>& use_effects
 TEST(TestSuite, test_use_effect_time_function)
 {
     Use_effect use_effect1{};
-    use_effect1.duration = 20;
+    use_effect1.duration = Sim_time::from_seconds(20);
     Use_effect use_effect2{};
-    use_effect2.duration = 30;
-    std::vector<std::pair<double, Use_effect>> use_effect_timers;
+    use_effect2.duration = Sim_time::from_seconds(30);
+    std::vector<std::pair<Sim_time, Use_effect>> use_effect_timers;
     use_effect_timers.emplace_back(0.0, use_effect1);
-    double time = Use_effects::is_time_available(use_effect_timers, 0.0, use_effect2.duration);
-    EXPECT_TRUE(time == 20.0);
-    time = Use_effects::is_time_available(use_effect_timers, 10.0, use_effect2.duration);
-    EXPECT_TRUE(time == 20.0);
-    time = Use_effects::is_time_available(use_effect_timers, 20.0, use_effect2.duration);
-    EXPECT_TRUE(time == 20.0);
+    Sim_time time{Use_effects::is_time_available(use_effect_timers, Sim_time::from_seconds(0), use_effect2.duration)};
+    EXPECT_EQ(time, Sim_time::from_seconds(20));
+    time = Use_effects::is_time_available(use_effect_timers, Sim_time::from_seconds(10), use_effect2.duration);
+    EXPECT_EQ(time, Sim_time::from_seconds(20));
+    time = Use_effects::is_time_available(use_effect_timers, Sim_time::from_seconds(20), use_effect2.duration);
+    EXPECT_EQ(time, Sim_time::from_seconds(20));
 
-    use_effect_timers.emplace_back(40.0, use_effect1);
-    time = Use_effects::get_next_available_time(use_effect_timers, 0.0, use_effect2.duration);
-    EXPECT_TRUE(time == 60.0);
+    use_effect_timers.emplace_back(Sim_time::from_seconds(40), use_effect1);
+    time = Use_effects::get_next_available_time(use_effect_timers, Sim_time::from_seconds(0), use_effect2.duration);
+    EXPECT_EQ(time, Sim_time::from_seconds(60));
 }
 
 TEST(TestSuite, test_use_effect_ordering)
 {
     Use_effect use_effect1{};
     use_effect1.name = "should_not_fit";
-    use_effect1.duration = 30;
-    use_effect1.cooldown = 100;
+    use_effect1.duration = Sim_time::from_seconds(30);
+    use_effect1.cooldown = Sim_time::from_seconds(100);
     use_effect1.special_stats_boost = {12, 0, 0};
     use_effect1.effect_socket = Use_effect::Effect_socket::shared;
 
     Use_effect use_effect2{};
-    use_effect2.duration = 30;
-    use_effect2.cooldown = 80;
+    use_effect2.duration = Sim_time::from_seconds(30);
+    use_effect2.cooldown = Sim_time::from_seconds(80);
     use_effect2.special_stats_boost = {12, 0, 40};
     use_effect2.effect_socket = Use_effect::Effect_socket::shared;
 
     Use_effect use_effect3{};
-    use_effect3.duration = 30;
-    use_effect3.cooldown = 80;
+    use_effect3.duration = Sim_time::from_seconds(30);
+    use_effect3.cooldown = Sim_time::from_seconds(80);
     use_effect3.special_stats_boost = {12, 0, 100};
     use_effect3.effect_socket = Use_effect::Effect_socket::shared;
 
     std::vector<Use_effect> use_effects{use_effect1, use_effect2, use_effect3};
-    auto order = Use_effects::compute_use_effect_order(use_effects, Special_stats{}, 580, 1500, 0, 0, 0);
+    auto order =
+        Use_effects::compute_use_effect_order(use_effects, Special_stats{}, Sim_time::from_seconds(580), 1500, 0, 0);
     for (const auto& effect : order)
     {
         EXPECT_TRUE(effect.second.name != "should_not_fit");
@@ -69,13 +71,12 @@ TEST(TestSuite, test_use_effect_ordering)
 
 TEST(TestSuite, test_use_effect_shuffle)
 {
-    Combat_simulator sim{};
     std::vector<Use_effect> use_effects{};
-    use_effects.emplace_back(sim.deathwish);
-    use_effects.emplace_back(sim.bloodrage);
-    double sim_time = 20.0;
-    auto order_with_rage = Use_effects::compute_use_effect_order(use_effects, Special_stats{}, sim_time, 1500, 0, 0, 10);
-    auto order_without_rage = Use_effects::compute_use_effect_order(use_effects, Special_stats{}, sim_time, 1500, 0, 0, 0);
+    use_effects.emplace_back(spellbook::deathwish);
+    use_effects.emplace_back(spellbook::bloodrage);
+    Sim_time sim_time{Sim_time::from_seconds(20)};
+    auto order_with_rage = Use_effects::compute_use_effect_order(use_effects, Special_stats{}, sim_time, 1500, 0, 10);
+    auto order_without_rage = Use_effects::compute_use_effect_order(use_effects, Special_stats{}, sim_time, 1500, 0, 0);
 
     EXPECT_TRUE(order_with_rage[0].second.name == "Bloodrage");
     EXPECT_TRUE(order_with_rage[1].second.name == "Death_wish");
@@ -89,12 +90,12 @@ TEST(TestSuite, test_use_effect_shuffle)
     Armory armory;
     auto use1 = armory.find_armor(Socket::trinket, "diamond_flask");
     use_effects.clear();
-    use_effects.emplace_back(sim.deathwish);
-    use_effects.emplace_back(sim.bloodrage);
-    use_effects.emplace_back(sim.recklessness);
+    use_effects.emplace_back(spellbook::deathwish);
+    use_effects.emplace_back(spellbook::bloodrage);
+    use_effects.emplace_back(spellbook::recklessness);
     use_effects.emplace_back(use1.use_effects[0]);
-    order_with_rage = Use_effects::compute_use_effect_order(use_effects, Special_stats{}, sim_time, 1500, 0, 0, 10);
-    order_without_rage = Use_effects::compute_use_effect_order(use_effects, Special_stats{}, sim_time, 1500, 0, 0, 0);
+    order_with_rage = Use_effects::compute_use_effect_order(use_effects, Special_stats{}, sim_time, 1500, 0, 10);
+    order_without_rage = Use_effects::compute_use_effect_order(use_effects, Special_stats{}, sim_time, 1500, 0, 0);
 
     EXPECT_TRUE(order_with_rage[0].second.name == "Bloodrage");
     EXPECT_TRUE(order_with_rage[1].second.name == "Recklessness");
@@ -116,20 +117,32 @@ TEST(TestSuite, test_use_effects)
     auto use1 = armory.find_armor(Socket::trinket, "diamond_flask");
     auto use2 = armory.find_armor(Socket::trinket, "earthstrike");
     auto use3 = armory.find_armor(Socket::legs, "cloudkeeper_legplates");
-    Combat_simulator sim{};
 
     std::vector<Use_effect> use_effects{};
-    use_effects.emplace_back(sim.deathwish);
-    use_effects.emplace_back(sim.recklessness);
-    use_effects.emplace_back(sim.bloodrage);
-    use_effects.emplace_back(
-        Use_effect{"Blood_fury", Use_effect::Effect_socket::unique, {}, {0, 0, 300}, 0, 15, 120, true});
-    use_effects.emplace_back(Use_effect{"Berserking", Use_effect::Effect_socket::unique, {}, {}, 0, 10, 180, false});
+    use_effects.emplace_back(spellbook::deathwish);
+    use_effects.emplace_back(spellbook::recklessness);
+    use_effects.emplace_back(spellbook::bloodrage);
+    use_effects.emplace_back(Use_effect{"Blood_fury",
+                                        Use_effect::Effect_socket::unique,
+                                        {},
+                                        {0, 0, 300},
+                                        0,
+                                        Sim_time::from_seconds(15),
+                                        Sim_time::from_seconds(120),
+                                        true});
+    use_effects.emplace_back(Use_effect{"Berserking",
+                                        Use_effect::Effect_socket::unique,
+                                        {},
+                                        {},
+                                        0,
+                                        Sim_time::from_seconds(10),
+                                        Sim_time::from_seconds(180),
+                                        false});
     use_effects.emplace_back(use1.use_effects[0]);
     use_effects.emplace_back(use2.use_effects[0]);
     use_effects.emplace_back(use3.use_effects[0]);
-    double sim_time = 320.0;
-    auto order = Use_effects::compute_use_effect_order(use_effects, Special_stats{}, sim_time, 1500, 0, 0, 0);
+    auto sim_time{Sim_time::from_seconds(320)};
+    auto order = Use_effects::compute_use_effect_order(use_effects, Special_stats{}, sim_time, 1500, 0, 0);
     EXPECT_TRUE(is_descending(order));
     int df = 0;
     int es = 0;

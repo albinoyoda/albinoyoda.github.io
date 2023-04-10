@@ -16,8 +16,8 @@ T Find_values<T>::find(const std::string& name)
     if (it != string_vec.cend())
     {
         auto pos = it - string_vec.cbegin();
-        return value_vec[pos];
+        return T{value_vec[pos]};
     }
-    return {0};
+    return T{0};
 }
 

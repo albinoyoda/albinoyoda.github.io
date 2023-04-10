@@ -1,5 +1,5 @@
-#include "Distribution.hpp"
-#include "Statistics.hpp"
+#include "statistics/Distribution.hpp"
+#include "statistics/Statistics.hpp"
 
 #include "gtest/gtest.h"
 #include <random>

@@ -1,4 +1,4 @@
-#include "Statistics.hpp"
+#include "statistics/Statistics.hpp"
 
 #include <cmath>
 
@@ -76,7 +76,7 @@ double find_cdf_quantile(double target_quantile, double precision)
 
 double geometric_series(double p)
 {
-    return 1 / (1 - p);
+    return 1.0 / (1.0 - p);
 }
 
 } // namespace Statistics

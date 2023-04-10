@@ -1,8 +1,9 @@
 #include "Armory.hpp"
 
 #include "Character.hpp"
-#include "find_values.hpp"
-#include "string_helpers.hpp"
+#include "common/find_values.hpp"
+#include "common/sim_time.hpp"
+#include "common/string_helpers.hpp"
 
 Attributes Armory::get_enchant_attributes(Socket socket, Enchant::Type type) const
 {
@@ -147,13 +148,19 @@ Special_stats Armory::get_enchant_special_stats(Socket socket, Enchant::Type typ
     }
 }
 
-Hit_effect Armory::enchant_hit_effect(double weapon_speed, Enchant::Type type) const
+Hit_effect Armory::enchant_hit_effect(Sim_time weapon_speed, Enchant::Type type) const
 {
     if (type == Enchant::Type::crusader)
     {
-        return {"crusader", Hit_effect::Type::stat_boost, {100, 0}, {0, 0, 0}, 0, 15, weapon_speed / 60};
+        return {"crusader",
+                Hit_effect::Type::stat_boost,
+                {100, 0},
+                {0, 0, 0},
+                0,
+                Sim_time::from_seconds(15),
+                weapon_speed.seconds() / 60};
     }
-    return {"none", Hit_effect::Type::none, {}, {}, 0, 0, 0};
+    throw std::runtime_error("Hit effect not found");
 }
 
 void Armory::clean_weapon(Weapon& weapon) const
@@ -233,10 +240,10 @@ void Armory::compute_total_stats(Character& character) const
         {
             use_effects.emplace_back(use_effect);
         }
-        auto hit_effect = enchant_hit_effect(weapon.swing_speed, weapon.enchant.type);
-        if (hit_effect.type != Hit_effect::Type::none)
+
+        if (weapon.enchant.type != Enchant::Type::none)
         {
-            weapon.hit_effects.emplace_back(hit_effect);
+            weapon.hit_effects.emplace_back(enchant_hit_effect(weapon.swing_speed, weapon.enchant.type));
         }
 
         set_names.emplace_back(weapon.set_name);
@@ -316,7 +323,7 @@ void Armory::compute_total_stats(Character& character) const
         {
             if (character.talents.booming_voice_talent)
             {
-                use_effect.duration = 180.0;
+                use_effect.duration = Sim_time::from_seconds(180);
             }
             if (character.talents.improved_battle_shout_talent > 0)
             {
@@ -334,7 +341,8 @@ void Armory::compute_total_stats(Character& character) const
             if (wep.type == Weapon_type::sword)
             {
                 double prob = double(character.talents.sword_specialization) / 100.0;
-                wep.hit_effects.push_back({"sword_specialization", Hit_effect::Type::extra_hit, {}, {}, 0, 0, prob});
+                wep.hit_effects.push_back(
+                    {"sword_specialization", Hit_effect::Type::extra_hit, {}, {}, 0, Sim_time::from_seconds(0), prob});
             }
         }
     }

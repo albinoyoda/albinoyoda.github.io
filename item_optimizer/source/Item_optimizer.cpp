@@ -204,7 +204,7 @@ struct Weapon_struct
 {
     Weapon_struct() = default;
 
-    Weapon_struct(size_t index, Special_stats special_stats, double average_damage, double swing_speed,
+    Weapon_struct(size_t index, Special_stats special_stats, double average_damage, Sim_time swing_speed,
                   std::string name, Weapon_type type, Weapon_socket socket)
         : index(index)
         , special_stats(special_stats)
@@ -221,7 +221,7 @@ struct Weapon_struct
     Special_stats set_special_stats;
     Special_stats hit_special_stats;
     double average_damage{};
-    double swing_speed{};
+    Sim_time swing_speed{};
     std::string name{};
     Weapon_type type{};
     Weapon_socket socket{};
@@ -253,8 +253,8 @@ bool is_strictly_weaker_wep(const Weapon_struct& wep_struct1, const Weapon_struc
     {
         greater_eq &= wep_struct2.swing_speed <= wep_struct1.swing_speed;
     }
-    greater_eq &=
-        wep_struct2.average_damage / wep_struct2.swing_speed >= wep_struct1.average_damage / wep_struct1.swing_speed;
+    greater_eq &= wep_struct2.average_damage / wep_struct2.swing_speed.seconds() >=
+                  wep_struct1.average_damage / wep_struct1.swing_speed.seconds();
 
     bool greater = (special_stats2.hit > special_stats1.hit) ||
                    (special_stats2.critical_strike > special_stats1.critical_strike) ||
@@ -276,7 +276,7 @@ bool is_strictly_weaker_wep(const Weapon_struct& wep_struct1, const Weapon_struc
         greater |= wep_struct2.swing_speed < wep_struct1.swing_speed;
     }
     greater |=
-        wep_struct2.average_damage / wep_struct2.swing_speed > wep_struct1.average_damage / wep_struct1.swing_speed;
+        wep_struct2.average_damage / wep_struct2.swing_speed.seconds() > wep_struct1.average_damage / wep_struct1.swing_speed.seconds();
 
     return greater_eq && greater;
 }
@@ -284,11 +284,11 @@ bool is_strictly_weaker_wep(const Weapon_struct& wep_struct1, const Weapon_struc
 double estimate_wep_stat_diff(const Weapon_struct& wep1, const Weapon_struct& wep2, bool main_hand)
 {
     // Penalize fast MH and slow OH. Set 1 second to equal 100 AP.
-    double wep_1_ap = wep1.average_damage / wep1.swing_speed * 14;
-    wep_1_ap += main_hand ? 100 * (wep1.swing_speed - 2.3) : -100 * (wep1.swing_speed - 2.3);
+    double wep_1_ap = wep1.average_damage / wep1.swing_speed.seconds() * 14;
+    wep_1_ap += main_hand ? 100 * (wep1.swing_speed.seconds() - 2.3) : -100 * (wep1.swing_speed.seconds() - 2.3);
 
-    double wep_2_ap = wep2.average_damage / wep2.swing_speed * 14;
-    wep_2_ap += main_hand ? 100 * (wep2.swing_speed - 2.3) : -100 * (wep2.swing_speed - 2.3);
+    double wep_2_ap = wep2.average_damage / wep2.swing_speed.seconds() * 14;
+    wep_2_ap += main_hand ? 100 * (wep2.swing_speed.seconds() - 2.3) : -100 * (wep2.swing_speed.seconds() - 2.3);
 
     return wep_2_ap - wep_1_ap;
 }

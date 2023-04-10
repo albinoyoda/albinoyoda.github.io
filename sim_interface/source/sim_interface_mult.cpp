@@ -1,11 +1,11 @@
-#include "Combat_simulator.hpp"
 #include "Item_optimizer.hpp"
 #include "Item_popularity.hpp"
 #include "include/Armory.hpp"
 #include "include/Character.hpp"
-#include "include/Statistics.hpp"
 #include "item_heuristics.hpp"
 #include "sim_interface.hpp"
+#include "simulator/combat_simulator.hpp"
+#include "statistics/Statistics.hpp"
 
 #include <algorithm>
 #include <ctime>

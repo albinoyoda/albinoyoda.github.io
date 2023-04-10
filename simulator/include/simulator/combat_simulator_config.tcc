@@ -130,19 +130,19 @@ void Combat_simulator_config::get_combat_simulator_config(const T& input)
         combat.heroic_strike_rage_thresh = fv.find("heroic_strike_rage_thresh_dd");
         combat.cleave_rage_thresh = fv.find("cleave_rage_thresh_dd");
         combat.whirlwind_rage_thresh = fv.find("whirlwind_rage_thresh_dd");
-        combat.hamstring_cd_thresh = fv.find("hamstring_cd_thresh_dd");
+        combat.hamstring_cd_thresh = Sim_time::from_seconds(fv.find("hamstring_cd_thresh_dd"));
         combat.hamstring_thresh_dd = fv.find("hamstring_thresh_dd");
         combat.initial_rage = fv.find("initial_rage_dd");
-        combat.whirlwind_bt_cooldown_thresh = fv.find("whirlwind_bt_cooldown_thresh_dd");
+        combat.whirlwind_bt_cooldown_thresh = Sim_time::from_seconds(fv.find("whirlwind_bt_cooldown_thresh_dd"));
         combat.overpower_rage_thresh = fv.find("overpower_rage_thresh_dd");
-        combat.overpower_bt_cooldown_thresh = fv.find("overpower_bt_cooldown_thresh_dd");
-        combat.overpower_ww_cooldown_thresh = fv.find("overpower_ww_cooldown_thresh_dd");
-        combat.slam_cd_thresh = fv.find("slam_cd_thresh_dd");
-        combat.slam_spam_max_time = fv.find("slam_spam_max_time_dd");
+        combat.overpower_bt_cooldown_thresh = Sim_time::from_seconds(fv.find("overpower_bt_cooldown_thresh_dd"));
+        combat.overpower_ww_cooldown_thresh = Sim_time::from_seconds(fv.find("overpower_ww_cooldown_thresh_dd"));
+        combat.slam_cd_thresh = Sim_time::from_seconds(fv.find("slam_cd_thresh_dd"));
+        combat.slam_spam_max_time = Sim_time::from_seconds(fv.find("slam_spam_max_time_dd"));
         combat.slam_spam_rage = fv.find("slam_spam_rage_dd");
         combat.slam_rage_dd = fv.find("slam_rage_dd");
 
-        sim_time = fv.find("fight_time_dd");
+        sim_time = Sim_time::from_seconds(fv.find("fight_time_dd"));
 
         main_target_level = fv.find("opponent_level_dd");
         main_target_initial_armor_ = fv.find("boss_armor_dd");
@@ -150,10 +150,10 @@ void Combat_simulator_config::get_combat_simulator_config(const T& input)
         n_sunder_armor_stacks = fv.find("sunder_armor_dd");
 
         number_of_extra_targets = fv.find("number_of_extra_targets_dd");
-        extra_target_duration = fv.find("extra_target_duration_dd") / 100;
+        extra_target_percent_uptime = fv.find("extra_target_duration_dd") / 100;
         extra_target_initial_armor_ = fv.find("extra_target_armor_dd");
         extra_target_level = fv.find("extra_target_level_dd");
-        periodic_damage_interval_ = fv.find("periodic_damage_interval_dd");
+        periodic_damage_interval_ = Sim_time::from_seconds(fv.find("periodic_damage_interval_dd"));
         periodic_damage_amount_ = fv.find("periodic_damage_amount_dd");
         execute_phase_percentage_ = fv.find("execute_phase_percentage_dd");
         ability_queue_rage_thresh_ = fv.find("re_queue_abilities_dd");

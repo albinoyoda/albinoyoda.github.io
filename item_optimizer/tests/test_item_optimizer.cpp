@@ -1,5 +1,5 @@
 #include "item_optimizer_fixture.cpp"
-#include "string_helpers.hpp"
+#include "common/string_helpers.hpp"
 
 TEST_F(Optimizer_fixture, test_multi_select)
 {
